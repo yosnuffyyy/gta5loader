@@ -1,0 +1,45 @@
+// Native input bridge for browser build 8b0b5899ed. Loaded in every engine worker.
+// Called synchronously by two small WASM hooks; never writes engine state from
+// the page thread. The original ioPad update retains button history each frame.
+globalThis.createOfflineControllerBridge = function (buffer) {
+  const state = buffer ? new Int32Array(buffer) : null;
+  const PAD = 12840656, CONTROLS = new Set([24488864, 24660320, 24831776]);
+  let savedFlags = null, used = false;
+  const snapshot = new Int32Array(12);
+  const candidate = new Int32Array(12);
+  function read() {
+    if (!state) return false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const version = Atomics.load(state, 0);
+      if (version & 1) continue;
+      for (let i = 1; i < 12; i++) candidate[i] = Atomics.load(state, i);
+      if (version === Atomics.load(state, 0)) { snapshot.set(candidate); return true; }
+    }
+    // Never wait for a paused page while inside the synchronous engine loop.
+    return false;
+  }
+  return function applyController(pointer, heap) {
+    if (!state) return;
+    const coherent = read();
+    const fresh = coherent && (((Date.now() >>> 0) - (snapshot[11] >>> 0)) >>> 0) < 1000;
+    const connected = snapshot[1] === 1;
+    const active = connected && fresh && snapshot[2] === 1 && snapshot[3] === 1;
+    if (pointer === PAD) {
+      if (connected && !savedFlags) savedFlags = [heap[PAD + 50], heap[PAD + 55]];
+      if (!connected && !savedFlags) return;
+      const view = new DataView(heap.buffer);
+      view.setUint32(PAD + 12, active ? snapshot[4] : 0, true);
+      for (let i = 0; i < 4; i++) heap[PAD + 20 + i] = active ? snapshot[5 + i] : 128;
+      heap[PAD + 24] = active ? snapshot[9] : 0;
+      heap[PAD + 25] = active ? snapshot[10] : 0;
+      heap[PAD + 50] = connected ? 1 : savedFlags[0];
+      heap[PAD + 55] = connected ? 1 : savedFlags[1];
+      if (!connected) savedFlags = null;
+      used = true;
+    } else if (CONTROLS.has(pointer) && (connected || used)) {
+      // CControl's last-input source: pad 0, or keyboard/mouse (-4).
+      // This makes the existing game prompts switch even with a neutral pad.
+      new DataView(heap.buffer).setInt32(pointer + 138272, active ? 0 : -4, true);
+    }
+  };
+};

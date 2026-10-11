@@ -14,6 +14,7 @@
 <progress id="progress" max="100" value="0" aria-label="Installation progress"></progress>
 <div class="stats"><span id="bytes">Checking files</span><span id="count"></span></div>
 <p id="current" class="filename"></p>
+<details id="file-issues" hidden><summary id="issue-count"></summary><pre id="issue-list" class="filename" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:16rem;overflow:auto"></pre><p id="issue-note" class="detail"></p></details>
 <div class="actions"><button id="check" disabled>Check this device</button><button id="download" disabled>Install from setup server</button><button id="import" class="secondary" disabled>Import a local web folder</button><button id="pause" class="secondary" hidden>Pause</button></div>
 <input id="folder" type="file" webkitdirectory multiple hidden>
 <a id="play" class="play" href="/gta5loader/game.html?touch=1&amp;low=1&amp;fps=30" hidden>Play offline →</a>
@@ -25,12 +26,12 @@
 <h2>Set up on iPhone</h2>
 <ol><li>Open this HTTPS setup page in Safari. Use <strong>Share → Add to Home Screen</strong>, with <strong>Open as Web App</strong> enabled if offered.</li>
 <li><strong>Open the new Home Screen app before installing the files.</strong> Its storage may be separate from Safari's tab.</li>
-<li>Tap <strong>Check this device</strong>, then import your existing complete <strong>web</strong> folder from Files or a connected USB drive. Keep Wi-Fi on during import: the compatible engine (about 66 MB) downloads automatically; the game data is read locally.</li>
-<li>Keep this app visible and the phone unlocked while copying. You can pause and resume. When it says <strong>Installed</strong>, turn off the setup server and use <strong>Play offline</strong>.</li></ol>
+<li>Tap <strong>Check this device</strong>, then import your existing <strong>web</strong> folder from Files or a connected USB drive. Keep Wi-Fi on during import: the compatible engine and support scripts, including audio (about 67 MB total), download automatically. Game data is read locally. Missing optional artwork or duplicate shader files will not block playing.</li>
+<li>Keep this app visible and the phone unlocked while copying. You can pause and resume. When it says <strong>Installed</strong> or <strong>Ready to play</strong>, use <strong>Play offline</strong>. Files that could not be imported are listed separately, and the rest of the import continues.</li></ol>
 <p>Allow about <strong>22 GB for the installed game</strong>, plus free space for saves and iOS. Importing from a folder already copied onto the phone temporarily needs room for both copies. Importing from a USB drive avoids that duplicate phone copy.</p>
 <p class="detail">This edition uses converted 32-bit WebAssembly memory with a 512 MB initial allocation and a 4 GB ceiling. It no longer needs Memory64. WebGPU and sufficient runtime memory are still required. The converted engine has rendered Story Mode on a desktop; physical iPhone gameplay is not yet verified.</p>
 </section>
-<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This setup website imports game data from your local web folder and downloads its compatible engine once. The setup website is needed once. Opening this HTML file directly in Files cannot install the offline handler.</p></footer>
+<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This setup website imports game data from your local web folder and downloads its compatible engine and support scripts once. Opening this HTML file directly in Files cannot install the offline handler.</p><p class="detail">Installer update: resilient folder import v2.</p></footer>
 </main><script type="module" src="/gta5loader/installer.js"></script>
 <script>if(location.protocol==='file:'){document.getElementById('status').textContent='Open this installer from an HTTPS setup server on your iPhone. A downloaded HTML file cannot register the offline handler.';}</script>
 </body></html>

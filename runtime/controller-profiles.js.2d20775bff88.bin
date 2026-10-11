@@ -1,0 +1,109 @@
+// Nonstandard USB adapters have no guaranteed layout. Learn their exposed inputs
+// once, then normalize them to the browser's standard controller layout.
+const finite = Number.isFinite;
+const limit = (v, lo, hi) => Math.max(lo, Math.min(hi, finite(v) ? v : 0));
+export const PROFILE_KEY = 'offline-controller-profiles-v1';
+export const deviceKey = pad => JSON.stringify([pad.id, pad.mapping, pad.buttons.length, pad.axes.length]);
+export function controllerStyle(pad) {
+  if (/054c|sony|playstation|dualsense|dualshock|ps[2345]\b/i.test(pad?.id || '')) return 'playstation';
+  if (/xbox|xinput|045e|microsoft/i.test(pad?.id || '')) return 'xbox';
+  return 'generic';
+}
+export function rawSnapshot(pad) {
+  return {axes: Array.from(pad.axes, v => finite(v) ? v : 0),
+    buttons: Array.from(pad.buttons, b => limit(b?.value ?? (b?.pressed ? 1 : 0), 0, 1))};
+}
+export function emptyProfile(pad, style = controllerStyle(pad)) {
+  return {version: 1, buttonCount: pad.buttons.length, axisCount: pad.axes.length,
+    style, axes: Array(4).fill(null), buttons: Array(16).fill(null), dpadMove: false};
+}
+export function validProfile(p, pad) {
+  if (!p || p.version !== 1 || !Number.isInteger(p.buttonCount) || p.buttonCount < 0 || p.buttonCount > 256 ||
+      !Number.isInteger(p.axisCount) || p.axisCount < 0 || p.axisCount > 64 ||
+      !['playstation','xbox','generic'].includes(p.style) || typeof p.dpadMove !== 'boolean' ||
+      !Array.isArray(p.axes) || p.axes.length !== 4 || !Array.isArray(p.buttons) || p.buttons.length !== 16 ||
+      (pad && (p.axisCount !== pad.axes.length || p.buttonCount !== pad.buttons.length))) return false;
+  const index = (b, count) => Number.isInteger(b.index) && b.index >= 0 && b.index < count;
+  const unit = v => finite(v) && v >= -1 && v <= 1;
+  const binding = (b, stick) => b === null || (b && typeof b === 'object' && (stick
+    ? b.kind === 'stick' && index(b,p.axisCount) && unit(b.center) && Math.abs(b.center) <= .5 && Math.abs(b.sign) === 1
+    : b.kind === 'button' ? index(b,p.buttonCount)
+    : b.kind === 'axis' ? index(b,p.axisCount) && unit(b.rest) && Math.abs(b.end) === 1 && Math.abs(b.end-b.rest) >= .5
+    : b.kind === 'hat' && index(b,p.axisCount) && Number.isInteger(b.direction) && b.direction >= 0 && b.direction < 8));
+  return p.axes.every(b => binding(b,true)) && p.buttons.every(b => binding(b,false)) &&
+    [...p.axes,...p.buttons].some(Boolean);
+}
+export function mappedInputs(pad, profile) {
+  const raw = rawSnapshot(pad);
+  const values = profile.buttons.map(b => {
+    if (!b) return 0;
+    if (b.kind === 'button') return raw.buttons[b.index] || 0;
+    const value = raw.axes[b.index];
+    if (b.kind === 'axis') return limit((value-b.rest)/(b.end-b.rest),0,1);
+    // Windows HID hats use eight equally spaced directions; diagonals activate
+    // both neighboring cardinals. Out-of-range values represent the rest state.
+    if (value < -1 || value > 1) return 0;
+    const slot = (value+1)*3.5, nearest = Math.round(slot);
+    if (Math.abs(slot-nearest) > .12) return 0;
+    const distance = Math.abs(nearest-b.direction);
+    return distance === 0 || distance === 1 || distance === 7 ? 1 : 0;
+  });
+  values.push(0);
+  const axes = profile.axes.map(b => {
+    if (!b) return 0;
+    const displacement = raw.axes[b.index]-b.center;
+    return limit(displacement/(displacement >= 0 ? 1-b.center : 1+b.center)*b.sign,-1,1);
+  });
+  if (profile.dpadMove) {
+    if (!profile.axes[0]) axes[0] = values[15]-values[14];
+    if (!profile.axes[1]) axes[1] = values[13]-values[12];
+  }
+  return {values, axes};
+}
+export function isAtRest(raw, rest) {
+  return raw.buttons.every((v,i) => v <= .2 && Math.abs(v-rest.buttons[i]) < .2) &&
+    raw.axes.every((v,i) => Math.abs(v-rest.axes[i]) < .18);
+}
+export function detectBinding(raw, rest, stick, profile) {
+  if (!stick) {
+    const button = raw.buttons.findIndex((v,i) => v > .65 && rest.buttons[i] < .2);
+    if (button >= 0) return {kind:'button', index:button};
+  }
+  let index = -1, magnitude = .65;
+  for (let i = 0; i < raw.axes.length; i++) {
+    if (profile.axes.some(b => b?.index === i)) continue;
+    if (stick && Math.abs(rest.axes[i]) > .5) continue;
+    const change = Math.abs(raw.axes[i]-rest.axes[i]);
+    if (change > magnitude) { index=i; magnitude=change; }
+  }
+  if (index < 0) return null;
+  if (stick) return {kind:'stick', index, center:rest.axes[index], sign:Math.sign(raw.axes[index]-rest.axes[index])};
+  if (Math.abs(rest.axes[index]) > 1 && Math.abs(raw.axes[index]) <= 1) {
+    const slot = (raw.axes[index]+1)*3.5;
+    return Math.abs(slot-Math.round(slot)) <= .12 ? {kind:'hat',index,direction:Math.round(slot)} : null;
+  }
+  if (Math.abs(rest.axes[index]) > 1) return null;
+  return {kind:'axis', index, rest:rest.axes[index], end:Math.sign(raw.axes[index]-rest.axes[index])};
+}
+export function createProfileStore(storage) {
+  let profiles = new Map();
+  try {
+    const entries = JSON.parse(storage?.getItem(PROFILE_KEY) || '[]');
+    if (Array.isArray(entries)) profiles = new Map(entries.slice(0,64).filter(e =>
+      Array.isArray(e) && typeof e[0] === 'string' && e[0].length <= 4096 && validProfile(e[1])));
+  } catch { /* Corrupt or unavailable storage must never prevent the game loading. */ }
+  function persist() {
+    try { if (!storage) return false; storage.setItem(PROFILE_KEY,JSON.stringify([...profiles])); return true; }
+    catch { return false; }
+  }
+  return {
+    get(pad) { const p=profiles.get(deviceKey(pad)); return validProfile(p,pad) ? p : null; },
+    save(pad, profile) {
+      if (!validProfile(profile,pad)) throw new Error('Invalid controller mapping');
+      const key=deviceKey(pad); profiles.delete(key); profiles.set(key,structuredClone(profile));
+      if (profiles.size > 64) profiles.delete(profiles.keys().next().value);
+      return persist();
+    },
+    remove(pad) { profiles.delete(deviceKey(pad)); return persist(); }
+  };
+}

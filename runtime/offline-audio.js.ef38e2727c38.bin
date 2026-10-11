@@ -1,0 +1,139 @@
+// Keep resume() inside the user's gesture, even when the engine or worklet
+// arrives later. Never wait for resume() before installing the next retry.
+export class GameAudio {
+  constructor({ workletUrl, log = () => {}, onChange = () => {}, contextFactory, nodeFactory }) {
+    this.workletUrl = workletUrl;
+    this.log = log;
+    this.onChange = onChange;
+    this.contextFactory = contextFactory || (() => new AudioContext({ sampleRate: 48000, latencyHint: 'interactive' }));
+    this.nodeFactory = nodeFactory || ((ctx, source) => new AudioWorkletNode(ctx, 'game-audio', {
+      numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: source
+    }));
+    this.context = null;
+    this.source = null;
+    this.node = null;
+    this.loading = null;
+    this.moduleLoaded = false;
+    this.error = '';
+    this.generation = 0;
+  }
+  changed() { this.onChange(this); }
+  failed(error) {
+    this.error = String(error?.message || error);
+    this.log('[page] audio failed: ' + this.error);
+    this.changed();
+  }
+  setSource(source) {
+    this.source = source;
+    this.attach();
+  }
+  unlock() {
+    try {
+      if (!this.context || this.context.state === 'closed') {
+        this.reset();
+        const ctx = this.context = this.contextFactory();
+        ctx.onstatechange = () => { if (this.context === ctx) this.changed(); };
+      }
+      const ctx = this.context;
+      this.error = '';
+      // Call synchronously on EVERY gesture. A previous resume promise may
+      // still be waiting for permission; that must not block a fresh retry.
+      Promise.resolve(ctx.resume()).then(() => {
+        if (this.context === ctx) this.changed();
+      }).catch(error => { if (this.context === ctx) this.failed(error); });
+      this.attach();
+      this.changed();
+    } catch (error) { this.failed(error); }
+  }
+  attach() {
+    if (!this.source || !this.context || this.node || this.loading) return;
+    const ctx = this.context, generation = this.generation;
+    this.loading = true;
+    (async () => {
+      try {
+        if (!this.moduleLoaded) await ctx.audioWorklet.addModule(this.workletUrl);
+        if (this.context !== ctx || generation !== this.generation) return;
+        this.moduleLoaded = true;
+        const node = this.nodeFactory(ctx, this.source);
+        node.onprocessorerror = () => {
+          if (this.node !== node) return;
+          node.disconnect(); this.node = null;
+          this.failed(new Error('Audio playback stopped. Click Enable sound to retry.'));
+        };
+        node.connect(ctx.destination);
+        this.node = node;
+        this.error = '';
+        this.log('[page] audio connected: ' + ctx.sampleRate + ' Hz; state ' + ctx.state);
+      } catch (error) {
+        if (this.context === ctx && generation === this.generation) this.failed(error);
+      } finally {
+        if (this.context === ctx && generation === this.generation) { this.loading = null; this.changed(); }
+      }
+    })();
+  }
+  reset() {
+    this.generation++;
+    this.node?.disconnect();
+    const old = this.context;
+    this.context = null; this.node = null; this.loading = null; this.moduleLoaded = false;
+    if (old) { old.onstatechange = null; Promise.resolve(old.close()).catch(() => {}); }
+  }
+  restart() { this.reset(); this.unlock(); }
+  get playing() { return !!this.node && this.context?.state === 'running'; }
+}
+
+export function installGameAudio({ workletUrl, log, diagnostics = false }) {
+  const panel = document.createElement('div');
+  panel.id = 'offline-audio';
+  panel.style.cssText = 'position:fixed;right:12px;top:12px;z-index:20;max-width:300px;font:13px/1.4 Arial,sans-serif;color:#fff';
+  const button = document.createElement('button');
+  button.id = 'enable-sound';
+  button.type = 'button';
+  button.style.cssText = 'display:block;margin-left:auto;border:1px solid #ffffff55;border-radius:6px;padding:8px 12px;background:#111c;color:#fff;font:inherit;cursor:pointer';
+  const notice = document.createElement('div');
+  notice.setAttribute('role', 'status');
+  notice.style.cssText = 'margin-top:4px;background:#111d;border-radius:4px;padding:5px 8px';
+  panel.append(button, notice);
+  document.body.append(panel);
+  const player = new GameAudio({workletUrl, log, onChange: () => render()});
+  function render() {
+    button.textContent = player.playing ? 'Sound on' : 'Enable sound';
+    button.title = player.playing ? 'Click to restart sound if you cannot hear the game.' : 'Click to allow the browser to play game audio.';
+    notice.textContent = player.error || '';
+    notice.hidden = !player.error;
+    panel.dataset.audioState = player.context?.state || 'not-started';
+    panel.dataset.audioConnected = String(!!player.node);
+  }
+  // Registered before the game's mode picker, which consumes Enter/Space.
+  const gesture = event => {
+    if (panel.contains(event.target)) return;
+    if (event.type === 'keydown' && (event.ctrlKey || event.altKey || event.metaKey)) return;
+    player.unlock();
+  };
+  addEventListener('pointerdown', gesture, {capture:true});
+  addEventListener('keydown', gesture, {capture:true});
+  button.addEventListener('click', () => {
+    if (player.playing) player.restart(); else player.unlock();
+  });
+  // Do not let the game's keyboard controls swallow activation of this button.
+  addEventListener('keydown', event => {
+    if (event.target === button && ['Enter','Space'].includes(event.code)) {
+      event.preventDefault(); event.stopImmediatePropagation(); button.click();
+    }
+  }, {capture:true});
+  if (diagnostics) {
+    const readout = document.createElement('output');
+    readout.id = 'offline-audio-diagnostics';
+    readout.style.cssText = 'display:block;margin-top:4px;padding:5px;background:#111d;white-space:pre-wrap;font:11px monospace';
+    panel.append(readout);
+    setInterval(() => {
+      if (!player.source || !player.context) return;
+      const hdr = new Int32Array(player.source.memory.buffer, player.source.ring, 8);
+      const result = {state:player.context.state,connected:!!player.node,written:hdr[0]>>>0,read:hdr[1]>>>0,workletCalls:hdr[3]>>>0,peak:Atomics.exchange(hdr,4,0)/1e6};
+      readout.textContent = JSON.stringify(result);
+      log('[page audio] ' + JSON.stringify(result));
+    }, 5000);
+  }
+  render();
+  return player;
+}

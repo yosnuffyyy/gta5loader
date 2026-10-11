@@ -1,0 +1,114 @@
+import {deviceKey, controllerStyle, emptyProfile, rawSnapshot, isAtRest, detectBinding, validProfile} from './controller-profiles.js';
+
+const stickNames = ['Left stick RIGHT','Left stick DOWN','Right stick RIGHT','Right stick DOWN'];
+const buttonNames = ['A / ✕ (bottom face button)','B / ○ (right face button)','X / □ (left face button)',
+  'Y / △ (top face button)','LB / L1','RB / R1','LT / L2','RT / R2','Back / Select / Share',
+  'Start / Options','Left stick click / L3','Right stick click / R3','D-pad UP','D-pad DOWN','D-pad LEFT','D-pad RIGHT'];
+const steps = [...stickNames,...buttonNames];
+
+export function installControllerSetup(help, store, onBlock) {
+  const section=document.createElement('div');
+  section.innerHTML='<hr><label>Controller <select id="controller-device" aria-label="Controller to set up"></select></label><p id="controller-device-info"></p><button id="controller-configure" type="button">Set up / remap</button> <button id="controller-reset" type="button">Use default layout</button><p id="controller-notice" role="status"></p>';
+  help.append(section);
+  const choose=section.querySelector('select'), info=section.querySelector('#controller-device-info');
+  const configure=section.querySelector('#controller-configure'), reset=section.querySelector('#controller-reset');
+  const notice=section.querySelector('#controller-notice');
+  const dialog=document.createElement('dialog'); dialog.id='controller-setup';
+  dialog.innerHTML='<h2>Controller setup</h2><p id="setup-device"></p><label>Button labels <select id="setup-style"><option value="generic">A / B / X / Y (generic)</option><option value="xbox">Xbox</option><option value="playstation">PlayStation</option></select></label><p id="setup-progress"></p><h3 id="setup-prompt"></h3><p id="setup-hint"></p><label id="setup-dpad-label" hidden><input id="setup-dpad" type="checkbox"> Use D-pad for movement when a left stick is missing</label><p id="setup-review"></p><div class="setup-actions"><button id="setup-start">Ready — controls released</button><button id="setup-back" hidden>Previous</button><button id="setup-skip" hidden>Skip this control</button><button id="setup-save" hidden>Save layout</button><button id="setup-cancel">Cancel</button></div>';
+  document.body.append(dialog);
+  const el=id=>dialog.querySelector('#setup-'+id);
+  let pads=[], deviceList='', shownDevice='', session=null;
+  const selected=()=>pads.find(p=>String(p.index)===choose.value);
+  function close() { session=null; dialog.close(); onBlock(false); }
+  function draw() {
+    if (!session) return;
+    const step=session.step, complete=step===steps.length;
+    el('start').hidden=step!==-1; el('back').hidden=step<=0;
+    el('skip').hidden=step<0 || complete; el('save').hidden=!complete;
+    el('dpad-label').hidden=!complete;
+    el('progress').textContent=step<0?'One-time setup':complete?'Review your layout':`Control ${step+1} of ${steps.length}`;
+    el('prompt').textContent=step<0?'Release all buttons, sticks and triggers':complete?'Layout ready':steps[step];
+    el('hint').textContent=step<0?'Pause the game before setup. Keep the controller still, then click Ready. Skip any control your controller does not have.':complete?'Release the controller, then save. Skipped controls remain available on the keyboard.':session.ready
+      ? step<4?'Push this stick fully in the indicated direction.':'Press and hold this button or direction. Squeeze triggers fully.'
+      :'Release all controls to continue…';
+    el('review').textContent=complete?'Skipped: '+(steps.filter((_,i)=>!(i<4?session.profile.axes[i]:session.profile.buttons[i-4])).join(', ') || 'none'):'';
+    el('save').disabled=complete&&!validProfile(session.profile,session.pad);
+  }
+  function next(step) {
+    session.step=step; session.ready=false; session.restSince=null; session.candidate=null;
+    for(let i=Math.max(0,step);i<steps.length;i++) (i<4?session.profile.axes:session.profile.buttons)[i<4?i:i-4]=null;
+    draw();
+  }
+  configure.onclick=()=>{
+    const pad=selected(); if(!pad)return;
+    if(pad.axes.length>64||pad.buttons.length>256){notice.textContent='This device exposes more controls than this setup supports.';return;}
+    session={pad,key:deviceKey(pad),profile:emptyProfile(pad,store.get(pad)?.style||controllerStyle(pad)),step:-1};
+    el('device').textContent=pad.id; el('style').value=session.profile.style;
+    el('style').disabled=false; el('dpad').checked=false;
+    onBlock(true); dialog.showModal(); draw();
+  };
+  reset.onclick=()=>{
+    const pad=selected(); if(!pad)return;
+    const saved=store.remove(pad);
+    notice.textContent=saved?'Custom layout removed.': 'Custom layout removed for this session; browser storage is unavailable.';
+    onBlock(true); onBlock(false); deviceList='';
+  };
+  el('start').onclick=()=>{
+    const pad=pads.find(p=>p.index===session.pad.index&&deviceKey(p)===session.key); if(!pad)return;
+    const rest=rawSnapshot(pad);
+    if(rest.buttons.some(v=>v>.2)){el('hint').textContent='Release all buttons and triggers first.';return;}
+    session.rest=rest; session.profile.style=el('style').value; el('style').disabled=true; next(0);
+  };
+  el('skip').onclick=()=>next(session.step+1);
+  el('back').onclick=()=>next(session.step-1);
+  el('save').onclick=()=>{
+    session.profile.dpadMove=el('dpad').checked;
+    const saved=store.save(session.pad,session.profile);
+    notice.textContent=saved?'Layout saved. Use the controller to play.':'Layout active for this session. Browser storage is unavailable; setup cannot be remembered.';
+    deviceList=''; close();
+  };
+  el('cancel').onclick=close;
+  dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
+  function refreshInfo() {
+    const pad=selected(), custom=pad&&store.get(pad);
+    const identity=pad?deviceKey(pad):'';
+    if(identity!==shownDevice){notice.textContent='';shownDevice=identity;}
+    configure.disabled=!pad; reset.disabled=!custom;
+    const message=!pad?'Connect a controller and press a button.':custom?'Saved custom layout.':pad.mapping==='standard'
+      ?'Automatic layout. Remap only if needed.':'One-time setup needed for this USB adapter or older controller.';
+    if(info.textContent!==message)info.textContent=message;
+  }
+  choose.onchange=refreshInfo;
+  return {
+    get blocked(){return !!session;},
+    tick(connected, focused, now=performance.now()) {
+      pads=connected.filter(p=>p?.connected);
+      const list=pads.map(p=>p.index+':'+deviceKey(p)).join('|');
+      if(list!==deviceList){
+        const value=choose.value; deviceList=list; choose.replaceChildren();
+        for(const pad of pads){const option=document.createElement('option');option.value=pad.index;option.textContent=pad.id;choose.append(option);}
+        if(pads.some(p=>String(p.index)===value))choose.value=value;
+      }
+      refreshInfo();
+      if(!session)return;
+      const pad=pads.find(p=>p.index===session.pad.index&&deviceKey(p)===session.key);
+      if(!pad){notice.textContent='Controller disconnected. Setup cancelled; the previous layout is unchanged.';close();return;}
+      if(session.step<0||session.step>=steps.length)return;
+      if(!focused){session.ready=false;session.restSince=null;session.candidate=null;draw();return;}
+      const raw=rawSnapshot(pad);
+      if(!session.ready){
+        if(!isAtRest(raw,session.rest))session.restSince=null;
+        else if(session.restSince===null)session.restSince=now;
+        else if(now-session.restSince>=250){session.ready=true;draw();}
+        return;
+      }
+      const binding=detectBinding(raw,session.rest,session.step<4,session.profile);
+      if(!binding){session.candidate=null;return;}
+      const key=JSON.stringify(binding);
+      if(session.candidate?.key!==key){session.candidate={key,since:now};return;}
+      if(now-session.candidate.since<100)return;
+      (session.step<4?session.profile.axes:session.profile.buttons)[session.step<4?session.step:session.step-4]=binding;
+      next(session.step+1);
+    }
+  };
+}

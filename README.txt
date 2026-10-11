@@ -29,3 +29,22 @@ it once more. Do not clear website data to update.
 Hosting: main branch, /(root), with .nojekyll. Files are configured for
 /gta5loader/. The service worker adds isolation headers after the initial
 controlled reload. Keep the original website address for offline storage.
+
+IMPORT REPAIR V2
+
+The setup automatically downloads the verified audio, controller, mobile
+and engine support scripts along with the compatible engine. Keep Wi-Fi
+on during import. Folder paths are preserved before passing files to the
+storage worker. A missing, unreadable, wrong-sized or corrupt input file
+is listed separately; import continues with the remaining files.
+
+Missing loading-screen artwork/font/spinner and byte-verified duplicate
+shader sources are optional. Play offline becomes available once every
+required file is verified. Required shader packs and game archives still
+need to be installed. No corrupt or missing file is counted as installed.
+Select the folder again to repair or resume; verified chunks are retained.
+
+To update, close all tabs and Home Screen windows for this address, open
+the site online, then close and reopen once more if the update is waiting.
+Look for "Installer update: resilient folder import v2" at the bottom.
+Do not clear website data. Your existing game storage is reused.

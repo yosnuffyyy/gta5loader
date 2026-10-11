@@ -1,15 +1,22 @@
 import {checkGameSupport} from './platform-check.js';
-import {formatBytes,sha256} from './offline-common.js';
+import {formatBytes,sha256,folderEntries} from './offline-common.js';
 const el=id=>document.getElementById(id);
-let worker,manifest,busy=false,supported=false,ready=false,wake,storedBytes=0,spaceAvailable=true;
+let worker,manifest,busy=false,supported=false,ready=false,wake,storedBytes=0,spaceAvailable=true,optionalMissing=0;
 function message(text){el('status').textContent=text;}
 function controls(){el('check').disabled=busy;el('download').disabled=busy||!supported||!spaceAvailable;el('download').hidden=manifest?.installSource==='folder';el('import').disabled=busy||!supported||!spaceAvailable;el('pause').hidden=!busy;el('play').hidden=!ready||busy||!supported;el('offline-test').hidden=!ready||busy;}
 function progress(data){
-  ready=data.ready;storedBytes=data.bytes;el('progress').value=data.totalBytes?data.bytes/data.totalBytes*100:0;
+  ready=data.ready;optionalMissing=data.optionalMissing||0;storedBytes=data.bytes;el('progress').value=data.totalBytes?data.bytes/data.totalBytes*100:0;
   el('bytes').textContent=formatBytes(data.bytes)+' / '+formatBytes(data.totalBytes);
   el('count').textContent=data.complete.toLocaleString()+' / '+data.total.toLocaleString()+' files';
   if(data.current)el('current').textContent=data.current;
-  el('state-badge').textContent=ready?'Installed':busy?'Installing':'Not installed';el('state-badge').classList.toggle('ready',ready);
+  el('state-badge').textContent=ready?(optionalMissing?'Ready to play':'Installed'):busy?'Installing':'Not installed';el('state-badge').classList.toggle('ready',ready);
+  const showIssues=data.issueCount>0||(!busy&&(data.requiredMissing||data.optionalMissing)&&data.bytes>0);
+  el('file-issues').hidden=!showIssues;
+  if(showIssues){
+    el('issue-count').textContent=(data.requiredMissing||0)+' required and '+optionalMissing+' optional files remain';
+    el('issue-list').textContent=(data.issues?.length?data.issues:data.missingFiles||[]).map(f=>(f.optional?'Optional: ':'Required: ')+f.path+(f.message?' — '+f.message:'')).join('\n');
+    el('issue-note').textContent='Showing up to 30 files. Missing optional loading artwork and verified duplicate shader files do not block Play offline. Required game files must still be installed. Choose the folder again to resume.';
+  }
   controls();
 }
 async function storageInfo(){
@@ -37,7 +44,16 @@ async function start(files){
 }
 el('download').onclick=()=>start();
 el('import').onclick=()=>el('folder').click();
-el('folder').onchange=()=>{if(el('folder').files.length)start([...el('folder').files]);el('folder').value='';};
+el('folder').onchange=()=>{
+  try{
+    if(el('folder').files.length){
+      const files=folderEntries(el('folder').files,manifest);
+      if(!files.length)message('No matching game paths were found. Select the web folder itself (or the folder containing it), keeping its b and data subfolders intact.');
+      else start(files);
+    }
+  }catch(e){message(e.message);}
+  finally{el('folder').value='';}
+};
 el('pause').onclick=()=>{message('Finishing the current storage checkpoint…');worker.postMessage({command:'pause'});};
 el('check').onclick=async()=>{
   el('check').disabled=true;message('Checking browser, graphics and storage support…');
@@ -93,12 +109,13 @@ async function boot(){
   manifest=await (await fetch('/gta5loader/offline-manifest.json')).json();
   worker=new Worker('/gta5loader/install-worker.js',{type:'module'});
   worker.onmessage=({data})=>{
-    if(['status','progress','complete'].includes(data.type))progress(data);
+    if(['status','progress','complete','incomplete'].includes(data.type))progress(data);
     if(data.type==='status'){message(data.ready?'Installed on this device. Checking browser support…':'Offline launcher ready. Check this device before installing '+formatBytes(data.totalBytes)+'.');if(data.ready)el('check').click();}
-    if(['complete','paused','error'].includes(data.type)){
+    if(['complete','incomplete','paused','error'].includes(data.type)){
       busy=false;releaseAwake();controls();storageInfo();
-      message(data.type==='complete'?'Installed and verified. Your PC and internet connection are no longer needed for the stored game.':data.type==='paused'?'Paused. Verified files and chunks are kept; use Install to resume, or choose the local folder again.':data.message);
-      el('state-badge').textContent=data.type==='complete'?'Installed':data.type==='paused'?'Paused':'Needs attention';
+      if(data.type==='complete'||data.type==='incomplete')progress(data);
+      message(data.type==='complete'?(optionalMissing?'Ready to play. '+optionalMissing+' optional files were skipped; all required game files are verified. You can use Play offline.':'Installed and verified. Your PC and internet connection are no longer needed for the stored game.'):data.type==='incomplete'?'Import finished with '+data.requiredMissing+' required files still missing or unverified. Other files were kept. Check the file list below and select the folder again to resume.':data.type==='paused'?'Paused. Verified files and chunks are kept; use Install to resume, or choose the local folder again.':data.message);
+      el('state-badge').textContent=data.type==='complete'?(optionalMissing?'Ready to play':'Installed'):data.type==='paused'?'Paused':'Needs attention';
     }
   };
   worker.onerror=()=>{busy=false;releaseAwake();controls();message('The storage worker stopped. Reload this app and resume; completed checkpoints are retained.');};

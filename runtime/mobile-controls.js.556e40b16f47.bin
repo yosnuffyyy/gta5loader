@@ -1,0 +1,107 @@
+export function detectMobile(nav, coarse = false) {
+  return /Android|iPhone|iPad|iPod/i.test(nav.userAgent || '') ||
+    ((nav.maxTouchPoints || 0) > 0 && (coarse || nav.platform === 'MacIntel'));
+}
+export function touchStick(x, y, radius) {
+  if (![x,y,radius].every(Number.isFinite) || radius <= 0) return [0,0];
+  const scale=Math.max(radius,Math.hypot(x,y));
+  return [x/scale,y/scale];
+}
+// Each pointer owns its control until release. Two fingers on one button must
+// not release each other; a second finger cannot replace an occupied stick.
+export function createTouchState() {
+  const pad={id:'On-screen touch controls',index:1000000,mapping:'standard',touch:true,
+    connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({value:0,pressed:false}))};
+  const pointers=new Map();
+  function syncButtons() {
+    pad.buttons.forEach((b,i)=>{b.pressed=[...pointers.values()].some(v=>v===i);b.value=b.pressed?1:0;});
+  }
+  return {
+    pad,
+    begin(id,control) {
+      if(pointers.has(id) || !(control==='left'||control==='right'||Number.isInteger(control)&&control>=0&&control<16))return false;
+      if(typeof control==='string' && [...pointers.values()].includes(control))return false;
+      pointers.set(id,control);syncButtons();return true;
+    },
+    move(id,x,y,radius) {
+      const control=pointers.get(id);if(control!=='left'&&control!=='right')return;
+      const offset=control==='left'?0:2;
+      [pad.axes[offset],pad.axes[offset+1]]=touchStick(x,y,radius);
+    },
+    end(id) {
+      const control=pointers.get(id);pointers.delete(id);
+      if(control==='left'||control==='right'){const offset=control==='left'?0:2;pad.axes[offset]=pad.axes[offset+1]=0;}
+      syncButtons();
+    },
+    clear() {pointers.clear();pad.axes.fill(0);syncButtons();},
+    has:id=>pointers.has(id)
+  };
+}
+
+export function installMobileControls({enabled=false, mobile=false, onActivity=()=>{}}={}) {
+  const state=createTouchState(), captures=new Map();
+  let activate=onActivity, visible=enabled, physical=false, blocked=false, loading=true;
+  state.pad.connected=enabled;
+  const root=document.createElement('div');root.id='touch-controls';root.setAttribute('aria-label','Touch game controls');
+  root.innerHTML='<div class="touch-shoulders touch-left"><button data-button="4">LB<small>Weapons</small></button><button data-button="6">LT<small>Aim / brake</small></button></div><div class="touch-shoulders touch-right"><button data-button="7">RT<small>Fire / gas</small></button><button data-button="5">RB<small>Cover / handbrake</small></button></div><div class="touch-menu"><button data-button="8" aria-label="Change view">View</button><button data-button="9" aria-label="Pause game">Pause</button></div><div class="touch-stick touch-move" data-stick="left" role="group" aria-label="Movement joystick"><span>MOVE</span><i></i></div><div class="touch-stick touch-look" data-stick="right" role="group" aria-label="Camera joystick"><span>LOOK</span><i></i></div><div class="touch-dpad"><button data-button="12" class="up" aria-label="D-pad up">↑</button><button data-button="14" class="left" aria-label="D-pad left">←</button><button data-button="15" class="right" aria-label="D-pad right">→</button><button data-button="13" class="down" aria-label="D-pad down">↓</button></div><div class="touch-face"><button data-button="3" class="top">Y<small>Enter / exit</small></button><button data-button="2" class="left">X<small>Jump</small></button><button data-button="1" class="right">B<small>Back / reload</small></button><button data-button="0" class="bottom">A<small>Run / OK</small></button></div><div class="touch-clicks"><button data-button="10">L3<small>Crouch</small></button><button data-button="11">R3<small>Look back</small></button></div>';
+  const toggle=document.createElement('button');toggle.id='touch-toggle';toggle.type='button';toggle.textContent='Touch controls';toggle.setAttribute('aria-pressed',String(enabled));
+  const rotate=document.createElement('div');rotate.id='touch-rotate';rotate.textContent='Turn your phone sideways for more room.';
+  const style=document.createElement('link');style.rel='stylesheet';style.href='/mobile-controls.css';document.head.append(style);
+  document.body.append(root,toggle,rotate);
+  document.documentElement.classList.toggle('mobile-device',mobile);
+  function clear() {
+    state.clear();
+    for(const [id,item] of captures){try{if(item.el.hasPointerCapture(id))item.el.releasePointerCapture(id);}catch{}}
+    captures.clear();
+    root.querySelectorAll('i').forEach(el=>el.style.transform='translate(0,0)');
+    root.querySelectorAll('.pressed').forEach(el=>el.classList.remove('pressed'));
+  }
+  function render() {
+    root.hidden=!visible||physical||blocked||loading;
+    toggle.hidden=!mobile&&!enabled;
+    toggle.textContent=visible&&!physical?'Hide touch':'Touch controls';
+    toggle.setAttribute('aria-pressed',String(visible&&!physical));
+    rotate.hidden=!mobile||loading||blocked||!visible||physical;
+  }
+  toggle.onclick=()=>{
+    visible=physical?true:!visible;physical=false;state.pad.connected=visible;
+    clear();if(visible)activate();render();
+  };
+  function move(e) {
+    const item=captures.get(e.pointerId);if(!item||!item.rect)return;
+    e.preventDefault();const {rect,el}=item,r=rect.width*.34;
+    const x=e.clientX-(rect.left+rect.width/2),y=e.clientY-(rect.top+rect.height/2);
+    state.move(e.pointerId,x,y,r);
+    const axis=el.dataset.stick==='left'?0:2;
+    el.querySelector('i').style.transform=`translate(${state.pad.axes[axis]*r}px,${state.pad.axes[axis+1]*r}px)`;
+  }
+  root.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    const el=e.target.closest('[data-stick],[data-button]');if(!el||root.hidden)return;
+    e.preventDefault();
+    const control=el.dataset.stick||Number(el.dataset.button);
+    if(!state.begin(e.pointerId,control))return;
+    captures.set(e.pointerId,{el,rect:el.dataset.stick?el.getBoundingClientRect():null});
+    try{el.setPointerCapture(e.pointerId);}catch{}
+    el.classList.add('pressed');activate();move(e);
+  });
+  root.addEventListener('pointermove',move);
+  function release(e) {
+    const item=captures.get(e.pointerId);if(!item)return;
+    e.preventDefault();state.end(e.pointerId);captures.delete(e.pointerId);
+    if(![...captures.values()].some(v=>v.el===item.el))item.el.classList.remove('pressed');
+    if(item.rect)item.el.querySelector('i').style.transform='translate(0,0)';
+  }
+  root.addEventListener('pointerup',release);root.addEventListener('pointercancel',release);root.addEventListener('lostpointercapture',release);
+  root.addEventListener('contextmenu',e=>e.preventDefault());
+  root.addEventListener('click',e=>e.preventDefault());
+  addEventListener('blur',clear);addEventListener('pagehide',clear);addEventListener('resize',clear);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});
+  render();
+  return {pad:state.pad,clear,setOnActivate(fn){activate=fn;},
+    update({physicalActive=false,menuOpen=false,setupOpen=false}) {
+      if((physicalActive&&!physical)||(menuOpen&&!loading)||(setupOpen&&!blocked))clear();
+      if(physical!==physicalActive||loading!==menuOpen||blocked!==setupOpen){physical=physicalActive;loading=menuOpen;blocked=setupOpen;render();}
+    }
+  };
+}

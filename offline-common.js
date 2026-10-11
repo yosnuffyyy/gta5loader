@@ -32,12 +32,34 @@ export function localResponse(blob,request,path) {
 export async function sha256(bytes) {
   return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');
 }
-export function folderPath(file) {
+export function folderPath(file,knownPaths) {
   const relative=file.webkitRelativePath || file.name;
+  if(typeof relative!=='string')return null;
   const parts=relative.split('/');
-  const web=parts.indexOf('web');
+  if(parts.some(p=>!p||p==='..'||p==='.'||p.includes('\\')))return null;
+  // Resolve against the manifest, accepting a renamed or enclosing folder.
+  // Never guess by basename: game archives contain many repeated filenames.
+  if(knownPaths){
+    for(let i=0;i<parts.length;i++){
+      const match=knownPaths.get(('/'+parts.slice(i).join('/')).toLowerCase());
+      if(match)return match;
+    }
+    return null;
+  }
+  const web=parts.findIndex(p=>p.toLowerCase()==='web');
   const path='/'+parts.slice(web>=0?web+1:1).join('/');
-  if(path==='/'||parts.some(p=>p==='..'||p==='.'||p.includes('\\')))return null;
+  if(path==='/')return null;
   return path;
+}
+export function folderEntries(files,manifest) {
+  const paths=new Map();
+  for(const {path} of manifest.files){
+    const key=path.toLowerCase();
+    if(paths.has(key)&&paths.get(key)!==path)throw Error('Ambiguous file paths in the installation manifest.');
+    paths.set(key,path);
+  }
+  // Capture directory metadata on the page. File structured cloning does not
+  // reliably preserve webkitRelativePath in every browser.
+  return Array.from(files,file=>({path:folderPath(file,paths),file})).filter(entry=>entry.path);
 }
 export function formatBytes(bytes) {return (bytes/1e9).toFixed(2)+' GB';}
