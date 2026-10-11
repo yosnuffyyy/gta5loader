@@ -5,7 +5,7 @@
 <link rel="manifest" href="/gta5loader/app.webmanifest"><link rel="apple-touch-icon" href="/gta5loader/b/8b0b5899ed/title/logo.png"><link rel="stylesheet" href="/gta5loader/installer.css">
 <title>GTA Mobile · Offline</title></head>
 <body><main>
-<div class="eyebrow">GTA MOBILE / OFFLINE EDITION</div>
+<div class="eyebrow">GTA MOBILE / MEMORY32 EDITION</div>
 <h1>Install once.<br>Play from your phone.</h1>
 <p class="intro">Keep the complete game on this device. After installation, the built-in offline handler serves its files locally—even with the PC off.</p>
 <section class="card">
@@ -25,12 +25,12 @@
 <h2>Set up on iPhone</h2>
 <ol><li>Open this HTTPS setup page in Safari. Use <strong>Share → Add to Home Screen</strong>, with <strong>Open as Web App</strong> enabled if offered.</li>
 <li><strong>Open the new Home Screen app before installing the files.</strong> Its storage may be separate from Safari's tab.</li>
-<li>Tap <strong>Check this device</strong>, then import the complete <strong>web</strong> folder from Files or a connected USB drive.</li>
+<li>Tap <strong>Check this device</strong>, then import your existing complete <strong>web</strong> folder from Files or a connected USB drive. Keep Wi-Fi on during import: the compatible engine (about 66 MB) downloads automatically; the game data is read locally.</li>
 <li>Keep this app visible and the phone unlocked while copying. You can pause and resume. When it says <strong>Installed</strong>, turn off the setup server and use <strong>Play offline</strong>.</li></ol>
 <p>Allow about <strong>22 GB for the installed game</strong>, plus free space for saves and iOS. Importing from a folder already copied onto the phone temporarily needs room for both copies. Importing from a USB drive avoids that duplicate phone copy.</p>
-<p class="detail">This is still the original browser engine. It needs shared memory64, WebGPU and a 3 GB initial memory allocation before graphics. The feature check cannot guarantee full gameplay on iOS. Physical iPhone gameplay has not been verified.</p>
+<p class="detail">This edition uses converted 32-bit WebAssembly memory with a 512 MB initial allocation and a 4 GB ceiling. It no longer needs Memory64. WebGPU and sufficient runtime memory are still required. The converted engine has rendered Story Mode on a desktop; physical iPhone gameplay is not yet verified.</p>
 </section>
-<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This small setup website imports the game from your local web folder. The setup website is needed once. Opening this HTML file directly in Files cannot install the offline handler.</p></footer>
+<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This setup website imports game data from your local web folder and downloads its compatible engine once. The setup website is needed once. Opening this HTML file directly in Files cannot install the offline handler.</p></footer>
 </main><script type="module" src="/gta5loader/installer.js"></script>
 <script>if(location.protocol==='file:'){document.getElementById('status').textContent='Open this installer from an HTTPS setup server on your iPhone. A downloaded HTML file cannot register the offline handler.';}</script>
 </body></html>

@@ -31,7 +31,7 @@ async function start(files){
   if(!files&&manifest.installSource==='folder'){message('This setup page installs from a local web folder. Choose Import a local web folder.');return;}
   busy=true;controls();await persistence();
   if(!await storageInfo()){busy=false;controls();message('Not enough browser storage for the complete game. See the storage estimate below.');return;}
-  message(files?'Importing and verifying local files…':'Downloading and verifying the game…');
+  message(files?'Importing local game data and downloading the compatible engine…':'Downloading and verifying the game…');
   el('test-result').textContent='';holdAwake();
   worker.postMessage({command:'install',...(files?{files}:{} )});
 }

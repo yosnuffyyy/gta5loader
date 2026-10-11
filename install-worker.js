@@ -6,9 +6,11 @@ async function fetchChunk(manifest,file,start,end) {
   for(let attempt=0;attempt<3;attempt++){
     paused();
     try{
-      const url=new URL(file.path,self.location.origin);url.searchParams.set('__install',manifest.id);
-      const response=await fetch(url,{cache:'no-store',headers:{Range:`bytes=${start}-${end}`},signal:aborter.signal});
-      if(response.status!==206 && !(response.status===200&&start===0&&end+1===file.size)) {await response.body?.cancel();throw Error('The setup server must support byte ranges: '+file.path);}
+      const setupPath=file.setupChunks?.[start/manifest.chunkBytes];
+      if(file.setupChunks&&!setupPath)throw Error('Missing compatibility-engine chunk.');
+      const url=new URL(setupPath||file.path,self.location.origin);url.searchParams.set('__install',manifest.id);
+      const response=await fetch(url,{cache:'no-store',headers:setupPath?{}:{Range:`bytes=${start}-${end}`},signal:aborter.signal});
+      if(setupPath?response.status!==200:response.status!==206 && !(response.status===200&&start===0&&end+1===file.size)) {await response.body?.cancel();throw Error('The setup server must support byte ranges: '+file.path);}
       if(response.status===206 && response.headers.get('Content-Range')!==`bytes ${start}-${end}/${file.size}`){await response.body?.cancel();throw Error('Incorrect byte range: '+file.path);}
       // Stream into a bounded buffer; a wrong server cannot make us buffer an archive.
       const bytes=new Uint8Array(end-start+1),reader=response.body.getReader();let offset=0;
@@ -37,8 +39,8 @@ async function install(manifest,localFiles) {
       let offset=validBytes(file,row);
       if(row?.complete&&row.sha256===file.sha256&&row.size===file.size&&row.bytes===file.size&&offset===file.size&&stored.size===file.size){progress();continue;}
       if(stored.size<offset || (offset!==file.size && offset%manifest.chunkBytes!==0))offset=0;
-      const source=local?.get(file.path);
-      if(local&&(!source||source.size!==file.size))throw Error('Choose the complete web folder. Missing or wrong-sized file: '+file.path);
+      const source=file.setupChunks?null:local?.get(file.path);
+      if(local&&!file.setupChunks&&(!source||source.size!==file.size))throw Error('Choose the complete web folder. Missing or wrong-sized file: '+file.path);
       const access=await handle.createSyncAccessHandle();
       try{
         access.truncate(offset);access.flush();await checkpoint(file,offset,false);

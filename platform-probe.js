@@ -1,17 +1,17 @@
-// One-page allocation with the engine's shared i64 memory type and 16 GiB maximum.
-// Import validation distinguishes real memory64 support from an ignored option.
-export const MEMORY64_PROBE=new Uint8Array([
-  0,97,115,109,1,0,0,0,2,18,1,3,101,110,118,6,109,101,109,111,114,121,2,7,1,128,128,16
+// One-page allocation with this converted engine's shared i32 type and 4 GiB maximum.
+// Import validation verifies that shared wasm32 memory can be linked.
+export const MEMORY32_PROBE=new Uint8Array([
+  0,97,115,109,1,0,0,0,2,18,1,3,101,110,118,6,109,101,109,111,114,121,2,3,1,128,128,4
 ]);
-export function probeMemory64() {
-  const module=new WebAssembly.Module(MEMORY64_PROBE);
-  const memory=new WebAssembly.Memory({initial:1n,maximum:262144n,shared:true,address:'i64'});
+export function probeMemory32() {
+  const module=new WebAssembly.Module(MEMORY32_PROBE);
+  const memory=new WebAssembly.Memory({initial:1,maximum:65536,shared:true});
   new WebAssembly.Instance(module,{env:{memory}});
   return memory.buffer instanceof SharedArrayBuffer;
 }
 export async function probePlatform({gpu=true}={}) {
   const failures=[];
-  try {if(!probeMemory64())throw Error();}catch{failures.push('Shared 64-bit WebAssembly memory is unavailable. Update your browser/OS. Touch controls cannot replace this engine requirement.');}
+  try {if(!probeMemory32())throw Error();}catch{failures.push('Shared 32-bit WebAssembly memory is unavailable. Close all setup tabs and reopen the Home Screen app while online, then check again.');}
   if(gpu) {
     let device;
     try {

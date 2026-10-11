@@ -1,6 +1,6 @@
 import {ISOLATION,sha256,localResponse} from './offline-common.js';
 import {dataDirectory,fileName} from './offline-store.js';
-const RELEASE = 'a02f246a1e901df697c437a3d8ba562561b4ced47fb2643c881610b54fdfc690';
+const RELEASE = '1f6277557f1ed60de281aff5c10e5027f6e59f8b15e9b72e0c1e41f5cd19dd8e';
 const APP_BASE='/gta5loader/';
 const appURL=path=>APP_BASE+path.replace(/^\//,'');
 const CACHE='gta-mobile-shell-'+RELEASE;
@@ -10,7 +10,7 @@ async function manifest() {
     const cached=await (await caches.open(CACHE)).match(appURL('/offline-manifest.json'));
     if(!cached)throw Error('Offline launcher metadata is missing.');
     const m=await cached.json();if(m.id!==RELEASE)throw Error('Offline launcher version mismatch.');
-    m.byPath=new Map(m.files.map(f=>[f.path,f]));return m;
+    m.byPath=new Map(m.files.map(f=>[f.path,f]));m.setupPaths=new Set(m.files.flatMap(f=>f.setupChunks||[]));return m;
   })();
 }
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -38,7 +38,7 @@ async function serve(request) {
   if(path==='/')path='/index.html';
   const m=await manifest();
   // Only the installer requests the network, explicitly, for verified chunks.
-  if(url.searchParams.get('__install')===m.id&&m.byPath.has(path))return fetch(request);
+  if(url.searchParams.get('__install')===m.id&&(m.byPath.has(path)||m.setupPaths.has(url.pathname)))return fetch(request);
   const shell=await (await caches.open(CACHE)).match(appURL(path));
   if(shell){const headers=new Headers(shell.headers);for(const [k,v] of Object.entries(ISOLATION))headers.set(k,v);headers.set('X-GTA-Source','phone-storage');return new Response(request.method==='HEAD'?null:shell.body,{status:200,headers});}
   const file=m.byPath.get(path);if(!file)return errorResponse('This file is not in the offline package: '+path,404);
