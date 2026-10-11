@@ -1,0 +1,20 @@
+{
+  "id": "/gta5loader/",
+  "name": "GTA Mobile Offline",
+  "short_name": "GTA Offline",
+  "description": "Install the full game on this device and play from local storage.",
+  "start_url": "/gta5loader/",
+  "scope": "/gta5loader/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101720",
+  "theme_color": "#101720",
+  "icons": [
+    {
+      "src": "/gta5loader/b/8b0b5899ed/title/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
