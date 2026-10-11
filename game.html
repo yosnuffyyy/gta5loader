@@ -83,7 +83,7 @@ const BASE = '/gta5loader/b/8b0b5899ed'.charAt(0) === '_' ? '' : '/gta5loader/b/
 // bandwidth and this thread's time. The loading screen's own log line and the browser console do not depend on it.
 const remoteLog = q.get('log') === '1';
 const postLog = (text) => { if (remoteLog) fetch('/gta5loader/log', { method: 'POST', body: text }).catch(() => {}); };
-const gameAudio = installGameAudio({ workletUrl: BASE + '/gta5loader/audio-worklet.js', log: postLog, diagnostics: q.has('audio') || q.has('mem') });
+const gameAudio = installGameAudio({ workletUrl: BASE + '/audio-worklet.js', log: postLog, diagnostics: q.has('audio') || q.has('mem') });
 // Crash reports from the engine threads (prejs.js __crash, loader.js onAbort/onExit): shown in the bottom-left line with a hint when it looks like memory, and posted to the host's log
 // only with ?log=1 (at most 3 per page, ~10 KB each; they were always posted until 2026-10-06, when 10,000 visitors a day made 5,500 posts and a log file per visitor). A normal exit does not report.
 {
@@ -450,7 +450,7 @@ controller = installController({
     else if (pressed[2]) act(pickingMap ? 'map6' : 'sandbox');
   }
 });
-const worker = new Worker(BASE + '/gta5loader/loader.js');
+const worker = new Worker(BASE + '/loader.js');
 	worker.onmessage = (ev) => {
 		if (ev.data.hud) hud.textContent = ev.data.hud;
 		if (ev.data.input) installInput(ev.data.input.memory, ev.data.input.block);
@@ -486,7 +486,7 @@ if (remoteLog && (q.get('mem') || lowMemory) && performance.measureUserAgentSpec
 	const report = async () => {
 		try {
 			const r = await performance.measureUserAgentSpecificMemory();
-			const rows = r.breakdown.filter((b) => b.bytes > 1e6).map((b) => (b.bytes / 1048576 | 0) + ' MB ' + (b.types || []).join('+') + ' ' + (b.attribution || []).map((a) => (a.url || '').split('/gta5loader/').pop() + '/gta5loader/' + (a.scope || '')).join(','));
+			const rows = r.breakdown.filter((b) => b.bytes > 1e6).map((b) => (b.bytes / 1048576 | 0) + ' MB ' + (b.types || []).join('+') + ' ' + (b.attribution || []).map((a) => (a.url || '').split('/').pop() + '/' + (a.scope || '')).join(','));
 			postLog('[page mem] total ' + (r.bytes / 1048576 | 0) + ' MB; ' + rows.join(' | '));
 		} catch (e) { postLog('[page mem] failed: ' + e); }
 		setTimeout(report, 15000);
