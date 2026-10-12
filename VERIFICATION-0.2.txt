@@ -19,7 +19,7 @@ PASS: a second process reopened and verified the first process's probe save.
 PASS: 64-bit pointer/iovec/stat/offset ABI, including sparse I/O above 4 GiB,
 unchanged file position after positioned I/O and invalid-buffer errors.
 PASS: head and tail reads through the real engine on three synthetic game-
-path fixtures. Actual iPhone game-file checks remain a physical-device gate.
+path fixtures in CI. Actual iPhone sample results are recorded below.
 PASS: all 135 engine/runtime C units compiled for Mac and iPhone. The final
 run reused 133 verified objects per target and rebuilt the two changed units;
 execution tests ran again. The prior full build is run 38288536228.
@@ -43,9 +43,29 @@ committed virtual address space and the process footprint sample was 35.1
 MiB. The engine had not entered main(), loaded the world or created a game
 renderer. This is not peak use, an iPhone result or a gameplay memory budget.
 
-Physical iPhone 0.2 result: pending. Install over 0.1 with the same signing
-account, select the extracted web folder and run runtime + save tests twice,
-reopening the app and reselecting the folder between runs. Copy the report.
+Physical iPhone 0.2 checkpoint: PASS in two user-supplied reports received
+2026-10-12. Reports identify iOS 27.0.1 / iPhone and selected folder "web".
+The user previously identified this phone as an iPhone 16 Pro Max. These
+are user-reported device results, not measurements captured by CI.
+
+Both runs pass constructors/main-thread TLS; engine file APIs; persistent
+64 KiB save validation; signed offsets and EOF; missing-file, traversal and
+game-data write rejection; 64-bit iovecs, offsets above 4 GiB, stat layout,
+clocks, environment and invalid-buffer checks. Both report exit 0 and an
+intact probe save from the previous run. All three selected actual game
+files pass head/tail reads through the engine:
+- data/common/data/levels/gta5/paths.xml
+- data/x64/anim/cutscene/cuts_prologue.rpf
+- data/x64/levels/gta5/_prologue/plg_01.rpf
+These samples do not validate every game file or complete world streaming.
+
+Reported process footprint (MiB):
+Run 1: before 14.4; initialized engine alive 45.5; after cleanup 15.5.
+Run 2: before 11.8; initialized engine alive 46.0; after cleanup 15.6.
+Both report a committed virtual heap of 564.1 MiB. The process footprint
+samples and virtual heap are distinct measurements. Neither report measures
+peak memory, main() startup, a loaded game world or sustained gameplay.
+Structured device evidence: evidence/0.2/iphone-device-test.json.
 
 Roadmap stage 4 remains in progress. Engine worker dispatch, mailbox/proxy
 delivery, game filesystem streaming, remaining host operations and main()
@@ -60,4 +80,3 @@ Main remains de7664a8e6448096716c5a341250d32d4f594fd1.
 
 Detailed logs, coverage inventory, generated header and package audit:
 evidence/0.2/. The original 0.1 evidence remains alongside it.
-

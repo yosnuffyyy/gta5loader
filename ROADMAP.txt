@@ -4,7 +4,7 @@ Repository: yosnuffyyy/gta5loader
 Branch: native-ios-prototype
 0.1 baseline build: 971e32f49c952822f5086ddeea9f70671f637c7d
 0.2 runtime checkpoint: ec11683005cb9003ba2beb9055556fc28f96f9b8
-0.2 build/package gates pass; physical iPhone validation is pending.
+0.2 build/package gates pass; two user-reported iPhone runtime checks pass.
 Baseline: confirmed v7 engine.
 PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
 user instruction. Native work uses independent workspace copies only.
@@ -37,7 +37,11 @@ user instruction. Native work uses independent workspace copies only.
        ABI, monotonic/realtime clocks and fixed native environment. Native
        host and full engine runtime tests pass on Mac, including save
        persistence across processes. iPhone ARM64 compilation and package
-       audit pass. Physical iPhone 0.2 validation is pending.
+       audit pass. Physical iPhone 0.2 checkpoint validated in two user-
+       reported runs on 2026-10-12: constructors/TLS, persistent save, file
+       ABI and all three real game-file head/tail samples pass; exit 0.
+       Initialized-engine footprint samples: 45.5 and 46.0 MiB; committed
+       virtual heap: 564.1 MiB. These are not peak or gameplay measurements.
        Shared size/pages metadata uses atomic publication with committed
        size published before the new page count. A compiled concurrent
        grow/read fixture passes on Mac.
@@ -75,4 +79,3 @@ Free-account signing needs refreshing every seven days. No Apple credentials
 or signing keys enter this repository; no JIT entitlement is required.
 
 See INSTALL-ON-IPHONE.txt, NATIVE-ARCHITECTURE.txt and HOST-INTERFACE.json.
-

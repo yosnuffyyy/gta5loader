@@ -3,7 +3,8 @@
   "runId": 38294712685,
   "jobId": 114962911279,
   "result": "success",
-  "physicalIPhoneValidation": "pending",
+  "physicalIPhoneValidation": "runtime checkpoint passed in two user-reported device runs; gameplay not tested",
+  "physicalIPhoneEvidence": "iphone-device-test.json",
   "artifacts": [
     {
       "id": 11768840425,
@@ -48,4 +49,3 @@
   "ipaBytes": 99623654,
   "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
 }
-

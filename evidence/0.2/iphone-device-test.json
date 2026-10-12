@@ -1,0 +1,57 @@
+{
+  "recordedDate": "2026-10-12",
+  "source": "Two diagnostic reports supplied by the user in this conversation; not independently captured by CI",
+  "prototype": "Native prototype 0.2 — runtime checkpoint",
+  "reportedOS": "iOS 27.0.1",
+  "reportedDevice": "iPhone",
+  "priorUserDeviceIdentification": "iPhone 16 Pro Max",
+  "selectedFolder": "web",
+  "result": "pass for the runtime checkpoint only",
+  "checksPassedInBothRuns": [
+    "Real engine constructors and main-thread TLS",
+    "Probe save from the previous run is intact",
+    "Engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF",
+    "Missing files, path traversal and writes to game data are rejected",
+    "64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors",
+    "Three selected actual game files read through the engine at the beginning and end"
+  ],
+  "gameFileSamples": [
+    "data/common/data/levels/gta5/paths.xml",
+    "data/x64/anim/cutscene/cuts_prologue.rpf",
+    "data/x64/levels/gta5/_prologue/plg_01.rpf"
+  ],
+  "runs": [
+    {
+      "run": 1,
+      "exitCode": 0,
+      "committedVirtualHeapMiB": 564.1,
+      "processFootprintMiB": {
+        "before": 14.4,
+        "initializedEngineAlive": 45.5,
+        "afterCleanup": 15.5
+      }
+    },
+    {
+      "run": 2,
+      "exitCode": 0,
+      "committedVirtualHeapMiB": 564.1,
+      "processFootprintMiB": {
+        "before": 11.8,
+        "initializedEngineAlive": 46.0,
+        "afterCleanup": 15.6
+      }
+    }
+  ],
+  "limitations": [
+    "Footprint readings are samples, not peaks or gameplay memory budgets",
+    "Committed virtual heap and process footprint are distinct measurements",
+    "File samples do not validate the entire installation or world streaming",
+    "Constructor audio log messages do not validate native game audio"
+  ],
+  "remainingGates": [
+    "Engine worker lifecycle, worker TLS and dispatch",
+    "Mailbox and main-thread proxy delivery",
+    "Remaining host services, asset I/O protocol and engine main startup",
+    "Actual game rendering, audio, controls and sustained iPhone gameplay"
+  ]
+}
