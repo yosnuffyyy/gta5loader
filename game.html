@@ -414,13 +414,13 @@ postLog('[page env] ' + JSON.stringify({ deviceMemory: navigator.deviceMemory, c
 // Back buffer = the browser window in device pixels (native resolution), following window resizes live (see installInput). ?scale=0.75 renders at 75 % (faster), ?fixed=1 keeps the
 // start-up size whatever the window does, ?res=1920x1080 forces a size. Even numbers, at most 3840x2160 (2560x1440 in the low-memory profile: screen-sized render targets dominate GPU memory).
 wantSize = () => {
-  if (compactMemory && !q.has('res')) return [640,360];
+  if (compactMemory && !q.has('res')) return [512,288];
 	const forced = /^(\d+)x(\d+)$/.exec(q.get('res') || '');
 	if (forced) return [+forced[1], +forced[2]];
 	const sc = Math.max(0.25, Math.min(2, +(q.get('scale') || (mobile ? .5 : 1))));
 	let w = innerWidth * devicePixelRatio * sc, h = innerHeight * devicePixelRatio * sc;
 	if(mobile && h>w)[w,h]=[h,w];
-	const cap = compactMemory ? [640,360] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
+	const cap = compactMemory ? [512,288] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
 	w *= k; h *= k;
 	return [Math.max(320, Math.round(w / 2) * 2), Math.max(240, Math.round(h / 2) * 2)];
 };
@@ -441,8 +441,8 @@ if(compactMemory) {
 const LOG_ARGS = q.get('verbose') ? [] : ['-Script_all=warning', '-replay_all=warning'];
 // -fastscriptcore: the script interpreter's production core (scrThread::Run static). Without it this build runs the debugging core, which looks up two breakpoint tables
 // for every script instruction (scrThread::Run was ~8 % of the main thread).
-const ENGINE_ARGS = ['-fastscriptcore', ...(compactMemory ? ['-ignoreDeployedPacks', '-globalLOD=0.125', '-pedMult=1', '-pedOnFoot=8', '-pedAmbient=6', '-carMult=1', '-vehiclesUpperLimit=8', '-vehiclesAmbientDensityMultiplier=1', '-vehiclesParkedDensityMultiplier=0', '-vehiclesLowPrioParkedDensityMultiplier=0', '-parkedVehiclesUpperLimit=0', '-disableDistantCars', '-noDistantLightAutoLoad', '-noambient', '-disableambientaudio', '-aggressivecleanup', '-minspecaudio'] : [])];
-if (compactMemory) startupDiagnostics.record('Light streets v8: 640 x 360, sparse random pedestrians and traffic; optional DLC and ambient events disabled');
+const ENGINE_ARGS = ['-fastscriptcore', ...(compactMemory ? ['-ignoreDeployedPacks', '-globalLOD=0.125', '-pedMult=1', '-pedOnFoot=4', '-pedAmbient=4', '-carMult=1', '-vehiclesUpperLimit=4', '-vehiclesAmbientDensityMultiplier=1', '-vehiclesParkedDensityMultiplier=0', '-vehiclesLowPrioParkedDensityMultiplier=0', '-parkedVehiclesUpperLimit=0', '-disableDistantCars', '-noDistantLightAutoLoad', '-noambient', '-disableambientaudio', '-aggressivecleanup', '-minspecaudio'] : [])];
+if (compactMemory) startupDiagnostics.record('Apple memory v9: 512 x 288, sparse random pedestrians and traffic; optional DLC and ambient events disabled');
 // Chrome on Windows rounds every wait with a timeout (Atomics.wait: the engine's sleeps, its 1 ms event waits, the frame limiter, the yields of its spin loops) up to the OS
 // timer tick, 15.6 ms, unless the renderer process has a timer below 16 ms pending, which switches the process to a fine tick (measured: a 1 ms wait takes 15.5 ms; with
 // this timer 2.1 ms, a 4 ms wait 5.0 ms). The game has no such timer, so every short sleep cost a whole tick: the limiter held a 60 fps cap to 37 fps and the visibility
@@ -462,7 +462,7 @@ controller = installController({
     else if (pressed[2]) act(pickingMap ? 'map6' : 'sandbox');
   }
 });
-const worker = new Worker(BASE + '/loader-street.js');
+const worker = new Worker(BASE + '/loader-apple-v9.js');
 	worker.onmessage = (ev) => {
 		if (ev.data.hud) hud.textContent = ev.data.hud;
 		if (ev.data.input) installInput(ev.data.input.memory, ev.data.input.block);

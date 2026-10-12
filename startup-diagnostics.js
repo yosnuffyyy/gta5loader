@@ -7,7 +7,7 @@ export function installStartupDiagnostics() {
   let previous;try{previous=read(sessionStorage)||read(localStorage);}catch{}
   const previousReport=previous?.report||'';
   const lines=[];let lastSave=0,phase='Opening launcher',failure='',world=false,active=false,paused=false;
-  let heap=512,requested=0,gpu=null;
+  let heap=512,requested=0,gpu=null,localIO="Not reported";
   const start=performance.now();
   const button=document.createElement('button');button.textContent='Loading details';
   button.style.cssText='position:fixed;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:40;padding:10px;border:1px solid #62758a;border-radius:8px;background:#172431;color:#fff;font:14px system-ui';
@@ -18,7 +18,7 @@ export function installStartupDiagnostics() {
   const copy=document.createElement('button'),close=document.createElement('button'),back=document.createElement('a');
   copy.textContent='Copy details';close.textContent='Close';back.textContent='Back to setup';back.href='/gta5loader/';
   for(const el of [copy,close,back])el.style.cssText='display:inline-block;background:#b4e9c3;color:#10241a;padding:12px;margin:0 8px 12px 0;border:0;border-radius:8px;font:700 14px system-ui;text-decoration:none';
-  const currentReport=()=>['Startup repair v8 — light streets',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Frame rate: '+(frameRate===null?'Not reported':frameRate+' FPS'),'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'First error: '+(failure||'No exception reported'),...lines].join('\n');
+  const currentReport=()=>['Apple memory v9 — experimental',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Frame rate: '+(frameRate===null?'Not reported':frameRate+' FPS'),'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'File reader: '+localIO,'First error: '+(failure||'No exception reported'),...lines].join('\n');
   const report=()=>paused?('Previous session before restart:\n'+previousReport):currentReport();
   const render=()=>{status.textContent=failure||('Current step: '+phase);pre.textContent=report();};
   function save(force=false){if(!active)return;if(!force&&performance.now()-lastSave<(world?5000:1000))return;lastSave=performance.now();const state=JSON.stringify({active:true,updated:Date.now(),report:currentReport()});try{sessionStorage.setItem(key,state);}catch{}try{localStorage.setItem(key,state);localStorage.setItem('gta-last-startup',currentReport());}catch{}}
@@ -33,6 +33,7 @@ export function installStartupDiagnostics() {
     if(m.startup||m.label){phase=m.startup||m.label;record(phase);save(true);}
     if(m.compiling!==undefined){phase='Preparing shaders ('+m.compiling+' pending)';save();}
     if(m.memoryMiB!==undefined){heap=Math.max(heap,m.memoryMiB);if(m.memoryRequestedMiB!==undefined)requested=Math.max(requested,m.memoryRequestedMiB);save(true);}
+    if(m.localIO){localIO=m.localIO;record(localIO);}
     if(m.gpuMemory){gpu=m.gpuMemory;save();}
     if(m.gpuLost){failure ||= 'Graphics device lost: '+m.gpuLost;record(failure);save(true);show();}
     if(m.lines)for(const line of m.lines.slice(-3))record(line);
@@ -52,7 +53,7 @@ export function installStartupDiagnostics() {
       if(shouldPauseRestart(previous,navigationType)){
         paused=true;heading.textContent='Game restart paused';close.style.display='none';
         failure='The previous game session ended or reloaded. Automatic restart is paused. Memory pressure or a browser/graphics failure may be responsible; this report cannot confirm which.';
-        const retry=document.createElement('button');retry.textContent='Try light streets again';retry.style.cssText=copy.style.cssText;
+        const retry=document.createElement('button');retry.textContent='Try Apple profile again';retry.style.cssText=copy.style.cssText;
         const safe=document.createElement('button');safe.textContent='Use stable v7 profile';safe.style.cssText=copy.style.cssText;safe.onclick=()=>{try{sessionStorage.removeItem(key);localStorage.removeItem(key);}catch{}location.replace('/gta5loader/game-v7.html?touch=1&low=1&fps=30&compact=1&mode=story&newgame=1');};panel.insertBefore(safe,pre);panel.insertBefore(retry,pre);show();
         await new Promise(resolve=>{retry.onclick=()=>{const url=new URL(location.href);url.searchParams.set('compact','1');url.searchParams.set('low','1');url.searchParams.delete('res');url.searchParams.delete('slots');history.replaceState(null,'',url);retry.remove();resolve();};});
         paused=false;failure='';close.style.display='inline-block';heading.textContent='Game loading details';panel.hidden=true;
