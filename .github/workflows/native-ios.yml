@@ -1,0 +1,26 @@
+name: Native iPhone prototype
+on:
+  push:
+    branches: [native-ios-prototype]
+    paths: ['native-ios/**', '.github/workflows/native-ios.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-build:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Validate and convert actual engine
+        run: bash native-ios/ci-convert.sh
+      - name: Upload compiler evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-compiler-evidence
+          path: native-build/evidence/
+          retention-days: 14

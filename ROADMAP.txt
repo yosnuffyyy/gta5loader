@@ -1,0 +1,21 @@
+NATIVE IPHONE PROTOTYPE - SEPARATE DEVELOPMENT BRANCH
+
+Baseline: confirmed v7 engine; PC package immutable.
+1. Baseline inventory and engine host interface: inspected, 85 imports.
+2. GitHub macOS build path and native compiler: in progress.
+3. Full engine native compilation and execution probes: pending.
+4. Native host initialization, threads, IO and saves: pending.
+5. Metal rendering of a real engine frame: pending.
+6. Prologue audio, input and progression on iPhone: pending.
+7. Sustained Prologue/Sandbox device tests: pending.
+8. Measured optimization, followed by gradual quality increases: pending.
+
+The current compiler experiment is not a playable game or an IPA.
+Stock WABT 1.0.42 aborts on AtomicWait/AtomicNotify. A narrow source patch
+emits native_wait32, native_wait64 and native_notify calls. Correct native
+implementations and tests are required before engine execution.
+No synchronization operations may be silently removed or replaced by success.
+
+Signing route: unsigned build artifact from GitHub Actions; local Windows
+Sideloadly signing using the user's free Apple account. Apple sign-in and
+two-factor approval remain with the user. No credentials in this repository.
