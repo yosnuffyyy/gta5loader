@@ -13,6 +13,7 @@ git -C native-build/wabt submodule update --init --depth 1 third_party/picosha2 
 node native-ios/patch-wabt.mjs native-build/wabt
 node native-ios/patch-simd.mjs native-build/wabt
 node native-ios/patch-bulk.mjs native-build/wabt
+node native-ios/patch-shared-metadata.mjs native-build/wabt
 cmake -S native-build/wabt -B native-build/wabt-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_LIBWASM=OFF
 cmake --build native-build/wabt-build --target wasm2c wasm-validate wat2wasm -j 3
 native-build/wabt-build/wasm-validate native-build/engine-probe.wasm --enable-threads
@@ -25,5 +26,6 @@ du -sh native-build/generated
 find native-build/generated -type f | wc -l
 echo 'PASS: complete engine converted to C with native wait/notify calls.'
 node native-ios/generate-probe.mjs
+bash native-ios/ci-test-host.sh
 node native-ios/compile-native.mjs
 bash native-ios/package-ios.sh

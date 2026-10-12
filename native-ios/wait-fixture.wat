@@ -1,5 +1,7 @@
 (module
- (memory (import "env" "memory") 1 4 shared)
+ (memory (import "env" "memory") 1 64 shared)
+ (func (export "pages") (result i32) memory.size)
+ (func (export "load") (param i32) (result i32) local.get 0 i32.load)
  (func (export "wait32") (param i32 i32 i64) (result i32)
    local.get 0 local.get 1 local.get 2 memory.atomic.wait32)
  (func (export "wait64") (param i32 i64 i64) (result i32)

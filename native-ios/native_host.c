@@ -1,0 +1,190 @@
+#include "native_host.h"
+#include "wasm-rt-impl.h"
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <limits.h>
+
+// This checkpoint has one engine thread. File descriptor ownership and the
+// mailbox must be extended before engine pthread dispatch can be enabled.
+static uint32_t wasi_errno(int e) {
+ switch(e){
+ case 0:return 0;case EACCES:return 2;case EAGAIN:return 6;case EBADF:return 8;
+ case EEXIST:return 20;case EFAULT:return 21;case EFBIG:return 22;case EINTR:return 27;
+ case EINVAL:return 28;case EIO:return 29;case EISDIR:return 31;case ELOOP:return 32;
+ case EMFILE:return 33;case ENAMETOOLONG:return 37;case ENOENT:return 44;
+ case ENOMEM:return 48;case ENOSPC:return 51;case ENOSYS:return 52;
+ case ENOTDIR:return 54;case ENOTEMPTY:return 55;case ENOTSUP:return 58;
+ case EPERM:return 63;case EROFS:return 69;case ESPIPE:return 70;case EXDEV:return 75;
+ default:return 29;
+ }
+}
+bool host_range(struct w2c_env *h,uint64_t p,uint64_t n) {
+ uint64_t size=atomic_load_explicit(&h->memory.size,memory_order_acquire);
+ return p<=size&&n<=size-p;
+}
+void host_load(struct w2c_env *h,void *out,uint64_t p,size_t n) {
+ if(!host_range(h,p,n))wasm_rt_trap(WASM_RT_TRAP_OOB);
+ unsigned char *b=out;
+ for(size_t i=0;i<n;i++)b[i]=atomic_load_explicit(h->memory.data+p+i,memory_order_relaxed);
+}
+void host_store(struct w2c_env *h,uint64_t p,const void *in,size_t n) {
+ if(!host_range(h,p,n))wasm_rt_trap(WASM_RT_TRAP_OOB);
+ const unsigned char *b=in;
+ for(size_t i=0;i<n;i++)atomic_store_explicit(h->memory.data+p+i,b[i],memory_order_relaxed);
+}
+uint64_t host_u64(struct w2c_env *h,uint64_t p){uint64_t v;host_load(h,&v,p,8);return v;}
+void host_put64(struct w2c_env *h,uint64_t p,uint64_t v){host_store(h,p,&v,8);}
+void host_put32(struct w2c_env *h,uint64_t p,uint32_t v){host_store(h,p,&v,4);}
+bool host_string(struct w2c_env *h,uint64_t p,char *s,size_t cap) {
+ for(size_t i=0;i<cap;i++){
+  if(p>UINT64_MAX-i||!host_range(h,p+i,1))return false;
+  s[i]=atomic_load_explicit(h->memory.data+p+i,memory_order_relaxed);
+  if(!s[i])return true;
+ }
+ return false;
+}
+static uint64_t ns(clockid_t clock){struct timespec t;if(clock_gettime(clock,&t))return 0;return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
+void host_init(struct w2c_env *h) {
+ for(unsigned i=0;i<HOST_FDS;i++)h->files[i].fd=-1;
+ h->game_root=h->save_root=-1;
+ h->mono_origin=ns(CLOCK_MONOTONIC);h->wall_origin=ns(CLOCK_REALTIME);
+}
+void host_close(struct w2c_env *h) {
+ for(unsigned i=3;i<HOST_FDS;i++)if(h->files[i].fd>=0)close(h->files[i].fd);
+ if(h->game_root>=0)close(h->game_root);
+ if(h->save_root>=0)close(h->save_root);
+}
+void host_log(struct w2c_env *h,const char *line) {
+ // Bound progress output while preserving named failures in the final report.
+ if(h->progress&&h->log_lines++<80)h->progress(h->progress_context,line);
+}
+_Noreturn void host_unavailable(struct w2c_env *h,const char *name) {
+ if(h)h->failure=name;
+ wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
+}
+static HostFD *file(struct w2c_env *h,uint32_t fd){return fd>=3&&fd<HOST_FDS&&h->files[fd].fd>=0?&h->files[fd]:NULL;}
+// Walk each component relative to a granted root. Never follow symlinks or
+// expose arbitrary app/OS paths. Linux open flags are translated, not reused.
+uint32_t host_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags,uint64_t modeptr) {
+ (void)modeptr;
+ char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
+ if((int32_t)dirfd!=-100)return (uint32_t)-58;
+ char *p=text;if(*p=='/')p++;
+ int root;bool readonly;
+ if(!strncmp(p,"data/",5)){root=h->game_root;readonly=true;}
+ else if(!strncmp(p,"userdata/",9)){root=h->save_root;readonly=false;p+=9;}
+ else return (uint32_t)-44;
+ if(root<0)return (uint32_t)-44;
+ const uint32_t supported=3u|64u|128u|512u|1024u|32768u|65536u|131072u|524288u;
+ if((flags&~supported)||(flags&3u)==3)return (uint32_t)-28;
+ bool writes=(flags&3u)!=0||(flags&(64|512|1024));
+ if(readonly&&writes)return (uint32_t)-69;
+ unsigned slot=3;while(slot<HOST_FDS&&h->files[slot].fd>=0)slot++;
+ if(slot==HOST_FDS)return (uint32_t)-33;
+ int parent=dup(root);if(parent<0)return (uint32_t)-wasi_errno(errno);
+ uint32_t result=0;
+ for(;;){
+  char *slash=strchr(p,'/');if(slash)*slash=0;
+  if(!*p||!strcmp(p,".")||!strcmp(p,"..")){result=(uint32_t)-63;break;}
+  if(slash){
+   int next=openat(parent,p,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+   if(next<0){result=(uint32_t)-wasi_errno(errno);break;}
+   close(parent);parent=next;p=slash+1;continue;
+  }
+  int native=(flags&3)==0?O_RDONLY:(flags&3)==1?O_WRONLY:O_RDWR;
+  if(flags&64)native|=O_CREAT;if(flags&128)native|=O_EXCL;
+  if(flags&512)native|=O_TRUNC;if(flags&1024)native|=O_APPEND;
+  if(flags&65536)native|=O_DIRECTORY;
+  int fd=openat(parent,p,native|O_NOFOLLOW|O_CLOEXEC,0600);
+  if(fd<0)result=(uint32_t)-wasi_errno(errno);
+  else{h->files[slot]=(HostFD){fd,!readonly&&(flags&3)!=0};result=slot;}
+  break;
+ }
+ close(parent);return result;
+}
+uint32_t host_fd_close(struct w2c_env *h,uint32_t fd) {
+ HostFD *f=file(h,fd);if(!f)return 8;
+ int native=f->fd;f->fd=-1;
+ // Save data is synced before closing so a successful fclose is meaningful.
+ int sync_error=0;if(f->writable&&fsync(native))sync_error=errno;
+ int rc=close(native);if(sync_error||rc)h->failure="native file sync/close failed";return wasi_errno(sync_error?sync_error:rc?errno:0);
+}
+uint32_t host_io(struct w2c_env *h,uint32_t fd,uint64_t iov,uint64_t count,uint64_t out,bool write_op,bool positional,uint64_t offset) {
+ HostFD *f=file(h,fd);bool log=write_op&&!positional&&(fd==1||fd==2);
+ if(!f&&!log)return 8;
+ if(f&&write_op&&!f->writable)return 8;
+ if(count>1024||!host_range(h,iov,count*16)||!host_range(h,out,8))return 21;
+ if(positional&&offset>INT64_MAX)return 28;
+ // Validate the whole vector before an operation changes any file position.
+ for(uint64_t i=0;i<count;i++)if(!host_range(h,host_u64(h,iov+16*i),host_u64(h,iov+16*i+8)))return 21;
+ unsigned char scratch[65536];uint64_t total=0;uint32_t error=0;
+ for(uint64_t i=0;i<count;i++){
+  uint64_t p=host_u64(h,iov+16*i),remaining=host_u64(h,iov+16*i+8);
+  while(remaining){
+   size_t n=remaining>sizeof(scratch)?sizeof(scratch):(size_t)remaining;
+   if(positional&&(total>INT64_MAX-offset||n>(uint64_t)INT64_MAX-offset-total)){error=28;goto done;}
+   if(write_op)host_load(h,scratch,p,n);
+   ssize_t got;
+   if(log){char line[513];size_t take=n<512?n:512;memcpy(line,scratch,take);line[take]=0;host_log(h,line);got=(ssize_t)n;}
+   else do{
+    got=write_op?(positional?pwrite(f->fd,scratch,n,(off_t)(offset+total)):write(f->fd,scratch,n)):
+                  (positional?pread(f->fd,scratch,n,(off_t)(offset+total)):read(f->fd,scratch,n));
+   }while(got<0&&errno==EINTR);
+   if(got<0){error=wasi_errno(errno);goto done;}
+   if(!write_op&&got)host_store(h,p,scratch,(size_t)got);
+   p+=(uint64_t)got;remaining-=(uint64_t)got;total+=(uint64_t)got;
+   if((size_t)got<n)goto done;
+  }
+ }
+done:host_put64(h,out,total);return total?0:error;
+}
+uint32_t host_seek(struct w2c_env *h,uint32_t fd,uint64_t offset,uint32_t whence,uint64_t out) {
+ HostFD *f=file(h,fd);if(!f)return 8;if(whence>2)return 28;if(!host_range(h,out,8))return 21;
+ off_t p=lseek(f->fd,(off_t)(int64_t)offset,whence==0?SEEK_SET:whence==1?SEEK_CUR:SEEK_END);
+ if(p<0)return wasi_errno(errno);host_put64(h,out,(uint64_t)p);return 0;
+}
+uint32_t host_stat(struct w2c_env *h,uint32_t fd,uint64_t p) {
+ HostFD *f=file(h,fd);if(!f)return (uint32_t)-8;if(!host_range(h,p,104))return (uint32_t)-21;
+ struct stat s;if(fstat(f->fd,&s))return (uint32_t)-wasi_errno(errno);
+ unsigned char zero[104]={0};host_store(h,p,zero,sizeof(zero));
+ host_put32(h,p,(uint32_t)s.st_dev);
+ uint32_t mode=(S_ISDIR(s.st_mode)?0040000u:0100000u)|(s.st_mode&0777u);
+ host_put32(h,p+4,mode);host_put64(h,p+8,s.st_nlink);
+ host_put32(h,p+16,s.st_uid);host_put32(h,p+20,s.st_gid);host_put32(h,p+24,(uint32_t)s.st_rdev);
+ host_put64(h,p+32,(uint64_t)s.st_size);host_put32(h,p+40,(uint32_t)s.st_blksize);host_put32(h,p+44,(uint32_t)s.st_blocks);
+#if defined(__APPLE__)
+ const struct timespec times[3]={s.st_atimespec,s.st_mtimespec,s.st_ctimespec};
+#else
+ const struct timespec times[3]={s.st_atim,s.st_mtim,s.st_ctim};
+#endif
+ for(unsigned i=0;i<3;i++){host_put64(h,p+48+i*16,times[i].tv_sec);host_put64(h,p+56+i*16,times[i].tv_nsec);}
+ host_put64(h,p+96,s.st_ino);return 0;
+}
+uint32_t host_resize(struct w2c_env *h,uint64_t size) {
+ if(size>4294967296ull)return 0;
+ uint64_t wanted=(size+65535)/65536,current=atomic_load(&h->memory.pages);
+ if(wanted<=current)return 1;
+ return wasm_rt_grow_memory_shared(&h->memory,wanted-current)!=UINT64_MAX;
+}
+double host_now(struct w2c_env *h,bool wall) {
+ return (double)(wall?ns(CLOCK_REALTIME):h->wall_origin+(ns(CLOCK_MONOTONIC)-h->mono_origin))/1000000.0;
+}
+uint32_t host_clock(struct w2c_env *h,uint32_t id,uint64_t p) {
+ if(id>3)return 28;if(!host_range(h,p,8))return 21;
+ clockid_t clock=id==0?CLOCK_REALTIME:id==1?CLOCK_MONOTONIC:id==2?CLOCK_PROCESS_CPUTIME_ID:CLOCK_THREAD_CPUTIME_ID;
+ struct timespec t;if(clock_gettime(clock,&t))return wasi_errno(errno);
+ host_put64(h,p,(uint64_t)t.tv_sec*1000000000ull+t.tv_nsec);return 0;
+}
+uint32_t host_environment(struct w2c_env *h,uint64_t a,uint64_t b,bool sizes) {
+ // Deliberately fixed values: do not expose the native process environment.
+ static const char values[]="USER=native\0HOME=/userdata\0LANG=en_US.UTF-8\0";
+ const uint64_t count=3,bytes=sizeof(values)-1;
+ if(sizes){if(!host_range(h,a,8)||!host_range(h,b,8))return 21;host_put64(h,a,count);host_put64(h,b,bytes);}
+ else{if(!host_range(h,a,count*8)||!host_range(h,b,bytes))return 21;host_store(h,b,values,bytes);uint64_t p=b;for(unsigned i=0;i<count;i++){host_put64(h,a+8*i,p);p+=strlen(values+(p-b))+1;}}
+ return 0;
+}

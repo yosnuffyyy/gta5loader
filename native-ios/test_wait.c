@@ -28,11 +28,17 @@ static unsigned notify_until(w2c_wait *i,uint32_t address,unsigned count) {
   for(unsigned n=0;n<2000 && result<count;n++) { result+=w2c_wait_notify(i,address,count-result);usleep(1000); }
   return result;
 }
+static _Atomic bool stop_growth_readers;
+static void *read_during_growth(void *arg) {
+ struct w2c_env *env=arg;wasm_rt_init_thread();w2c_wait i;wasm2c_wait_instantiate(&i,env);
+ do {uint32_t pages=w2c_wait_pages(&i);assert(pages>=2&&pages<=64);assert(w2c_wait_load(&i,pages*65536-4)==0);}while(!atomic_load(&stop_growth_readers));
+ wasm2c_wait_free(&i);wasm_rt_free_thread();return NULL;
+}
 int main(void) {
   wasm_rt_init();
   struct w2c_env env={0},other={0};
-  wasm_rt_allocate_memory_shared(&env.memory,1,4,false,65536);
-  wasm_rt_allocate_memory_shared(&other.memory,1,4,false,65536);
+  wasm_rt_allocate_memory_shared(&env.memory,1,64,false,65536);
+  wasm_rt_allocate_memory_shared(&other.memory,1,64,false,65536);
   w2c_wait instance;wasm2c_wait_instantiate(&instance,&env);
   assert(w2c_wait_wait32(&instance,0,1,0)==1);
   assert(w2c_wait_wait64(&instance,0,0,0)==2);
@@ -65,6 +71,11 @@ int main(void) {
   assert(w2c_wait_grow(&instance,1)==1);
   assert(notify_until(&instance,0,1)==1);assert(pthread_join(thread,NULL)==0);assert(atomic_load(&growth.result)==0);
   assert(w2c_wait_wait32(&instance,65536,0,0)==2);
+  pthread_t readers[3];
+  for(unsigned i=0;i<3;i++)assert(pthread_create(&readers[i],NULL,read_during_growth,&env)==0);
+  for(unsigned pages=2;pages<64;pages++){assert(w2c_wait_grow(&instance,1)==pages);usleep(100);}
+  atomic_store(&stop_growth_readers,true);
+  for(unsigned i=0;i<3;i++)assert(pthread_join(readers[i],NULL)==0);
   wasm2c_wait_free(&instance);
   wasm_rt_free_memory_shared(&env.memory);wasm_rt_free_memory_shared(&other.memory);wasm_rt_free();
   puts("PASS: compiled wait/notify, timeout, mismatch, alignment, bounds, mixed widths, address/memory isolation, concurrent waiters and growth.");

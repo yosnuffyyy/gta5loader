@@ -19,9 +19,17 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) UITextView *report;
 @property(nonatomic,strong) UIButton *runButton;
 @property(nonatomic,strong) UIButton *filesButton;
+@property(nonatomic,strong) UIButton *runtimeButton;
+@property(nonatomic,strong) NSURL *gameFolder;
 @property(nonatomic,strong) UILabel *controllerLabel;
 @property(nonatomic,assign) BOOL busy;
+- (void)append:(NSString *)text;
 @end
+static void RuntimeProgress(void *context,const char *line) {
+    ProbeController *controller=(__bridge ProbeController *)context;
+    NSString *text=[NSString stringWithUTF8String:line]?:@"Invalid runtime log";
+    dispatch_sync(dispatch_get_main_queue(),^{[controller append:text];});
+}
 @implementation ProbeController
 - (UIButton *)button:(NSString *)title action:(SEL)action {
     UIButton *button=[UIButton buttonWithType:UIButtonTypeSystem];
@@ -34,16 +42,17 @@ static NSString *Digest(NSData *bytes) {
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
     [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
-    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.1";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
-    UILabel *description=[[UILabel alloc]init];description.text=@"Tests the converted engine on your iPhone. Game startup and the Metal game renderer are still pending. No gameplay in this build.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.2";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
+    UILabel *description=[[UILabel alloc]init];description.text=@"Runtime checkpoint: initializes the real engine and tests its file functions and separate app saves. Select your web folder first to include game-file reads. Worker dispatch and the game renderer are pending; this build has no gameplay.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
+    self.runtimeButton=[self button:@"Run runtime + save tests" action:@selector(runRuntime)];[stack addArrangedSubview:self.runtimeButton];
     self.controllerLabel=[[UILabel alloc]init];self.controllerLabel.numberOfLines=0;self.controllerLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:self.controllerLabel];
     self.report=[[UITextView alloc]init];self.report.editable=NO;self.report.font=[UIFont monospacedSystemFontOfSize:13 weight:UIFontWeightRegular];self.report.backgroundColor=UIColor.secondarySystemBackgroundColor;self.report.layer.cornerRadius=10;[stack addArrangedSubview:self.report];
     [self.report.heightAnchor constraintEqualToConstant:240].active=YES;
     [stack addArrangedSubview:[self button:@"Copy report" action:@selector(copyReport)]];
     NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
-    self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. No game files are needed for the native engine test. The optional file check reads samples from your existing web folder.";
+    self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. Select the extracted web folder, then run runtime + save tests. Run it a second time to check that the probe save persisted. The basic engine test is also available.";
     if([defaults boolForKey:@"probeRunning"])self.report.text=[@"Previous test ended without a result. The app may have been closed or terminated.\n\n" stringByAppendingString:self.report.text];
     [defaults setBool:NO forKey:@"probeRunning"];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(controllerChanged:) name:GCControllerDidConnectNotification object:nil];
@@ -51,7 +60,7 @@ static NSString *Digest(NSData *bytes) {
     [self refreshControllers];
 }
 - (void)dealloc {[NSNotificationCenter.defaultCenter removeObserver:self];}
-- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;}
+- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;}
 - (void)append:(NSString *)text {
     self.report.text=[self.report.text stringByAppendingFormat:@"\n%@",text];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
@@ -69,7 +78,7 @@ static NSString *Digest(NSData *bytes) {
 - (void)copyReport {UIPasteboard.generalPasteboard.string=self.report.text;}
 - (void)runProbe {
     if(self.busy)return;[self setWorking:YES];
-    self.report.text=[NSString stringWithFormat:@"Native prototype 0.1\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
+    self.report.text=[NSString stringWithFormat:@"Native prototype 0.2 — basic test\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
@@ -78,6 +87,30 @@ static NSString *Digest(NSData *bytes) {
         NSString *memory=Footprint();NSString *metal=[self testMetal];
         dispatch_async(dispatch_get_main_queue(),^{
             [self append:[NSString stringWithFormat:@"%@\nExit: %d\n%@\n%@",result,code,memory,metal]];
+            [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
+        });
+    }});
+}
+- (void)runRuntime {
+    if(self.busy)return;
+    NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
+    NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];
+    NSError *error=nil;
+    if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:[NSString stringWithFormat:@"FAIL: app save folder — %@",error.localizedDescription]];return;}
+    [self setWorking:YES];
+    self.report.text=[NSString stringWithFormat:@"Native prototype 0.2 — runtime checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"];
+    [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
+    [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
+    NSURL *folder=self.gameFolder;
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
+        BOOL scoped=folder?[folder startAccessingSecurityScopedResource]:NO;
+        char report[4096]={0};
+        int code=native_runtime_probe(folder?folder.fileSystemRepresentation:NULL,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void *)self,report,sizeof(report));
+        if(scoped)[folder stopAccessingSecurityScopedResource];
+        NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid runtime report";
+        NSString *memory=Footprint();
+        dispatch_async(dispatch_get_main_queue(),^{
+            [self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter engine cleanup: %@",result,code,memory]];
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
     }});
@@ -98,7 +131,7 @@ static NSString *Digest(NSData *bytes) {
     UIDocumentPickerViewController *picker=[[UIDocumentPickerViewController alloc]initForOpeningContentTypes:@[UTTypeFolder] asCopy:NO];picker.delegate=self;picker.allowsMultipleSelection=NO;[self presentViewController:picker animated:YES completion:nil];
 }
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    NSURL *folder=urls.firstObject;if(!folder||self.busy)return;[self setWorking:YES];
+    NSURL *folder=urls.firstObject;if(!folder||self.busy)return;self.gameFolder=folder;[self setWorking:YES];
     [self append:@"Checking three local game files with 64 KiB reads. Files stored in iCloud may need to download first."];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];NSMutableString *report=[NSMutableString string];
@@ -121,7 +154,7 @@ static NSString *Digest(NSData *bytes) {
             if(coordError)[report appendFormat:@"FAIL: %@ — %@\n",sample[@"path"],coordError.localizedDescription];
         }
         if(scoped)[folder stopAccessingSecurityScopedResource];
-        [report appendString:@"Sample check only; this does not validate or install the complete game."];
+        [report appendString:@"Sample check only; this does not validate or install the complete game.\nFolder selected for runtime tests. Tap Run runtime + save tests next."];
         dispatch_async(dispatch_get_main_queue(),^{[self append:report];[self setWorking:NO];});
     }});
 }

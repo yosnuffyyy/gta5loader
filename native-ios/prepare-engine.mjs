@@ -20,14 +20,14 @@ function leb(n){const a=[];do{let b=n%128;n=Math.floor(n/128);a.push(b|(n?128:0)
 function reader(b,p=0){return {p,u(){let n=0,s=1,c;do{c=b[this.p++];assert.notEqual(c,undefined);n+=(c&127)*s;s*=128;}while(c&128);return n;},str(){let n=this.u();let s=b.subarray(this.p,this.p+n).toString();this.p+=n;return s;}};}
 const sections=[],names=new Map();let r=reader(bytes,8);
 while(r.p<bytes.length){let offset=r.p,id=bytes[r.p++],n=r.u(),start=r.p,end=start+n;assert(end<=bytes.length);sections.push({id,offset,start,end});if(id===0){let nr=reader(bytes,start);if(nr.str()==='name'){while(nr.p<end){let sub=bytes[nr.p++],length=nr.u(),stop=nr.p+length;if(sub===1){let count=nr.u();for(let i=0;i<count;i++){let index=nr.u();names.set(nr.str(),index);}}nr.p=stop;}}}r.p=end;}
-const probes=['memcmp','strcmp','strlen','sinf','cosf'].map(name=>{assert(names.has(name));return {name,index:names.get(name)};});
+const probes=['memcmp','strcmp','strlen','sinf','cosf','fopen','fclose','fread','fwrite','__fseeko','__ftello'].map(name=>{assert(names.has(name));return {name:name.replace(/^__/,''),sourceName:name,index:names.get(name)};});
 const ex=sections.find(s=>s.id===7),er=reader(bytes,ex.start),oldCount=er.u();
 const additions=probes.map(({name,index})=>{let n=Buffer.from('native_probe_'+name);return Buffer.concat([leb(n.length),n,Buffer.from([0]),leb(index)]);});
 const payload=Buffer.concat([leb(oldCount+probes.length),bytes.subarray(er.p,ex.end),...additions]);
 const probeBytes=Buffer.concat([bytes.subarray(0,ex.offset),Buffer.from([7]),leb(payload.length),payload,bytes.subarray(ex.end)]);
 fs.writeFileSync(path.join(out,'engine-probe.wasm'),probeBytes);
 fs.mkdirSync(path.join(out,'evidence'),{recursive:true});
-fs.writeFileSync(path.join(out,'evidence','engine-inventory.json'),JSON.stringify({originalSHA256:hash(bytes),probeSHA256:hash(probeBytes),modification:'Add five exports only; engine instructions unchanged',probes},null,2));
+fs.writeFileSync(path.join(out,'evidence','engine-inventory.json'),JSON.stringify({originalSHA256:hash(bytes),probeSHA256:hash(probeBytes),modification:'Add eleven exports only; engine instructions unchanged',probes},null,2));
 const module=await WebAssembly.compile(probeBytes),memory=new WebAssembly.Memory({initial:8192,maximum:65536,shared:true});
 const imports={};for(const imp of WebAssembly.Module.imports(module)){imports[imp.module]||={};imports[imp.module][imp.name]=imp.kind==='memory'?memory:(()=>{throw Error('Unexpected reference import '+imp.module+'.'+imp.name);});}
 const instance=await WebAssembly.instantiate(module,imports),e=instance.exports;

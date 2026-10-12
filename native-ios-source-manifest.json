@@ -1,0 +1,145 @@
+{
+  "scope": "Native prototype 0.2 source only; original engine assembled separately from verified chunks",
+  "files": [
+    {
+      "path": "native-ios/App.m",
+      "bytes": 15144,
+      "sha256": "c7e9f112dfdb1a9765aaae7a2294cd634468f679133b9c7d685c907d3ab0d010"
+    },
+    {
+      "path": "native-ios/ci-convert.sh",
+      "bytes": 1766,
+      "sha256": "cdc1506beb92053e77db3bb1a14fb601092eae2a323e902dbe172cd215c51cc1"
+    },
+    {
+      "path": "native-ios/ci-test-host.sh",
+      "bytes": 783,
+      "sha256": "1b63f03a1ead7ae8cfde2270eff06be1b2ae99820f8f1fd272e2ed9036ebb8d0"
+    },
+    {
+      "path": "native-ios/ci-test-wait.sh",
+      "bytes": 875,
+      "sha256": "2dd6c2aadedae3fa272c4595b26d7e2e9bb5e17e6d8a6128e18750c07dcbbfc1"
+    },
+    {
+      "path": "native-ios/compile-native.mjs",
+      "bytes": 3854,
+      "sha256": "30b46a67d756df468e4f339a3075ffb82f2e867ebf6fb8bdc24927dc1f35bd8f"
+    },
+    {
+      "path": "native-ios/file-probes.json",
+      "bytes": 524,
+      "sha256": "9cc908a724c66c06c9b4a8665f14ca261231347dd90ac20d5cc58f84e2334912"
+    },
+    {
+      "path": "native-ios/generate-probe.mjs",
+      "bytes": 4348,
+      "sha256": "fb5757e3030c0ab72dff5f8ca9f50e7385930ae2ee7d44decafbd5108d77282b"
+    },
+    {
+      "path": "native-ios/host-imports.json",
+      "bytes": 1974,
+      "sha256": "f56b6fbff3e42c2d94dff3b5f04cbb30ccff228865fe62901bf9e72bde210a20"
+    },
+    {
+      "path": "native-ios/Info.plist",
+      "bytes": 1618,
+      "sha256": "d4fc67b6036269fec643c61ff6d301a9736880491ccfb333c720d9f7f2cfe211"
+    },
+    {
+      "path": "native-ios/native_host.c",
+      "bytes": 9797,
+      "sha256": "e9959ae242a9844c6551b1f6c8a47ad37678e6dd7b035c82955abf7c25821f19"
+    },
+    {
+      "path": "native-ios/native_host.h",
+      "bytes": 1650,
+      "sha256": "2592f7fab3149d3772dc5e8204e676a60d16b44cec968a23f563eff5ec8a6e33"
+    },
+    {
+      "path": "native-ios/native_runtime.c",
+      "bytes": 11204,
+      "sha256": "b9c12a9e009f3e6d108c9ed7791f4500d4adc87cc681e5dc06af34439badcbff"
+    },
+    {
+      "path": "native-ios/native_wait.c",
+      "bytes": 4746,
+      "sha256": "65c3eb17bbb38169f645badf8aaa1f0ad4b062e96f1d66870f3e3096053c574a"
+    },
+    {
+      "path": "native-ios/native_wait.h",
+      "bytes": 328,
+      "sha256": "ccb443e1f743492a86912b96294ca971729cce7b8323594c9d6345610a886b04"
+    },
+    {
+      "path": "native-ios/package-ios.sh",
+      "bytes": 1412,
+      "sha256": "d5722545a2c754d7b9ae9b191aaf6a7aa00d04a17503ce714b17f7b3dd1b6e47"
+    },
+    {
+      "path": "native-ios/patch-bulk.mjs",
+      "bytes": 2609,
+      "sha256": "94d8cf4ba671b2cdfe2afb7d512d91f65dbfe14d20dd0253a8cda0ba60026831"
+    },
+    {
+      "path": "native-ios/patch-shared-metadata.mjs",
+      "bytes": 1123,
+      "sha256": "a3b5d3808f0eae7bc72e8e41e1401617db8e0bcfcd6af1bdf66d2485074b093b"
+    },
+    {
+      "path": "native-ios/patch-simd.mjs",
+      "bytes": 3076,
+      "sha256": "65323d4fc61b22d32b692daa4210d55a6213021749d7b6e5505956bbe67f9948"
+    },
+    {
+      "path": "native-ios/patch-wabt.mjs",
+      "bytes": 1698,
+      "sha256": "b6cde819f5b84997db1ada71b77a26655da4888906b6ef7ec213c53b41987a2b"
+    },
+    {
+      "path": "native-ios/prepare-engine.mjs",
+      "bytes": 4350,
+      "sha256": "2c9a51d7140c427d69732d04ea047d396633282278030eedf6b1f972d99b7ff0"
+    },
+    {
+      "path": "native-ios/prepare-fixtures.mjs",
+      "bytes": 766,
+      "sha256": "d4db314a8b47ad3c0fea89efb2c84d975ed77613b9ea78767b8ca5e8e6352af4"
+    },
+    {
+      "path": "native-ios/probe.h",
+      "bytes": 426,
+      "sha256": "9f4c176aa4694e54be5e206330360dbe88bdfaa858d377a2eedf1bb53ff06cb8"
+    },
+    {
+      "path": "native-ios/test-bulk.mjs",
+      "bytes": 3447,
+      "sha256": "af6da43b67548f66bfe5d660d78f1d7f91e09fc2580dfb8c0bfcb3590b56d50e"
+    },
+    {
+      "path": "native-ios/test-simd.mjs",
+      "bytes": 3711,
+      "sha256": "a3abbb86151bc63c825613cfa40a91724ba13cfb8313b65868dd522a3536ac6c"
+    },
+    {
+      "path": "native-ios/test_host.c",
+      "bytes": 2442,
+      "sha256": "060d391b6158099776ac554400cacc5e3fefb00ebcf102f2b81ccd290efaa6c8"
+    },
+    {
+      "path": "native-ios/test_wait.c",
+      "bytes": 3885,
+      "sha256": "825505f40108bbb77392ea955fdc5bda05d4fe99d512fd44e606a751c69cd04a"
+    },
+    {
+      "path": "native-ios/wait-fixture.wat",
+      "bytes": 726,
+      "sha256": "7e1caf2355e3d6a41f77b8909a30ea1c6c47dc14cd08ab937e510bd5f8b4062a"
+    },
+    {
+      "path": ".github/workflows/native-ios.yml",
+      "bytes": 1679,
+      "sha256": "767f29cc4ec86d13f0c423343d17d37c48c4a692f33a2cf8143299fd337128a4"
+    }
+  ]
+}
