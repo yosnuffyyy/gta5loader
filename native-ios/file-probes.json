@@ -1,0 +1,17 @@
+[
+  {
+    "path": "data/common/data/levels/gta5/paths.xml",
+    "size": 145182312,
+    "prefixSHA256": "76e807125ca23edc254f37248e2eb5991a777d37426537afc8930ea825219967"
+  },
+  {
+    "path": "data/x64/anim/cutscene/cuts_prologue.rpf",
+    "size": 6287360,
+    "prefixSHA256": "95a48ae0ffa718ed8ea0762991ecf874d28b2526da38a7e78aec6334b21147ae"
+  },
+  {
+    "path": "data/x64/levels/gta5/_prologue/plg_01.rpf",
+    "size": 98912256,
+    "prefixSHA256": "d0804c583f08fd3ce0f39b7bf526d426be8b2e3ca611a944df9b096ec117d666"
+  }
+]

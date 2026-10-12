@@ -1,0 +1,13 @@
+(module
+ (memory (import "env" "memory") 1 4 shared)
+ (func (export "wait32") (param i32 i32 i64) (result i32)
+   local.get 0 local.get 1 local.get 2 memory.atomic.wait32)
+ (func (export "wait64") (param i32 i64 i64) (result i32)
+   local.get 0 local.get 1 local.get 2 memory.atomic.wait64)
+ (func (export "notify") (param i32 i32) (result i32)
+   local.get 0 local.get 1 memory.atomic.notify)
+ (func (export "offsetWait") (param i32 i32 i64) (result i32)
+   local.get 0 local.get 1 local.get 2 memory.atomic.wait32 offset=16)
+ (func (export "grow") (param i32) (result i32)
+   local.get 0 memory.grow)
+)
