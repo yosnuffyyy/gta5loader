@@ -49,23 +49,29 @@ the site online, then close and reopen once more if the update is waiting.
 Look for "Installer update: resilient folder import v2" at the bottom.
 Do not clear website data. Your existing game storage is reused.
 
-STARTUP REPAIR V6
+STARTUP REPAIR V7
 
-Open the site online, close and reopen the Home Screen app, then tap
-Update engine support. The replacement engine downloads about 66 MB.
-Existing game archives and save files are retained. Do not clear website
-data and do not import the entire game again. Confirm that Loading details
-says Startup repair v6 - lean engine (the displayed dash may be longer).
+Open the site online, close and reopen the Home Screen app until the footer
+says minimal engine v7, then tap Update engine support. The replacement
+engine downloads about 66 MB. Keep the existing installation and website
+data; reimporting the whole game is unnecessary.
 
-Tradeoffs: mobile rendering is capped at 640x360 and 30 FPS. Main/extra
-heaps reserve 384/96 MiB; replay gets 16 MiB. Resource heaps grow in 64 MiB
-segments. The resource budget, checked allocation failure paths, 512 MiB
-initial WebAssembly memory, and 4 GiB maximum remain intact. The streamer
-checks retained capacity before loading instead of just committed space.
-The small heaps may not fit unusually demanding scenes or replay recording.
+Play offline starts the Prologue instead of automatically loading the saved
+downtown scene. Existing game files are retained; normal game autosaving
+can still occur. Compact mode uses 512x288 at 30 FPS, shorter draw distance,
+no optional DLC, random pedestrians, random traffic or ambient events.
+Mission characters and audio remain enabled. Full-map stability and later
+missions have not been established. Recording capacity is heavily reduced.
 
-The 21 GB game data and desktop offline edition are unchanged. Engine
-patches are confined to identified allocation functions, preserve section
-offsets and validate as WebAssembly. Original engine chunks are retained.
-Desktop tests demonstrate rendered gameplay; this is not proof of stable
-iPhone gameplay. The recovery screen preserves evidence if iOS restarts.
+Main/extra heaps reserve 352/80 MiB; replay 16 MiB; recorder 1 MiB. Resource
+heaps grow in 32 MiB segments within the original budget. Streaming permits
+four pending reads per device and an 8 MiB burst; a single larger requested
+asset is still allowed to complete. The file cache keeps at most 16 MiB.
+
+Original PC game files and the 21 GB archives are unchanged. Update only
+replaces the iPhone engine and support files. Patches preserve section
+offsets, ABI, imports/exports and checked allocation paths. Game details
+remains available during play. The recovery report stays local.
+
+The physical iPhone must still be tested; desktop rendering is not proof
+of iPhone success. Do not clear website data if the phone restarts.

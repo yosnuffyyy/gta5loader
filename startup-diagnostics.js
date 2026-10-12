@@ -16,7 +16,7 @@ export function installStartupDiagnostics() {
   const copy=document.createElement('button'),close=document.createElement('button'),back=document.createElement('a');
   copy.textContent='Copy details';close.textContent='Close';back.textContent='Back to setup';back.href='/gta5loader/';
   for(const el of [copy,close,back])el.style.cssText='display:inline-block;background:#b4e9c3;color:#10241a;padding:12px;margin:0 8px 12px 0;border:0;border-radius:8px;font:700 14px system-ui;text-decoration:none';
-  const currentReport=()=>['Startup repair v6 — lean engine',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'First error: '+(failure||'No exception reported'),...lines].join('\n');
+  const currentReport=()=>['Startup repair v7 — minimal engine',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'First error: '+(failure||'No exception reported'),...lines].join('\n');
   const report=()=>paused?('Previous session before restart:\n'+previousReport):currentReport();
   const render=()=>{status.textContent=failure||('Current step: '+phase);pre.textContent=report();};
   function save(force=false){if(!active)return;if(!force&&performance.now()-lastSave<1000)return;lastSave=performance.now();const state=JSON.stringify({active:true,updated:Date.now(),report:currentReport()});try{sessionStorage.setItem(key,state);}catch{}try{localStorage.setItem(key,state);localStorage.setItem('gta-last-startup',currentReport());}catch{}}
@@ -35,7 +35,7 @@ export function installStartupDiagnostics() {
     if(m.gpuLost){failure ||= 'Graphics device lost: '+m.gpuLost;record(failure);save(true);show();}
     if(m.lines)for(const line of m.lines.slice(-3))record(line);
     if(m.error){failure ||= m.error;record(m.error);save(true);show();}
-    if(m.world){world=true;phase='Playing';record('World shown');save(true);button.hidden=true;panel.hidden=true;}
+    if(m.world){world=true;phase='Playing';record('World shown');save(true);button.textContent='Game details';button.hidden=false;panel.hidden=true;}
   };
   const crashes=new BroadcastChannel('game-crash');
   crashes.onmessage=({data:m})=>{const detail=String(m.text||'Engine worker failed');failure ||= detail;record('Heap: '+m.heap+' MiB; '+detail);button.hidden=false;show();};
