@@ -3,7 +3,7 @@ import {formatBytes,sha256,folderEntries} from './offline-common.js';
 const el=id=>document.getElementById(id);
 let worker,manifest,busy=false,supported=false,ready=false,wake,storedBytes=0,spaceAvailable=true,optionalMissing=0,supportMissing=0;
 function message(text){el('status').textContent=text;}
-function controls(){el('check').disabled=busy;el('download').disabled=busy||!supported||!spaceAvailable;el('download').hidden=manifest?.installSource==='folder';el('import').disabled=busy||!supported||!spaceAvailable;el('pause').hidden=!busy;el('play').hidden=!ready||busy||!supported;el('offline-test').hidden=!ready||busy;el('repair').hidden=!supportMissing||storedBytes===0;el('repair').disabled=busy||!supported;}
+function controls(){el('check').disabled=busy;el('download').disabled=busy||!supported||!spaceAvailable;el('download').hidden=manifest?.installSource==='folder';el('import').disabled=busy||!supported||!spaceAvailable;el('pause').hidden=!busy;el('play').hidden=!ready||busy||!supported;el('play-safe').hidden=el('play').hidden;el('play-city').hidden=el('play').hidden;el('offline-test').hidden=!ready||busy;el('repair').hidden=!supportMissing||storedBytes===0;el('repair').disabled=busy||!supported;}
 function progress(data){
   ready=data.ready;optionalMissing=data.optionalMissing||0;supportMissing=data.supportMissing||0;storedBytes=data.bytes;el('progress').value=data.totalBytes?data.bytes/data.totalBytes*100:0;
   el('bytes').textContent=formatBytes(data.bytes)+' / '+formatBytes(data.totalBytes);

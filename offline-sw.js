@@ -1,6 +1,6 @@
 import {ISOLATION,sha256,localResponse} from './offline-common.js';
 import {dataDirectory,fileName} from './offline-store.js';
-const RELEASE = '5f95f2eb4847b8f948908649db799d1d750a495628fb6b81836e6d015826ee21';
+const RELEASE = '80d3b30fbce10ebc10e17719960449f0256eb49299ff083b8d26429291a9726f';
 const APP_BASE='/gta5loader/';
 const appURL=path=>APP_BASE+path.replace(/^\//,'');
 const CACHE='gta-mobile-shell-'+RELEASE;

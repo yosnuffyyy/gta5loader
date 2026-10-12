@@ -1,6 +1,8 @@
 import {shouldPauseRestart} from './restart-policy.js';
 export function installStartupDiagnostics() {
   const key='gta-run-state-v5';
+  let frameRate=null;
+  new BroadcastChannel('game-fps').onmessage=({data})=>{if(Number.isFinite(data.fps))frameRate=Math.round(data.fps);};
   const read=store=>{try{return JSON.parse(store.getItem(key));}catch{return null;}};
   let previous;try{previous=read(sessionStorage)||read(localStorage);}catch{}
   const previousReport=previous?.report||'';
@@ -16,10 +18,10 @@ export function installStartupDiagnostics() {
   const copy=document.createElement('button'),close=document.createElement('button'),back=document.createElement('a');
   copy.textContent='Copy details';close.textContent='Close';back.textContent='Back to setup';back.href='/gta5loader/';
   for(const el of [copy,close,back])el.style.cssText='display:inline-block;background:#b4e9c3;color:#10241a;padding:12px;margin:0 8px 12px 0;border:0;border-radius:8px;font:700 14px system-ui;text-decoration:none';
-  const currentReport=()=>['Startup repair v7 — minimal engine',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'First error: '+(failure||'No exception reported'),...lines].join('\n');
+  const currentReport=()=>['Startup repair v8 — light streets',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Frame rate: '+(frameRate===null?'Not reported':frameRate+' FPS'),'Engine heap: '+Math.round(heap)+' MiB'+(requested?' (last growth request '+Math.round(requested)+' MiB)':''),'Graphics: '+(gpu?JSON.stringify(gpu):'Not reported'),'First error: '+(failure||'No exception reported'),...lines].join('\n');
   const report=()=>paused?('Previous session before restart:\n'+previousReport):currentReport();
   const render=()=>{status.textContent=failure||('Current step: '+phase);pre.textContent=report();};
-  function save(force=false){if(!active)return;if(!force&&performance.now()-lastSave<1000)return;lastSave=performance.now();const state=JSON.stringify({active:true,updated:Date.now(),report:currentReport()});try{sessionStorage.setItem(key,state);}catch{}try{localStorage.setItem(key,state);localStorage.setItem('gta-last-startup',currentReport());}catch{}}
+  function save(force=false){if(!active)return;if(!force&&performance.now()-lastSave<(world?5000:1000))return;lastSave=performance.now();const state=JSON.stringify({active:true,updated:Date.now(),report:currentReport()});try{sessionStorage.setItem(key,state);}catch{}try{localStorage.setItem(key,state);localStorage.setItem('gta-last-startup',currentReport());}catch{}}
   function record(text){lines.push(Math.round((performance.now()-start)/1000)+'s '+String(text).slice(0,700));if(lines.length>40)lines.shift();if(!panel.hidden&&!paused)render();save();}
   const show=()=>{render();panel.hidden=false;};
   button.onclick=show;close.onclick=()=>{panel.hidden=true;};
@@ -50,8 +52,8 @@ export function installStartupDiagnostics() {
       if(shouldPauseRestart(previous,navigationType)){
         paused=true;heading.textContent='Game restart paused';close.style.display='none';
         failure='The previous game session ended or reloaded. Automatic restart is paused. Memory pressure or a browser/graphics failure may be responsible; this report cannot confirm which.';
-        const retry=document.createElement('button');retry.textContent='Retry with reduced graphics';retry.style.cssText=copy.style.cssText;
-        panel.insertBefore(retry,pre);show();
+        const retry=document.createElement('button');retry.textContent='Try light streets again';retry.style.cssText=copy.style.cssText;
+        const safe=document.createElement('button');safe.textContent='Use stable v7 profile';safe.style.cssText=copy.style.cssText;safe.onclick=()=>{try{sessionStorage.removeItem(key);localStorage.removeItem(key);}catch{}location.replace('/gta5loader/game-v7.html?touch=1&low=1&fps=30&compact=1&mode=story&newgame=1');};panel.insertBefore(safe,pre);panel.insertBefore(retry,pre);show();
         await new Promise(resolve=>{retry.onclick=()=>{const url=new URL(location.href);url.searchParams.set('compact','1');url.searchParams.set('low','1');url.searchParams.delete('res');url.searchParams.delete('slots');history.replaceState(null,'',url);retry.remove();resolve();};});
         paused=false;failure='';close.style.display='inline-block';heading.textContent='Game loading details';panel.hidden=true;
       }

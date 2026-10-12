@@ -65,10 +65,12 @@ const startupDiagnostics=installStartupDiagnostics();
 await startupDiagnostics.beforeStart();
 import {records,summarize} from '/gta5loader/offline-store.js';
 if(!navigator.serviceWorker?.controller||!globalThis.crossOriginIsolated){location.replace('/gta5loader/');throw new Error('Open the offline launcher first.');}
+{
 const offlineManifest=await (await fetch('/gta5loader/offline-manifest.json')).json();
 if(!summarize(offlineManifest,await records(offlineManifest)).ready){location.replace('/gta5loader/');throw new Error('Finish installing the game first.');}
+}
 const { installGameAudio } = await import('/gta5loader/offline-audio.js');
-const { installController } = await import('/gta5loader/offline-controller.js');
+const { installController } = await import('/gta5loader/street-controller.js');
 const { detectMobile, installMobileControls } = await import('/gta5loader/mobile-controls.js');
 import { checkGameSupport, showCompatibilityFailure } from '/gta5loader/platform-check.js';
 // Page of the browser build. The engine runs in a dedicated worker (loader.js: its "main thread", where the static constructors and
@@ -407,17 +409,18 @@ else {
 	const LOW_ARGS = ['-textureQuality=0', '-pedVariety=0', '-vehicleVariety=0', '-shadowQuality=' + (q.get('shadows') === '1' ? 0 : -1), '-reflectionQuality=0', '-particleQuality=0',
 		'-grassQuality=0', '-cityDensity=0', '-lodScale=0', '-pedLodBias=0', '-vehicleLodBias=0'];
 	const cores = +(q.get('cores') || 0) || (lowMemory ? 2 : navigator.hardwareConcurrency);
-	if (lowMemory) hud.textContent = mobile ? 'Mobile graphics profile. Close other tabs to leave more memory for the game.' : 'Low-memory device (' + (navigator.deviceMemory || '?') + ' GB reported): close other tabs. If the tab shows "Aw, Snap!" or SIGILL it ran out of memory.';
+	if (lowMemory) hud.textContent = mobile ? 'Mobile graphics profile. Close other tabs to leave more memory for the game.' : 'Reduced-memory graphics profile. Open Game details if startup fails.';
 postLog('[page env] ' + JSON.stringify({ deviceMemory: navigator.deviceMemory, cores: navigator.hardwareConcurrency, usingCores: cores, low: lowMemory, isolated: crossOriginIsolated, ua: navigator.userAgent.slice(0, 120), screen: screen.width + 'x' + screen.height + '@' + devicePixelRatio }));
 // Back buffer = the browser window in device pixels (native resolution), following window resizes live (see installInput). ?scale=0.75 renders at 75 % (faster), ?fixed=1 keeps the
 // start-up size whatever the window does, ?res=1920x1080 forces a size. Even numbers, at most 3840x2160 (2560x1440 in the low-memory profile: screen-sized render targets dominate GPU memory).
 wantSize = () => {
+  if (compactMemory && !q.has('res')) return [640,360];
 	const forced = /^(\d+)x(\d+)$/.exec(q.get('res') || '');
 	if (forced) return [+forced[1], +forced[2]];
 	const sc = Math.max(0.25, Math.min(2, +(q.get('scale') || (mobile ? .5 : 1))));
 	let w = innerWidth * devicePixelRatio * sc, h = innerHeight * devicePixelRatio * sc;
 	if(mobile && h>w)[w,h]=[h,w];
-	const cap = compactMemory ? [512,288] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
+	const cap = compactMemory ? [640,360] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
 	w *= k; h *= k;
 	return [Math.max(320, Math.round(w / 2) * 2), Math.max(240, Math.round(h / 2) * 2)];
 };
@@ -438,13 +441,13 @@ if(compactMemory) {
 const LOG_ARGS = q.get('verbose') ? [] : ['-Script_all=warning', '-replay_all=warning'];
 // -fastscriptcore: the script interpreter's production core (scrThread::Run static). Without it this build runs the debugging core, which looks up two breakpoint tables
 // for every script instruction (scrThread::Run was ~8 % of the main thread).
-const ENGINE_ARGS = ['-fastscriptcore', ...(compactMemory ? ['-ignoreDeployedPacks', '-globalLOD=0.25', '-nopeds', '-nocars', '-noambient', '-disableambientaudio', '-aggressivecleanup', '-minspecaudio'] : [])];
-if (compactMemory) startupDiagnostics.record('Minimal v7 profile: reduced world detail, no optional DLC, random population or ambient events');
+const ENGINE_ARGS = ['-fastscriptcore', ...(compactMemory ? ['-ignoreDeployedPacks', '-globalLOD=0.125', '-pedMult=1', '-pedOnFoot=8', '-pedAmbient=6', '-carMult=1', '-vehiclesUpperLimit=8', '-vehiclesAmbientDensityMultiplier=1', '-vehiclesParkedDensityMultiplier=0', '-vehiclesLowPrioParkedDensityMultiplier=0', '-parkedVehiclesUpperLimit=0', '-disableDistantCars', '-noDistantLightAutoLoad', '-noambient', '-disableambientaudio', '-aggressivecleanup', '-minspecaudio'] : [])];
+if (compactMemory) startupDiagnostics.record('Light streets v8: 640 x 360, sparse random pedestrians and traffic; optional DLC and ambient events disabled');
 // Chrome on Windows rounds every wait with a timeout (Atomics.wait: the engine's sleeps, its 1 ms event waits, the frame limiter, the yields of its spin loops) up to the OS
 // timer tick, 15.6 ms, unless the renderer process has a timer below 16 ms pending, which switches the process to a fine tick (measured: a 1 ms wait takes 15.5 ms; with
 // this timer 2.1 ms, a 4 ms wait 5.0 ms). The game has no such timer, so every short sleep cost a whole tick: the limiter held a 60 fps cap to 37 fps and the visibility
 // wait added 15 ms to a frame. An empty callback; nothing else on this thread runs while the game plays.
-setInterval(() => {}, 1);
+if (/Windows NT/.test(navigator.userAgent)) setInterval(() => {}, 1);
 const touch=installMobileControls({enabled:touchEnabled,mobile});
 if(mobile)document.getElementById('loading').append(modesEl);
 controller = installController({
@@ -459,7 +462,7 @@ controller = installController({
     else if (pressed[2]) act(pickingMap ? 'map6' : 'sandbox');
   }
 });
-const worker = new Worker(BASE + '/loader.js');
+const worker = new Worker(BASE + '/loader-street.js');
 	worker.onmessage = (ev) => {
 		if (ev.data.hud) hud.textContent = ev.data.hud;
 		if (ev.data.input) installInput(ev.data.input.memory, ev.data.input.block);
@@ -471,7 +474,7 @@ const worker = new Worker(BASE + '/loader.js');
 		controllerState: controller.buffer,
 		base: BASE,
 		args: ['-rootdir=/game/', ...(q.get('nogpu') ? [] : ['-wgpu']), '-nodisplaycalibration', '-noSocialClub', '-pc:nosocialclub', ...(q.get('newgame') === '1' ? ['-noautoload'] : []), '-nonetwork', '-output', '-width=' + startSize[0], '-height=' + startSize[1], '-forceResolution', ...LOG_ARGS, ...ENGINE_ARGS, '-frameLimit=' + ((q.get('fps') || (compactMemory ? '30' : '60')) === '30' ? 2 : q.get('fps') === '0' ? 0 : 1),		// the game's own limiter: VSync 2 (its default) = 30 fps; 1 = 60 fps; ?fps=0 uncapped (diagnostics). Story Mode continues from the newest savegame (the engine skips that for Sandbox Mode); ?newgame=1 (-noautoload) starts it from the Prologue instead
-		 ...(cores <= 2 ? ['-numCores=' + cores] : []), ...(lowMemory ? LOW_ARGS : []), ...(q.get('args') || '').split(',').filter(Boolean)],
+		 ...(q.get('city') === '1' && startMode === 2 ? ['-playercoords=94.95,-742.96,44.75'] : []), ...(cores <= 2 ? ['-numCores=' + cores] : []), ...(lowMemory ? LOW_ARGS : []), ...(q.get('args') || '').split(',').filter(Boolean)],
 		shotEvery: +(q.get('shot') || 0),
 		shotRt: q.get('shotrt') === '1',		// ?shotrt=1 (with ?shot=N): every render target of one frame after the world is shown to the dev server's shots/ (wgpu_worker.js)
 		noHints: q.get('nohints') === '1',		// ?nohints=1: do not fetch the streamer's queued reads ahead (io_worker.js drainHints; diagnostics)
