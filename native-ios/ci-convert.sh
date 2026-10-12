@@ -9,11 +9,13 @@ test "$(git -C native-build/wabt rev-parse HEAD)" = ff0ef7e0009402740c805a9744c0
 git -C native-build/wabt submodule update --init --depth 1 third_party/picosha2 third_party/simde
 node native-ios/patch-wabt.mjs native-build/wabt
 node native-ios/patch-simd.mjs native-build/wabt
+node native-ios/patch-bulk.mjs native-build/wabt
 cmake -S native-build/wabt -B native-build/wabt-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_LIBWASM=OFF
 cmake --build native-build/wabt-build --target wasm2c wasm-validate wat2wasm -j 3
 native-build/wabt-build/wasm-validate native-build/engine-probe.wasm --enable-threads
 bash native-ios/ci-test-wait.sh
 node native-ios/test-simd.mjs
+node native-ios/test-bulk.mjs
 native-build/wabt-build/wasm2c native-build/engine-probe.wasm --enable-threads --no-debug-names --num-outputs=128 -n gta -o native-build/generated/gta.c
 cp native-build/generated/gta.h native-build/evidence/gta.h
 du -sh native-build/generated

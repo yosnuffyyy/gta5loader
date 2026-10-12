@@ -30,16 +30,17 @@ static NSString *Digest(NSData *bytes) {
 }
 - (void)viewDidLoad {
     [super viewDidLoad];self.view.backgroundColor=UIColor.systemBackgroundColor;
+    UIScrollView *scroll=[[UIScrollView alloc]init];scroll.translatesAutoresizingMaskIntoConstraints=NO;[self.view addSubview:scroll];
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
-    [self.view addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide;
-    [NSLayoutConstraint activateConstraints:@[[stack.topAnchor constraintEqualToAnchor:safe.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-20]]];
+    [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
     UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.1";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
     UILabel *description=[[UILabel alloc]init];description.text=@"Tests the converted engine on your iPhone. Game startup and the Metal game renderer are still pending. No gameplay in this build.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
     self.controllerLabel=[[UILabel alloc]init];self.controllerLabel.numberOfLines=0;self.controllerLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:self.controllerLabel];
     self.report=[[UITextView alloc]init];self.report.editable=NO;self.report.font=[UIFont monospacedSystemFontOfSize:13 weight:UIFontWeightRegular];self.report.backgroundColor=UIColor.secondarySystemBackgroundColor;self.report.layer.cornerRadius=10;[stack addArrangedSubview:self.report];
-    [self.report.heightAnchor constraintGreaterThanOrEqualToConstant:90].active=YES;
+    [self.report.heightAnchor constraintEqualToConstant:240].active=YES;
     [stack addArrangedSubview:[self button:@"Copy report" action:@selector(copyReport)]];
     NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
     self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. No game files are needed for the native engine test. The optional file check reads samples from your existing web folder.";
@@ -102,7 +103,7 @@ static NSString *Digest(NSData *bytes) {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];NSMutableString *report=[NSMutableString string];
         NSData *metadata=[NSData dataWithContentsOfURL:[NSBundle.mainBundle URLForResource:@"file-probes" withExtension:@"json"]];
-        NSArray *samples=[NSJSONSerialization JSONObjectWithData:metadata options:0 error:nil];
+        NSArray *samples=metadata?[NSJSONSerialization JSONObjectWithData:metadata options:0 error:nil]:nil;
         if(samples.count!=3)[report appendString:@"FAIL: bundled sample manifest\n"];
         for(NSDictionary *sample in samples){
             NSURL *file=[folder URLByAppendingPathComponent:sample[@"path"]];
@@ -111,8 +112,10 @@ static NSString *Digest(NSData *bytes) {
                 NSError *error=nil;NSNumber *size=nil;[available getResourceValue:&size forKey:NSURLFileSizeKey error:&error];
                 if(error||size.unsignedLongLongValue!=[sample[@"size"] unsignedLongLongValue]){[report appendFormat:@"FAIL: size/missing %@\n",sample[@"path"]];return;}
                 NSFileHandle *handle=[NSFileHandle fileHandleForReadingFromURL:available error:&error];
-                NSData *bytes=[handle readDataUpToLength:65536 error:&error];[handle closeAndReturnError:nil];
-                BOOL valid=bytes&&!error&&[Digest(bytes) isEqualToString:sample[@"prefixSHA256"]];
+                NSMutableData *bytes=[NSMutableData dataWithCapacity:65536];
+                while(handle&&!error&&bytes.length<65536){NSData *part=[handle readDataUpToLength:65536-bytes.length error:&error];if(part.length==0)break;[bytes appendData:part];}
+                [handle closeAndReturnError:nil];
+                BOOL valid=bytes.length==65536&&!error&&[Digest(bytes) isEqualToString:sample[@"prefixSHA256"]];
                 [report appendFormat:@"%@: %@\n",valid?@"PASS":@"FAIL: read/hash",sample[@"path"]];
             }];
             if(coordError)[report appendFormat:@"FAIL: %@ — %@\n",sample[@"path"],coordError.localizedDescription];

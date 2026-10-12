@@ -5,7 +5,7 @@ const root='native-build';
 const generated=fs.readdirSync(root+'/generated').filter(n=>/^gta.*\.c$/.test(n)).sort().map(n=>root+'/generated/'+n);
 if(generated.length!==128)throw Error('Expected all 128 engine source partitions');
 const runtime=['wasm-rt-impl.c','wasm-rt-mem-impl.c','wasm-rt-exceptions-impl.c'].map(n=>root+'/wabt/wasm2c/'+n);
-const common=['-std=gnu11','-fno-optimize-sibling-calls','-frounding-math',
+const common=['-std=gnu11','-Werror=incompatible-pointer-types','-fno-optimize-sibling-calls','-frounding-math',
  '-DWASM_RT_USE_MMAP=1','-DWASM_RT_MEMCHECK_BOUNDS_CHECK=1','-DWASM_RT_MEMCHECK_GUARD_PAGES=0','-DWASM_RT_SKIP_SIGNAL_RECOVERY=1',
  '-I'+root+'/wabt/wasm2c','-I'+root+'/wabt/third_party/simde','-Inative-ios','-I'+root,'-I'+root+'/generated','-include','native-ios/native_wait.h'];
 function run(cmd,args){return new Promise((resolve,reject)=>{const child=spawn(cmd,args,{stdio:'inherit'});child.on('error',reject);child.on('exit',(code,signal)=>code===0?resolve():reject(Error(cmd+' failed '+(signal||code))));});}

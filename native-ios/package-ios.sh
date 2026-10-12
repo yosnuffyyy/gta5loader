@@ -10,6 +10,7 @@ xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" \
 cp native-ios/Info.plist "$app/Info.plist"
 cp native-ios/file-probes.json "$app/file-probes.json"
 cp native-build/wabt/LICENSE "$app/WABT-LICENSE.txt"
+cp native-build/wabt/third_party/simde/COPYING "$app/SIMDe-LICENSE.txt"
 cp native-build/evidence/engine-inventory.json "$app/engine-inventory.json"
 plutil -lint "$app/Info.plist"
 file "$app/NativeProbe" | tee native-build/evidence/ios-binary.txt
