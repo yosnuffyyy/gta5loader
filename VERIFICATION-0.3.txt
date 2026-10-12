@@ -1,0 +1,65 @@
+NATIVE PROTOTYPE 0.3 — THREADING CHECKPOINT VERIFICATION
+
+Source: 435a73d09ae0556d9692691100da9aaf41a07c59
+Branch: native-ios-prototype
+Release run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38300970845
+Release job: 114983533268
+Final release status: PASS; every job step completed successfully 2026-10-12.
+Local ZIP/checksum/Mach-O/plist/package audit: PASS.
+Earlier 0.3 runs 38300242712 and 38300604544 passed. The release corrects a
+memory-sample label: workers may finish before the sample is taken.
+
+Checks passed on the release build
+- Original engine/chunk digest and unchanged eleven diagnostic exports.
+- Real WebAssembly reference string/math comparisons; compiled wait/notify,
+  growth and shared-memory tests; 73 SIMD comparisons and bulk-memory checks.
+- Cancel an indefinite native wait, join its thread, and verify no stale
+  waiter remains in the notification queue.
+- Rooted native file access and rejection tests, signed seeks, 64-bit file
+  and pointer ABI, stat, clocks, environment and invalid buffer checks.
+- Complete real engine constructors/main-thread TLS and persistent save
+  validation across two separate native process launches.
+- Real engine pthread_create/exit/join: two batches of four workers per
+  process. Separate pthread IDs, engine instances, TLS/errno and stacks;
+  original shared heap; synchronous engine mailbox/environment proxy replies;
+  independent concurrent save writes/reopens/byte comparisons and cleanup.
+- The three game-path samples in CI use synthetic fixture files. Actual
+  iPhone files remain a device check, as in the verified 0.2 checkpoint.
+- Actual engine main() executes until its first game-worker request (entry
+  14), where this checkpoint stops deliberately. The requested game worker
+  workload is not executed, and this is not a rendered game frame.
+- All 136 engine/runtime C units are compiled or reused from digest-verified
+  objects for both Mac and ARM64 iPhone. Tests run again before packaging.
+  The release reused 135 verified objects per target and rebuilt the changed
+  threading source. The engine and all other native runtime tests ran again.
+
+IPA: GTA-Native-Probe-0.3-unsigned.ipa
+Bytes: 99639817
+SHA-256: 556f30e57d9e3a519dfb59a081ee95b7eb9c95accb07fa1f81eaa6e75550554b
+Bundle: io.github.yosnuffyyy.gtanativeprobe; version 0.3.0/build 3.
+PASS: downloaded ZIP digests match GitHub artifact metadata; IPA digest
+matches the build output. Archive entry paths and symbolic links checked.
+PASS: ARM64 iPhone platform, iOS 17 minimum; no code signature, provisioning
+profile, WebKit/JavaScriptCore dependency or writable-executable segment.
+PASS: required licenses and original engine inventory are included.
+PASS: 0.1 and 0.2 IPA files remain byte-identical to their recorded hashes.
+PASS: all 30 native source/build file hashes match source-manifest.json.
+
+No 0.3 physical iPhone result has been received. Install over 0.2 using the
+same signing setup; select the extracted web folder; run threads + startup
+tests; close/reopen, select the folder again and repeat. Send both reports.
+
+Memory observations from CI are Mac process samples. They are not iPhone
+measurements, peaks, resident sizes of each heap region, or gameplay budgets.
+The worker-batch sample may include workers that have already finished.
+No renderer, world streaming or native audio output runs in this checkpoint.
+
+Remaining stage-4 work: game worker workloads and event loops, remaining
+main-thread/async proxy operations, asset I/O worker protocol and other host
+services needed to continue main() through graphics initialization. The
+renderer, native audio/controls and sustained Prologue/Sandbox play remain
+separate later gates. Unsupported behavior is not returned as success.
+
+Isolation: no access to either protected Desktop PC folder. Main was verified
+unchanged at de7664a8e6448096716c5a341250d32d4f594fd1. The 0.1 and 0.2 IPA hashes
+were checked against their original recorded digests and matched.

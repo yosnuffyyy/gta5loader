@@ -1,8 +1,9 @@
 NATIVE IPHONE PROTOTYPE — IMPLEMENTATION BOUNDARIES
 
-Current development: 0.2 adds real constructors, main-thread TLS, native file
-and save operations, clocks/environment and shared metadata publication.
-See NATIVE-0.2.txt for implemented behavior, limitations and device checks.
+Current development: 0.3 adds real engine pthread lifecycle, per-worker TLS,
+synchronous mailbox/proxy tests and deliberate main-entry checkpointing.
+See NATIVE-0.3.txt for scope and pending game workloads. The 0.2 constructor,
+file/save and main-thread TLS checkpoint passed on the user's iPhone.
 The 0.1 description and physical-device result below remain historical.
 
 Baseline

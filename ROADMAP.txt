@@ -5,6 +5,8 @@ Branch: native-ios-prototype
 0.1 baseline build: 971e32f49c952822f5086ddeea9f70671f637c7d
 0.2 runtime checkpoint: ec11683005cb9003ba2beb9055556fc28f96f9b8
 0.2 build/package gates pass; two user-reported iPhone runtime checks pass.
+0.3 threading checkpoint: 435a73d09ae0556d9692691100da9aaf41a07c59
+0.3 device validation remains pending. See VERIFICATION-0.3.txt for CI status.
 Baseline: confirmed v7 engine.
 PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
 user instruction. Native work uses independent workspace copies only.
@@ -31,7 +33,7 @@ user instruction. Native work uses independent workspace copies only.
    Controller input has not been reported. The 19.2 MiB after-test footprint
    is measured after freeing the engine, not during gameplay or at peak use.
 
-4. Native host and threaded startup — IN PROGRESS (0.2 checkpoint)
+4. Native host and threaded startup — IN PROGRESS (0.3 checkpoint)
    4a. Implemented: real engine constructors and main-thread TLS, rooted
        read-only game files, app-private probe saves, retained 64-bit file
        ABI, monotonic/realtime clocks and fixed native environment. Native
@@ -45,11 +47,17 @@ user instruction. Native work uses independent workspace copies only.
        Shared size/pages metadata uses atomic publication with committed
        size published before the new page count. A compiled concurrent
        grow/read fixture passes on Mac.
-   4b. Still pending: engine pthread lifecycle, worker TLS/instances, mailbox
-       and main-thread proxy dispatch, asset I/O worker protocol, remaining
-       libc/platform operations and actual main() startup.
+   4b. 0.3 implements and tests real engine pthread create/exit/join in two
+       batches of four diagnostic workers, per-worker TLS/instances, mailbox
+       delivery and synchronous environment-query proxies. Native descriptor
+       access is synchronized; worker memory is freed after native joins.
+       Actual main() enters and deliberately stops at its first game-worker
+       request. The requested game workload is not launched at this gate.
+       Still pending: active game-worker workloads and event loops, broader
+       proxy/async operations, asset I/O protocol, remaining platform calls
+       and continuing threaded main() startup to the renderer boundary.
    Gate remains: real threaded startup without unsupported imports or
-   fabricated successes. The 0.2 checkpoint is not completion of stage 4.
+   fabricated successes. The 0.3 checkpoint is not completion of stage 4.
 
 5. Real engine frame on Metal — PENDING
    Port the existing GPU command protocol and shaders to a native backend.

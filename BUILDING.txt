@@ -24,8 +24,9 @@ Outputs inside the checkout:
   native-build/GTA-Native-Probe-unsigned.ipa
   native-build/evidence/
 
-0.2 adds native file-host tests, real engine constructor/libc execution and
-two separate process launches to check save persistence. CI uses synthetic
+0.3 additionally tests engine pthread lifecycle/TLS, mailbox/proxy delivery,
+concurrent saves, cancelled waits and deliberate main-entry checkpointing.
+Two separate process launches also check save persistence. CI uses synthetic
 sample files; the iPhone folder check uses the user's actual extracted data.
 Native compiler objects are cached with source/header/compiler/flag digests
 and verified object hashes. Tests are always rerun before IPA publication.

@@ -1,7 +1,8 @@
 NATIVE PROTOTYPE 0.1 — BUILD AND VERIFICATION RECORD
 
-Historical 0.1 record. For the current 0.2 runtime checkpoint, see
-VERIFICATION-0.2.txt and evidence/0.2/. The 0.1 IPA is preserved.
+Historical 0.1 record. For the current 0.3 threading checkpoint, see
+VERIFICATION-0.3.txt and evidence/0.3/. Both earlier IPAs are preserved;
+VERIFICATION-0.2.txt records the successful iPhone runtime checkpoint.
 
 Build completed 2026-10-12 on GitHub's macos-15-arm64 runner.
 Source commit: 971e32f49c952822f5086ddeea9f70671f637c7d
@@ -63,4 +64,3 @@ Main branch remains de7664a8e6448096716c5a341250d32d4f594fd1.
 
 evidence/ contains the compiler/test log, engine inventory, probe results,
 iPhone binary metadata, build SHA-256 output and local package-audit.json.
-
