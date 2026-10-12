@@ -49,20 +49,23 @@ the site online, then close and reopen once more if the update is waiting.
 Look for "Installer update: resilient folder import v2" at the bottom.
 Do not clear website data. Your existing game storage is reused.
 
-STARTUP REPAIR V3
+STARTUP REPAIR V4
 
 Close all game tabs and Home Screen windows, open the site online, then
 close and reopen to activate this update. Tap Update engine support.
-Only the changed support files (about 137 KB) need downloading; existing
+Only the changed support files (about 140 KB) need downloading; existing
 archives and saves are retained. Do not clear website data or reinstall.
 
-Worker initialization is staggered (two at a time in the mobile profile),
-with visible worker counts and explicit startup errors/timeouts. Engine
-streaming compilation no longer clones the response for progress tracking.
-The generic stall message no longer assumes an out-of-memory failure.
-If loading still stops, open Loading details and use Copy details. These
-diagnostics stay on your device unless you choose to share them.
+The iPhone report showed a NetworkError on game.js line 1 during worker
+startup. That line imported the controller bridge separately in each worker.
+The bridge is now bundled in game.js. All pthreads reuse one local blob
+script with no dependent script imports. The original 28-worker pool and
+bounded startup are retained. No browser security settings need changing.
 
-These changes address confirmed startup error-handling and concurrency
-issues. They do not establish the cause on a physical iPhone; full iPhone
-gameplay still needs verification.
+Loading details now preserves the first error and includes the message
+when Safari supplies a stack without it. If loading still stops, use Copy
+details. These diagnostics stay local unless you choose to share them.
+
+Physical iPhone gameplay still needs verification. This addresses the
+reported script-loading path; it cannot guarantee the full game will fit
+within the iPhone browser runtime memory limit.

@@ -10,7 +10,7 @@ export function installStartupDiagnostics() {
   const copy=document.createElement('button'),close=document.createElement('button'),back=document.createElement('a');
   copy.textContent='Copy details';close.textContent='Close';back.textContent='Back to setup';back.href='/gta5loader/';
   for(const el of [copy,close,back])el.style.cssText='display:inline-block;background:#b4e9c3;color:#10241a;padding:12px;margin:0 8px 12px 0;border:0;border-radius:8px;font:700 14px system-ui;text-decoration:none';
-  const report=()=>['Startup repair v3',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'Error: '+(failure||'No exception reported'),...lines].join('\n');
+  const report=()=>['Startup repair v4',navigator.userAgent,'Isolated: '+crossOriginIsolated,'Elapsed: '+Math.round((performance.now()-start)/1000)+' s','Step: '+phase,'First error: '+(failure||'No exception reported'),...lines].join('\n');
   const render=()=>{status.textContent=failure||('Current step: '+phase);pre.textContent=report();};
   function record(text){lines.push(Math.round((performance.now()-start)/1000)+'s '+String(text).slice(0,700));if(lines.length>40)lines.shift();if(!panel.hidden)render();if(performance.now()-lastSave>1000){lastSave=performance.now();try{localStorage.setItem('gta-last-startup',report());}catch{}}}
   const show=()=>{render();panel.hidden=false;};
@@ -21,12 +21,12 @@ export function installStartupDiagnostics() {
   progress.onmessage=({data:m})=>{
     if(m.startup||m.label){phase=m.startup||m.label;record(phase);}
     if(m.lines)for(const line of m.lines.slice(-3))record(line);
-    if(m.error){failure=m.error;record(failure);show();}
+    if(m.error){failure ||= m.error;record(m.error);show();}
     if(m.world){world=true;button.hidden=true;panel.hidden=true;}
   };
   const crashes=new BroadcastChannel('game-crash');
-  crashes.onmessage=({data:m})=>{failure=String(m.text||'Engine worker failed');record('Heap: '+m.heap+' MiB; '+failure);button.hidden=false;show();};
-  addEventListener('error',e=>{failure=e.message;record(failure);show();});
-  addEventListener('unhandledrejection',e=>{failure=String(e.reason?.message||e.reason);record(failure);show();});
+  crashes.onmessage=({data:m})=>{const detail=String(m.text||'Engine worker failed');failure ||= detail;record('Heap: '+m.heap+' MiB; '+detail);button.hidden=false;show();};
+  addEventListener('error',e=>{failure ||= e.message;record(e.message);show();});
+  addEventListener('unhandledrejection',e=>{const detail=String(e.reason?.message||e.reason);failure ||= detail;record(detail);show();});
   return {stall(seconds){if(world||failure)return;record('No engine activity for '+seconds+' seconds; cause not yet known.');show();},record};
 }
