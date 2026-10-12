@@ -140,6 +140,7 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
   uint64_t scratch=w2c_gta_0x5Femscripten_stack_alloc(engine,80*1024);
   saves(h,scratch);abi(h,scratch);
   if(game_folder)assets(h,scratch);else message(h,"SKIP: actual game-file reads; select the extracted web folder to include them.");
+  require(h,h->failure==NULL,"native file close reported an error");
   w2c_gta_0x5Femscripten_stack_restore(engine,stack);
   snprintf(report,capacity,"PASS: native runtime checkpoint — engine constructors, main-thread TLS, clocks/environment, file ABI and persistent save I/O.\n%s\nEngine main, worker dispatch, game renderer, audio and gameplay are still pending.",game_folder?"PASS: three selected game files read through the engine (head and tail samples).":"Game-file checks skipped: no folder selected.");
  }else snprintf(report,capacity,"FAIL: runtime trap %d at %s.\nThis checkpoint has not reached gameplay.",trap,h->failure?h->failure:"engine instruction / memory allocation");

@@ -1,0 +1,87 @@
+NATIVE PROTOTYPE 0.2 — RUNTIME CHECKPOINT
+
+This is the first checkpoint within roadmap stage 4. It does not run the
+game's main function, create engine worker threads or render gameplay.
+The original 0.1 IPA and its evidence are preserved for rollback.
+
+What changed
+- Execute the real engine's static constructors and initialize its main
+  thread/TLS. The compiled engine instructions remain unchanged. Six more
+  existing libc functions are exposed for testing, for eleven probe exports.
+- Exercise the engine's fopen, fwrite, fread, fseeko, ftello and fclose
+  against a native file bridge. fread's element count, signed seeks, short
+  EOF reads and close/reopen behavior are checked explicitly. This engine's
+  optimized fclose export returns void, so verification uses reopened data
+  and host sync/close status rather than a fabricated return value.
+- Preserve the actual ABI: 64-bit pointers, 16-byte iovecs, 104-byte stat
+  structures and 64-bit result counts. A temporary sparse file tests an
+  offset above 4 GiB with only a few bytes written. It is then removed.
+- Keep /data rooted under the selected web folder and read-only. Map
+  /userdata to Application Support/NativeRuntimeProbe inside the app.
+  Reject parent traversal and symlinks in every file-path component.
+  Translate Emscripten flags/errno values rather than passing them directly
+  to Darwin. Only the implemented flag subset is accepted.
+- Use 64 KiB host I/O scratch buffers, validated heap ranges, stable mmap
+  memory and atomic byte transfers. No 21 GB asset import or duplication.
+- Sync the persistent 64 KiB probe save and check it on the next invocation.
+- Supply clocks and a small fixed native environment without copying the
+  host machine's process environment into the engine.
+- Publish committed shared-memory size before page count using atomic
+  fields. Concurrent generated memory.size/load operations race with growth
+  in the test fixture. This does not yet validate an entire engine workload.
+- Allow wasm2c's ABI-correct tail-call adapters to forward host calls. The
+  earlier diagnostic's trap-only tail-call overrides have been removed.
+- Report process footprint with constructors completed and the engine still
+  alive, separately from the after-cleanup reading. Neither is a peak or a
+  gameplay budget measurement.
+
+Thread boundary
+The checkpoint has one engine execution thread, with an explicit 4 MiB
+native C stack in the app and the Mac test harness. This C stack is separate
+from the engine's own 1 MiB stack inside linear memory. Its reserved address
+space is not the same as resident memory. The UI stays on the main thread.
+Apple's thread-stack configuration documentation:
+https://developer.apple.com/documentation/foundation/thread/stacksize
+
+The main engine TCB/mailbox pointer is registered, with the async-wait flag
+clear; no browser event loop is simulated. There are no engine child threads
+at this checkpoint. Future worker instances, mailbox delivery, descriptor
+synchronization, cooperative shutdown and proxy calls must be implemented
+before threaded main() startup is enabled.
+
+Unsupported operations
+Unimplemented imports still trap with their names. Descriptor-control
+operations return an explicit unsupported errno, and terminal ioctls return
+ENOTTY. Constructor logging is bounded. Defaults are returned for engine
+configuration keys because this checkpoint supplies no gameplay overrides.
+These limited adapters do not mean every behavior behind an import is done.
+CI writes host-coverage.json with the per-import checkpoint inventory.
+
+Device test after installing 0.2
+1. Open the app and tap Check local web folder. Select the same extracted
+   web folder used successfully in 0.1, with data directly inside it.
+2. Tap Run runtime + save tests. Keep the app in the foreground until done.
+3. Copy the report, including the live-engine memory measurement and Exit.
+4. Close/reopen the app, select the folder again, and repeat. The second
+   report should say the probe save from the previous run is intact.
+
+The three actual files are read through the engine at their beginning and
+end and compared with native reads. The earlier folder-check button still
+checks known file sizes and prefix hashes. These are sample checks, not a
+complete installation audit. Without a selected folder, runtime/save tests
+can run, but the report explicitly marks asset checks as skipped.
+
+Build isolation
+Only native-ios/**, its Actions workflow and native documentation change on
+native-ios-prototype. Main and the deployed browser version are untouched.
+The PC directory has been moved and is no longer accessed by development.
+GitHub Actions builds the unsigned IPA; the existing Windows sideloading
+process installs the update with the same bundle identifier and account.
+
+Compiler object caching
+Reusable objects are keyed by target, compiler version, flags, source and
+header digests. The stored object digest is checked before reuse. Native
+execution tests and package checks run even when objects are reused.
+
+Build and physical-device results are recorded separately. Do not treat
+successful compilation or Mac diagnostics as an iPhone gameplay result.

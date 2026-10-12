@@ -102,7 +102,7 @@ static void RuntimeProgress(void *context,const char *line) {
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     NSURL *folder=self.gameFolder;
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
+    NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=folder?[folder startAccessingSecurityScopedResource]:NO;
         char report[4096]={0};
         int code=native_runtime_probe(folder?folder.fileSystemRepresentation:NULL,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void *)self,report,sizeof(report));
@@ -113,7 +113,10 @@ static void RuntimeProgress(void *context,const char *line) {
             [self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter engine cleanup: %@",result,code,memory]];
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
-    }});
+    }}];
+    // Use the same explicit C stack budget as the Mac runtime checkpoint.
+    thread.stackSize=4*1024*1024;thread.name=@"Native runtime checkpoint";
+    thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
 }
 - (NSString *)testMetal {
     id<MTLDevice> device=MTLCreateSystemDefaultDevice();if(!device)return @"FAIL: no Metal device";

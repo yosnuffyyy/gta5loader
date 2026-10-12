@@ -44,6 +44,7 @@ for(const target of ['macos','ios']){
   let result='';
   for(let pass=1;pass<=2;pass++){
    const output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});
+   if(pass===2&&!output.includes('probe save from the previous run is intact'))throw Error('Persistent save was not verified in the second process');
    result+='PROCESS '+pass+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);

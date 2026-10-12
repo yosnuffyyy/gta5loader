@@ -57,7 +57,10 @@ int native_engine_probe(char *report,size_t capacity){
  return failed?1:0;
 }
 #ifdef NATIVE_PROBE_CLI
-int main(int argc,char **argv){char report[4096];int code=native_engine_probe(report,sizeof(report));puts(report);if(code)return code;if(argc!=3)return 2;code=native_runtime_probe(argv[1],argv[2],NULL,NULL,report,sizeof(report));puts(report);return code;}
+typedef struct {char **argv;int result;} CliTask;
+static void cli_progress(void *unused,const char *line){(void)unused;puts(line);fflush(stdout);}
+static void *cli_run(void *arg){CliTask *t=arg;char report[4096];t->result=native_engine_probe(report,sizeof(report));puts(report);if(!t->result){t->result=native_runtime_probe(t->argv[1],t->argv[2],cli_progress,NULL,report,sizeof(report));puts(report);}return NULL;}
+int main(int argc,char **argv){if(argc!=3)return 2;CliTask task={.argv=argv};pthread_t thread;pthread_attr_t attr;if(pthread_attr_init(&attr))return 2;if(pthread_attr_setstacksize(&attr,4*1024*1024))return 2;int error=pthread_create(&thread,&attr,cli_run,&task);pthread_attr_destroy(&attr);if(error||pthread_join(thread,NULL))return 2;return task.result;}
 #endif
 `;
 fs.writeFileSync(root+'/generated/probe.c',source);

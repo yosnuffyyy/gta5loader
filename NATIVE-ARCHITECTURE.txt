@@ -1,5 +1,10 @@
 NATIVE IPHONE PROTOTYPE — IMPLEMENTATION BOUNDARIES
 
+Current development: 0.2 adds real constructors, main-thread TLS, native file
+and save operations, clocks/environment and shared metadata publication.
+See NATIVE-0.2.txt for implemented behavior, limitations and device checks.
+The 0.1 description and physical-device result below remain historical.
+
 Baseline
 The independently confirmed v7 engine is 66,172,903 bytes, SHA-256:
 e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e
@@ -58,7 +63,7 @@ shared heap. It is neither peak usage nor gameplay memory. The diagnostic
 does not allocate gameplay's full working set, so this pass does not establish
 a larger memory budget or fix the previous game crashes.
 
-Subsequent integration, in order
+Integration sequence from the 0.1 baseline (0.2 updates in NATIVE-0.2.txt)
 1. Implement the Emscripten/WASI host ABI, preserving the actual 64-bit
    pointer layouts. Verify file reads, errors, clock/time and save isolation.
 2. Map the engine thread lifecycle, TLS and main-thread dispatch onto native
