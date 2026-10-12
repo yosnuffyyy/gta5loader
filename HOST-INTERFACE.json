@@ -1,0 +1,790 @@
+{
+  "scope": "Native prototype 0.1 host integration checklist; none of these imports is claimed implemented by the diagnostic",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "referenceJS": {
+    "path": "work/minimal-engine/game.js",
+    "sha256": "4a73cd529cfd2a3a4837dad995259e8ce0cff00fb6c1a66e52ef3dc739a08b20"
+  },
+  "abi": "Retain 64-bit engine ABI values; engine addresses are offsets into the shared heap, not native pointers. Decode syscall/WASI structures using the original ABI, not host structs.",
+  "counts": {
+    "Thread lifecycle and dispatch": 10,
+    "Emscripten syscall ABI": 25,
+    "Exception and exit handling": 14,
+    "Runtime configuration and diagnostics": 7,
+    "Clocks and calendar": 8,
+    "Embedded platform operations": 1,
+    "Shared heap": 2,
+    "Audio ring": 1,
+    "Asset IO and isolated saves": 5,
+    "Input shared state": 1,
+    "GPU command protocol": 1,
+    "WASI file/time/process ABI": 10
+  },
+  "imports": [
+    {
+      "module": "env",
+      "name": "__pthread_create_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_pthread_create_js",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_accept4",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_accept4",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_connect",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u32, u32, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_connect",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fcntl64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_fcntl64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fstat64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_fstat64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ftruncate64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_ftruncate64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getcwd",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_getcwd",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getdents64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_getdents64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockname",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_getsockname",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockopt",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u32, u64, u64, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_getsockopt",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ioctl",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_ioctl",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_lstat64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_lstat64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_mkdirat",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_mkdirat",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_newfstatat",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_newfstatat",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_openat",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_openat",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_poll",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_poll",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_recvfrom",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_recvfrom",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_renameat",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u32, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_renameat",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_rmdir",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_rmdir",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_sendto",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32, u64, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_sendto",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_setsockopt",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u32, u64, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_setsockopt",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_shutdown",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u32, u32, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_shutdown",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_socket",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u32, u32, u32, u32, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_socket",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_stat64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_stat64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_statfs64",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64",
+      "nativeSymbol": "w2c_env_0x5F_syscall_statfs64",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_unlinkat",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u32, u64, u32",
+      "nativeSymbol": "w2c_env_0x5F_syscall_unlinkat",
+      "category": "Emscripten syscall ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_abort_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_0x5Fabort_js",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_init_main_thread_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_init_main_thread_js",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_notify_mailbox_postmessage",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_notify_mailbox_postmessage",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_receive_on_main_thread_js",
+      "returnType": "f64",
+      "parameters": "struct w2c_env*, u32, u64, u64, u32, u64, u64, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_receive_on_main_thread_js",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_system",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_system",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_cleanup",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_thread_cleanup",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_mailbox_await",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_thread_mailbox_await",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_set_strongref",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Femscripten_thread_set_strongref",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_throw_longjmp",
+      "returnType": "void",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_0x5Femscripten_throw_longjmp",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_gmtime_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5Fgmtime_js",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_localtime_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_0x5Flocaltime_js",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_mktime_js",
+      "returnType": "u64",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_0x5Fmktime_js",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "_tzset_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u64, u64",
+      "nativeSymbol": "w2c_env_0x5Ftzset_js",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64",
+      "nativeSymbol": "w2c_env_emscripten_asm_const_int",
+      "category": "Embedded platform operations",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int_sync_on_main_thread",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64",
+      "nativeSymbol": "w2c_env_emscripten_asm_const_int_sync_on_main_thread",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_check_blocking_allowed",
+      "returnType": "void",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_check_blocking_allowed",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_date_now",
+      "returnType": "f64",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_date_now",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_exit_with_live_runtime",
+      "returnType": "void",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_exit_with_live_runtime",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_heap_max",
+      "returnType": "u64",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_get_heap_max",
+      "category": "Shared heap",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_now",
+      "returnType": "f64",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_get_now",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_num_logical_cores",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_num_logical_cores",
+      "category": "Thread lifecycle and dispatch",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_resize_heap",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_emscripten_resize_heap",
+      "category": "Shared heap",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_snapshot",
+      "returnType": "u64",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_emscripten_stack_snapshot",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_unwind_buffer",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u32",
+      "nativeSymbol": "w2c_env_emscripten_stack_unwind_buffer",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "exit",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u32",
+      "nativeSymbol": "w2c_env_exit",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ij",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_invoke_ij",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_iji",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u32",
+      "nativeSymbol": "w2c_env_invoke_iji",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijji",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64, u32",
+      "nativeSymbol": "w2c_env_invoke_ijji",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijjiii",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u64, u64, u32, u32, u32",
+      "nativeSymbol": "w2c_env_invoke_ijjiii",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjiiijij",
+      "returnType": "u64",
+      "parameters": "struct w2c_env*, u64, u64, u32, u32, u32, u64, u32, u64",
+      "nativeSymbol": "w2c_env_invoke_jjiiijij",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjij",
+      "returnType": "u64",
+      "parameters": "struct w2c_env*, u64, u64, u32, u64",
+      "nativeSymbol": "w2c_env_invoke_jjij",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vj",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64",
+      "nativeSymbol": "w2c_env_invoke_vj",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjii",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u32, u32",
+      "nativeSymbol": "w2c_env_invoke_vjii",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjij",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u32, u64",
+      "nativeSymbol": "w2c_env_invoke_vjij",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjj",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u64",
+      "nativeSymbol": "w2c_env_invoke_vjj",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjjii",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u64, u32, u32",
+      "nativeSymbol": "w2c_env_invoke_vjjii",
+      "category": "Exception and exit handling",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_audio_publish_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u32",
+      "nativeSymbol": "w2c_env_wasm_audio_publish_js",
+      "category": "Audio ring",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_hang_line_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_wasm_hang_line_js",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_has_page_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_wasm_has_page_js",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_io_start_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_wasm_httpfs_io_start_js",
+      "category": "Asset IO and isolated saves",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_manifest_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u32",
+      "nativeSymbol": "w2c_env_wasm_httpfs_manifest_js",
+      "category": "Asset IO and isolated saves",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_input_publish_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_wasm_input_publish_js",
+      "category": "Input shared state",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_module_int_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*, u64, u32",
+      "nativeSymbol": "w2c_env_wasm_module_int_js",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_now_ms",
+      "returnType": "f64",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_wasm_now_ms",
+      "category": "Clocks and calendar",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_print_line_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_wasm_print_line_js",
+      "category": "Runtime configuration and diagnostics",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_delete_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64",
+      "nativeSymbol": "w2c_env_wasm_userdata_delete_js",
+      "category": "Asset IO and isolated saves",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_page_js",
+      "returnType": "u32",
+      "parameters": "struct w2c_env*",
+      "nativeSymbol": "w2c_env_wasm_userdata_page_js",
+      "category": "Asset IO and isolated saves",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_put_js",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u64, f64",
+      "nativeSymbol": "w2c_env_wasm_userdata_put_js",
+      "category": "Asset IO and isolated saves",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "env",
+      "name": "wgpu_start_worker",
+      "returnType": "void",
+      "parameters": "struct w2c_env*, u64, u64, u64",
+      "nativeSymbol": "w2c_env_wgpu_start_worker",
+      "category": "GPU command protocol",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "clock_time_get",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_clock_time_get",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_get",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_environ_get",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_sizes_get",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_environ_sizes_get",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_close",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_close",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pread",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u64, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_pread",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pwrite",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u64, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_pwrite",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_read",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_read",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_seek",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u32, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_seek",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_write",
+      "returnType": "u32",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32, u64, u64, u64",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_fd_write",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "proc_exit",
+      "returnType": "void",
+      "parameters": "struct w2c_wasi__snapshot__preview1*, u32",
+      "nativeSymbol": "w2c_wasi__snapshot__preview1_proc_exit",
+      "category": "WASI file/time/process ABI",
+      "status": "Unsupported diagnostic import: traps explicitly if called"
+    }
+  ]
+}

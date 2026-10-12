@@ -1,21 +1,59 @@
-NATIVE IPHONE PROTOTYPE - SEPARATE DEVELOPMENT BRANCH
+NATIVE IPHONE PROTOTYPE — SEPARATE DEVELOPMENT BRANCH
 
-Baseline: confirmed v7 engine; PC package immutable.
-1. Baseline inventory and engine host interface: inspected, 85 imports.
-2. GitHub macOS build path and native compiler: in progress.
-3. Full engine native compilation and execution probes: pending.
-4. Native host initialization, threads, IO and saves: pending.
-5. Metal rendering of a real engine frame: pending.
-6. Prologue audio, input and progression on iPhone: pending.
-7. Sustained Prologue/Sandbox device tests: pending.
-8. Measured optimization, followed by gradual quality increases: pending.
+Repository: yosnuffyyy/gta5loader
+Branch: native-ios-prototype
+Build source: 971e32f49c952822f5086ddeea9f70671f637c7d
+Baseline: confirmed v7 engine. PC package stays unchanged.
 
-The current compiler experiment is not a playable game or an IPA.
-Stock WABT 1.0.42 aborts on AtomicWait/AtomicNotify. A narrow source patch
-emits native_wait32, native_wait64 and native_notify calls. Correct native
-implementations and tests are required before engine execution.
-No synchronization operations may be silently removed or replaced by success.
+1. Baseline and host interface — COMPLETE
+   Recorded the engine digest, 91,026 defined functions, 85 host imports,
+   shared memory layout and the retained 64-bit engine ABI.
 
-Signing route: unsigned build artifact from GitHub Actions; local Windows
-Sideloadly signing using the user's free Apple account. Apple sign-in and
-two-factor approval remain with the user. No credentials in this repository.
+2. Native compiler path — COMPLETE ON MAC
+   Pinned WABT 1.0.42, added wait/notify, shared SIMD and shared bulk-memory
+   support. Compiled concurrency fixtures, 73 SIMD cases and bulk-memory
+   comparisons against WebAssembly pass. The full engine converts to C.
+
+3. Native engine diagnostic — IPA BUILT; DEVICE TEST PENDING
+   All 133 native source files compiled for both Mac and iPhone. Actual engine
+   instantiation, strings, comparison, math, byte order and memory growth
+   probes pass on the Mac runner. The unsigned ARM64 IPA passed a local
+   package/dependency/checksum audit. UIKit, Metal readback, folder samples
+   and a controller button test are included. Gameplay is not started.
+   Device gate: install and run the tests on the iPhone 16 Pro Max; collect
+   the report before treating this execution path as device-validated.
+
+4. Native host and threaded startup — PENDING
+   Implement the Emscripten/WASI and embedded platform operations, preserving
+   engine structure layouts. Connect threads, TLS, dispatch, timing, native
+   file reads and separate saves. Audit shared metadata during memory growth.
+   Gate: real startup with no unsupported imports or fabricated successes.
+
+5. Real engine frame on Metal — PENDING
+   Port the existing GPU command protocol and shaders to a native backend.
+   Preserve resource lifetimes and layouts. Measure allocations and capture
+   detailed validation errors, then verify an actual game frame on iPhone.
+
+6. Playable Prologue — PENDING
+   Connect native audio, touch and GameController input. Test the exact
+   cutscene/door transition that failed in v9, including audio progression.
+   Gate: sustained play, working controls, and correct pause/resume behavior.
+
+7. Sandbox and sustained device tests — PENDING
+   Test world streaming and travel, thermal behavior, memory peaks, controller
+   disconnects and foreground/background transitions. Native apps still have
+   iOS memory limits. A successful diagnostic does not predict this budget.
+
+8. Quality improvements — PENDING
+   Optimize measured bottlenecks, then increase resolution, pedestrians and
+   traffic individually. Keep a stable low-memory profile and compare the
+   same scenes before and after each change.
+
+Signing route
+GitHub Actions builds an unsigned IPA. Windows Sideloadly signs and installs
+it using the user's free Apple account. Account sign-in, two-factor approval,
+USB trust and Developer Mode prompts are completed locally by the user.
+Free-account signing needs refreshing every seven days. No Apple credentials
+or signing keys enter this repository; no JIT entitlement is required.
+
+See INSTALL-ON-IPHONE.txt, NATIVE-ARCHITECTURE.txt and HOST-INTERFACE.json.

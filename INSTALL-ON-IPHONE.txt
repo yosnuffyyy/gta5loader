@@ -1,0 +1,54 @@
+NATIVE PROTOTYPE 0.1 — WINDOWS INSTALLATION
+
+This is a native engine diagnostic app. It does not launch GTA gameplay yet.
+It is separate from both the working PC game and the Safari installation.
+
+1. The windows folder contains Apple's iTunes64Setup.exe and iCloudSetup.exe
+   linked by Sideloadly, plus SideloadlySetup64.exe from https://sideloadly.io/ .
+   Install the Apple prerequisites, then Sideloadly, following their prompts.
+   Follow the site's Windows prerequisites for Apple's web iTunes/iCloud
+   versions. Do not uninstall existing Apple software without checking those
+   instructions and your sync/backup needs.
+2. Connect your unlocked iPhone by USB and trust this computer on the phone.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-unsigned.ipa.
+4. Use the normal Apple ID signing/install mode with your free Apple account.
+   Enter the password and any two-factor code only in the local signing tool.
+   No account credentials, certificates or private keys belong in GitHub.
+5. Install. If requested, enable Developer Mode in iPhone Settings > Privacy
+   & Security, and trust your developer profile in Settings > General >
+   VPN & Device Management. Follow the iPhone's restart/confirmation prompts.
+6. Open GTA Native Probe and tap Run native engine tests. Copy its report.
+   This checks actual converted engine functions and native Metal access.
+   PASS does not yet establish game compatibility or sustained memory use.
+7. Optionally tap Check local web folder and select the existing extracted
+   web folder in Files. The folder must contain data/. Only three 64 KiB
+   samples are read; no 21 GB copy or installation happens in this prototype.
+   Safari's private installed-file storage is not accessible to a native app;
+   select the original extracted folder in Files, if you still have it.
+8. Optionally pair a controller in Settings > Bluetooth. Return to the app
+   and press its primary face button (PlayStation Cross / Xbox A).
+
+No JIT activation is required: the engine is compiled to ARM64 ahead of time.
+No special increased-memory entitlement is requested in this diagnostic app.
+Native apps still have iOS memory limits; this build does not bypass them.
+
+Free-account signing lasts seven days. Sideloadly can refresh the app when
+your computer and phone are connected; it does not require the computer to
+stay on while you use the app. Keep the same account and app identifier
+when refreshing. The original PC port and Safari game are separate apps.
+
+Official references, checked 2026-10-12:
+https://sideloadly.io/
+https://sideloadly.io/faq
+https://developer.apple.com/help/account/basics/about-your-developer-account
+https://support.apple.com/guide/security/app-code-signing-process-sec7c917bf14/web
+
+Official installer downloaded over HTTPS, 143898976 bytes:
+SHA-256 7f5bbd15e00897c301f51c133a552aead5064ac29134b74b116d4d200986e49b
+No Windows Authenticode signature was present. The installer has not been run.
+
+Apple prerequisites downloaded from the links on Sideloadly's official site:
+iTunes64Setup.exe — 202759648 bytes
+SHA-256 25b28905a81406a5edbf482f7f3ee4831a8641d32d29dceda5d1eb3e8d534c08
+iCloudSetup.exe — 161146680 bytes
+SHA-256 4cfd20d13cdce2b5c435f2ddaf4ee4c81d976461846bf3b954e8af6cbcdeb9f7

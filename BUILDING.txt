@@ -1,0 +1,29 @@
+BUILD THE NATIVE PROTOTYPE
+
+You do not need to own a Mac for this workflow. GitHub Actions uses its macOS
+runner and produces the unsigned IPA as an artifact after the checks pass.
+
+Repository: https://github.com/yosnuffyyy/gta5loader
+Branch: native-ios-prototype
+Workflow: .github/workflows/native-ios.yml
+
+Pushing native-ios/ or the workflow on this branch starts a build. A manual
+workflow_dispatch trigger is also declared. The workflow's token has read
+access only; it does not deploy Pages or update the main branch.
+
+To reproduce on a Mac with Xcode, CMake, Git and Node 24 available, use a
+fresh checkout of the full branch and run:
+
+  bash native-ios/ci-convert.sh
+
+The local source-only package does not duplicate the repository's engine32
+chunks or offline-manifest.json; those are required from the full checkout.
+The original 21 GB asset folder is not required to compile this diagnostic.
+
+Outputs inside the checkout:
+  native-build/GTA-Native-Probe-unsigned.ipa
+  native-build/evidence/
+
+The workflow uploads compiler evidence even on a failure and uploads an IPA
+only after the complete script succeeds. The final IPA intentionally has no
+provisioning profile or signature. Sign it locally before installing on iOS.

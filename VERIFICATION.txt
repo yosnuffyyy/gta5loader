@@ -1,0 +1,54 @@
+NATIVE PROTOTYPE 0.1 — BUILD AND VERIFICATION RECORD
+
+Build completed 2026-10-12 on GitHub's macos-15-arm64 runner.
+Source commit: 971e32f49c952822f5086ddeea9f70671f637c7d
+Run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38271629876
+Branch: native-ios-prototype
+Final job conclusion and every job step: success.
+
+PASS: original engine chunk hashes and complete digest.
+PASS: unchanged engine functions in WebAssembly reference execution.
+PASS: compiled wait/notify concurrency, timeout, mismatch, isolation,
+      alignment, bounds, mixed-width waiters and memory growth tests.
+PASS: 73 shared SIMD cases compared with WebAssembly, including unaligned
+      loads/stores and out-of-bounds traps.
+PASS: shared bulk init/fill/copy compared with WebAssembly, overlap in both
+      directions, dropped data, boundaries and no partial writes on traps.
+PASS: all 91,026 engine functions converted; all 133 C compilation units
+      compiled on Apple silicon and cross-compiled for iPhone ARM64.
+PASS: actual converted engine instantiation, strings, memory comparison,
+      math, byte order and sequential shared-memory growth on the Mac runner.
+PASS: UIKit app compiled with iPhone SDK and linked against native frameworks.
+PASS: downloaded artifact archives match the GitHub artifact SHA-256 values.
+PASS: IPA has iPhone-device ARM64 executable, iOS 17 minimum, expected bundle
+      identifier and scene configuration, license notices and file manifest.
+PASS: no WebKit/JavaScriptCore dependency, writable-executable segment,
+      embedded provisioning profile or code signature.
+PASS: downloaded IPA hash matches the build's independent hash output.
+
+IPA: GTA-Native-Probe-unsigned.ipa
+Bytes: 93004776
+SHA-256: 03ec7809359e36216e97fc9da0c241b8bcb78feb609a00e82d08b616cb9099d0
+Bundle identifier: io.github.yosnuffyyy.gtanativeprobe
+
+Build warnings: some generated loops could not be vectorized. These are
+optimization warnings; the build and execution probes passed. They do not
+establish the engine's future gameplay performance.
+
+NOT YET VERIFIED
+- Signing, installation and launch on the physical iPhone.
+- Native diagnostic execution, Metal readback and file/controller tests on
+  that iPhone (Mac engine probes passed; these iPhone tests need your report).
+- Real game startup, renderer, audio, threaded runtime and gameplay.
+- Sustained game memory use, thermal behavior, Prologue and Sandbox stability.
+
+All 85 unimplemented host imports explicitly trap if called. This diagnostic
+does not run the game's main function or pretend those imports are complete.
+Read NATIVE-ARCHITECTURE.txt for the remaining integration and concurrency work.
+
+PC isolation check: 12,500 files, no added/missing files and no size or mtime
+changes against work/apple-v9/pc-before.json. No PC package writes performed.
+Main branch remains de7664a8e6448096716c5a341250d32d4f594fd1.
+
+evidence/ contains the compiler/test log, engine inventory, probe results,
+iPhone binary metadata, build SHA-256 output and local package-audit.json.

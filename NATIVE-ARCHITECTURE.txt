@@ -1,0 +1,80 @@
+NATIVE IPHONE PROTOTYPE — IMPLEMENTATION BOUNDARIES
+
+Baseline
+The independently confirmed v7 engine is 66,172,903 bytes, SHA-256:
+e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e
+Its shared memory uses 32-bit Wasm addressing, but its C ABI retains 64-bit
+pointers. Host structures cannot be copied from an ordinary wasm32 runtime.
+There are 91,026 defined engine functions and 85 imported host functions.
+HOST-INTERFACE.json records those imports and their generated C signatures.
+Some imports dispatch embedded JavaScript operations, so the import count
+is not a count of all the host behaviors that still need native equivalents.
+
+Prototype 0.1
+GitHub's macOS runner rebuilds pinned WABT 1.0.42, converts the entire engine,
+compiles the resulting C, and packages ARM64 code in a native UIKit app.
+The original engine instructions are unchanged; a derived copy exposes five
+existing string/math functions so their native results can be compared with
+WebAssembly. The application also checks Metal readback and selected local
+file samples, and receives a controller button through GameController.
+
+No WebKit, JavaScript engine, runtime executable-memory allocation or JIT
+entitlement is needed for these tests. The application does not yet start
+gameplay. All 85 unsupported host imports trap with the function name; none
+returns a fabricated success. This prevents the diagnostic from suggesting
+that the operating-system integration is already implemented.
+
+Compiler extensions
+- Atomic wait32/wait64/notify: pthread conditions, monotonic deadlines,
+  per-memory/address wait queues, proper mismatch/timeout/wakeup results.
+- Shared SIMD loads/stores: correct shared-memory dispatch, explicit bounds
+  checks, relaxed byte accesses for unaligned, potentially tearing operations.
+- Shared bulk memory: typed helpers for init/fill/copy, source/destination
+  bounds checks before writes, and overlap behavior matching WebAssembly.
+- mmap-backed memory retains a stable base address when it grows.
+- Pointer-type mismatches fail the engine build instead of being hidden.
+
+Tests required before an IPA is published by the workflow
+1. Original engine chunk hashes and full-engine digest.
+2. WebAssembly reference results for the exported probe functions.
+3. Actual compiled wait/notify fixture: concurrent waiters, memory/address
+   isolation, 32/64-bit waiters, timeouts, alignment, bounds and growth.
+4. 73 shared SIMD cases compared byte-for-byte against WebAssembly,
+   including unaligned addresses and out-of-bounds traps.
+5. Shared bulk copy/fill/init compared against WebAssembly, including
+   overlapping copies in both directions, dropped data and boundaries.
+6. Entire engine compilation and native execution of its exported probes
+   on the Mac runner, followed by compilation for iPhone ARM64.
+7. IPA metadata, iPhone platform, dynamic dependencies and unsigned status.
+
+Next device gate
+Install the unsigned IPA through Windows signing with the user's free Apple
+account. Run the native test on the iPhone 16 Pro Max and collect its report.
+The diagnostic does not allocate gameplay's full working set, so a pass
+does not establish a larger memory budget or fix the previous game crashes.
+
+Subsequent integration, in order
+1. Implement the Emscripten/WASI host ABI, preserving the actual 64-bit
+   pointer layouts. Verify file reads, errors, clock/time and save isolation.
+2. Map the engine thread lifecycle, TLS and main-thread dispatch onto native
+   threads. Check shared heap growth and shutdown with real engine startup.
+   Audit the runtime's shared size/pages metadata: WABT 1.0.42 stores these
+   as ordinary integers, while generated bounds checks read size directly.
+   The current engine probe grows memory sequentially. Its pass does not
+   validate bounds checks racing with growth; fix or synchronize that path
+   before running concurrent engine workloads, then add a concurrent test.
+3. Port the GPU command protocol to Metal-backed native rendering. Record
+   actual validation errors and device-loss reasons; an error count is not
+   enough to diagnose the earlier Safari crashes. Preserve shader/resource
+   layouts and verify a real engine frame before raising quality.
+4. Connect audio buffers, touch controls and GameController input. Test
+   gameplay and cutscene progression, audio synchronization and disconnects.
+5. Measure resident memory, GPU allocations and frame timing through the
+   exact failing Prologue section and Sandbox startup. Test for sustained
+   play before increasing resolution, pedestrian counts or traffic.
+
+Isolation
+Code changes are confined to native-ios/** and its own GitHub Actions
+workflow on the native-ios-prototype branch, with separate documentation.
+The main branch and existing PC/mobile packages are not replaced. Native
+signing credentials never enter the repository.
