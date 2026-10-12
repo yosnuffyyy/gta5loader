@@ -35,10 +35,18 @@ Build warnings: some generated loops could not be vectorized. These are
 optimization warnings; the build and execution probes passed. They do not
 establish the engine's future gameplay performance.
 
+PHYSICAL IPHONE REPORT — 2026-10-12
+User reports successful installation and launch on iPhone 16 Pro Max / iOS
+27.0.1. Native engine probes PASS with exit 0. Metal GPU fill and CPU readback
+PASS on Apple A18 Pro. All three reference file samples PASS after selecting
+the correct web folder; the earlier failures came from the wrong folder.
+These device results were supplied by the user, not captured by CI.
+The reported 17.3 MiB before and 19.2 MiB after footprints do not measure
+peak/gameplay use: the engine instance and shared memory are freed before
+the after-test measurement. See evidence/iphone-device-test.json locally.
+
 NOT YET VERIFIED
-- Signing, installation and launch on the physical iPhone.
-- Native diagnostic execution, Metal readback and file/controller tests on
-  that iPhone (Mac engine probes passed; these iPhone tests need your report).
+- Controller input on the physical iPhone.
 - Real game startup, renderer, audio, threaded runtime and gameplay.
 - Sustained game memory use, thermal behavior, Prologue and Sandbox stability.
 

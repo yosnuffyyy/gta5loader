@@ -47,11 +47,16 @@ Tests required before an IPA is published by the workflow
    on the Mac runner, followed by compilation for iPhone ARM64.
 7. IPA metadata, iPhone platform, dynamic dependencies and unsigned status.
 
-Next device gate
-Install the unsigned IPA through Windows signing with the user's free Apple
-account. Run the native test on the iPhone 16 Pro Max and collect its report.
-The diagnostic does not allocate gameplay's full working set, so a pass
-does not establish a larger memory budget or fix the previous game crashes.
+Device gate result, 2026-10-12
+The user's iPhone 16 Pro Max / iOS 27.0.1 report confirms engine probes with
+exit 0, Metal buffer fill/readback on A18 Pro, and all three file samples.
+The first file attempt selected the wrong folder; selecting the correct
+folder resolved it without an application change. Controller input is not
+yet reported. These are user-reported physical-device results.
+The 19.2 MiB reading is taken after the probe frees the engine instance and
+shared heap. It is neither peak usage nor gameplay memory. The diagnostic
+does not allocate gameplay's full working set, so this pass does not establish
+a larger memory budget or fix the previous game crashes.
 
 Subsequent integration, in order
 1. Implement the Emscripten/WASI host ABI, preserving the actual 64-bit

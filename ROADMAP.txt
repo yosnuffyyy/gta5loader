@@ -14,14 +14,18 @@ Baseline: confirmed v7 engine. PC package stays unchanged.
    support. Compiled concurrency fixtures, 73 SIMD cases and bulk-memory
    comparisons against WebAssembly pass. The full engine converts to C.
 
-3. Native engine diagnostic — IPA BUILT; DEVICE TEST PENDING
+3. Native engine diagnostic — CPU, METAL AND FILE DEVICE CHECKS PASS
    All 133 native source files compiled for both Mac and iPhone. Actual engine
    instantiation, strings, comparison, math, byte order and memory growth
    probes pass on the Mac runner. The unsigned ARM64 IPA passed a local
    package/dependency/checksum audit. UIKit, Metal readback, folder samples
    and a controller button test are included. Gameplay is not started.
-   Device gate: install and run the tests on the iPhone 16 Pro Max; collect
-   the report before treating this execution path as device-validated.
+   User report, 2026-10-12: installed and ran on iPhone 16 Pro Max / iOS
+   27.0.1. Engine probes passed with exit 0; Metal buffer fill/readback passed
+   on A18 Pro; all three file samples passed after selecting the correct
+   folder. The earlier file failures were a folder-selection mistake.
+   Controller input has not been reported. The 19.2 MiB after-test footprint
+   is measured after freeing the engine, not during gameplay or at peak use.
 
 4. Native host and threaded startup — PENDING
    Implement the Emscripten/WASI and embedded platform operations, preserving
