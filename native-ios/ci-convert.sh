@@ -3,6 +3,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p native-build/evidence native-build/generated
 exec > >(tee native-build/evidence/build.log) 2>&1
+sdk=$(xcrun --sdk iphoneos --show-sdk-path)
+xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-arc -Inative-ios -fsyntax-only native-ios/App.m
+plutil -lint native-ios/Info.plist
 node native-ios/prepare-engine.mjs
 git clone --depth 1 --branch 1.0.42 https://github.com/WebAssembly/wabt.git native-build/wabt
 test "$(git -C native-build/wabt rev-parse HEAD)" = ff0ef7e0009402740c805a9744c09b05be063e48

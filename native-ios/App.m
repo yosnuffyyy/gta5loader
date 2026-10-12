@@ -126,12 +126,17 @@ static NSString *Digest(NSData *bytes) {
     }});
 }
 @end
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface ProbeSceneDelegate : UIResponder <UIWindowSceneDelegate>
 @property(nonatomic,strong) UIWindow *window;
 @end
-@implementation AppDelegate
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)options {
-    self.window=[[UIWindow alloc]initWithFrame:UIScreen.mainScreen.bounds];self.window.rootViewController=[[ProbeController alloc]init];[self.window makeKeyAndVisible];return YES;
+@implementation ProbeSceneDelegate
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)options {
+    if(![scene isKindOfClass:UIWindowScene.class])return;
+    self.window=[[UIWindow alloc]initWithWindowScene:(UIWindowScene *)scene];self.window.rootViewController=[[ProbeController alloc]init];[self.window makeKeyAndVisible];
 }
+@end
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@end
+@implementation AppDelegate
 @end
 int main(int argc,char **argv){@autoreleasepool{return UIApplicationMain(argc,argv,nil,NSStringFromClass(AppDelegate.class));}}
