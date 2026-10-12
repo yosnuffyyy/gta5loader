@@ -157,7 +157,7 @@ static void wait_finished(NativeThreads *r){
    sampled=true;
 #ifdef __APPLE__
    task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;
-   if(task_info(mach_task_self(),TASK_VM_INFO,(task_info_t)&info,&count)==KERN_SUCCESS){char line[180];snprintf(line,sizeof(line),"Four native workers active: process footprint %.1f MiB (sample, not peak).",(double)info.phys_footprint/1048576.0);report(r->host,line);}
+   if(task_info(mach_task_self(),TASK_VM_INFO,(task_info_t)&info,&count)==KERN_SUCCESS){char line[180];snprintf(line,sizeof(line),"Worker-batch process footprint: %.1f MiB (sample, not peak; workers may already be finishing).",(double)info.phys_footprint/1048576.0);report(r->host,line);}
 #endif
   }
   w2c_gta_0x5Femscripten_check_mailbox(r->host->engine);
