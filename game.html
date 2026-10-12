@@ -62,6 +62,7 @@ if(location.protocol==='file:') {
 <script type="module">
 import {installStartupDiagnostics} from '/gta5loader/startup-diagnostics.js';
 const startupDiagnostics=installStartupDiagnostics();
+await startupDiagnostics.beforeStart();
 import {records,summarize} from '/gta5loader/offline-store.js';
 if(!navigator.serviceWorker?.controller||!globalThis.crossOriginIsolated){location.replace('/gta5loader/');throw new Error('Open the offline launcher first.');}
 const offlineManifest=await (await fetch('/gta5loader/offline-manifest.json')).json();
@@ -75,6 +76,8 @@ import { checkGameSupport, showCompatibilityFailure } from '/gta5loader/platform
 // Query string: ?args=-flag1,-flag2=value (added to the engine command line), ?shot=N (screenshot of every N-th present to the dev server).
 const q = new URLSearchParams(location.search);
 const mobile = detectMobile(navigator,matchMedia('(pointer:coarse)').matches);
+const compactMemory = mobile || q.get('compact')==='1';
+startupDiagnostics.record(compactMemory?'Graphics profile: reduced memory':'Graphics profile: standard');
 const touchEnabled = q.get('touch')==='1' || (mobile && q.get('touch')!=='0');
 let controller, releaseKeyboard = () => {};
 document.documentElement.classList.toggle('mobile-device',mobile);
@@ -414,11 +417,12 @@ wantSize = () => {
 	const sc = Math.max(0.25, Math.min(2, +(q.get('scale') || (mobile ? .5 : 1))));
 	let w = innerWidth * devicePixelRatio * sc, h = innerHeight * devicePixelRatio * sc;
 	if(mobile && h>w)[w,h]=[h,w];
-	const cap = mobile ? [1280,720] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
+	const cap = compactMemory ? [960,540] : lowMemory ? [2560, 1440] : [3840, 2160], k = Math.min(1, cap[0] / w, cap[1] / h);
 	w *= k; h *= k;
 	return [Math.max(320, Math.round(w / 2) * 2), Math.max(240, Math.round(h / 2) * 2)];
 };
 startSize = wantSize();
+startupDiagnostics.record('Render size: '+startSize.join(' × '));
 // The compiled engine can crash while reallocating its targets on rotation.
 // Mobile keeps one landscape back buffer; only its CSS presentation resizes.
 if(mobile) {
@@ -478,10 +482,11 @@ const worker = new Worker(BASE + '/loader.js');
 		fullConsole: !!q.get('console'),
 		remoteLog,		// ?log=1 (above): loader.js passes it on to the engine threads and the GPU and io workers
 		trace: !!q.get('trace'),		// ?trace=1: log every engine file request (io_worker.js)
-		slots: +(q.get('slots') || 0),		// ?slots=N: frames in flight of the GPU worker (diagnostics)
+		slots: +(q.get('slots') || (compactMemory ? 2 : 0)),		// two frame slots reduce mobile graphics buffers
 		syncPipelines: !!q.get('syncpipelines'),		// ?syncpipelines=1: the GPU worker compiles pipelines synchronously (no draws skipped while one compiles)
 		record: !!q.get('record'),		// ?record=1: log the boot read set (io_worker.js), for record_bootset.py
 		lowMemory,
+		compactMemory,
 	}, [offscreen]);
 }
 

@@ -24,7 +24,7 @@
 <p id="space" class="detail"></p><p id="persistence" class="detail"></p>
 </section>
 <section class="instructions">
-<h2>Set up on iPhone</h2><p><strong>Already installed?</strong> Tap <strong>Update engine support</strong> if offered. This small update keeps your game files. Engine workers now reuse one local script with the controller helper included. <strong>Loading details</strong> preserves the first startup error.</p>
+<h2>Set up on iPhone</h2><p><strong>Already installed?</strong> Tap <strong>Update engine support</strong> if offered. This small update keeps your game files. Mobile now uses reduced graphics memory. If the browser restarts a game session, a recovery screen pauses the next attempt and preserves its last loading details.</p>
 <ol><li>Open this HTTPS setup page in Safari. Use <strong>Share → Add to Home Screen</strong>, with <strong>Open as Web App</strong> enabled if offered.</li>
 <li><strong>Open the new Home Screen app before installing the files.</strong> Its storage may be separate from Safari's tab.</li>
 <li>Tap <strong>Check this device</strong>, then import your existing <strong>web</strong> folder from Files or a connected USB drive. Keep Wi-Fi on during import: the compatible engine and support scripts, including audio (about 67 MB total), download automatically. Game data is read locally. Missing optional artwork or duplicate shader files will not block playing.</li>
@@ -32,7 +32,7 @@
 <p>Allow about <strong>22 GB for the installed game</strong>, plus free space for saves and iOS. Importing from a folder already copied onto the phone temporarily needs room for both copies. Importing from a USB drive avoids that duplicate phone copy.</p>
 <p class="detail">This edition uses converted 32-bit WebAssembly memory with a 512 MB initial allocation and a 4 GB ceiling. It no longer needs Memory64. WebGPU and sufficient runtime memory are still required. The converted engine has rendered Story Mode on a desktop; physical iPhone gameplay is not yet verified.</p>
 </section>
-<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This setup website imports game data from your local web folder and downloads its compatible engine and support scripts once. Opening this HTML file directly in Files cannot install the offline handler.</p><p class="detail">Installer update: startup repair v4.</p></footer>
+<footer><p>Keep this Home Screen app and its original website address. Clearing website data removes the installed files and may remove saves. Storage persistence is requested, but iOS can still impose storage limits.</p><p>This setup website imports game data from your local web folder and downloads its compatible engine and support scripts once. Opening this HTML file directly in Files cannot install the offline handler.</p><p class="detail">Installer update: startup repair v5.</p></footer>
 </main><script type="module" src="/gta5loader/installer.js"></script>
 <script>if(location.protocol==='file:'){document.getElementById('status').textContent='Open this installer from an HTTPS setup server on your iPhone. A downloaded HTML file cannot register the offline handler.';}</script>
 </body></html>

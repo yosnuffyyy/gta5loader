@@ -49,23 +49,25 @@ the site online, then close and reopen once more if the update is waiting.
 Look for "Installer update: resilient folder import v2" at the bottom.
 Do not clear website data. Your existing game storage is reused.
 
-STARTUP REPAIR V4
+STARTUP REPAIR V5
 
 Close all game tabs and Home Screen windows, open the site online, then
 close and reopen to activate this update. Tap Update engine support.
-Only the changed support files (about 140 KB) need downloading; existing
+Only the changed support files (about 335 KB) need downloading; existing
 archives and saves are retained. Do not clear website data or reinstall.
 
-The iPhone report showed a NetworkError on game.js line 1 during worker
-startup. That line imported the controller bridge separately in each worker.
-The bridge is now bundled in game.js. All pthreads reuse one local blob
-script with no dependent script imports. The original 28-worker pool and
-bounded startup are retained. No browser security settings need changing.
+Mobile renders at up to 960x540 with two GPU frame slots, compiles only
+needed pipelines (two at a time), and keeps smaller bind-group caches.
+Engine heap growth keeps at most 8 MiB extra capacity instead of 96 MiB.
+The 28 engine workers and memory ceiling are unchanged.
 
-Loading details now preserves the first error and includes the message
-when Safari supplies a stack without it. If loading still stops, use Copy
-details. These diagnostics stay local unless you choose to share them.
+If a recent session is interrupted or reloaded, the game pauses before
+starting another engine. Retry with reduced graphics is an explicit
+action. Copy details includes the previous session, heap growth and GPU
+resource estimates. Back to setup keeps installed data and saves.
 
-Physical iPhone gameplay still needs verification. This addresses the
-reported script-loading path; it cannot guarantee the full game will fit
-within the iPhone browser runtime memory limit.
+The reported black screen and return to 0% are consistent with a browser
+process restart, but do not prove memory pressure was the cause. These
+changes reduce startup overhead and stop repeated automatic attempts;
+physical iPhone gameplay remains unverified. No website can raise the
+iOS process memory limit. Diagnostics stay local unless shared by you.
