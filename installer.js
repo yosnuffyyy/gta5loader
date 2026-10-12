@@ -1,11 +1,11 @@
 import {checkGameSupport} from './platform-check.js';
 import {formatBytes,sha256,folderEntries} from './offline-common.js';
 const el=id=>document.getElementById(id);
-let worker,manifest,busy=false,supported=false,ready=false,wake,storedBytes=0,spaceAvailable=true,optionalMissing=0;
+let worker,manifest,busy=false,supported=false,ready=false,wake,storedBytes=0,spaceAvailable=true,optionalMissing=0,supportMissing=0;
 function message(text){el('status').textContent=text;}
-function controls(){el('check').disabled=busy;el('download').disabled=busy||!supported||!spaceAvailable;el('download').hidden=manifest?.installSource==='folder';el('import').disabled=busy||!supported||!spaceAvailable;el('pause').hidden=!busy;el('play').hidden=!ready||busy||!supported;el('offline-test').hidden=!ready||busy;}
+function controls(){el('check').disabled=busy;el('download').disabled=busy||!supported||!spaceAvailable;el('download').hidden=manifest?.installSource==='folder';el('import').disabled=busy||!supported||!spaceAvailable;el('pause').hidden=!busy;el('play').hidden=!ready||busy||!supported;el('offline-test').hidden=!ready||busy;el('repair').hidden=!supportMissing||storedBytes===0;el('repair').disabled=busy||!supported;}
 function progress(data){
-  ready=data.ready;optionalMissing=data.optionalMissing||0;storedBytes=data.bytes;el('progress').value=data.totalBytes?data.bytes/data.totalBytes*100:0;
+  ready=data.ready;optionalMissing=data.optionalMissing||0;supportMissing=data.supportMissing||0;storedBytes=data.bytes;el('progress').value=data.totalBytes?data.bytes/data.totalBytes*100:0;
   el('bytes').textContent=formatBytes(data.bytes)+' / '+formatBytes(data.totalBytes);
   el('count').textContent=data.complete.toLocaleString()+' / '+data.total.toLocaleString()+' files';
   if(data.current)el('current').textContent=data.current;
@@ -44,6 +44,11 @@ async function start(files){
 }
 el('download').onclick=()=>start();
 el('import').onclick=()=>el('folder').click();
+el('repair').onclick=async()=>{
+  if(busy||!supported)return;busy=true;controls();await persistence();holdAwake();
+  message('Updating engine support files. Existing game archives are kept; no folder selection is needed. Keep Wi-Fi on.');
+  worker.postMessage({command:'repair'});
+};
 el('folder').onchange=()=>{
   try{
     if(el('folder').files.length){
@@ -110,7 +115,7 @@ async function boot(){
   worker=new Worker('/gta5loader/install-worker.js',{type:'module'});
   worker.onmessage=({data})=>{
     if(['status','progress','complete','incomplete'].includes(data.type))progress(data);
-    if(data.type==='status'){message(data.ready?'Installed on this device. Checking browser support…':'Offline launcher ready. Check this device before installing '+formatBytes(data.totalBytes)+'.');if(data.ready)el('check').click();}
+    if(data.type==='status'){message(data.ready?'Installed on this device. Checking browser support…':data.supportMissing&&data.bytes>0?'Engine support updates are available. Check this device, then tap Update engine support.':'Offline launcher ready. Check this device before installing '+formatBytes(data.totalBytes)+'.');if(data.ready||data.supportMissing&&data.bytes>0)el('check').click();}
     if(['complete','incomplete','paused','error'].includes(data.type)){
       busy=false;releaseAwake();controls();storageInfo();
       if(data.type==='complete'||data.type==='incomplete')progress(data);

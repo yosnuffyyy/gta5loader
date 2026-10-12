@@ -48,3 +48,21 @@ To update, close all tabs and Home Screen windows for this address, open
 the site online, then close and reopen once more if the update is waiting.
 Look for "Installer update: resilient folder import v2" at the bottom.
 Do not clear website data. Your existing game storage is reused.
+
+STARTUP REPAIR V3
+
+Close all game tabs and Home Screen windows, open the site online, then
+close and reopen to activate this update. Tap Update engine support.
+Only the changed support files (about 137 KB) need downloading; existing
+archives and saves are retained. Do not clear website data or reinstall.
+
+Worker initialization is staggered (two at a time in the mobile profile),
+with visible worker counts and explicit startup errors/timeouts. Engine
+streaming compilation no longer clones the response for progress tracking.
+The generic stall message no longer assumes an out-of-memory failure.
+If loading still stops, open Loading details and use Copy details. These
+diagnostics stay on your device unless you choose to share them.
+
+These changes address confirmed startup error-handling and concurrency
+issues. They do not establish the cause on a physical iPhone; full iPhone
+gameplay still needs verification.

@@ -21,8 +21,9 @@ async function fetchChunk(manifest,file,start,end) {
     }catch(e){if(aborter.signal.aborted||attempt===2)throw e;await new Promise(r=>setTimeout(r,500*(attempt+1)));}
   }
 }
-async function install(manifest,localFiles) {
+async function install(manifest,localFiles,repairOnly=false) {
   const dir=await dataDirectory(manifest,true),rows=await records(manifest);
+  const files=repairOnly?manifest.files.filter(f=>f.setupChunks):manifest.files;
   const local=localFiles?new Map():null;
   if(local)for(const entry of localFiles){
     if(!entry.path||!entry.file)continue;
@@ -39,8 +40,8 @@ async function install(manifest,localFiles) {
   progress(true);
   let next=0;
   async function run(){
-    while(next<manifest.files.length){
-      paused();const file=manifest.files[next++];current=file.path;
+    while(next<files.length){
+      paused();const file=files[next++];current=file.path;
       const handle=await dir.getFileHandle(fileName(file),{create:true});
       const stored=await handle.getFile(),row=rows.get(file.index);
       let offset=validBytes(file,row);
@@ -86,7 +87,7 @@ self.onmessage=async({data})=>{
   try{
     const manifest=await (await fetch('/gta5loader/offline-manifest.json')).json();
     if(data.command==='status'){postMessage({type:'status',...summarize(manifest,await records(manifest))});return;}
-    const work=()=>install(manifest,data.files || null);
+    const work=()=>install(manifest,data.files || null,data.command==='repair');
     if(navigator.locks){await navigator.locks.request('gta-mobile-install-'+(manifest.dataId||manifest.id),{ifAvailable:true},lock=>{if(!lock)throw Error('Another installation is open. Close it before continuing here.');return work();});}
     else await work();
   }catch(e){postMessage({type:e.name==='AbortError'?'paused':'error',message:e.name==='QuotaExceededError'?'The iPhone/browser ran out of storage. Free space, then resume; verified files are retained.':e.message});}

@@ -60,6 +60,8 @@ if(location.protocol==='file:') {
 }
 </script>
 <script type="module">
+import {installStartupDiagnostics} from '/gta5loader/startup-diagnostics.js';
+const startupDiagnostics=installStartupDiagnostics();
 import {records,summarize} from '/gta5loader/offline-store.js';
 if(!navigator.serviceWorker?.controller||!globalThis.crossOriginIsolated){location.replace('/gta5loader/');throw new Error('Open the offline launcher first.');}
 const offlineManifest=await (await fetch('/gta5loader/offline-manifest.json')).json();
@@ -279,10 +281,11 @@ showModes();
 	let lastLine = '';
 	const consoleEl = document.getElementById('console');
 	const bc = new BroadcastChannel('game-progress');
-	let lastActivity = performance.now(), stallLogged = 0, lastLabel = '';
+	let lastActivity = performance.now(), stallLogged = 0, lastLabel = '', loadingError = false;
 	bc.onmessage = (ev) => {
 		const m = ev.data;
 		lastActivity = performance.now();
+		if(m.startup&&!loadingError){lastLabel=m.startup;label.textContent=m.startup;label.style.color='';}
 		if (m.dl) {		// bytes of game data fetched by an engine thread since its last report
 			dataBytes += m.dl;
 			samples.push([performance.now(), m.dl]);
@@ -295,7 +298,8 @@ showModes();
 			return;
 		}
 		if (m.gpuLost) { hud.textContent = 'The graphics device was lost (' + m.gpuLost + '): the screen will stay black. Reload the page.'; hud.style.color = '#f66'; return; }
-		if (m.error) { label.textContent = m.error; label.style.color = '#e66'; return; }
+		if (m.error) { loadingError=true;label.textContent = m.error; label.style.color = '#e66'; return; }
+		if (loadingError) return;
 		if (m.pct > target) { target = m.pct; if (m.label) { lastLabel = m.label; if (!waitingChoice) label.textContent = m.label; } if (m.pct >= 72 && worldBase < 0) worldBase = dataBytes; }
 		if (m.choice && !startMode) { waitingChoice = true; modesEl.classList.add('ask'); showModes(); }		// the engine waits for the choice: showModes asks for it in the label
 		if (m.commit) { startCommitted = true; pickingMap = false; if (m.mode) startMode = m.mode; showModes(); }		// the engine took the choice
@@ -308,13 +312,13 @@ showModes();
 	// Stall watchdog: nothing (no log line, no data, no progress) from any engine thread for 30 s while loading. A tab that ran out of memory dies ("Aw, Snap!") and cannot say so,
 	// but one that is thrashing or deadlocked can: show it, and leave a timestamped line in the server log for diagnosis.
 	setInterval(() => {
-		if (ready) return;
+		if (ready||loadingError) return;
 		if (waitingChoice) { if (!startMode) { lastActivity = performance.now(); return; } waitingChoice = false; label.textContent = lastLabel; }
 		const quiet = (performance.now() - lastActivity) / 1000;
 		if (quiet > 30) {
-			label.textContent = 'No progress for ' + (quiet | 0) + ' s' + (lastLabel ? ' (last step: ' + lastLabel + ')' : '') + ': the device may be out of memory. Close other tabs, or reload.';
+			label.textContent = 'Waiting ' + (quiet | 0) + ' s' + (lastLabel ? ' — ' + lastLabel : '') + '. Open Loading details for the actual status.';
 			label.style.color = '#e96';
-			if (quiet - stallLogged > 30) { stallLogged = quiet; postLog('[page] STALL: no progress for ' + (quiet | 0) + ' s, last step "' + lastLabel + '", shown ' + shown.toFixed(0) + '%'); }
+			if (quiet - stallLogged > 30) { stallLogged = quiet; startupDiagnostics.stall(quiet|0);postLog('[page] STALL: no progress for ' + (quiet | 0) + ' s, last step "' + lastLabel + '", shown ' + shown.toFixed(0) + '%'); }
 		} else if (stallLogged) { stallLogged = 0; label.style.color = ''; }
 	}, 2000);
 	const progressTimer = setInterval(() => {

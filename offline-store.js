@@ -27,17 +27,18 @@ export function validBytes(file,row) {
   return row.bytes;
 }
 export function summarize(manifest,rows) {
-  let bytes=0,complete=0,requiredMissing=0,optionalMissing=0;
+  let bytes=0,complete=0,requiredMissing=0,optionalMissing=0,supportMissing=0,supportBytes=0;
   const missingFiles=[];
   for(const file of manifest.files){
     const row=rows.get(file.index),n=validBytes(file,row);bytes+=n;
     if(row?.complete&&n===file.size&&row.size===file.size&&row.bytes===file.size&&row.sha256===file.sha256)complete++;
     else{
+      if(file.setupChunks){supportMissing++;supportBytes+=file.size-n;}
       if(file.optional===true)optionalMissing++;else requiredMissing++;
       if(missingFiles.length<30)missingFiles.push({path:file.path,optional:file.optional===true});
     }
   }
-  return {bytes,complete,total:manifest.files.length,totalBytes:manifest.totalBytes,ready:requiredMissing===0,fullReady:complete===manifest.files.length,requiredMissing,optionalMissing,missingFiles};
+  return {bytes,complete,total:manifest.files.length,totalBytes:manifest.totalBytes,ready:requiredMissing===0,fullReady:complete===manifest.files.length,requiredMissing,optionalMissing,supportMissing,supportBytes,missingFiles};
 }
 export async function dataDirectory(manifest,create=false) {
   const root=await navigator.storage.getDirectory();
