@@ -49,25 +49,23 @@ the site online, then close and reopen once more if the update is waiting.
 Look for "Installer update: resilient folder import v2" at the bottom.
 Do not clear website data. Your existing game storage is reused.
 
-STARTUP REPAIR V5
+STARTUP REPAIR V6
 
-Close all game tabs and Home Screen windows, open the site online, then
-close and reopen to activate this update. Tap Update engine support.
-Only the changed support files (about 335 KB) need downloading; existing
-archives and saves are retained. Do not clear website data or reinstall.
+Open the site online, close and reopen the Home Screen app, then tap
+Update engine support. The replacement engine downloads about 66 MB.
+Existing game archives and save files are retained. Do not clear website
+data and do not import the entire game again. Confirm that Loading details
+says Startup repair v6 - lean engine (the displayed dash may be longer).
 
-Mobile renders at up to 960x540 with two GPU frame slots, compiles only
-needed pipelines (two at a time), and keeps smaller bind-group caches.
-Engine heap growth keeps at most 8 MiB extra capacity instead of 96 MiB.
-The 28 engine workers and memory ceiling are unchanged.
+Tradeoffs: mobile rendering is capped at 640x360 and 30 FPS. Main/extra
+heaps reserve 384/96 MiB; replay gets 16 MiB. Resource heaps grow in 64 MiB
+segments. The resource budget, checked allocation failure paths, 512 MiB
+initial WebAssembly memory, and 4 GiB maximum remain intact. The streamer
+checks retained capacity before loading instead of just committed space.
+The small heaps may not fit unusually demanding scenes or replay recording.
 
-If a recent session is interrupted or reloaded, the game pauses before
-starting another engine. Retry with reduced graphics is an explicit
-action. Copy details includes the previous session, heap growth and GPU
-resource estimates. Back to setup keeps installed data and saves.
-
-The reported black screen and return to 0% are consistent with a browser
-process restart, but do not prove memory pressure was the cause. These
-changes reduce startup overhead and stop repeated automatic attempts;
-physical iPhone gameplay remains unverified. No website can raise the
-iOS process memory limit. Diagnostics stay local unless shared by you.
+The 21 GB game data and desktop offline edition are unchanged. Engine
+patches are confined to identified allocation functions, preserve section
+offsets and validate as WebAssembly. Original engine chunks are retained.
+Desktop tests demonstrate rendered gameplay; this is not proof of stable
+iPhone gameplay. The recovery screen preserves evidence if iOS restarts.
