@@ -21,6 +21,9 @@ function reader(b,p=0){return {p,u(){let n=0,s=1,c;do{c=b[this.p++];assert.notEq
 const sections=[],names=new Map();let r=reader(bytes,8);
 while(r.p<bytes.length){let offset=r.p,id=bytes[r.p++],n=r.u(),start=r.p,end=start+n;assert(end<=bytes.length);sections.push({id,offset,start,end});if(id===0){let nr=reader(bytes,start);if(nr.str()==='name'){while(nr.p<end){let sub=bytes[nr.p++],length=nr.u(),stop=nr.p+length;if(sub===1){let count=nr.u();for(let i=0;i<count;i++){let index=nr.u();names.set(nr.str(),index);}}nr.p=stop;}}}r.p=end;}
 const probes=['memcmp','strcmp','strlen','sinf','cosf','fopen','fclose','fread','fwrite','__fseeko','__ftello'].map(name=>{assert(names.has(name));return {name:name.replace(/^__/,''),sourceName:name,index:names.get(name)};});
+// Native 0.3 calls existing generated C symbols; no additional Wasm exports
+// or engine instructions are needed. Pin names as well as generated signatures.
+for(const [name,index] of [['__pthread_create',90879],['__pthread_join',90884],['__errno_location',90695]])assert.equal(names.get(name),index,'Thread ABI changed: '+name);
 const ex=sections.find(s=>s.id===7),er=reader(bytes,ex.start),oldCount=er.u();
 const additions=probes.map(({name,index})=>{let n=Buffer.from('native_probe_'+name);return Buffer.concat([leb(n.length),n,Buffer.from([0]),leb(index)]);});
 const payload=Buffer.concat([leb(oldCount+probes.length),bytes.subarray(er.p,ex.end),...additions]);

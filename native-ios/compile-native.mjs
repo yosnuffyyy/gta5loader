@@ -23,14 +23,18 @@ for(const target of ['macos','ios']){
  const sdk=execFileSync('xcrun',['--sdk',target==='ios'?'iphoneos':'macosx','--show-sdk-path'],{encoding:'utf8'}).trim();
  const arch=target==='ios'?['-target','arm64-apple-ios17.0']:[];
  const flags=[...common,'-isysroot',sdk,...arch,target==='ios'?'-O1':'-O0'];
- const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/native_runtime.c',root+'/generated/probe.c'];
+ const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c',root+'/generated/probe.c'];
  let next=0,finished=0,reused=0;
  // Bound concurrent compiler memory; each partition contains hundreds of functions.
  await Promise.all(Array.from({length:2},async()=>{
   for(;;){const index=next++;if(index>=sources.length)return;
    const source=sources[index],object=folder+'/'+path.basename(source)+'.o';
    const args=[...flags,...(target==='macos'?['-DNATIVE_PROBE_CLI']:[]),'-c',source,'-o',object];
-   const key=hash(JSON.stringify({dependencyHash,args,sourceHash:hash(fs.readFileSync(source))}));
+   const item={dependencyHash,args,sourceHash:hash(fs.readFileSync(source))};
+// Extra header applies only to host consumers. Engine cache keys stay unchanged.
+if(source==='native-ios/native_runtime.c'||source==='native-ios/threading/native_threads.c'||source.endsWith('/probe.c'))
+ item.threadHeader=hash(fs.readFileSync('native-ios/threading/native_threads.h'));
+const key=hash(JSON.stringify(item));
    const cached=cache+'/'+key+'.o',record=cache+'/'+key+'.sha256';
    if(fs.existsSync(cached)&&fs.existsSync(record)&&hash(fs.readFileSync(cached))===fs.readFileSync(record,'utf8')){fs.copyFileSync(cached,object);reused++;}
    else{await run('clang',args);fs.copyFileSync(object,cached);fs.writeFileSync(record,hash(fs.readFileSync(object)));}

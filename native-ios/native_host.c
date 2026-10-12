@@ -8,9 +8,17 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <limits.h>
+#include <stdlib.h>
 
-// This checkpoint has one engine thread. File descriptor ownership and the
-// mailbox must be extended before engine pthread dispatch can be enabled.
+// Shared descriptors are serialized. Never hold these locks across engine calls.
+static pthread_mutex_t file_mutex=PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t log_mutex=PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t grow_mutex=PTHREAD_MUTEX_INITIALIZER;
+static void lock(pthread_mutex_t *m){if(pthread_mutex_lock(m))abort();}
+static void unlock(pthread_mutex_t *m){if(pthread_mutex_unlock(m))abort();}
+#ifndef NATIVE_HOST_UNIT
+void native_thread_error(struct w2c_env*,const char*);
+#endif
 static uint32_t wasi_errno(int e) {
  switch(e){
  case 0:return 0;case EACCES:return 2;case EAGAIN:return 6;case EBADF:return 8;
@@ -61,16 +69,20 @@ void host_close(struct w2c_env *h) {
 }
 void host_log(struct w2c_env *h,const char *line) {
  // Bound progress output while preserving named failures in the final report.
- if(h->progress&&h->log_lines++<80)h->progress(h->progress_context,line);
+ lock(&log_mutex); if(h->progress&&h->log_lines++<80)h->progress(h->progress_context,line); unlock(&log_mutex);
 }
 _Noreturn void host_unavailable(struct w2c_env *h,const char *name) {
+ #ifdef NATIVE_HOST_UNIT
  if(h)h->failure=name;
+#else
+ if(h)native_thread_error(h,name);
+#endif
  wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
 }
 static HostFD *file(struct w2c_env *h,uint32_t fd){return fd>=3&&fd<HOST_FDS&&h->files[fd].fd>=0?&h->files[fd]:NULL;}
 // Walk each component relative to a granted root. Never follow symlinks or
 // expose arbitrary app/OS paths. Linux open flags are translated, not reused.
-uint32_t host_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags,uint64_t modeptr) {
+static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags,uint64_t modeptr) {
  (void)modeptr;
  char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
  if((int32_t)dirfd!=-100)return (uint32_t)-58;
@@ -107,14 +119,14 @@ uint32_t host_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags
  }
  close(parent);return result;
 }
-uint32_t host_fd_close(struct w2c_env *h,uint32_t fd) {
+static uint32_t unlocked_fd_close(struct w2c_env *h,uint32_t fd) {
  HostFD *f=file(h,fd);if(!f)return 8;
  int native=f->fd;f->fd=-1;
  // Save data is synced before closing so a successful fclose is meaningful.
  int sync_error=0;if(f->writable&&fsync(native))sync_error=errno;
  int rc=close(native);if(sync_error||rc)h->failure="native file sync/close failed";return wasi_errno(sync_error?sync_error:rc?errno:0);
 }
-uint32_t host_io(struct w2c_env *h,uint32_t fd,uint64_t iov,uint64_t count,uint64_t out,bool write_op,bool positional,uint64_t offset) {
+static uint32_t unlocked_io(struct w2c_env *h,uint32_t fd,uint64_t iov,uint64_t count,uint64_t out,bool write_op,bool positional,uint64_t offset) {
  HostFD *f=file(h,fd);bool log=write_op&&!positional&&(fd==1||fd==2);
  if(!f&&!log)return 8;
  if(f&&write_op&&!f->writable)return 8;
@@ -143,12 +155,12 @@ uint32_t host_io(struct w2c_env *h,uint32_t fd,uint64_t iov,uint64_t count,uint6
  }
 done:host_put64(h,out,total);return total?0:error;
 }
-uint32_t host_seek(struct w2c_env *h,uint32_t fd,uint64_t offset,uint32_t whence,uint64_t out) {
+static uint32_t unlocked_seek(struct w2c_env *h,uint32_t fd,uint64_t offset,uint32_t whence,uint64_t out) {
  HostFD *f=file(h,fd);if(!f)return 8;if(whence>2)return 28;if(!host_range(h,out,8))return 21;
  off_t p=lseek(f->fd,(off_t)(int64_t)offset,whence==0?SEEK_SET:whence==1?SEEK_CUR:SEEK_END);
  if(p<0)return wasi_errno(errno);host_put64(h,out,(uint64_t)p);return 0;
 }
-uint32_t host_stat(struct w2c_env *h,uint32_t fd,uint64_t p) {
+static uint32_t unlocked_stat(struct w2c_env *h,uint32_t fd,uint64_t p) {
  HostFD *f=file(h,fd);if(!f)return (uint32_t)-8;if(!host_range(h,p,104))return (uint32_t)-21;
  struct stat s;if(fstat(f->fd,&s))return (uint32_t)-wasi_errno(errno);
  unsigned char zero[104]={0};host_store(h,p,zero,sizeof(zero));
@@ -165,7 +177,7 @@ uint32_t host_stat(struct w2c_env *h,uint32_t fd,uint64_t p) {
  for(unsigned i=0;i<3;i++){host_put64(h,p+48+i*16,times[i].tv_sec);host_put64(h,p+56+i*16,times[i].tv_nsec);}
  host_put64(h,p+96,s.st_ino);return 0;
 }
-uint32_t host_resize(struct w2c_env *h,uint64_t size) {
+static uint32_t unlocked_resize(struct w2c_env *h,uint64_t size) {
  if(size>4294967296ull)return 0;
  uint64_t wanted=(size+65535)/65536,current=atomic_load(&h->memory.pages);
  if(wanted<=current)return 1;
@@ -188,3 +200,10 @@ uint32_t host_environment(struct w2c_env *h,uint64_t a,uint64_t b,bool sizes) {
  else{if(!host_range(h,a,count*8)||!host_range(h,b,bytes))return 21;host_store(h,b,values,bytes);uint64_t p=b;for(unsigned i=0;i<count;i++){host_put64(h,a+8*i,p);p+=strlen(values+(p-b))+1;}}
  return 0;
 }
+
+uint32_t host_open(struct w2c_env *h,uint32_t d,uint64_t p,uint32_t f,uint64_t m){lock(&file_mutex);uint32_t r=unlocked_open(h,d,p,f,m);unlock(&file_mutex);return r;}
+uint32_t host_fd_close(struct w2c_env *h,uint32_t fd){lock(&file_mutex);uint32_t r=unlocked_fd_close(h,fd);unlock(&file_mutex);return r;}
+uint32_t host_io(struct w2c_env *h,uint32_t fd,uint64_t v,uint64_t n,uint64_t out,bool wr,bool pos,uint64_t off){lock(&file_mutex);uint32_t r=unlocked_io(h,fd,v,n,out,wr,pos,off);unlock(&file_mutex);return r;}
+uint32_t host_seek(struct w2c_env *h,uint32_t fd,uint64_t off,uint32_t whence,uint64_t out){lock(&file_mutex);uint32_t r=unlocked_seek(h,fd,off,whence,out);unlock(&file_mutex);return r;}
+uint32_t host_stat(struct w2c_env *h,uint32_t fd,uint64_t p){lock(&file_mutex);uint32_t r=unlocked_stat(h,fd,p);unlock(&file_mutex);return r;}
+uint32_t host_resize(struct w2c_env *h,uint64_t size){lock(&grow_mutex);uint32_t r=unlocked_resize(h,size);unlock(&grow_mutex);return r;}

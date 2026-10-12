@@ -1,4 +1,5 @@
 #include "native_host.h"
+#include "threading/native_threads.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
 #include <fcntl.h>
@@ -119,11 +120,13 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
  host_init(h);h->engine=engine;h->progress=progress;h->progress_context=context;
  struct w2c_wasi__snapshot__preview1 wasi={.env=h};
  volatile bool allocated=false,instantiated=false;
+ NativeThreads *volatile threads=NULL;
  wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(!trap){
   require(h,save_folder&&*save_folder,"missing app-private save folder");
   h->save_root=open(save_folder,O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(h,h->save_root>=0,"save folder unavailable");
   if(game_folder){h->game_root=open(game_folder,O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(h,h->game_root>=0,"selected folder permission unavailable");}
+  threads=native_threads_begin(h);
   message(h,"Starting real engine constructors and main-thread TLS…");
   wasm_rt_allocate_memory_shared(&h->memory,8192,65536,false,65536);allocated=true;
   wasm2c_gta_instantiate(engine,h,&wasi);instantiated=true;
@@ -141,9 +144,14 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
   saves(h,scratch);abi(h,scratch);
   if(game_folder)assets(h,scratch);else message(h,"SKIP: actual game-file reads; select the extracted web folder to include them.");
   require(h,h->failure==NULL,"native file close reported an error");
+  native_threads_probe(h,scratch);
   w2c_gta_0x5Femscripten_stack_restore(engine,stack);
-  snprintf(report,capacity,"PASS: native runtime checkpoint — engine constructors, main-thread TLS, clocks/environment, file ABI and persistent save I/O.\n%s\nEngine main, worker dispatch, game renderer, audio and gameplay are still pending.",game_folder?"PASS: three selected game files read through the engine (head and tail samples).":"Game-file checks skipped: no folder selected.");
+  message(h,"Entering real engine main up to its first game-worker request…");
+  native_main_checkpoint(h);
+ }else if(native_main_reached(h)){
+  snprintf(report,capacity,"PASS: native 0.3 threading checkpoint — constructors, persistent saves, real engine pthread lifecycle, TLS isolation and synchronous mailbox/proxy delivery.\nPASS: engine main reached its first game-worker request; stopped at this deliberate boundary.\nGame worker workloads, renderer, audio output and gameplay remain pending.");trap=WASM_RT_TRAP_NONE;
  }else snprintf(report,capacity,"FAIL: runtime trap %d at %s.\nThis checkpoint has not reached gameplay.",trap,h->failure?h->failure:"engine instruction / memory allocation");
+ native_threads_end(threads);
  host_close(h);
  // This is only our disposable sparse probe. The regular probe save persists.
  if(save_folder){int root=open(save_folder,O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);if(root>=0){unlinkat(root,".native-sparse-probe",0);close(root);}}

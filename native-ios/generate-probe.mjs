@@ -2,11 +2,13 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const root=process.argv[2]||'native-build';
 const header=fs.readFileSync(root+'/generated/gta.h','utf8');
+const internal=fs.readFileSync(root+'/generated/gta-impl.h','utf8');
+for(const declaration of ['u32 w2c_gta_f90879(w2c_gta*, u64, u64, u64, u64);','u32 w2c_gta_f90884(w2c_gta*, u64);','u64 w2c_gta_f90695(w2c_gta*);'])assert(internal.includes(declaration),'Thread binding ABI differs: '+declaration);
 const declarations=[...header.matchAll(/\/\* import: '([^']+)' '([^']+)' \*\/\s+(void|u32|u64|f32|f64) (w2c_\w+)\(([^;]+)\);/g)];
 assert.equal(declarations.length,85,'Unexpected engine host interface');
 const implemented=JSON.parse(fs.readFileSync('native-ios/host-imports.json','utf8'));
 for(const key of Object.keys(implemented))assert(declarations.some(d=>d[2]===key),'Unknown host import '+key);
-let source=`#include "native_host.h"\n#include "wasm-rt-impl.h"\n#include "wasm-rt-exceptions.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <unistd.h>\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
+let source=`#include "native_host.h"\n#include "threading/native_threads.h"\n#include "wasm-rt-impl.h"\n#include "wasm-rt-exceptions.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <unistd.h>\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
 for(const d of declarations){
  const args=d[5].split(',').map((s,i)=>s.trim()+' arg'+i).join(', ');
  const env=d[1]==='env'?'arg0':'arg0->env';

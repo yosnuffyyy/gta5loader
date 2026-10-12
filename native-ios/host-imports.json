@@ -1,6 +1,6 @@
 {
  "_emscripten_init_main_thread_js": "w2c_gta_0x5Femscripten_thread_init(arg0->engine,arg1,0,1,1,1048576,0); w2c_gta_0x5Femscripten_tls_init(arg0->engine);",
- "_emscripten_thread_mailbox_await": "arg0->mailbox=arg1; host_put32(arg0,arg1+204,0);",
+ "_emscripten_thread_mailbox_await": "native_mailbox_register(arg0,arg1);",
  "emscripten_check_blocking_allowed": "return;",
  "emscripten_get_heap_max": "return 4294967296ull;",
  "emscripten_resize_heap": "return host_resize(arg0,arg1);",
@@ -23,5 +23,15 @@
  "fd_write": "return host_io(arg0->env,arg1,arg2,arg3,arg4,true,false,0);",
  "fd_pread": "return host_io(arg0->env,arg1,arg2,arg3,arg5,false,true,arg4);",
  "fd_pwrite": "return host_io(arg0->env,arg1,arg2,arg3,arg5,true,true,arg4);",
- "fd_seek": "return host_seek(arg0->env,arg1,arg2,arg3,arg4);"
+ "fd_seek": "return host_seek(arg0->env,arg1,arg2,arg3,arg4);",
+ "__pthread_create_js": "return native_thread_create(arg0,arg1,arg2,arg3,arg4);",
+ "_emscripten_notify_mailbox_postmessage": "native_mailbox_notify(arg0,arg1,arg2);",
+ "_emscripten_thread_cleanup": "native_thread_cleanup(arg0,arg1);",
+ "_emscripten_thread_set_strongref": "(void)arg0; (void)arg1; /* OS pthread retained until joined */",
+ "_emscripten_receive_on_main_thread_js": "return native_proxy_receive(arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7);",
+ "_tzset_js": "native_timezone(arg0,arg1,arg2,arg3,arg4);",
+ "_gmtime_js": "return native_calendar(arg0,arg1,arg2,false);",
+ "_localtime_js": "return native_calendar(arg0,arg1,arg2,true);",
+ "wasm_input_publish_js": "native_publish(arg0,arg1,0,false);",
+ "wasm_audio_publish_js": "native_publish(arg0,arg1,arg2,true);"
 }

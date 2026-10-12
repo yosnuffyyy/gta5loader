@@ -19,6 +19,7 @@ typedef struct Waiter {
 } Waiter;
 typedef struct { pthread_mutex_t mutex; Waiter *head; } Bucket;
 static Bucket buckets[128];
+__attribute__((weak)) bool native_wait_cancelled(void){return false;}
 static pthread_once_t initialized=PTHREAD_ONCE_INIT;
 static void checked(int status) { if(status) abort(); }
 static void initialize(void) {
@@ -68,18 +69,21 @@ static uint32_t wait_value(wasm_rt_shared_memory_t *memory,uint64_t address,
   const uint64_t start=now_ns();
   const uint64_t deadline=timeout<0 || (uint64_t)timeout>UINT64_MAX-start
     ?UINT64_MAX:start+(uint64_t)timeout;
+  bool cancelled=false;
   while(!waiter.notified) {
+    if(native_wait_cancelled()){cancelled=true;break;}
     int result;
-    if(timeout<0) result=pthread_cond_wait(&waiter.condition,&bucket->mutex);
-    else {
+    {
       uint64_t now=now_ns();
-      if(now>=deadline) break;
+      if(timeout>=0&&now>=deadline) break;
+      uint64_t wake=deadline;
+      if(wake>now+100000000ull)wake=now+100000000ull;
 #if defined(__APPLE__)
-      uint64_t remaining=deadline-now;
+      uint64_t remaining=wake-now;
       struct timespec relative={(time_t)(remaining/1000000000ull),(long)(remaining%1000000000ull)};
       result=pthread_cond_timedwait_relative_np(&waiter.condition,&bucket->mutex,&relative);
 #else
-      struct timespec absolute={(time_t)(deadline/1000000000ull),(long)(deadline%1000000000ull)};
+      struct timespec absolute={(time_t)(wake/1000000000ull),(long)(wake%1000000000ull)};
       result=pthread_cond_timedwait(&waiter.condition,&bucket->mutex,&absolute);
 #endif
     }
@@ -93,6 +97,7 @@ static uint32_t wait_value(wasm_rt_shared_memory_t *memory,uint64_t address,
   uint32_t result=waiter.notified?0:2;
   checked(pthread_cond_destroy(&waiter.condition));
   checked(pthread_mutex_unlock(&bucket->mutex));
+  if(cancelled)wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
   return result;
 }
 uint32_t native_wait32(wasm_rt_shared_memory_t *m,uint64_t a,uint32_t expected,int64_t timeout) {
