@@ -4,7 +4,7 @@ const root=process.argv[2]||'native-build';
 const header=fs.readFileSync(root+'/generated/gta.h','utf8');
 const declarations=[...header.matchAll(/\/\* import: '([^']+)' '([^']+)' \*\/\s+(void|u32|u64|f32|f64) (w2c_\w+)\(([^;]+)\);/g)];
 assert.equal(declarations.length,85,'Unexpected engine host interface');
-let source=`#include "gta.h"\n#include "wasm-rt-impl.h"\n#include "probe.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <stdatomic.h>\nstruct w2c_env {wasm_rt_shared_memory_t memory;};\nstruct w2c_wasi__snapshot__preview1 {int unused;};\nstatic _Thread_local const char *missing_import;\nstatic _Noreturn void unavailable(const char *name){missing_import=name;wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);}\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
+let source=`#include "gta.h"\n#include "wasm-rt-impl.h"\n#include "wasm-rt-exceptions.h"\n#include "probe.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <stdatomic.h>\nstruct w2c_env {wasm_rt_shared_memory_t memory;};\nstruct w2c_wasi__snapshot__preview1 {int unused;};\nstatic _Thread_local const char *missing_import;\nstatic _Noreturn void unavailable(const char *name){missing_import=name;wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);}\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
 for(const d of declarations){
  const args=d[5].split(',').map((s,i)=>s.trim()+' arg'+i).join(', ');
  source+=`${d[3]} ${d[4]}(${args}){unavailable("${d[1]}.${d[2]}");}\n`;

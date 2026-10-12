@@ -1,6 +1,7 @@
 #include "wait.h"
 #include "native_wait.h"
 #include "wasm-rt-impl.h"
+#include "wasm-rt-exceptions.h"
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
