@@ -1,0 +1,92 @@
+PROCESS 1
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 35.1 MiB (sample, not peak).
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+PASS: native runtime checkpoint — engine constructors, main-thread TLS, clocks/environment, file ABI and persistent save I/O.
+PASS: three selected game files read through the engine (head and tail samples).
+Engine main, worker dispatch, game renderer, audio and gameplay are still pending.
+PROCESS 2
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 35.1 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+PASS: native runtime checkpoint — engine constructors, main-thread TLS, clocks/environment, file ABI and persistent save I/O.
+PASS: three selected game files read through the engine (head and tail samples).
+Engine main, worker dispatch, game renderer, audio and gameplay are still pending.
+

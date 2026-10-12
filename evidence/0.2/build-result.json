@@ -1,0 +1,51 @@
+{
+  "sourceCommit": "ec11683005cb9003ba2beb9055556fc28f96f9b8",
+  "runId": 38294712685,
+  "jobId": 114962911279,
+  "result": "success",
+  "physicalIPhoneValidation": "pending",
+  "artifacts": [
+    {
+      "id": 11768840425,
+      "name": "native-compiler-evidence",
+      "size_in_bytes": 23047,
+      "url": "https://api.github.com/repos/yosnuffyyy/gta5loader/actions/artifacts/11768840425",
+      "archive_download_url": "https://api.github.com/repos/yosnuffyyy/gta5loader/actions/artifacts/11768840425/zip",
+      "expired": false,
+      "created_at": "2026-10-12T19:02:59Z",
+      "expires_at": "2026-10-26T19:02:58Z",
+      "updated_at": "2026-10-12T19:02:59Z",
+      "digest": "sha256:b51e0f345c3fdb6726a40cb9490080b6b70f5de02652111363f369787271834b",
+      "workflow_run": {
+        "id": 38294712685,
+        "repository_id": 1414817773,
+        "head_repository_id": 1414817773,
+        "head_branch": "native-ios-prototype",
+        "head_sha": "ec11683005cb9003ba2beb9055556fc28f96f9b8"
+      }
+    },
+    {
+      "id": 11768710548,
+      "name": "GTA-Native-Probe-unsigned",
+      "size_in_bytes": 87500474,
+      "url": "https://api.github.com/repos/yosnuffyyy/gta5loader/actions/artifacts/11768710548",
+      "archive_download_url": "https://api.github.com/repos/yosnuffyyy/gta5loader/actions/artifacts/11768710548/zip",
+      "expired": false,
+      "created_at": "2026-10-12T19:03:03Z",
+      "expires_at": "2026-11-11T19:02:59Z",
+      "updated_at": "2026-10-12T19:03:03Z",
+      "digest": "sha256:636bce612f81c21dbe0a80d1b14692950bcca16514eff25155bcd1c0334afa59",
+      "workflow_run": {
+        "id": 38294712685,
+        "repository_id": 1414817773,
+        "head_repository_id": 1414817773,
+        "head_branch": "native-ios-prototype",
+        "head_sha": "ec11683005cb9003ba2beb9055556fc28f96f9b8"
+      }
+    }
+  ],
+  "ipaSHA256": "57b6580193f65e3f6bbc492aeaf623340f7a2ec39de084bcc9676c22b001b94f",
+  "ipaBytes": 99623654,
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}
+

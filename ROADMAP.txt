@@ -3,7 +3,8 @@ NATIVE IPHONE PROTOTYPE — SEPARATE DEVELOPMENT BRANCH
 Repository: yosnuffyyy/gta5loader
 Branch: native-ios-prototype
 0.1 baseline build: 971e32f49c952822f5086ddeea9f70671f637c7d
-0.2 runtime checkpoint: build validation in progress
+0.2 runtime checkpoint: ec11683005cb9003ba2beb9055556fc28f96f9b8
+0.2 build/package gates pass; physical iPhone validation is pending.
 Baseline: confirmed v7 engine.
 PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
 user instruction. Native work uses independent workspace copies only.
@@ -34,7 +35,9 @@ user instruction. Native work uses independent workspace copies only.
    4a. Implemented: real engine constructors and main-thread TLS, rooted
        read-only game files, app-private probe saves, retained 64-bit file
        ABI, monotonic/realtime clocks and fixed native environment. Native
-       host unit tests pass on Mac; full engine and iPhone checks pending.
+       host and full engine runtime tests pass on Mac, including save
+       persistence across processes. iPhone ARM64 compilation and package
+       audit pass. Physical iPhone 0.2 validation is pending.
        Shared size/pages metadata uses atomic publication with committed
        size published before the new page count. A compiled concurrent
        grow/read fixture passes on Mac.
@@ -72,3 +75,4 @@ Free-account signing needs refreshing every seven days. No Apple credentials
 or signing keys enter this repository; no JIT entitlement is required.
 
 See INSTALL-ON-IPHONE.txt, NATIVE-ARCHITECTURE.txt and HOST-INTERFACE.json.
+

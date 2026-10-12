@@ -1,0 +1,63 @@
+NATIVE PROTOTYPE 0.2 — BUILD AND VERIFICATION RECORD
+
+Source: ec11683005cb9003ba2beb9055556fc28f96f9b8
+Branch: native-ios-prototype
+Run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38294712685
+Job: 114962911279 — completed successfully, 2026-10-12.
+
+PASS: original engine chunk hashes and full digest; eleven additional
+exports expose existing functions without changing engine instructions.
+PASS: WebAssembly reference string/math checks, compiled wait/notify and
+concurrent grow/read tests, 73 SIMD cases and shared bulk-memory checks.
+PASS: native host unit tests for file isolation, symlink refusal, vectors,
+positions, stat, environment, clocks and error handling.
+PASS: full native engine constructors and main-thread TLS on the Mac runner,
+using a dedicated native thread with a 4 MiB C stack, as configured on iPhone.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose, signed seeks, EOF reads,
+file size and data comparisons. Native saves are synced before close.
+PASS: a second process reopened and verified the first process's probe save.
+PASS: 64-bit pointer/iovec/stat/offset ABI, including sparse I/O above 4 GiB,
+unchanged file position after positioned I/O and invalid-buffer errors.
+PASS: head and tail reads through the real engine on three synthetic game-
+path fixtures. Actual iPhone game-file checks remain a physical-device gate.
+PASS: all 135 engine/runtime C units compiled for Mac and iPhone. The final
+run reused 133 verified objects per target and rebuilt the two changed units;
+execution tests ran again. The prior full build is run 38288536228.
+PASS: iPhone UIKit source, metadata, native framework linking and packaging.
+PASS: downloaded artifact ZIP hashes match GitHub's recorded digests.
+PASS: IPA hash matches the independent build output.
+PASS: package audit confirms ARM64 iPhone device platform, iOS 17 minimum,
+version 0.2.0/build 2, original engine digest and all eleven probe exports.
+PASS: no WebKit/JavaScriptCore dependency, writable-executable segment,
+embedded provisioning profile or code signature. Required licenses included.
+PASS: original 0.1 IPA remains byte-identical to its recorded SHA-256.
+PASS: all 28 final native source/build files match source-manifest.json.
+
+IPA: GTA-Native-Probe-0.2-unsigned.ipa
+Bytes: 99623654
+SHA-256: 57b6580193f65e3f6bbc492aeaf623340f7a2ec39de084bcc9676c22b001b94f
+Bundle: io.github.yosnuffyyy.gtanativeprobe
+
+Mac-only memory observation: after constructors, the heap had 564.1 MiB of
+committed virtual address space and the process footprint sample was 35.1
+MiB. The engine had not entered main(), loaded the world or created a game
+renderer. This is not peak use, an iPhone result or a gameplay memory budget.
+
+Physical iPhone 0.2 result: pending. Install over 0.1 with the same signing
+account, select the extracted web folder and run runtime + save tests twice,
+reopening the app and reselecting the folder between runs. Copy the report.
+
+Roadmap stage 4 remains in progress. Engine worker dispatch, mailbox/proxy
+delivery, game filesystem streaming, remaining host operations and main()
+startup are pending. Metal gameplay rendering, audio and sustained play are
+later gates. Unsupported host calls remain explicit errors or named traps.
+
+PC relocation was verified before the freeze: 12,500 files and
+21,253,139,768 bytes moved to Desktop\GTA-Browser-Offline-PC; all relative
+paths, sizes and modification times matched. No further accesses were made
+to that protected directory. Native tests use independent workspace inputs.
+Main remains de7664a8e6448096716c5a341250d32d4f594fd1.
+
+Detailed logs, coverage inventory, generated header and package audit:
+evidence/0.2/. The original 0.1 evidence remains alongside it.
+
