@@ -9,6 +9,9 @@
 #include <time.h>
 #include <math.h>
 #include <unistd.h>
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
 
 // Each OS thread owns an engine instance (globals, stack pointer and TLS).
 // Instances import the same host and shared heap. No heap copies or JIT.
@@ -148,7 +151,15 @@ uint32_t native_thread_create(struct w2c_env *h,uint64_t tcb,uint64_t attr,uint6
 }
 static void wait_finished(NativeThreads *r){
  uint64_t deadline=now_ns()+15000000000ull;
+ bool sampled=false;
  for(;;){
+  if(!sampled&&atomic_load(&r->ready)==LIMIT){
+   sampled=true;
+#ifdef __APPLE__
+   task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;
+   if(task_info(mach_task_self(),TASK_VM_INFO,(task_info_t)&info,&count)==KERN_SUCCESS){char line[180];snprintf(line,sizeof(line),"Four native workers active: process footprint %.1f MiB (sample, not peak).",(double)info.phys_footprint/1048576.0);report(r->host,line);}
+#endif
+  }
   w2c_gta_0x5Femscripten_check_mailbox(r->host->engine);
   bool all=true;for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&!atomic_load(&r->workers[i].finished))all=false;
   if(all)return;check(r->host,now_ns()<deadline,"native workers timed out");

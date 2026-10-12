@@ -1,0 +1,71 @@
+NATIVE PROTOTYPE 0.3 — THREADING AND MAIN-ENTRY CHECKPOINT
+
+This advances roadmap stage 4. It does not complete threaded game startup
+or create a game renderer. Keep the verified 0.2 IPA for rollback.
+
+Worker integration
+- The unchanged engine's pthread_create, pthread_exit and pthread_join run
+  against native pthreads. Each worker gets its own engine globals, indirect
+  function table, stack pointer and TLS. All workers share one existing heap.
+- The engine supplies each worker's stack location and size. The host reads
+  the actual 64-bit thread descriptor, validates the range, sets stack limits
+  and initializes thread/TLS state in the same order as the matching game.js.
+- Native condition notifications and the engine's own mailbox queue deliver
+  synchronous worker-to-main proxy calls. The original 16-byte tagged proxy
+  argument ABI is retained. Only environment-query proxies are enabled in
+  this checkpoint; other operations stop with an explicit unsupported error.
+- File descriptor operations are synchronized. Native thread cleanup waits
+  for OS-thread completion before releasing the engine thread's stack/TLS.
+- A failed diagnostic requests cooperative shutdown. Indefinite native
+  futex waits check shutdown at bounded intervals, unlink the waiter and
+  unwind before the owning thread joins them. No forced pthread cancellation
+  or shared-heap release while a worker is still running is used.
+
+What the test exercises
+After the complete 0.2 runtime/save/file checks, the app runs two batches of
+four engine pthreads. A diagnostic-only callback is installed in the null
+table slot of each test worker. It verifies pthread_self, distinct errno/TLS
+addresses, stack bounds, synchronous mailbox/proxy replies, concurrent 4 KiB
+save writes and reopened byte comparisons. Temporary worker files are deleted.
+The regular 0.2 probe save is preserved and checked on subsequent launches.
+The owner checks all replies, joins workers using both native and engine
+lifecycle operations, then frees thread data. The second batch checks reuse.
+
+The test then calls the actual engine main function. It records published
+input/audio pointers and deliberately stops at the first game-worker creation
+request. That stop is reported separately from worker diagnostic successes.
+The requested game workload is not launched. No input/audio output or game
+rendering is claimed merely because their shared-state pointers are published.
+
+Checkpoint limits
+This version has no world streaming, active game-worker workloads, native
+renderer, native audio output or gameplay. Async/ASM proxy dispatch, broader
+main-thread proxy operations, thread event loops and remaining host services
+need further implementation. Calendar conversion uses deterministic UTC for
+this diagnostic. Unimplemented host imports still fail explicitly.
+
+Memory and build cost
+The engine heap and machine code are shared; neither is cloned per worker.
+Worker count is bounded to four for the diagnostic, with 4 MiB reserved C
+stacks (reservation is not resident footprint). Workers are created on demand
+and destroyed after each batch. Footprint samples do not measure peak usage
+or a loaded game world's memory needs.
+
+No engine instruction or export changes were needed beyond the eleven probe
+exports already in 0.2. Existing generated pthread/errno C bindings are checked
+against the pinned engine names and exact generated signatures. Verified
+compiler objects are reused; extra threading header dependencies are included
+in the cache keys of the host files that consume them. All execution tests
+and package audits still run.
+
+Device check
+Install GTA-Native-Probe-0.3-unsigned.ipa over 0.2 using the same signing account
+and bundle identifier. Select the extracted web folder and tap Run threads +
+startup tests. Copy the entire report. Reopen the app, select the folder again
+and repeat. Report any failure or restart; a successful checkpoint should end
+with Exit: 0 and explicitly say it stopped before launching game workers.
+
+Isolation
+The two earlier IPA artifacts are preserved. Native work uses independent
+workspace inputs and the native-ios-prototype branch. Neither protected PC
+folder is accessed, and the deployed main branch remains unchanged.

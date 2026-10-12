@@ -128,13 +128,13 @@
     },
     {
       "path": "native-ios/test_wait.c",
-      "bytes": 3885,
-      "sha256": "825505f40108bbb77392ea955fdc5bda05d4fe99d512fd44e606a751c69cd04a"
+      "bytes": 4800,
+      "sha256": "c1917f710a03f9e73b879094f22320f6afaf4c76a303f197c3a3947ae0016614"
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 15288,
-      "sha256": "a9d3843027373723462fb1f6ba293a10be705dda08176b4e327bcee945342992"
+      "bytes": 15798,
+      "sha256": "95cc2df5cbdf869e8bc75125ba6a9e4f5449e4c6a4502fea2eeafe3225821f26"
     },
     {
       "path": "native-ios/threading/native_threads.h",

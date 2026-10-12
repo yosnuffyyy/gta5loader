@@ -29,6 +29,15 @@ static unsigned notify_until(w2c_wait *i,uint32_t address,unsigned count) {
   return result;
 }
 static _Atomic bool stop_growth_readers;
+static _Atomic bool cancel_waiter;
+bool native_wait_cancelled(void){return atomic_load(&cancel_waiter);}
+static void *run_cancelled_wait(void *arg){
+ Task *t=arg;wasm_rt_init_thread();
+ wasm_rt_trap_t trap=wasm_rt_impl_try();
+ if(!trap){native_wait32(&t->env->memory,t->address,0,-1);abort();}
+ assert(trap==WASM_RT_TRAP_UNREACHABLE);atomic_store(&t->result,123);
+ wasm_rt_free_thread();return NULL;
+}
 static void *read_during_growth(void *arg) {
  struct w2c_env *env=arg;wasm_rt_init_thread();w2c_wait i;wasm2c_wait_instantiate(&i,env);
  do {uint32_t pages=w2c_wait_pages(&i);assert(pages>=2&&pages<=64);assert(w2c_wait_load(&i,pages*65536-4)==0);}while(!atomic_load(&stop_growth_readers));
@@ -76,7 +85,14 @@ int main(void) {
   for(unsigned pages=2;pages<64;pages++){assert(w2c_wait_grow(&instance,1)==pages);usleep(100);}
   atomic_store(&stop_growth_readers,true);
   for(unsigned i=0;i<3;i++)assert(pthread_join(readers[i],NULL)==0);
+  // A failed checkpoint can cancel an indefinite futex wait and safely join
+  // its worker before freeing the shared heap. The waiter must be unlinked.
+  Task cancelled={.env=&env,.address=16,.result=99};
+  assert(pthread_create(&thread,NULL,run_cancelled_wait,&cancelled)==0);
+  usleep(20000);atomic_store(&cancel_waiter,true);
+  assert(pthread_join(thread,NULL)==0&&atomic_load(&cancelled.result)==123);
+  atomic_store(&cancel_waiter,false);assert(w2c_wait_notify(&instance,16,1)==0);
   wasm2c_wait_free(&instance);
   wasm_rt_free_memory_shared(&env.memory);wasm_rt_free_memory_shared(&other.memory);wasm_rt_free();
-  puts("PASS: compiled wait/notify, timeout, mismatch, alignment, bounds, mixed widths, address/memory isolation, concurrent waiters and growth.");
+  puts("PASS: compiled wait/notify, timeout, mismatch, alignment, bounds, mixed widths, address/memory isolation, concurrent waiters, growth and cancelled-wait cleanup.");
 }
