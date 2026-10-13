@@ -33,8 +33,9 @@ for(unsigned test=0;test<10;test++){
  memset(cmd,0,sizeof(cmd));cmd[0]=test==7?106:0;for(unsigned i=1;i<5;i++)cmd[i]=0x3f800000;cmd[5]=UINT32_MAX;EMIT(27,6);
  memset(cmd,0,sizeof(cmd));cmd[0]=112;cmd[2]=256;float color[64]={0};color[60]=test==7?.5f:1;color[63]=test==7?.75f:(test%3+1)*.25f;memcpy(cmd+3,color,sizeof(color));EMIT(12,67);
  memset(cmd,0,sizeof(cmd));cmd[0]=test<6?test:0;cmd[1]=6;cmd[2]=test==2||test==3?2:1;cmd[3]=test==1||test==3?0:6;cmd[4]=test==1||test==3?6:0;cmd[5]=0;if(test==4||test==5){cmd[1]=113;cmd[2]=test==4?16:0;}EMIT(32,6);
- /* Two consecutive identical draws exercise pipeline/BG reuse and batching. */
- if(test==0)EMIT(32,6);
+ /* Constants change while one pass stays open. The first draw must retain its
+    snapshot; only the right half is overwritten by the second draw. */
+ if(test==0){cmd[0]=105;EMIT(29,1);cmd[0]=1;cmd[1]=8;cmd[2]=0;cmd[3]=16;cmd[4]=16;EMIT(31,5);cmd[0]=112;cmd[1]=63*4;cmd[2]=4;float second=.5f;memcpy(cmd+3,&second,4);EMIT(12,4);memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;cmd[3]=6;EMIT(32,6);}
  memset(cmd,0,sizeof(cmd));cmd[0]=116;uint64_t out=dst+4096+test*1024;cmd[9]=(uint32_t)out;cmd[10]=out>>32;cmd[11]=64;cmd[12]=1024;cmd[14]=1024;EMIT(42,17);
 }
 EMIT(33,0);
