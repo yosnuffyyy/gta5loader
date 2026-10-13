@@ -24,6 +24,23 @@ static void bc_expected(unsigned kind,unsigned i,bool srgb,uint8_t out[4]){
  else if(kind==7){out[0]=254;out[3]=254;}
  if(srgb)for(unsigned k=0;k<3;k++){float x=out[k]/255.f;x=x<=.04045f?x/12.92f:powf((x+.055f)/1.055f,2.4f);out[k]=(uint8_t)lroundf(x*255.f);}
 }
+static float bc_linear(float x){return x<=.04045f?x/12.92f:powf((x+.055f)/1.055f,2.4f);}
+static bool bc_matches(unsigned kind,unsigned i,bool srgb,unsigned channel,uint8_t value,uint8_t expected){
+ /* D3D11.3 functional spec 19.5.2: BC1-5 palette interpolation may differ by
+    absolute_error + .03 * endpoint span. These fixtures use span 1.
+    Compare in decoded space, then apply sRGB and final UNORM quantization.
+    Exact 0/1 endpoints and unused channels are NOT given this allowance.
+    https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm */
+ unsigned index=i%8;float ideal=0;bool interpolated=false;
+ if(kind<=3&&channel<2&&i%4>=2){ideal=i%4==2?(channel==0?2.f/3:1.f/3):(channel==0?1.f/3:2.f/3);interpolated=true;}
+ else if(((kind==3&&channel==3)||((kind==4||kind==5)&&channel==0))&&index>=2){ideal=(8.f-index)/7.f;interpolated=true;}
+ else if(kind==5&&channel==1&&index>=2&&index<=5){ideal=(index-1.f)/5.f;interpolated=true;}
+ if(!interpolated){if(expected==0||expected==255)return value==expected;return abs((int)value-(int)expected)<=1;}
+ float error=(kind>=4?1.f/65535:1.f/255)+.03f,lo=fmaxf(0,ideal-error),hi=fminf(1,ideal+error);
+ if(srgb&&channel<3){lo=bc_linear(lo);hi=bc_linear(hi);}
+ float actual=value/255.f,quantization=.5f/255;
+ return actual>=lo-quantization-1e-6f&&actual<=hi+quantization+1e-6f;
+}
 static bool bc_sample_test(NativeGpu *g){
  if(!check(g,g->bc_enabled,"Metal backend did not expose native BC compression; source capability patch/device support must be checked"))return false;
  const char *code="@group(0) @binding(0) var src:texture_2d<f32>; @vertex fn vs(@builtin(vertex_index) i:u32)->@builtin(position) vec4f {var p=array<vec2f,3>(vec2f(-1,-1),vec2f(3,-1),vec2f(-1,3));return vec4f(p[i],0,1);} @fragment fn fs(@builtin(position) p:vec4f)->@location(0) vec4f{return textureLoad(src,vec2i(p.xy),0);}";
@@ -53,7 +70,7 @@ static bool bc_sample_test(NativeGpu *g){
   ti.texture=output;WGPUTexelCopyBufferInfo dst=WGPU_TEXEL_COPY_BUFFER_INFO_INIT;dst.buffer=read;dst.layout.bytesPerRow=256;dst.layout.rowsPerImage=4;wgpuCommandEncoderCopyTextureToBuffer(e,&ti,&dst,&extent);if(!submit(g,e))goto next;
   atomic_store(&g->callback_done,false);atomic_store(&g->map_active,true);WGPUBufferMapCallbackInfo cb=WGPU_BUFFER_MAP_CALLBACK_INFO_INIT;cb.mode=WGPUCallbackMode_AllowProcessEvents;cb.callback=mapped;cb.userdata1=g;wgpuBufferMapAsync(read,WGPUMapMode_Read,0,1024,cb);if(!wait_callback(g))goto next;
   const uint8_t *data=wgpuBufferGetConstMappedRange(read,0,1024);if(!check(g,data!=NULL,"BC fixture mapped pixels unavailable"))goto next;
-  passed=true;for(unsigned i=0;i<16&&passed;i++){uint8_t expected[4];bc_expected(cases[test].kind,i,cases[test].srgb,expected);for(unsigned k=0;k<4;k++)if(abs(data[(i/4)*256+(i%4)*4+k]-expected[k])>1){char why[240];snprintf(why,sizeof(why),"BC%u%s sampled pixel %u channel %u: got %u expected %u",cases[test].kind,cases[test].srgb?" sRGB":"",i,k,data[(i/4)*256+(i%4)*4+k],expected[k]);fail(g,why);passed=false;break;}}
+  passed=true;for(unsigned i=0;i<16&&passed;i++){uint8_t expected[4];bc_expected(cases[test].kind,i,cases[test].srgb,expected);for(unsigned k=0;k<4;k++)if(!bc_matches(cases[test].kind,i,cases[test].srgb,k,data[(i/4)*256+(i%4)*4+k],expected[k])){char why[240];snprintf(why,sizeof(why),"BC%u%s sampled pixel %u channel %u outside format precision bounds: got %u ideal rounded %u",cases[test].kind,cases[test].srgb?" sRGB":"",i,k,data[(i/4)*256+(i%4)*4+k],expected[k]);fail(g,why);passed=false;break;}}
  next:
   if(atomic_exchange(&g->map_active,false))wgpuBufferUnmap(read);if(group)wgpuBindGroupRelease(group);if(in_view)wgpuTextureViewRelease(in_view);if(input){wgpuTextureDestroy(input);wgpuTextureRelease(input);}if(!passed||atomic_load(&g->failed))goto cleanup;g->bc_formats_tested++;
  }

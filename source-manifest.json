@@ -143,8 +143,8 @@
     },
     {
       "path": "native-ios/renderer/bc_fixture.inc",
-      "bytes": 8057,
-      "sha256": "3a02fcb561d41134c3bce81cbc89b4e4c02e6255900325e280f53e2cca97ed6e"
+      "bytes": 9492,
+      "sha256": "b4178fce9d1095ffb8923dac690a317369860a443d6aff7342062a2bd5ed5eca"
     },
     {
       "path": "native-ios/renderer/build-patched-backend.sh",
@@ -173,8 +173,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 47186,
-      "sha256": "d4f52d506b3e37b1e4c28bf2578011784a71e9b783c1f51219f8e2ea9331641c"
+      "bytes": 47198,
+      "sha256": "9c0642beb66ec51a95339ed3cbebc6d663980a7d4b35106887b65193fec0534b"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
