@@ -143,8 +143,8 @@
     },
     {
       "path": "native-ios/renderer/bc_fixture.inc",
-      "bytes": 7846,
-      "sha256": "e2e9e2891a67bd8d181ca56631eaf32e2e0c4962d7063ff7cca449e858dc7929"
+      "bytes": 8057,
+      "sha256": "3a02fcb561d41134c3bce81cbc89b4e4c02e6255900325e280f53e2cca97ed6e"
     },
     {
       "path": "native-ios/renderer/build-patched-backend.sh",

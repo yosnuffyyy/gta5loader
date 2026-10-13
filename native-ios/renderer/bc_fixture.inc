@@ -14,10 +14,13 @@ static unsigned bc_block(unsigned kind,uint8_t out[16]){memset(out,0,16);switch(
 }}
 static void bc_expected(unsigned kind,unsigned i,bool srgb,uint8_t out[4]){
  static const uint8_t c[4][3]={{255,0,0},{0,255,0},{170,85,0},{85,170,0}};
- static const uint8_t a[8]={255,0,218,182,145,109,72,36},b[8]={0,255,51,102,153,204,0,255};
+ /* Compare the final UNORM render-target quantization, not an intermediate
+    integer truncation of the ideal decoded alpha. */
+ static const float a[8]={1,0,6.f/7,5.f/7,4.f/7,3.f/7,2.f/7,1.f/7};
+ static const uint8_t b[8]={0,255,51,102,153,204,0,255};
  out[0]=out[1]=out[2]=0;out[3]=255;
- if(kind<=3){memcpy(out,c[i%4],3);if(kind==2)out[3]=i*17;else if(kind==3)out[3]=a[i%8];}
- else if(kind==4||kind==5){out[0]=a[i%8];if(kind==5)out[1]=b[i%8];}
+ if(kind<=3){memcpy(out,c[i%4],3);if(kind==2)out[3]=i*17;else if(kind==3)out[3]=(uint8_t)lroundf(a[i%8]*255.f);}
+ else if(kind==4||kind==5){out[0]=(uint8_t)lroundf(a[i%8]*255.f);if(kind==5)out[1]=b[i%8];}
  else if(kind==7){out[0]=254;out[3]=254;}
  if(srgb)for(unsigned k=0;k<3;k++){float x=out[k]/255.f;x=x<=.04045f?x/12.92f:powf((x+.055f)/1.055f,2.4f);out[k]=(uint8_t)lroundf(x*255.f);}
 }
