@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 const root=process.argv[2]||'native-build';
 const header=fs.readFileSync(root+'/generated/gta.h','utf8');
 const internal=fs.readFileSync(root+'/generated/gta-impl.h','utf8');
-for(const declaration of ['u32 w2c_gta_f90879(w2c_gta*, u64, u64, u64, u64);','u32 w2c_gta_f90884(w2c_gta*, u64);','u64 w2c_gta_f90695(w2c_gta*);'])assert(internal.includes(declaration),'Thread binding ABI differs: '+declaration);
+for(const declaration of ['u32 w2c_gta_f90879(w2c_gta*, u64, u64, u64, u64);','u32 w2c_gta_f90884(w2c_gta*, u64);','u64 w2c_gta_f90695(w2c_gta*);','u32 w2c_gta_f194(w2c_gta*, u64, u64, u64);','u32 w2c_gta_f198(w2c_gta*, u32, u64, u64, u32);'])assert(internal.includes(declaration),'Thread binding ABI differs: '+declaration);
 const declarations=[...header.matchAll(/\/\* import: '([^']+)' '([^']+)' \*\/\s+(void|u32|u64|f32|f64) (w2c_\w+)\(([^;]+)\);/g)];
 assert.equal(declarations.length,85,'Unexpected engine host interface');
 const implemented=JSON.parse(fs.readFileSync('native-ios/host-imports.json','utf8'));
 for(const key of Object.keys(implemented))assert(declarations.some(d=>d[2]===key),'Unknown host import '+key);
-let source=`#include "native_host.h"\n#include "threading/native_threads.h"\n#include "wasm-rt-impl.h"\n#include "wasm-rt-exceptions.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <unistd.h>\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
+let source=`#include "native_host.h"\n#include "threading/native_threads.h"\n#include "platform/native_paths.h"\n#include "wasm-rt-impl.h"\n#include "wasm-rt-exceptions.h"\n#include "probe_reference.h"\n#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n#include <unistd.h>\nwasm_rt_shared_memory_t* w2c_env_memory(struct w2c_env *env){return &env->memory;}\n`;
 for(const d of declarations){
  const args=d[5].split(',').map((s,i)=>s.trim()+' arg'+i).join(', ');
  const env=d[1]==='env'?'arg0':'arg0->env';
@@ -61,7 +61,7 @@ int native_engine_probe(char *report,size_t capacity){
 #ifdef NATIVE_PROBE_CLI
 typedef struct {char **argv;int result;} CliTask;
 static void cli_progress(void *unused,const char *line){(void)unused;puts(line);fflush(stdout);}
-static void *cli_run(void *arg){CliTask *t=arg;char report[4096];t->result=native_engine_probe(report,sizeof(report));puts(report);if(!t->result){t->result=native_runtime_probe(t->argv[1],t->argv[2],cli_progress,NULL,report,sizeof(report));puts(report);}return NULL;}
+static void *cli_run(void *arg){CliTask *t=arg;char report[4096];t->result=native_engine_probe(report,sizeof(report));puts(report);for(unsigned repeat=0;repeat<2&&!t->result;repeat++){t->result=native_runtime_probe(t->argv[1],t->argv[2],cli_progress,NULL,report,sizeof(report));puts(report);}return NULL;}
 int main(int argc,char **argv){if(argc!=3)return 2;CliTask task={.argv=argv};pthread_t thread;pthread_attr_t attr;if(pthread_attr_init(&attr))return 2;if(pthread_attr_setstacksize(&attr,4*1024*1024))return 2;int error=pthread_create(&thread,&attr,cli_run,&task);pthread_attr_destroy(&attr);if(error||pthread_join(thread,NULL))return 2;return task.result;}
 #endif
 `;

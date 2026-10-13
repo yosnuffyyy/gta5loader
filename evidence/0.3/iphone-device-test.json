@@ -1,0 +1,56 @@
+{
+  "recordedDate": "2026-10-12",
+  "source": "Two user-pasted physical iPhone reports; not independently captured",
+  "version": "0.3",
+  "device": "iPhone (previously identified by user as iPhone 16 Pro Max)",
+  "os": "iOS 27.0.1",
+  "result": "Both threading checkpoint runs passed, Exit 0",
+  "passedInBoth": [
+    "Real engine constructors and main-thread TLS",
+    "Previous persistent probe save intact",
+    "File ABI, save I/O, invalid-buffer and path protection checks",
+    "Eight engine pthreads in two batches: distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save I/O and joined cleanup",
+    "Actual engine main reached first game-worker request, entry 14; stopped deliberately before launching game workers"
+  ],
+  "runs": [
+    {
+      "folder": "web",
+      "assetSamples": "All three head/tail checks passed",
+      "beforeMiB": 11.6,
+      "initializedMiB": 45.5,
+      "workerBatchMiB": [
+        56.8,
+        56.8
+      ],
+      "afterCleanupMiB": 26.1,
+      "committedHeapMiB": 564.1,
+      "exit": 0
+    },
+    {
+      "folder": null,
+      "assetSamples": "Skipped because no folder selected; not a failure or validation of assets",
+      "beforeMiB": 9.7,
+      "initializedMiB": 44.5,
+      "workerBatchMiB": [
+        56,
+        56
+      ],
+      "afterCleanupMiB": 25.7,
+      "committedHeapMiB": 564.1,
+      "exit": 0
+    }
+  ],
+  "sampledAssetPaths": [
+    "data/common/data/levels/gta5/paths.xml",
+    "data/x64/anim/cutscene/cuts_prologue.rpf",
+    "data/x64/levels/gta5/_prologue/plg_01.rpf"
+  ],
+  "limitations": [
+    "Memory measurements are samples, not peaks or gameplay budgets",
+    "Committed virtual heap is distinct from process footprint",
+    "Game worker workloads, renderer, audio output and gameplay remain pending",
+    "Higher post-cleanup footprint than 0.2 alone does not establish a leak"
+  ],
+  "userDirection": "Record results for next week and stop development to conserve usage; wait for user to resume. No automation scheduled.",
+  "synchronization": "Local notes only; not pushed to GitHub"
+}

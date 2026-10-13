@@ -1,6 +1,7 @@
 #ifndef NATIVE_THREADS_H
 #define NATIVE_THREADS_H
 #include "native_host.h"
+#include "asset_io/native_assets.h"
 typedef struct NativeThreads NativeThreads;
 NativeThreads *native_threads_begin(struct w2c_env*);
 void native_threads_end(NativeThreads*);
@@ -17,4 +18,7 @@ uint32_t native_calendar(struct w2c_env*,uint64_t,uint64_t,bool);
 void native_timezone(struct w2c_env*,uint64_t,uint64_t,uint64_t,uint64_t);
 void native_publish(struct w2c_env*,uint64_t,uint64_t,bool);
 void native_thread_error(struct w2c_env*,const char*);
+void native_set_assets(NativeAssets*);
+NativeAssets *native_current_assets(void);
+uint32_t native_language(struct w2c_env*,uint64_t,uint64_t,uint64_t);
 #endif

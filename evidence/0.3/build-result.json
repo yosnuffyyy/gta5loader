@@ -3,7 +3,7 @@
   "runId": 38300970845,
   "jobId": 114983533268,
   "result": "success",
-  "physicalIPhoneValidation": "pending",
+  "physicalIPhoneValidation": "Two user-reported threading checkpoint runs passed; assets passed in first run and skipped in second",
   "checkpoint": "Real engine pthread diagnostics and main entry; stops before starting game worker workloads or rendering",
   "artifacts": [
     {
@@ -51,5 +51,6 @@
   "earlierPassedRuns": [
     38300242712,
     38300604544
-  ]
+  ],
+  "physicalIPhoneEvidence": "iphone-device-test.json"
 }

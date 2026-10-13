@@ -42,11 +42,11 @@ static void RuntimeProgress(void *context,const char *line) {
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
     [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
-    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.3";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
-    UILabel *description=[[UILabel alloc]init];description.text=@"Threading checkpoint: tests engine workers, separate thread state, message delivery and concurrent saves, then enters main up to its first game-worker request. Select your web folder to include file samples. This build stops deliberately before gameplay.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.4";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
+    UILabel *description=[[UILabel alloc]init];description.text=@"Asset and worker checkpoint: tests local files through the engine’s shared request queue, then launches real game workers and stops at the first archive request. Select your extracted web folder, including data/manifest.json. This is not gameplay.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
-    self.runtimeButton=[self button:@"Run threads + startup tests" action:@selector(runRuntime)];[stack addArrangedSubview:self.runtimeButton];
+    self.runtimeButton=[self button:@"Run asset + worker tests" action:@selector(runRuntime)];[stack addArrangedSubview:self.runtimeButton];
     self.controllerLabel=[[UILabel alloc]init];self.controllerLabel.numberOfLines=0;self.controllerLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:self.controllerLabel];
     self.report=[[UITextView alloc]init];self.report.editable=NO;self.report.font=[UIFont monospacedSystemFontOfSize:13 weight:UIFontWeightRegular];self.report.backgroundColor=UIColor.secondarySystemBackgroundColor;self.report.layer.cornerRadius=10;[stack addArrangedSubview:self.report];
     [self.report.heightAnchor constraintEqualToConstant:240].active=YES;
@@ -78,7 +78,7 @@ static void RuntimeProgress(void *context,const char *line) {
 - (void)copyReport {UIPasteboard.generalPasteboard.string=self.report.text;}
 - (void)runProbe {
     if(self.busy)return;[self setWorking:YES];
-    self.report.text=[NSString stringWithFormat:@"Native prototype 0.3 — basic test\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
+    self.report.text=[NSString stringWithFormat:@"Native prototype 0.4 — basic test\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
@@ -93,12 +93,13 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)runRuntime {
     if(self.busy)return;
+    if(!self.gameFolder){[self append:@"Select the extracted web folder before running this checkpoint."];return;}
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
     NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];
     NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:[NSString stringWithFormat:@"FAIL: app save folder — %@",error.localizedDescription]];return;}
     [self setWorking:YES];
-    self.report.text=[NSString stringWithFormat:@"Native prototype 0.3 — threading checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"];
+    self.report.text=[NSString stringWithFormat:@"Native prototype 0.4 — asset/worker checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     NSURL *folder=self.gameFolder;
@@ -157,7 +158,7 @@ static void RuntimeProgress(void *context,const char *line) {
             if(coordError)[report appendFormat:@"FAIL: %@ — %@\n",sample[@"path"],coordError.localizedDescription];
         }
         if(scoped)[folder stopAccessingSecurityScopedResource];
-        [report appendString:@"Sample check only; this does not validate or install the complete game.\nFolder selected for runtime tests. Tap Run threads + startup tests next."];
+        [report appendString:@"Sample check only; this does not validate or install the complete game.\nFolder selected for runtime tests. Tap Run asset + worker tests next."];
         dispatch_async(dispatch_get_main_queue(),^{[self append:report];[self setWorking:NO];});
     }});
 }

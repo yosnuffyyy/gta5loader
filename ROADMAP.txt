@@ -6,7 +6,8 @@ Branch: native-ios-prototype
 0.2 runtime checkpoint: ec11683005cb9003ba2beb9055556fc28f96f9b8
 0.2 build/package gates pass; two user-reported iPhone runtime checks pass.
 0.3 threading checkpoint: 435a73d09ae0556d9692691100da9aaf41a07c59
-0.3 device validation remains pending. See VERIFICATION-0.3.txt for CI status.
+0.3: two user-reported iPhone threading checkpoints PASS; actual asset samples
+pass in run 1 and are skipped (no folder) in run 2. See VERIFICATION-0.3.txt.
 Baseline: confirmed v7 engine.
 PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
 user instruction. Native work uses independent workspace copies only.

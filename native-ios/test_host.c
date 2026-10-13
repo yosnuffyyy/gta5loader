@@ -1,4 +1,5 @@
 #include "native_host.h"
+#include "platform/native_paths.h"
 #include "wasm-rt-impl.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -13,6 +14,14 @@ int main(void){
  h.game_root=open("native-build/fixtures/web",O_RDONLY|O_DIRECTORY);
  h.save_root=open("native-build/fixtures/saves",O_RDONLY|O_DIRECTORY);
  assert(h.game_root>=0&&h.save_root>=0);
+ host_store(&h,64,"/userdata",10);assert(host_path_stat(&h,64,8192)==0);
+ host_store(&h,64,"/userdata/path-test",20);
+ assert(host_mkdir(&h,(uint32_t)-100,64,0777)==0);
+ assert(host_path_stat(&h,64,8192)==0);
+ assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-20);
+ assert(unlinkat(h.save_root,"path-test",AT_REMOVEDIR)==0);
+ host_store(&h,64,"/userdata/../escape",20);assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-63);
+ host_store(&h,64,"/data/escape",13);assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-69);
  assert((int32_t)open_path(&h,"/data/new-file",64|1)==-69);
  assert((int32_t)open_path(&h,"/userdata/../web/evil",64|1)==-63);
  assert((int32_t)open_path(&h,"/userdata/link-file",0)<0);

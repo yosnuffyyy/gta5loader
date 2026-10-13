@@ -12,3 +12,5 @@ for(let i=0;i<paths.length;i++){
 fs.symlinkSync(path.resolve(root+'/saves'),root+'/web/data/escape','dir');
 fs.symlinkSync(path.resolve(root+'/web/'+paths[0]),root+'/saves/link-file');
 console.log('Created synthetic file fixtures; no game assets copied into the app.');
+
+fs.writeFileSync(root+'/web/data/manifest.json',JSON.stringify({mount:'/game/',version:'native-fixture',files:[...paths.map((p,i)=>[p.slice(5),65536*2+257+i,0]),['x64/audio/audio.rpf',1024,0]]}));

@@ -1,0 +1,17 @@
+NATIVE 0.4 — ASSET/WORKER CHECKPOINT
+Implements the original shared asset queue with bounded local file reads,
+validates the selected data/manifest.json and preserves its file ID order.
+One 64 KiB scratch buffer, at most eight cached descriptors; no network,
+asset duplication or whole-archive memory cache.
+Tests actual engine HTTPFS lookup/read functions, head/tail/EOF/error cases,
+concurrent engine-thread asset reads, file proxies and existing save tests.
+CPU main launches its real initial game workers; intentionally cancels at
+the first audio archive request, before supplying archive bytes. All engine
+threads must execute to waits and join before a checkpoint PASS is reported.
+Graphics are not enabled for this CPU checkpoint; -wgpu requests the GPU
+backend earlier than worker startup. A Metal backend remains a separate gate.
+Not gameplay: archive loading, more worker/services coverage, renderer,
+audio output and sustained phone gameplay remain pending.
+Requires extracted web folder including data/manifest.json, selected each
+app launch. Native branch only. PC folders and deployed main are protected.
+Build/device validation is pending until recorded in VERIFICATION-0.4.txt.

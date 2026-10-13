@@ -24,7 +24,7 @@ Checks passed on the release build
   original shared heap; synchronous engine mailbox/environment proxy replies;
   independent concurrent save writes/reopens/byte comparisons and cleanup.
 - The three game-path samples in CI use synthetic fixture files. Actual
-  iPhone files remain a device check, as in the verified 0.2 checkpoint.
+  iPhone samples now pass in the first user-reported 0.3 run below.
 - Actual engine main() executes until its first game-worker request (entry
   14), where this checkpoint stops deliberately. The requested game worker
   workload is not executed, and this is not a rendered game frame.
@@ -45,9 +45,17 @@ PASS: required licenses and original engine inventory are included.
 PASS: 0.1 and 0.2 IPA files remain byte-identical to their recorded hashes.
 PASS: all 30 native source/build file hashes match source-manifest.json.
 
-No 0.3 physical iPhone result has been received. Install over 0.2 using the
-same signing setup; select the extracted web folder; run threads + startup
-tests; close/reopen, select the folder again and repeat. Send both reports.
+Physical iPhone validation: two user-reported 0.3 checkpoint runs PASS, Exit 0.
+Run 1 selected web: all three actual game-file head/tail samples PASS.
+Run 2 selected no folder: actual game-file checks correctly SKIPPED.
+Both passed constructors/TLS, persistent saves, file ABI, eight engine
+pthreads in two batches, mailbox/proxy delivery, and main entry through
+first game-worker request 14. Game workloads deliberately did not launch.
+Process samples (before / initialized / worker batches / after cleanup), MiB:
+Run 1: 11.6 / 45.5 / 56.8, 56.8 / 26.1.
+Run 2: 9.7 / 44.5 / 56.0, 56.0 / 25.7.
+Committed virtual engine heap: 564.1 MiB in both runs. Samples are not peaks
+or a gameplay budget. See evidence/0.3/iphone-device-test.json.
 
 Memory observations from CI are Mac process samples. They are not iPhone
 measurements, peaks, resident sizes of each heap region, or gameplay budgets.

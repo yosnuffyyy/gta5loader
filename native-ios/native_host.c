@@ -1,4 +1,5 @@
 #include "native_host.h"
+#include "platform/native_paths.h"
 #include "wasm-rt-impl.h"
 #include <errno.h>
 #include <fcntl.h>
@@ -88,7 +89,9 @@ static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uin
  if((int32_t)dirfd!=-100)return (uint32_t)-58;
  char *p=text;if(*p=='/')p++;
  int root;bool readonly;
+ bool root_only=!strcmp(p,"userdata");
  if(!strncmp(p,"data/",5)){root=h->game_root;readonly=true;}
+ else if(root_only){root=h->save_root;readonly=false;p+=8;}
  else if(!strncmp(p,"userdata/",9)){root=h->save_root;readonly=false;p+=9;}
  else return (uint32_t)-44;
  if(root<0)return (uint32_t)-44;
@@ -98,6 +101,11 @@ static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uin
  if(readonly&&writes)return (uint32_t)-69;
  unsigned slot=3;while(slot<HOST_FDS&&h->files[slot].fd>=0)slot++;
  if(slot==HOST_FDS)return (uint32_t)-33;
+ if(root_only){
+  if(writes)return (uint32_t)-31;
+  int fd=dup(root);if(fd<0)return (uint32_t)-wasi_errno(errno);
+  h->files[slot]=(HostFD){fd,false};return slot;
+ }
  int parent=dup(root);if(parent<0)return (uint32_t)-wasi_errno(errno);
  uint32_t result=0;
  for(;;){
@@ -207,3 +215,26 @@ uint32_t host_io(struct w2c_env *h,uint32_t fd,uint64_t v,uint64_t n,uint64_t ou
 uint32_t host_seek(struct w2c_env *h,uint32_t fd,uint64_t off,uint32_t whence,uint64_t out){lock(&file_mutex);uint32_t r=unlocked_seek(h,fd,off,whence,out);unlock(&file_mutex);return r;}
 uint32_t host_stat(struct w2c_env *h,uint32_t fd,uint64_t p){lock(&file_mutex);uint32_t r=unlocked_stat(h,fd,p);unlock(&file_mutex);return r;}
 uint32_t host_resize(struct w2c_env *h,uint64_t size){lock(&grow_mutex);uint32_t r=unlocked_resize(h,size);unlock(&grow_mutex);return r;}
+
+uint32_t host_path_stat(struct w2c_env *h,uint64_t path,uint64_t out){
+ if(!host_range(h,out,104))return (uint32_t)-21;
+ lock(&file_mutex);uint32_t fd=unlocked_open(h,(uint32_t)-100,path,0,0),result=fd;
+ if((int32_t)fd>=0){result=unlocked_stat(h,fd,out);unlocked_fd_close(h,fd);}
+ unlock(&file_mutex);return result;
+}
+uint32_t host_mkdir(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t mode){
+ (void)mode;char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
+ if((int32_t)dirfd!=-100)return (uint32_t)-58;
+ char *part=text;if(*part=='/')part++;
+ if(!strcmp(part,"userdata"))return h->save_root>=0?(uint32_t)-20:(uint32_t)-44;
+ if(strncmp(part,"userdata/",9))return (uint32_t)-69;
+ part+=9;int dir=dup(h->save_root);if(dir<0)return (uint32_t)-wasi_errno(errno);
+ uint32_t result=0;
+ for(;;){char *slash=strchr(part,'/');if(slash)*slash=0;
+  if(!*part||!strcmp(part,".")||!strcmp(part,"..")){result=(uint32_t)-63;break;}
+  if(!slash){if(mkdirat(dir,part,0700))result=(uint32_t)-wasi_errno(errno);break;}
+  int next=openat(dir,part,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+  if(next<0){result=(uint32_t)-wasi_errno(errno);break;}close(dir);dir=next;part=slash+1;
+ }
+ close(dir);return result;
+}
