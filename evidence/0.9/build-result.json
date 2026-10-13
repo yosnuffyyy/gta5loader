@@ -1,0 +1,178 @@
+{
+  "date": "2026-10-13",
+  "version": "0.9",
+  "sourceCommit": "6cfdf99c1635bc5a27f04fd1255661fc5ffeb129",
+  "run": 38482121235,
+  "job": 115586928988,
+  "runURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38482121235",
+  "artifacts": [
+    {
+      "id": 11858001197,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 89723978,
+      "digest": "sha256:162e4857305f1b5d5c457c60c41f1e16550a9b8307a4279de62831ce090d8360"
+    },
+    {
+      "id": 11857496414,
+      "name": "native-compiler-evidence",
+      "bytes": 37662,
+      "digest": "sha256:e98b044b826884de4e666bdc3112f20806cc6111841a8fc108180f31059e4f5c"
+    }
+  ],
+  "developmentRuns": [
+    {
+      "run": 38480955340,
+      "status": "FAILED before cancellation",
+      "reason": "Unbraced multi-statement WABT LONGJMP macro in wait hook, fixed before delivery"
+    },
+    {
+      "run": 38481441609,
+      "status": "FAILED",
+      "reason": "macOS Bash 3 empty array under nounset, test option changed to scalar"
+    },
+    {
+      "run": 38481717480,
+      "status": "PASS",
+      "reason": "Pre-final build; final build adds thread-creation/shutdown race check"
+    }
+  ],
+  "ci": "PASS",
+  "mailboxBaseline": "EXPECTED FAILURE, pinned 0.8 source",
+  "mailboxSanitizers": "PASS",
+  "realEngineOwnerWaitProxyRuns": 4,
+  "synchronousProxiesPerRun": 48,
+  "macCPURegressions": 4,
+  "macGPURingReplays": 2,
+  "commandsPerReplay": 158,
+  "drawsPerReplay": 11,
+  "cachedEngineObjects": [
+    {
+      "target": "macos",
+      "count": 140
+    },
+    {
+      "target": "ios",
+      "count": 140
+    }
+  ],
+  "sourceBuildFilesVerified": 68,
+  "localAudit": {
+    "result": "PASS",
+    "architecture": "ARM64",
+    "platform": "iPhone device",
+    "minimumOS": "17.0",
+    "unsigned": true,
+    "hasWebKit": false,
+    "hasWritableExecutableSegment": false,
+    "ipaBytes": 102010314,
+    "ipaSHA256": "84882ef4608b29d11079a553742672ac3cbb24621c7e46b9b5365746227799a1",
+    "version": "0.9.0",
+    "build": "9",
+    "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+    "engine": {
+      "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+      "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+      "modification": "Add eleven exports only; engine instructions unchanged",
+      "probes": [
+        {
+          "name": "memcmp",
+          "sourceName": "memcmp",
+          "index": 90814
+        },
+        {
+          "name": "strcmp",
+          "sourceName": "strcmp",
+          "index": 90930
+        },
+        {
+          "name": "strlen",
+          "sourceName": "strlen",
+          "index": 90939
+        },
+        {
+          "name": "sinf",
+          "sourceName": "sinf",
+          "index": 90918
+        },
+        {
+          "name": "cosf",
+          "sourceName": "cosf",
+          "index": 90732
+        },
+        {
+          "name": "fopen",
+          "sourceName": "fopen",
+          "index": 90775
+        },
+        {
+          "name": "fclose",
+          "sourceName": "fclose",
+          "index": 90762
+        },
+        {
+          "name": "fread",
+          "sourceName": "fread",
+          "index": 90782
+        },
+        {
+          "name": "fwrite",
+          "sourceName": "fwrite",
+          "index": 90790
+        },
+        {
+          "name": "fseeko",
+          "sourceName": "__fseeko",
+          "index": 90784
+        },
+        {
+          "name": "ftello",
+          "sourceName": "__ftello",
+          "index": 90788
+        }
+      ]
+    },
+    "dylibs": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/System/Library/Frameworks/GameController.framework/GameController",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+    ],
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "initialProtection": 0
+      },
+      {
+        "name": "__TEXT",
+        "initialProtection": 5
+      },
+      {
+        "name": "__DATA_CONST",
+        "initialProtection": 3
+      },
+      {
+        "name": "__DATA",
+        "initialProtection": 3
+      },
+      {
+        "name": "__LINKEDIT",
+        "initialProtection": 1
+      }
+    ]
+  },
+  "priorEightIPAs": "Unchanged",
+  "iphone09": "PENDING",
+  "realSceneVerified": false,
+  "playable": false,
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}

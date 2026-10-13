@@ -34,9 +34,13 @@ IPA: GTA-Native-Probe-0.8-unsigned.ipa
 Bytes: 102008462
 SHA256: 065af3d1316d7b2675ec4b401acff929b78a80b35950c4b204327f66130f1c0b
 
-Physical iPhone 0.8 output cases, local shader loading from the selected web
-folder, real archive continuation and correct successive scene frames:
-PENDING. Stage 3 remains IN PROGRESS; five stages left. See NATIVE-0.8.txt
+Physical iPhone 0.8 output cases: PASS, as reported by the user on 2026-10-13.
+11 original shader draws/four pipelines, 11 BC formats and the archive-boundary
+checkpoint passed. Actual startup rendered the engine's blue boot screen,
+then remained unchanged for about two minutes. Stop did not finish reporting.
+Successive correct game scene frames: NOT VERIFIED. This is a startup/shutdown
+stall, not a completed renderer or playable release.
+Stage 3 remains IN PROGRESS; five stages left. See NATIVE-0.8.txt
 for remaining bindings, shader variants, GPU operations, audio and input.
 
 Pre-delivery run 38477183255 caught a C API enum sentinel mismatch; fixed.

@@ -149,7 +149,7 @@
     ]
   },
   "priorSevenIPAs": "Byte-for-byte unchanged",
-  "iphone08": "PENDING",
+  "iphone08": "FIXTURES PASS; real blue boot UI then stalled; no scene verified",
   "stage3": "IN PROGRESS",
   "stagesLeft": 5,
   "realSceneVerified": false,

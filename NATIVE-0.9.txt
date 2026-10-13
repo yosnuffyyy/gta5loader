@@ -1,0 +1,42 @@
+NATIVE 0.9 — PROLOGUE STARTUP WAIT REPAIR (STAGE 3)
+
+Original objective: standalone playable iPhone game, starting with conservative
+Prologue. PC packages and deployed main remain protected. No game scene or
+playable release is claimed for this build.
+
+This change addresses the physical 0.8 stall after its real blue boot screen.
+The old diagnostic manually checked the owner's mailbox while waiting for
+workers; an ordinary atomic wait did not. Native threads now service their
+own pending mailbox on waits and clock calls. A mailbox poke is spurious for
+WebAssembly wait/notify and cannot falsely complete an engine semaphore.
+Reentrant callbacks run outside the waiter locks. Local trap/exception guards
+unlink stack waiters before propagating to the unchanged outer checkpoint.
+No opaque jmp_buf is copied and no extra polling thread is added.
+
+Zero-timeout/mismatch waits and clock loops now observe cancellation too.
+The pinned Metal backend disables nextDrawable timeout in configure; this
+build restores allowsNextDrawableTimeout after configuration. An unavailable
+drawable skips a display attempt, records a timeout, and does not increment
+surface frames. GPU command ordering and the original game shaders are kept.
+
+The existing app main run loop samples atomic startup snapshots every five
+seconds, including during Stop. Snapshots show command count, surface frames,
+draws, shader hash, GPU phase, worker/proxy counts and owner mailbox status.
+They never read mutable GPU dictionaries or counters across threads. Their
+purpose is to locate a remaining native block without another blind build.
+
+Automated gate: reproduce the old wait failure; sanitizer checks for reentrant
+callbacks, nested traps/exceptions, cancellation and mailbox wake races; real
+engine worker proxies while the owner blocks in atomic waits; prior file,
+threading, shader, compressed-texture and GPU command regression checks.
+Build/package/delivery verification is recorded separately after completion.
+
+PHONE TEST AFTER VERIFIED DELIVERY
+Install 0.9 with the existing signing route. Keep game files and saves.
+Select the extracted web folder, then Trace Prologue startup (experimental).
+Keep the render view visible initially. Copy the final report if it stops,
+or the last Live startup lines and Stop result if it stalls. The immediate
+target is progression beyond the blue boot screen into real Prologue frames.
+Audio output, gameplay input and sustained play remain later roadmap gates.
+
+(stage 3 in progress) (5 stages left)

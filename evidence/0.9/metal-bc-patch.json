@@ -1,0 +1,10 @@
+{
+  "name": "Metal BC capability detection",
+  "wgpuHalVersion": "29.0.3",
+  "originalCrateSHA256": "31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f",
+  "originalAdapterSHA256": "6da21d590125e601015862dd2a66e4dae2fdd5e35d80624dd2c6cca52099d9bf",
+  "patchedAdapterSHA256": "dd57c51d4c50610f60e8eb0895d4f04ddccd1772756b5989f93dfccb047ffdd1",
+  "before": "            format_bc: os_type == super::OsType::Macos,",
+  "after": "            // Local native-iPhone patch: ask Metal rather than excluding iOS.\n            // Unsupported devices remain unsupported; no feature is fabricated.\n            format_bc: os_type == super::OsType::Macos\n                || (available!(ios = 16.4, tvos = 16.4, visionos = 1.0)\n                    && device_class_responds_to(device, sel!(supportsBCTextureCompression))\n                    && device.supportsBCTextureCompression()),",
+  "scope": "Only the BC capability condition; normal validation and compressed storage preserved"
+}

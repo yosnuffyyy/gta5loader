@@ -1,0 +1,9 @@
+{
+  "version": "0.9",
+  "status": "PENDING",
+  "requestedTest": "Trace Prologue startup; report visual progress, live status and Stop result",
+  "realSceneVerified": false,
+  "playable": false,
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5
+}

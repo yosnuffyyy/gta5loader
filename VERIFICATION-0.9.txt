@@ -1,0 +1,29 @@
+NATIVE 0.9 — PROLOGUE STARTUP WAIT REPAIR
+Source 6cfdf99c1635bc5a27f04fd1255661fc5ffeb129
+Run https://github.com/yosnuffyyy/gta5loader/actions/runs/38482121235
+Job 115586928988; CI PASS.
+
+PASS: old 0.8 mailbox wait failure reproduced with pinned baseline source.
+PASS: address/undefined sanitizers for mailbox delivery, same-bucket callback
+reentry, nested trap/exception cleanup, zero-timeout/mismatch cancellation
+and 50 spurious mailbox wake races. Existing wait/notify regression passed.
+PASS: four real engine runtime regressions. Each completed 48 synchronous
+worker-to-owner proxies while the owner blocked in indefinite atomic waits.
+Persistent saves, selected-file samples, TLS, workers and joined cleanup passed.
+PASS: two original startup DRAW replays, 158 commands / 11 draws / four
+cached pipelines each; BC sampling, packed constants, depth/blend/scissor,
+file bounds, GPU ring sanitizers and separate original shader fixture passed.
+Two real graphics main checkpoints deliberately stop before archive bytes.
+These checks do not establish actual scene frames or playable gameplay.
+PASS: Mac/iPhone compilation, pinned Metal/WGSL backend, source manifest/Git
+tree match, artifact ZIP verification, checked extraction and unsigned IPA audit.
+Engine object reuse: macos: 140; ios: 140.
+
+IPA: GTA-Native-Probe-0.9-unsigned.ipa
+Bytes: 102010314
+SHA256: 84882ef4608b29d11079a553742672ac3cbb24621c7e46b9b5365746227799a1
+
+Physical iPhone 0.9 Prologue continuation and Stop behavior: PENDING.
+The mailbox gap and unbounded drawable acquisition are concrete code defects;
+the phone must establish which repair advances its observed blue-screen stall.
+Stage 3 remains in progress; five stages left. PC folders and main unchanged.

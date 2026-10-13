@@ -1,17 +1,18 @@
-NATIVE INTEGRATION 0.8 — WINDOWS INSTALLATION
+NATIVE INTEGRATION 0.9 — WINDOWS INSTALLATION
 
-Install GTA-Native-Probe-0.8-unsigned.ipa over 0.7 with the same Sideloadly
+Install GTA-Native-Probe-0.9-unsigned.ipa over 0.8 with the same Sideloadly
 setup, Apple account and bundle identifier. No Windows prerequisite changes
-or game-file reinstall are needed. The working 0.1 through 0.7 IPAs remain
+or game-file reinstall are needed. The working 0.1 through 0.8 IPAs remain
 preserved for rollback.
 
-Select the extracted web folder (including data/manifest.json). Run GPU queue
-+ startup tests and copy its report. This checks native BC formats plus ten original startup shader DRAW
-output cases. If it passes, tap Trace Prologue startup and copy
-that report. The second test actually reads archives; it is expected to stop
-at an unsupported operation when an unimplemented shader binding or graphics operation is reached.
-Use Stop native startup if needed. Reselect the folder after each app launch.
-See NATIVE-0.8.txt and VERIFICATION-0.8.txt for tested scope and remaining work.
+Select the extracted web folder (including data/manifest.json), then tap
+Trace Prologue startup. Keep the render view visible initially. This build
+repairs mailbox/cancellation and drawable waits from the 0.8 startup stall.
+Copy its final report, or the last Live startup lines and Stop result if it
+stalls. Required unsupported operations still report explicit errors.
+Reselect the folder after each app launch. The separate older test buttons
+remain available; their Mac regressions already passed for this build.
+See NATIVE-0.9.txt and VERIFICATION-0.9.txt for tested scope and remaining work.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
 It is separate from both the working PC game and the Safari installation.
@@ -23,7 +24,7 @@ It is separate from both the working PC game and the Safari installation.
    versions. Do not uninstall existing Apple software without checking those
    instructions and your sync/backup needs.
 2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.8-unsigned.ipa.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.9-unsigned.ipa.
 4. Use the normal Apple ID signing/install mode with your free Apple account.
    Enter the password and any two-factor code only in the local signing tool.
    No account credentials, certificates or private keys belong in GitHub.
@@ -32,8 +33,7 @@ It is separate from both the working PC game and the Safari installation.
    VPN & Device Management. Follow the iPhone's restart/confirmation prompts.
 6. Open GTA Native Probe, tap Check local web folder and select the extracted
    web folder in Files. It must contain data/manifest.json and game files.
-   Tap Run GPU queue + startup tests and copy the complete report. Then tap
-   Trace Prologue startup and copy its report. If iOS closes the app, reopen
+   Tap Trace Prologue startup and copy its report. If iOS closes the app, reopen
    it and copy the retained report.
 7. The separate Run native engine tests button retains the basic converted
    engine and Metal diagnostic. The older renderer and worker tests remain

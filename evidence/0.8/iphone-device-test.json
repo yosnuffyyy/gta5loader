@@ -1,6 +1,11 @@
 {
   "version": "0.8",
-  "status": "PENDING",
+  "status": "FIXTURES_PASS_REAL_STARTUP_STALLED",
+  "reportedDate": "2026-10-13",
+  "device": "iPhone 16 Pro Max / Apple A18 Pro GPU",
+  "ios": "27.0.1",
+  "queueFixture": {"commands":158,"uploads":21,"readbacks":15,"draws":11,"pipelines":4,"pipelineHits":7,"bcFormats":11,"surfaceFrames":0,"result":"PASS"},
+  "realStartup": {"visible":"Engine-owned blue Now loading Grand Theft Auto V boot screen", "unchangedSecondsApprox":120,"lastPrintedAsset":"x64/audio/sfx/RADIO_13_JAZZ.rpf","lastReportLine":"Stopping native startup and joining workers…","exitReported":false,"finalGpuCountersReported":false},
   "requestedTests": [
     "GPU queue + startup: original startup DRAW, BC and queue fixtures PASS",
     "Trace real Prologue startup; copy full report and describe any visible loading image"

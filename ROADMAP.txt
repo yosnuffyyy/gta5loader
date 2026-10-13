@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.8 original startup DRAW integration; stage 3 remains active.
+Updated 2026-10-13. Native 0.9 startup wait/cancellation repair; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -27,8 +27,18 @@ parsed audio archives, then hit missing BC capability at command 710.
 0.7 patches the backend's macOS-only BC condition to query actual Metal
 support on iOS, preserving compressed storage. Physical 0.7 BC sampling passed; the archive trace reached DRAW at command
 790. Native 0.8 adds the draw consumer and a bounded local shader loader,
-with an original startup shader replay. Physical draws/archive continuation
-and successive correct real game frames are still required.
+with an original startup shader replay. The physical 0.8 GPU fixture passed
+all output cases, and actual startup displayed the engine's blue boot screen.
+It then stalled for about two minutes; Stop did not produce a final report.
+This is an engine-rendered startup screen, not a game scene.
+0.9 repairs mailbox delivery during blocking engine waits, cancellation in
+clock/zero-timeout spin loops, and the backend's indefinite drawable wait.
+Independent live status reports the blocked GPU phase even during shutdown.
+0.9 CI build 38482121235 passed all wait, owner-worker proxy and existing GPU
+regressions. The unsigned ARM64 IPA was audited and delivered. Physical 0.9
+Prologue continuation and shutdown behavior remain pending.
+Correct successive real game frames are still required. No stage is advanced
+by a fixture alone; these fixes target the actual Prologue startup blocker.
 
 STAGE 1 — COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
 Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.json.

@@ -1,0 +1,6 @@
+Native renderer feasibility 0.5
+Backend: wgpu-native 29.0.1.1 / Metal (Apple Paravirtual device)
+PASS: original postfx vertex + fragment WGSL with the browser's packed constant-buffer layouts.
+PASS: texture/sampler binding, vertex input, three draws with changed RGB/alpha uniforms, all 4,096 pixels compared per draw (1-byte tolerance), GPU readback and resource cleanup.
+Validation/runtime errors: 0
+This is an offscreen shader fixture, not an engine scene. Ring integration, remaining shader/format coverage, audio and gameplay are pending.
