@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 4530,
-      "sha256": "361041da9c178272fd0b15440760bb4fc1a2290703478c083710e8bf3c202eeb"
+      "bytes": 4548,
+      "sha256": "373dd8029502a6e855c2feddd6c721ba2ea48abbb680449fc14f83f1d6bbba4f"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -93,8 +93,8 @@
     },
     {
       "path": "native-ios/package-ios.sh",
-      "bytes": 1838,
-      "sha256": "757f6b192836d8f52e23271d5bc1fbc783694927df532d7bf6ed751d531abd1b"
+      "bytes": 2769,
+      "sha256": "6194971e0dbe4c37780a6c32210940ccd3ee8cd0dadc1c86b381c4e92cf53f47"
     },
     {
       "path": "native-ios/patch-bulk.mjs",

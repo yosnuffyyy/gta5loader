@@ -45,7 +45,7 @@ const key=hash(JSON.stringify(item));
  console.log(target+': reused '+reused+' verified compiler objects');
  const objects=sources.map(s=>folder+'/'+path.basename(s)+'.o');
  if(target==='macos'){
-  await run('clang',['-isysroot',sdk,...objects,'-framework','Foundation','-o',folder+'/native-probe']);
+  await run('clang',['-isysroot',sdk,...objects,'-Wl,-dead_strip','-framework','Foundation','-o',folder+'/native-probe']);
   let result='';
   for(let pass=1;pass<=2;pass++){
    const output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});
