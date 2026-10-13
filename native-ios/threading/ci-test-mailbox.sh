@@ -3,13 +3,13 @@ set -euo pipefail
 mkdir -p native-build/wait native-build/evidence
 for variant in baseline fixed; do
   source=native-ios/native_wait.c
-  options=()
-  if [[ "$variant" == baseline ]]; then source=native-ios/threading/native_wait_baseline.c; options+=(-DNATIVE_WAIT_BASELINE); fi
+  option=-DNATIVE_WAIT_FIXED
+  if [[ "$variant" == baseline ]]; then source=native-ios/threading/native_wait_baseline.c; option=-DNATIVE_WAIT_BASELINE; fi
   clang -std=gnu11 -O1 -g -pthread -fsanitize=address,undefined \
     -DWASM_RT_USE_MMAP=1 -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1 \
     -DWASM_RT_MEMCHECK_GUARD_PAGES=0 -DWASM_RT_SKIP_SIGNAL_RECOVERY=1 \
     -I native-build/wabt/wasm2c -I native-ios -I native-ios/threading \
-    "${options[@]}" native-ios/threading/test_mailbox_wait.c "$source" \
+    "$option" native-ios/threading/test_mailbox_wait.c "$source" \
     native-build/wabt/wasm2c/wasm-rt-impl.c \
     native-build/wabt/wasm2c/wasm-rt-mem-impl.c \
     native-build/wabt/wasm2c/wasm-rt-exceptions-impl.c \

@@ -303,8 +303,8 @@
     },
     {
       "path": "native-ios/threading/ci-test-mailbox.sh",
-      "bytes": 1103,
-      "sha256": "5a789bb09d4ad1ea91d8b51d2236dbb459c5a6aacba6445208313988cd2fc583"
+      "bytes": 1109,
+      "sha256": "93e868c6869a825878465c6bdd75e952da1c73585de16a37b2061854486b7cc3"
     },
     {
       "path": "native-ios/threading/native_pump.h",
