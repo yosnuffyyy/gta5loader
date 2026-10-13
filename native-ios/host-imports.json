@@ -41,5 +41,6 @@
   "__syscall_lstat64": "return host_path_stat(arg0,arg1,arg2); /* rooted resolver rejects symlinks */",
   "__syscall_mkdirat": "return host_mkdir(arg0,arg1,arg2,arg3);",
   "wgpu_start_worker": "native_graphics_start(arg0,arg1,arg2,arg3);",
-  "wasm_has_page_js": "return native_has_display();"
+  "wasm_has_page_js": "return native_has_display();",
+  "wasm_userdata_page_js": "return 0; /* native rooted save I/O is synchronous; no browser page persistence bridge */"
 }

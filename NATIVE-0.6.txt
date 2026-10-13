@@ -1,0 +1,47 @@
+NATIVE INTEGRATION 0.6 — ROADMAP STAGE 3 IN PROGRESS
+
+This is an engine/archive/GPU queue diagnostic, not a playable release.
+Stages 1 and 2 are complete. Stage 3 and the four following stages remain.
+The original CPU checkpoint and renderer feasibility buttons are retained.
+
+New paths
+- Run GPU queue + startup tests: replay the shared GPU ring with known bytes
+  and pixels, then enter the actual graphics-enabled engine main. This
+  checkpoint still stops BEFORE delivering the first audio.rpf archive bytes.
+- Trace Prologue startup (experimental): use the selected local web folder,
+  actually deliver archive bytes and run until an unsupported operation, user
+  Stop, backgrounding or the 180-second diagnostic deadline at a native wait.
+  The first unsupported host/GPU operation is reported. Scene draws are not
+  implemented yet; this build is expected to stop before a correct game scene.
+
+Conservative implementation
+The existing engine and game files are not duplicated into the app. Installed
+files are read with one 64 KiB buffer and at most eight open handles. GPU inline
+uploads are consumed before publishing the ring tail. A8 conversion scratch is
+bounded to 256 KiB; diagnostic readback scratch is limited to 64 MiB. Fences
+and query/readback completion flags follow actual GPU completion. Failed or
+unsupported commands cancel startup rather than report fabricated success.
+The app batches logs, bounds retained text, samples process memory once per
+second and reports its highest SAMPLE; this is not an exact peak measurement.
+
+Current coverage and limitations
+Resource creation, uploads, bindings/state, clears, same-format copies,
+resolves, RGBA8/BGRA8 or buffer readbacks, presentation, event/timestamp queries
+and fences have native handlers. Only the small replay subset is dynamically
+verified. Shader/layout/SRV/UAV creation currently retains metadata only.
+General draw/compute pipelines, occlusion queries, mip generation, UAV clear/
+counters, cross-format compression copies and additional readback formats are
+pending. Surface presentation and real archive continuation require iPhone
+testing. Audio output, player controls and sustained gameplay remain pending.
+
+Use
+Sideload the new 0.6 IPA through the same signing route used for 0.5. Select
+the extracted web folder using Check local web folder. Run GPU queue + startup
+tests, copy its report, then Trace Prologue startup and copy that report. If
+it is taking too long, use Stop native startup. If iOS terminates the app,
+reopen it and copy the retained report. Keep the working 0.5 IPA for rollback.
+Do not clear or reimport the game files for this test.
+
+Stage 3 is complete only after successive correct real game frames have been
+observed on iPhone. A successful replay or early startup is not that gate.
+The PC packages and deployed main branch are outside this development scope.

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <mach/mach.h>
 
 typedef struct {
  uint32_t id,kind,size,bind,misc,stride,words;bool a8;
@@ -28,10 +29,16 @@ struct NativeGpu {
  WGPUSurface surface;WGPURenderPipeline blit;WGPUShaderModule blit_shader;
  CFMutableDictionaryRef objects;uint64_t presents,surface_frames,uploads,readbacks;
  uint64_t buffer_bytes,texture_bytes;_Atomic uint32_t last_op;
+ uint64_t last_sample,last_report;double highest_footprint;
  uint32_t shader[3],layout,topology,vb[16][3],ib[3],cb[3][16][3],srv[3][128],smp[3][16],uav[3][8];
  uint32_t targets[37],blend[6],depth[2],raster,viewports[97],scissors[65];
 };
 static uint64_t now_ns(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
+static void sample_memory(NativeGpu *g){uint64_t now=now_ns();if(now-g->last_sample<1000000000ull)return;g->last_sample=now;
+ task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;if(task_info(mach_task_self(),TASK_VM_INFO,(task_info_t)&info,&count)!=KERN_SUCCESS)return;
+ double footprint=(double)info.phys_footprint/1048576.0;if(footprint>g->highest_footprint)g->highest_footprint=footprint;
+ if(g->host->progress&&now-g->last_report>=5000000000ull){g->last_report=now;char line[320];snprintf(line,sizeof(line),"Native startup: process %.1f MiB (highest 1-second sample %.1f MiB); heap committed %.1f MiB; GPU commands %llu, surface frames %llu, last %s",footprint,g->highest_footprint,(double)atomic_load(&g->host->memory.size)/1048576.0,(unsigned long long)g->ring.executed,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));g->host->progress(g->host->progress_context,line);}
+}
 static _Atomic uint32_t *heap_word(NativeGpu *g,uint64_t address){return (_Atomic uint32_t*)(g->host->memory.data+address);}
 static void wake(void *context,uint64_t address){NativeGpu *g=context;native_notify(&g->host->memory,address,UINT32_MAX);}
 static void fail(NativeGpu *g,const char *message){
@@ -87,7 +94,8 @@ static bool hardware(NativeGpu *g){
  WGPUAdapterInfo ai=WGPU_ADAPTER_INFO_INIT;if(!check(g,wgpuAdapterGetInfo(g->adapter,&ai)==WGPUStatus_Success,"Native adapter information"))return false;size_t n=ai.device.length==WGPU_STRLEN?(ai.device.data?strlen(ai.device.data):0):ai.device.length;if(n>190)n=190;snprintf(g->adapter_name,sizeof(g->adapter_name),"%.*s",(int)n,ai.device.data?ai.device.data:"");wgpuAdapterInfoFreeMembers(ai);
  WGPUFeatureName wanted[]={WGPUFeatureName_TextureCompressionBC,WGPUFeatureName_Depth32FloatStencil8,WGPUFeatureName_Float32Filterable,WGPUFeatureName_IndirectFirstInstance,WGPUFeatureName_RG11B10UfloatRenderable,WGPUFeatureName_BGRA8UnormStorage,WGPUFeatureName_DepthClipControl};WGPUFeatureName features[16];size_t count=0;
  for(unsigned i=0;i<sizeof(wanted)/sizeof(wanted[0]);i++)if(wgpuAdapterHasFeature(g->adapter,wanted[i]))features[count++]=wanted[i];
- WGPUDeviceDescriptor dd=WGPU_DEVICE_DESCRIPTOR_INIT;dd.requiredFeatures=features;dd.requiredFeatureCount=count;dd.uncapturedErrorCallbackInfo.callback=device_error;dd.uncapturedErrorCallbackInfo.userdata1=g;dd.deviceLostCallbackInfo.mode=WGPUCallbackMode_AllowProcessEvents;dd.deviceLostCallbackInfo.callback=lost;dd.deviceLostCallbackInfo.userdata1=g;
+ WGPULimits limits=WGPU_LIMITS_INIT;if(!check(g,wgpuAdapterGetLimits(g->adapter,&limits)==WGPUStatus_Success,"Native adapter limits query"))return false;
+ WGPUDeviceDescriptor dd=WGPU_DEVICE_DESCRIPTOR_INIT;dd.requiredLimits=&limits;dd.requiredFeatures=features;dd.requiredFeatureCount=count;dd.uncapturedErrorCallbackInfo.callback=device_error;dd.uncapturedErrorCallbackInfo.userdata1=g;dd.deviceLostCallbackInfo.mode=WGPUCallbackMode_AllowProcessEvents;dd.deviceLostCallbackInfo.callback=lost;dd.deviceLostCallbackInfo.userdata1=g;
  WGPURequestDeviceCallbackInfo dc=WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;dc.mode=WGPUCallbackMode_AllowProcessEvents;dc.callback=got_device;dc.userdata1=g;atomic_store(&g->callback_done,false);wgpuAdapterRequestDevice(g->adapter,&dd,dc);if(!wait_callback(g)||!g->device)return false;
  g->queue=wgpuDeviceGetQueue(g->device);if(!check(g,g->queue!=NULL,"Native GPU queue creation"))return false;
  if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);}
@@ -248,7 +256,7 @@ static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){Nativ
  case 45:{if(!check(g,n==1,"Invalid begin-query command"))return false;Object *q=object(g,gpu_word(p,0));return check(g,q&&q->kind==44&&q->meta[1]!=1&&q->meta[1]!=5,"Occlusion begin not yet implemented");}
  case 46:return check(g,n==2,"Invalid end-query command")&&end_query(g,p);
  case 42:return check(g,n==17,"Invalid readback command")&&readback(g,p);
- default:{char text[240];snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u PS %u, %llu commands executed",gpu_opcode_name(op),g->shader[0],g->shader[1],(unsigned long long)g->ring.executed);fail(g,text);return false;}
+ default:{char text[320];Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u (%08x%08x) PS %u (%08x%08x), %llu commands executed",gpu_opcode_name(op),g->shader[0],vs&&vs->kind==14?vs->meta[3]:0,vs&&vs->kind==14?vs->meta[2]:0,g->shader[1],ps&&ps->kind==14?ps->meta[3]:0,ps&&ps->kind==14?ps->meta[2]:0,(unsigned long long)g->ring.executed);fail(g,text);return false;}
  }
 }
 static void release_hardware(NativeGpu *g){atomic_store(&g->closing,true);CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);}
@@ -258,7 +266,7 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  else if(hardware(g)){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed))fail(g,g->ring.error);break;}
-   wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
+   sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
    if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head)native_wait32(&g->host->memory,g->ring.base,head,100000000);atomic_store(heap_word(g,g->ring.base+20),0);}
   }
  }
@@ -318,4 +326,3 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!trap){wasm_rt_allocate_memory_shared(&h->memory,32,65536,false,65536);allocated=true;result=native_gpu_replay_test(h,report,capacity)?0:1;}else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
  if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}free(h);wasm_rt_free_thread();return result;
 }
-

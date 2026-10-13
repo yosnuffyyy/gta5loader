@@ -57,6 +57,7 @@ static _Thread_local NativeThreads *current;
 static _Thread_local NativeWorker *worker;
 static _Atomic bool scene_stop;
 void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
+void native_scene_reset_stop(void){atomic_store(&scene_stop,false);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
 static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
@@ -317,7 +318,7 @@ bool native_main_reached(struct w2c_env *h){
 }
 static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
 uint32_t native_has_display(void){return current&&current->display?1:0;}
-void native_boot_prepare(struct w2c_env *h,void *layer,bool checkpoint){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");}
+void native_boot_prepare(struct w2c_env *h,void *layer,bool checkpoint){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");}
 void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);

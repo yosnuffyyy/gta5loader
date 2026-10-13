@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 24238,
-      "sha256": "fa0cb05bdac6324711894c2ce0e2212ee9cbed7487a07bb9f3ba14861142e419"
+      "bytes": 24293,
+      "sha256": "936fe866dc75fd81003f00071cfc2fdc18801b7db6ea6c6a5ce165e92617e4c1"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -58,8 +58,8 @@
     },
     {
       "path": "native-ios/host-imports.json",
-      "bytes": 3397,
-      "sha256": "178849c8147d4167917c6e089042becc9b6dcb113b00136a964eb30ef787af3b"
+      "bytes": 3517,
+      "sha256": "7ab4edc9fbd5e348f28a43065164eb9dc4b2106adb2f4c85dba0583e07b92e53"
     },
     {
       "path": "native-ios/Info.plist",
@@ -143,8 +143,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 1310,
-      "sha256": "366aa37f54d48dd98d4ed8dc25a48551e40e93a57a5179c472d76c2b3553ca56"
+      "bytes": 1592,
+      "sha256": "c70ef5008547abdf4733ef04abdb6a6b1c5d7810d6feee96a8b0f07ba338a386"
     },
     {
       "path": "native-ios/renderer/gpu_ring.c",
@@ -163,13 +163,13 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 44248,
-      "sha256": "73935e9dc1b07d65674d95c8c5237ebebdc673c41582786e82c3d973235297d0"
+      "bytes": 45657,
+      "sha256": "317f9c479090bd24b2fa89a72dd26dc4c1f08cc7fdeeff4485fba12e8aaffe52"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
-      "bytes": 360,
-      "sha256": "fe2c5b610faa63c3773a472d55ee0d27b74e1d4c2895756b46c58106f401444c"
+      "bytes": 396,
+      "sha256": "65becbd407937d024437ab6132d27b8541cbcb97f2d129ff3ea0e6d3c0f7c7cc"
     },
     {
       "path": "native-ios/renderer/native_renderer.c",
@@ -243,8 +243,8 @@
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 25837,
-      "sha256": "541030058b21ee545f297626366546a1df570bf5225ad0a468e7dd68264b992f"
+      "bytes": 25920,
+      "sha256": "ba6cb8141b1bc89f1921af59be2adb520584c874a63a37e08e23090cb53e2dc1"
     },
     {
       "path": "native-ios/threading/native_threads.h",
@@ -263,4 +263,3 @@
     }
   ]
 }
-
