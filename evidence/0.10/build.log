@@ -1,0 +1,975 @@
+native-ios/Info.plist: OK
+PASS: GPU ring publication, 100,000 concurrent commands, wrap, bounds, unknown opcode and truncated-payload rejection.
+PASS: GPU ring publication, 100,000 concurrent commands, wrap, bounds, unknown opcode and truncated-payload rejection.
+PASS: pinned native Metal backend downloads and game shader fixture digests.
+info: syncing channel updates for 1.93.1-aarch64-apple-darwin
+info: latest update on 2026-02-12 for version 1.93.1 (01f6ddf75 2026-02-11)
+info: downloading 3 components
+
+  1.93.1-aarch64-apple-darwin installed - rustc 1.93.1 (01f6ddf75 2026-02-11)
+
+info: self-update is disabled for this build of rustup
+info: any updates to rustup will need to be fetched with your system package manager
+info: downloading component rust-std
+info: component rust-std is up to date
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Initialized empty Git repository in /Users/runner/work/gta5loader/gta5loader/native-build/wgpu-source/.git/
+From https://github.com/gfx-rs/wgpu-native
+ * branch            6aed50955d934ac36049ba8d002034841633ae02 -> FETCH_HEAD
+HEAD is now at 6aed509 Bump webgpu-native headers to make immediates easier again (#592)
+Submodule 'examples/vendor/glfw' (https://github.com/glfw/glfw.git) registered for path 'examples/vendor/glfw'
+Submodule 'ffi/webgpu-headers' (https://github.com/webgpu-native/webgpu-headers) registered for path 'ffi/webgpu-headers'
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wgpu-source/examples/vendor/glfw'...
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wgpu-source/ffi/webgpu-headers'...
+From https://github.com/glfw/glfw
+ * branch            b35641f4a3c62aa86a0b3c983d163bc0fe36026d -> FETCH_HEAD
+Submodule path 'examples/vendor/glfw': checked out 'b35641f4a3c62aa86a0b3c983d163bc0fe36026d'
+From https://github.com/webgpu-native/webgpu-headers
+ * branch            673658bc2bd70ec39fc55ebe6bb0173cf6d0a603 -> FETCH_HEAD
+Submodule path 'ffi/webgpu-headers': checked out '673658bc2bd70ec39fc55ebe6bb0173cf6d0a603'
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded document-features v0.2.12
+  Downloaded pin-project-lite v0.2.17
+  Downloaded windows-threading v0.2.1
+  Downloaded windows-numerics v0.3.1
+  Downloaded windows-future v0.3.2
+  Downloaded xml-rs v0.8.28
+  Downloaded zerocopy-derive v0.8.52
+  Downloaded wasm-bindgen-macro-support v0.2.125
+  Downloaded serde v1.0.228
+  Downloaded wgpu-types v29.0.3
+  Downloaded regex v1.12.4
+  Downloaded libm v0.2.16
+  Downloaded objc2-metal v0.3.2
+  Downloaded objc2-core-foundation v0.3.2
+  Downloaded hashbrown v0.17.1
+  Downloaded hashbrown v0.16.1
+  Downloaded zerocopy v0.8.52
+  Downloaded unicode-width v0.2.2
+  Downloaded glow v0.17.0
+  Downloaded syn v2.0.118
+  Downloaded hashbrown v0.15.5
+  Downloaded ndk-sys v0.6.0+11769913
+  Downloaded nom v7.1.3
+  Downloaded wgpu-core v29.0.3
+  Downloaded js-sys v0.3.102
+  Downloaded minimal-lexical v0.2.1
+  Downloaded wgpu-hal v29.0.3
+  Downloaded codespan-reporting v0.13.1
+  Downloaded bytemuck v1.25.0
+  Downloaded serde_core v1.0.228
+  Downloaded prettyplease v0.2.37
+  Downloaded parking_lot v0.12.5
+  Downloaded num-traits v0.2.19
+  Downloaded indexmap v2.14.0
+  Downloaded gpu-allocator v0.28.0
+  Downloaded regex-automata v0.4.14
+  Downloaded khronos_api v3.1.0
+  Downloaded wasm-bindgen v0.2.125
+  Downloaded serde_derive v1.0.228
+  Downloaded raw-window-handle v0.6.2
+  Downloaded web-sys v0.3.102
+  Downloaded ordered-float v5.3.0
+  Downloaded half v2.7.1
+  Downloaded gpu-descriptor-types v0.2.0
+  Downloaded petgraph v0.8.3
+  Downloaded glob v0.3.3
+  Downloaded foldhash v0.1.5
+  Downloaded naga v29.0.3
+  Downloaded libc v0.2.186
+  Downloaded fixedbitset v0.5.7
+  Downloaded either v1.16.0
+  Downloaded cfg-if v1.0.4
+  Downloaded windows-core v0.62.2
+  Downloaded unicode-ident v1.0.24
+  Downloaded spirv v0.4.0+sdk-1.4.341.0
+  Downloaded smallvec v1.15.2
+  Downloaded slotmap v1.1.1
+  Downloaded shlex v1.3.0
+  Downloaded pkg-config v0.3.33
+  Downloaded parking_lot_core v0.9.12
+  Downloaded once_cell v1.21.4
+  Downloaded objc2-encode v4.1.0
+  Downloaded lock_api v0.4.14
+  Downloaded khronos-egl v6.0.0
+  Downloaded jni-sys v0.4.1
+  Downloaded jni-sys v0.3.1
+  Downloaded hexf-parse v0.2.1
+  Downloaded futures-task v0.3.32
+  Downloaded futures-core v0.3.32
+  Downloaded dlib v0.5.3
+  Downloaded dispatch2 v0.3.1
+  Downloaded crunchy v0.2.4
+  Downloaded cfg_aliases v0.2.1
+  Downloaded cexpr v0.6.0
+  Downloaded bytemuck_derive v1.10.2
+  Downloaded unicode-xid v0.2.6
+  Downloaded thiserror-impl v2.0.18
+  Downloaded slab v0.4.12
+  Downloaded rustc-hash v2.1.2
+  Downloaded renderdoc-sys v1.1.0
+  Downloaded raw-window-metal v1.1.0
+  Downloaded range-alloc v0.1.5
+  Downloaded quote v1.0.45
+  Downloaded presser v0.3.1
+  Downloaded paste v1.0.15
+  Downloaded objc2-quartz-core v0.3.2
+  Downloaded objc2 v0.6.4
+  Downloaded jni-sys-macros v0.4.1
+  Downloaded gpu-descriptor v0.3.2
+  Downloaded glutin_wgl_sys v0.6.1
+  Downloaded gl_generator v0.14.0
+  Downloaded equivalent v1.0.2
+  Downloaded clang-sys v1.8.1
+  Downloaded bit-vec v0.9.1
+  Downloaded bit-set v0.9.1
+  Downloaded windows-interface v0.59.3
+  Downloaded windows-implement v0.60.2
+  Downloaded wgpu-naga-bridge v29.0.3
+  Downloaded wgpu-core-deps-windows-linux-android v29.0.3
+  Downloaded wgpu-core-deps-emscripten v29.0.3
+  Downloaded wasm-bindgen-shared v0.2.125
+  Downloaded wasm-bindgen-macro v0.2.125
+  Downloaded version_check v0.9.5
+  Downloaded thiserror v2.0.18
+  Downloaded scopeguard v1.2.0
+  Downloaded rustc-hash v1.1.0
+  Downloaded redox_syscall v0.5.18
+  Downloaded profiling v1.0.18
+  Downloaded proc-macro2 v1.0.106
+  Downloaded pp-rs v0.2.1
+  Downloaded objc2-foundation v0.3.2
+  Downloaded memchr v2.8.2
+  Downloaded macro_rules_attribute-proc_macro v0.2.2
+  Downloaded macro_rules_attribute v0.2.2
+  Downloaded log v0.4.33
+  Downloaded litrs v1.0.0
+  Downloaded libloading v0.8.9
+  Downloaded itertools v0.13.0
+  Downloaded bindgen v0.72.1
+  Downloaded ash v0.38.0+1.3.281
+  Downloaded arrayvec v0.7.7
+  Downloaded android_system_properties v0.1.5
+  Downloaded windows-strings v0.5.1
+  Downloaded windows-result v0.4.1
+  Downloaded windows-link v0.2.1
+  Downloaded windows-collections v0.3.2
+  Downloaded wgpu-core-deps-apple v29.0.3
+  Downloaded wayland-sys v0.31.11
+  Downloaded rustversion v1.0.22
+  Downloaded regex-syntax v0.8.11
+  Downloaded bumpalo v3.20.3
+  Downloaded block2 v0.6.2
+  Downloaded bitflags v2.13.0
+  Downloaded autocfg v1.5.1
+  Downloaded allocator-api2 v0.2.21
+  Downloaded aho-corasick v1.1.4
+  Downloaded futures-util v0.3.32
+  Downloaded foldhash v0.2.0
+  Downloaded windows v0.62.2
+   Vendoring aho-corasick v1.1.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aho-corasick-1.1.4) to vendor/aho-corasick-1.1.4
+   Vendoring allocator-api2 v0.2.21 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/allocator-api2-0.2.21) to vendor/allocator-api2-0.2.21
+   Vendoring android_system_properties v0.1.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/android_system_properties-0.1.5) to vendor/android_system_properties-0.1.5
+   Vendoring arrayvec v0.7.7 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.7.7) to vendor/arrayvec-0.7.7
+   Vendoring ash v0.38.0+1.3.281 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ash-0.38.0+1.3.281) to vendor/ash-0.38.0+1.3.281
+   Vendoring autocfg v1.5.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.1) to vendor/autocfg-1.5.1
+   Vendoring bindgen v0.72.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bindgen-0.72.1) to vendor/bindgen-0.72.1
+   Vendoring bit-set v0.9.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bit-set-0.9.1) to vendor/bit-set-0.9.1
+   Vendoring bit-vec v0.9.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bit-vec-0.9.1) to vendor/bit-vec-0.9.1
+   Vendoring bitflags v2.13.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.0) to vendor/bitflags-2.13.0
+   Vendoring block2 v0.6.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/block2-0.6.2) to vendor/block2-0.6.2
+   Vendoring bumpalo v3.20.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bumpalo-3.20.3) to vendor/bumpalo-3.20.3
+   Vendoring bytemuck v1.25.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytemuck-1.25.0) to vendor/bytemuck-1.25.0
+   Vendoring bytemuck_derive v1.10.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytemuck_derive-1.10.2) to vendor/bytemuck_derive-1.10.2
+   Vendoring cexpr v0.6.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cexpr-0.6.0) to vendor/cexpr-0.6.0
+   Vendoring cfg-if v1.0.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4) to vendor/cfg-if-1.0.4
+   Vendoring cfg_aliases v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg_aliases-0.2.1) to vendor/cfg_aliases-0.2.1
+   Vendoring clang-sys v1.8.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1) to vendor/clang-sys-1.8.1
+   Vendoring codespan-reporting v0.13.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/codespan-reporting-0.13.1) to vendor/codespan-reporting-0.13.1
+   Vendoring crunchy v0.2.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crunchy-0.2.4) to vendor/crunchy-0.2.4
+   Vendoring dispatch2 v0.3.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dispatch2-0.3.1) to vendor/dispatch2-0.3.1
+   Vendoring dlib v0.5.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dlib-0.5.3) to vendor/dlib-0.5.3
+   Vendoring document-features v0.2.12 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/document-features-0.2.12) to vendor/document-features-0.2.12
+   Vendoring either v1.16.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/either-1.16.0) to vendor/either-1.16.0
+   Vendoring equivalent v1.0.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2) to vendor/equivalent-1.0.2
+   Vendoring fixedbitset v0.5.7 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fixedbitset-0.5.7) to vendor/fixedbitset-0.5.7
+   Vendoring foldhash v0.1.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/foldhash-0.1.5) to vendor/foldhash-0.1.5
+   Vendoring foldhash v0.2.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/foldhash-0.2.0) to vendor/foldhash-0.2.0
+   Vendoring futures-core v0.3.32 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-core-0.3.32) to vendor/futures-core-0.3.32
+   Vendoring futures-task v0.3.32 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-task-0.3.32) to vendor/futures-task-0.3.32
+   Vendoring futures-util v0.3.32 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.32) to vendor/futures-util-0.3.32
+   Vendoring gl_generator v0.14.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gl_generator-0.14.0) to vendor/gl_generator-0.14.0
+   Vendoring glob v0.3.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/glob-0.3.3) to vendor/glob-0.3.3
+   Vendoring glow v0.17.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/glow-0.17.0) to vendor/glow-0.17.0
+   Vendoring glutin_wgl_sys v0.6.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/glutin_wgl_sys-0.6.1) to vendor/glutin_wgl_sys-0.6.1
+   Vendoring gpu-allocator v0.28.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpu-allocator-0.28.0) to vendor/gpu-allocator-0.28.0
+   Vendoring gpu-descriptor v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpu-descriptor-0.3.2) to vendor/gpu-descriptor-0.3.2
+   Vendoring gpu-descriptor-types v0.2.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpu-descriptor-types-0.2.0) to vendor/gpu-descriptor-types-0.2.0
+   Vendoring half v2.7.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/half-2.7.1) to vendor/half-2.7.1
+   Vendoring hashbrown v0.15.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.15.5) to vendor/hashbrown-0.15.5
+   Vendoring hashbrown v0.16.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.16.1) to vendor/hashbrown-0.16.1
+   Vendoring hashbrown v0.17.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.17.1) to vendor/hashbrown-0.17.1
+   Vendoring hexf-parse v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hexf-parse-0.2.1) to vendor/hexf-parse-0.2.1
+   Vendoring indexmap v2.14.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-2.14.0) to vendor/indexmap-2.14.0
+   Vendoring itertools v0.13.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itertools-0.13.0) to vendor/itertools-0.13.0
+   Vendoring jni-sys v0.3.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/jni-sys-0.3.1) to vendor/jni-sys-0.3.1
+   Vendoring jni-sys v0.4.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/jni-sys-0.4.1) to vendor/jni-sys-0.4.1
+   Vendoring jni-sys-macros v0.4.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/jni-sys-macros-0.4.1) to vendor/jni-sys-macros-0.4.1
+   Vendoring js-sys v0.3.102 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/js-sys-0.3.102) to vendor/js-sys-0.3.102
+   Vendoring khronos-egl v6.0.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/khronos-egl-6.0.0) to vendor/khronos-egl-6.0.0
+   Vendoring khronos_api v3.1.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/khronos_api-3.1.0) to vendor/khronos_api-3.1.0
+   Vendoring libc v0.2.186 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.186) to vendor/libc-0.2.186
+   Vendoring libloading v0.8.9 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libloading-0.8.9) to vendor/libloading-0.8.9
+   Vendoring libm v0.2.16 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libm-0.2.16) to vendor/libm-0.2.16
+   Vendoring litrs v1.0.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/litrs-1.0.0) to vendor/litrs-1.0.0
+   Vendoring lock_api v0.4.14 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/lock_api-0.4.14) to vendor/lock_api-0.4.14
+   Vendoring log v0.4.33 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/log-0.4.33) to vendor/log-0.4.33
+   Vendoring macro_rules_attribute v0.2.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/macro_rules_attribute-0.2.2) to vendor/macro_rules_attribute-0.2.2
+   Vendoring macro_rules_attribute-proc_macro v0.2.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/macro_rules_attribute-proc_macro-0.2.2) to vendor/macro_rules_attribute-proc_macro-0.2.2
+   Vendoring memchr v2.8.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.8.2) to vendor/memchr-2.8.2
+   Vendoring minimal-lexical v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/minimal-lexical-0.2.1) to vendor/minimal-lexical-0.2.1
+   Vendoring naga v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/naga-29.0.3) to vendor/naga-29.0.3
+   Vendoring ndk-sys v0.6.0+11769913 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ndk-sys-0.6.0+11769913) to vendor/ndk-sys-0.6.0+11769913
+   Vendoring nom v7.1.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/nom-7.1.3) to vendor/nom-7.1.3
+   Vendoring num-traits v0.2.19 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-traits-0.2.19) to vendor/num-traits-0.2.19
+   Vendoring objc2 v0.6.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-0.6.4) to vendor/objc2-0.6.4
+   Vendoring objc2-core-foundation v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-core-foundation-0.3.2) to vendor/objc2-core-foundation-0.3.2
+   Vendoring objc2-encode v4.1.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-encode-4.1.0) to vendor/objc2-encode-4.1.0
+   Vendoring objc2-foundation v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-foundation-0.3.2) to vendor/objc2-foundation-0.3.2
+   Vendoring objc2-metal v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-metal-0.3.2) to vendor/objc2-metal-0.3.2
+   Vendoring objc2-quartz-core v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-quartz-core-0.3.2) to vendor/objc2-quartz-core-0.3.2
+   Vendoring once_cell v1.21.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/once_cell-1.21.4) to vendor/once_cell-1.21.4
+   Vendoring ordered-float v5.3.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ordered-float-5.3.0) to vendor/ordered-float-5.3.0
+   Vendoring parking_lot v0.12.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot-0.12.5) to vendor/parking_lot-0.12.5
+   Vendoring parking_lot_core v0.9.12 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.12) to vendor/parking_lot_core-0.9.12
+   Vendoring paste v1.0.15 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/paste-1.0.15) to vendor/paste-1.0.15
+   Vendoring petgraph v0.8.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/petgraph-0.8.3) to vendor/petgraph-0.8.3
+   Vendoring pin-project-lite v0.2.17 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pin-project-lite-0.2.17) to vendor/pin-project-lite-0.2.17
+   Vendoring pkg-config v0.3.33 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pkg-config-0.3.33) to vendor/pkg-config-0.3.33
+   Vendoring pp-rs v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pp-rs-0.2.1) to vendor/pp-rs-0.2.1
+   Vendoring presser v0.3.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/presser-0.3.1) to vendor/presser-0.3.1
+   Vendoring prettyplease v0.2.37 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/prettyplease-0.2.37) to vendor/prettyplease-0.2.37
+   Vendoring proc-macro2 v1.0.106 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/proc-macro2-1.0.106) to vendor/proc-macro2-1.0.106
+   Vendoring profiling v1.0.18 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/profiling-1.0.18) to vendor/profiling-1.0.18
+   Vendoring quote v1.0.45 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/quote-1.0.45) to vendor/quote-1.0.45
+   Vendoring range-alloc v0.1.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/range-alloc-0.1.5) to vendor/range-alloc-0.1.5
+   Vendoring raw-window-handle v0.6.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/raw-window-handle-0.6.2) to vendor/raw-window-handle-0.6.2
+   Vendoring raw-window-metal v1.1.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/raw-window-metal-1.1.0) to vendor/raw-window-metal-1.1.0
+   Vendoring redox_syscall v0.5.18 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/redox_syscall-0.5.18) to vendor/redox_syscall-0.5.18
+   Vendoring regex v1.12.4 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/regex-1.12.4) to vendor/regex-1.12.4
+   Vendoring regex-automata v0.4.14 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/regex-automata-0.4.14) to vendor/regex-automata-0.4.14
+   Vendoring regex-syntax v0.8.11 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/regex-syntax-0.8.11) to vendor/regex-syntax-0.8.11
+   Vendoring renderdoc-sys v1.1.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/renderdoc-sys-1.1.0) to vendor/renderdoc-sys-1.1.0
+   Vendoring rustc-hash v1.1.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-hash-1.1.0) to vendor/rustc-hash-1.1.0
+   Vendoring rustc-hash v2.1.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-hash-2.1.2) to vendor/rustc-hash-2.1.2
+   Vendoring rustversion v1.0.22 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustversion-1.0.22) to vendor/rustversion-1.0.22
+   Vendoring scopeguard v1.2.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0) to vendor/scopeguard-1.2.0
+   Vendoring serde v1.0.228 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228) to vendor/serde-1.0.228
+   Vendoring serde_core v1.0.228 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228) to vendor/serde_core-1.0.228
+   Vendoring serde_derive v1.0.228 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.228) to vendor/serde_derive-1.0.228
+   Vendoring shlex v1.3.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-1.3.0) to vendor/shlex-1.3.0
+   Vendoring slab v0.4.12 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slab-0.4.12) to vendor/slab-0.4.12
+   Vendoring slotmap v1.1.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.1.1) to vendor/slotmap-1.1.1
+   Vendoring smallvec v1.15.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.2) to vendor/smallvec-1.15.2
+   Vendoring spirv v0.4.0+sdk-1.4.341.0 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spirv-0.4.0+sdk-1.4.341.0) to vendor/spirv-0.4.0+sdk-1.4.341.0
+   Vendoring syn v2.0.118 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.118) to vendor/syn-2.0.118
+   Vendoring thiserror v2.0.18 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.18) to vendor/thiserror-2.0.18
+   Vendoring thiserror-impl v2.0.18 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.18) to vendor/thiserror-impl-2.0.18
+   Vendoring unicode-ident v1.0.24 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.24) to vendor/unicode-ident-1.0.24
+   Vendoring unicode-width v0.2.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-width-0.2.2) to vendor/unicode-width-0.2.2
+   Vendoring unicode-xid v0.2.6 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-xid-0.2.6) to vendor/unicode-xid-0.2.6
+   Vendoring version_check v0.9.5 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/version_check-0.9.5) to vendor/version_check-0.9.5
+   Vendoring wasm-bindgen v0.2.125 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-0.2.125) to vendor/wasm-bindgen-0.2.125
+   Vendoring wasm-bindgen-macro v0.2.125 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-macro-0.2.125) to vendor/wasm-bindgen-macro-0.2.125
+   Vendoring wasm-bindgen-macro-support v0.2.125 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-macro-support-0.2.125) to vendor/wasm-bindgen-macro-support-0.2.125
+   Vendoring wasm-bindgen-shared v0.2.125 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-shared-0.2.125) to vendor/wasm-bindgen-shared-0.2.125
+   Vendoring wayland-sys v0.31.11 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wayland-sys-0.31.11) to vendor/wayland-sys-0.31.11
+   Vendoring web-sys v0.3.102 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/web-sys-0.3.102) to vendor/web-sys-0.3.102
+   Vendoring wgpu-core v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-core-29.0.3) to vendor/wgpu-core-29.0.3
+   Vendoring wgpu-core-deps-apple v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-core-deps-apple-29.0.3) to vendor/wgpu-core-deps-apple-29.0.3
+   Vendoring wgpu-core-deps-emscripten v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-core-deps-emscripten-29.0.3) to vendor/wgpu-core-deps-emscripten-29.0.3
+   Vendoring wgpu-core-deps-windows-linux-android v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-core-deps-windows-linux-android-29.0.3) to vendor/wgpu-core-deps-windows-linux-android-29.0.3
+   Vendoring wgpu-hal v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-hal-29.0.3) to vendor/wgpu-hal-29.0.3
+   Vendoring wgpu-naga-bridge v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-naga-bridge-29.0.3) to vendor/wgpu-naga-bridge-29.0.3
+   Vendoring wgpu-types v29.0.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-types-29.0.3) to vendor/wgpu-types-29.0.3
+   Vendoring windows v0.62.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-0.62.2) to vendor/windows-0.62.2
+   Vendoring windows-collections v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-collections-0.3.2) to vendor/windows-collections-0.3.2
+   Vendoring windows-core v0.62.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-core-0.62.2) to vendor/windows-core-0.62.2
+   Vendoring windows-future v0.3.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-future-0.3.2) to vendor/windows-future-0.3.2
+   Vendoring windows-implement v0.60.2 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-implement-0.60.2) to vendor/windows-implement-0.60.2
+   Vendoring windows-interface v0.59.3 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-interface-0.59.3) to vendor/windows-interface-0.59.3
+   Vendoring windows-link v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-link-0.2.1) to vendor/windows-link-0.2.1
+   Vendoring windows-numerics v0.3.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-numerics-0.3.1) to vendor/windows-numerics-0.3.1
+   Vendoring windows-result v0.4.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-result-0.4.1) to vendor/windows-result-0.4.1
+   Vendoring windows-strings v0.5.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-strings-0.5.1) to vendor/windows-strings-0.5.1
+   Vendoring windows-threading v0.2.1 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-threading-0.2.1) to vendor/windows-threading-0.2.1
+   Vendoring xml-rs v0.8.28 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xml-rs-0.8.28) to vendor/xml-rs-0.8.28
+   Vendoring zerocopy v0.8.52 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-0.8.52) to vendor/zerocopy-0.8.52
+   Vendoring zerocopy-derive v0.8.52 (/Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-derive-0.8.52) to vendor/zerocopy-derive-0.8.52
+To use vendored sources, add this to your .cargo/config.toml for this project:
+
+PASS: exact pinned Metal BC condition patched to the runtime capability query.
+   Compiling wgpu-native v0.0.0 (/Users/runner/work/gta5loader/gta5loader/native-build/wgpu-source)
+warning: unused variable: `spirv`
+   --> src/conv.rs:730:5
+    |
+730 |     spirv: Option<&native::WGPUShaderSourceSPIRV>,
+    |     ^^^^^ help: if this is intentional, prefix it with an underscore: `_spirv`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `glsl`
+   --> src/conv.rs:732:5
+    |
+732 |     glsl: Option<&native::WGPUShaderSourceGLSL>,
+    |     ^^^^ help: if this is intentional, prefix it with an underscore: `_glsl`
+
+warning: `wgpu-native` (lib) generated 2 warnings (run `cargo fix --lib -p wgpu-native` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 10.61s
+   Compiling wgpu-native v0.0.0 (/Users/runner/work/gta5loader/gta5loader/native-build/wgpu-source)
+warning: unused variable: `spirv`
+   --> src/conv.rs:730:5
+    |
+730 |     spirv: Option<&native::WGPUShaderSourceSPIRV>,
+    |     ^^^^^ help: if this is intentional, prefix it with an underscore: `_spirv`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `glsl`
+   --> src/conv.rs:732:5
+    |
+732 |     glsl: Option<&native::WGPUShaderSourceGLSL>,
+    |     ^^^^ help: if this is intentional, prefix it with an underscore: `_glsl`
+
+warning: `wgpu-native` (lib) generated 2 warnings (run `cargo fix --lib -p wgpu-native` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 5.44s
+PASS: source-built Metal/WGSL backends for Mac and iPhone; exact BC capability patch and library digests recorded.
+Native renderer feasibility 0.5
+Backend: wgpu-native 29.0.1.1 / Metal (Apple Paravirtual device)
+PASS: original postfx vertex + fragment WGSL with the browser's packed constant-buffer layouts.
+PASS: texture/sampler binding, vertex input, three draws with changed RGB/alpha uniforms, all 4,096 pixels compared per draw (1-byte tolerance), GPU readback and resource cleanup.
+Validation/runtime errors: 0
+This is an offscreen shader fixture, not an engine scene. Ring integration, remaining shader/format coverage, audio and gameplay are pending.
+PASS: native renderer fixture compiled for Mac and ARM64 iPhone.
+Verified and assembled v7 engine: 66172903 bytes e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e
+PASS: unchanged engine string/memory/math functions in WebAssembly reference.
+Cloning into 'native-build/wabt'...
+Submodule 'third_party/picosha2' (https://github.com/okdshin/PicoSHA2) registered for path 'third_party/picosha2'
+Submodule 'third_party/simde' (https://github.com/simd-everywhere/simde) registered for path 'third_party/simde'
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wabt/third_party/picosha2'...
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wabt/third_party/simde'...
+From https://github.com/okdshin/PicoSHA2
+ * branch            27fcf6979298949e8a462e16d09a0351c18fcaf2 -> FETCH_HEAD
+Submodule path 'third_party/picosha2': checked out '27fcf6979298949e8a462e16d09a0351c18fcaf2'
+From https://github.com/simd-everywhere/simde
+ * branch            71fd833d9666141edcd1d3c109a80e228303d8d7 -> FETCH_HEAD
+Submodule path 'third_party/simde': checked out '71fd833d9666141edcd1d3c109a80e228303d8d7'
+Added checked native atomic wait/notify emission.
+Added 74 checked shared-memory SIMD helpers and corrected lane/splat/zero dispatch.
+Added bounds-checked shared bulk memory operations with overlap semantics.
+Shared page count and committed byte size now use atomic publication.
+PASS: pinned runtime supports wait-local trap cleanup without replacing its outer checkpoint.
+EXPECTED BASELINE FAILURE: 0.8 wait timed out without delivering its main-thread mailbox callback.
+PASS: mailbox delivery during atomic wait, callback reentry, nested trap/exception cleanup, zero-timeout/mismatch cancellation and 50 spurious mailbox wake races.
+PASS: bounded native startup logs retain messages after line 80, first errors, recent tail, repeat counts, truncation and concurrent producers; callbacks execute outside locks; storage below 32 KiB.
+-- The C compiler identification is AppleClang 17.0.0.17000013
+-- The CXX compiler identification is AppleClang 17.0.0.17000013
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Git: /opt/homebrew/bin/git (found version "2.55.0")
+-- Looking for alloca.h
+-- Looking for alloca.h - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Looking for setjmp.h
+-- Looking for setjmp.h - found
+-- Looking for snprintf
+-- Looking for snprintf - found
+-- Looking for strcasecmp
+-- Looking for strcasecmp - found
+-- Looking for openssl/sha.h
+-- Looking for openssl/sha.h - found
+-- Using OpenSSL libcrypto for SHA-256
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of ssize_t
+-- Check size of ssize_t - done
+-- Check size of size_t
+-- Check size of size_t - done
+-- Looking for __i386__
+-- Looking for __i386__ - not found
+-- Looking for __SSE2_MATH__
+-- Looking for __SSE2_MATH__ - not found
+-- Configuring done (6.9s)
+-- Generating done (0.6s)
+-- Build files have been written to: /Users/runner/work/gta5loader/gta5loader/native-build/wabt-build
+[  1%] Generating gen-wasm2c-prebuilt
+[  1%] Built target gen-wasm2c-prebuilt-target
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader-ir.cc.o
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader-logging.cc.o
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/apply-names.cc.o
+[  9%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader.cc.o
+[ 11%] Building CXX object CMakeFiles/wabt.dir/src/binary-writer-spec.cc.o
+[ 13%] Building CXX object CMakeFiles/wabt.dir/src/binary-writer.cc.o
+[ 15%] Building CXX object CMakeFiles/wabt.dir/src/binary.cc.o
+[ 17%] Building CXX object CMakeFiles/wabt.dir/src/binding-hash.cc.o
+[ 19%] Building CXX object CMakeFiles/wabt.dir/src/color.cc.o
+[ 21%] Building CXX object CMakeFiles/wabt.dir/src/common.cc.o
+[ 23%] Building CXX object CMakeFiles/wabt.dir/src/config.cc.o
+[ 25%] Building CXX object CMakeFiles/wabt.dir/src/error-formatter.cc.o
+[ 26%] Building CXX object CMakeFiles/wabt.dir/src/expr-visitor.cc.o
+[ 28%] Building CXX object CMakeFiles/wabt.dir/src/feature.cc.o
+[ 30%] Building CXX object CMakeFiles/wabt.dir/src/filenames.cc.o
+[ 32%] Building CXX object CMakeFiles/wabt.dir/src/generate-names.cc.o
+[ 34%] Building CXX object CMakeFiles/wabt.dir/src/ir-util.cc.o
+[ 36%] Building CXX object CMakeFiles/wabt.dir/src/ir.cc.o
+[ 38%] Building CXX object CMakeFiles/wabt.dir/src/leb128.cc.o
+[ 40%] Building CXX object CMakeFiles/wabt.dir/src/lexer-source-line-finder.cc.o
+[ 42%] Building CXX object CMakeFiles/wabt.dir/src/lexer-source.cc.o
+[ 44%] Building CXX object CMakeFiles/wabt.dir/src/literal.cc.o
+[ 46%] Building C object CMakeFiles/wabt.dir/src/opcode-code-table.c.o
+[ 48%] Building CXX object CMakeFiles/wabt.dir/src/opcode.cc.o
+[ 50%] Building CXX object CMakeFiles/wabt.dir/src/option-parser.cc.o
+[ 51%] Building CXX object CMakeFiles/wabt.dir/src/resolve-names.cc.o
+[ 53%] Building CXX object CMakeFiles/wabt.dir/src/sha256.cc.o
+[ 55%] Building CXX object CMakeFiles/wabt.dir/src/shared-validator.cc.o
+[ 57%] Building CXX object CMakeFiles/wabt.dir/src/stream.cc.o
+[ 59%] Building CXX object CMakeFiles/wabt.dir/src/token.cc.o
+[ 61%] Building CXX object CMakeFiles/wabt.dir/src/tracing.cc.o
+[ 63%] Building CXX object CMakeFiles/wabt.dir/src/type-checker.cc.o
+[ 65%] Building CXX object CMakeFiles/wabt.dir/src/utf8.cc.o
+[ 67%] Building CXX object CMakeFiles/wabt.dir/src/validator.cc.o
+[ 69%] Building CXX object CMakeFiles/wabt.dir/src/wast-lexer.cc.o
+[ 71%] Building CXX object CMakeFiles/wabt.dir/src/wast-parser.cc.o
+[ 73%] Building CXX object CMakeFiles/wabt.dir/src/wat-writer.cc.o
+[ 75%] Building CXX object CMakeFiles/wabt.dir/src/c-writer.cc.o
+[ 76%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_header_top.cc.o
+[ 78%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_header_bottom.cc.o
+[ 80%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_source_includes.cc.o
+[ 82%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_source_declarations.cc.o
+[ 84%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_simd_source_declarations.cc.o
+[ 86%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_atomicops_source_declarations.cc.o
+[ 88%] Building CXX object CMakeFiles/wabt.dir/src/interp/binary-reader-interp.cc.o
+[ 90%] Building CXX object CMakeFiles/wabt.dir/src/interp/interp.cc.o
+[ 92%] Building CXX object CMakeFiles/wabt.dir/src/interp/interp-util.cc.o
+[ 94%] Building CXX object CMakeFiles/wabt.dir/src/interp/istream.cc.o
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+  507 |     case Opcode::Select:
+      |     ^
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: note: insert '[[fallthrough]];' to silence this warning
+  507 |     case Opcode::Select:
+      |     ^
+      |     [[fallthrough]]; 
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: note: insert 'break;' to avoid fall-through
+  507 |     case Opcode::Select:
+      |     ^
+      |     break; 
+1 warning generated.
+[ 96%] Linking CXX static library libwabt.a
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wasm2c.dir/src/tools/wasm2c.cc.o
+[100%] Linking CXX executable wasm2c
+[100%] Built target wasm2c
+[  1%] Built target gen-wasm2c-prebuilt-target
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wasm-validate.dir/src/tools/wasm-validate.cc.o
+[100%] Linking CXX executable wasm-validate
+[100%] Built target wasm-validate
+[  1%] Built target gen-wasm2c-prebuilt-target
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wat2wasm.dir/src/tools/wat2wasm.cc.o
+[100%] Linking CXX executable wat2wasm
+[100%] Built target wat2wasm
+PASS: compiled wait/notify, timeout, mismatch, alignment, bounds, mixed widths, address/memory isolation, concurrent waiters, growth and cancelled-wait cleanup.
+PASS: 73 shared SIMD load/store, splat, extend, zero and lane cases match WebAssembly; unaligned accesses and bounds traps checked.
+
+PASS: shared bulk init/fill/copy match WebAssembly, both overlap directions, zero length at boundary, dropped data and bounds trap without partial writes.
+
+1.0G	native-build/generated
+     130
+PASS: complete engine converted to C with native wait/notify calls.
+Generated native host bridge with explicit unsupported imports and real tail-call forwarding.
+Created synthetic file fixtures; no game assets copied into the app.
+PASS: native host errors, rooted paths, symlink refusal, vectored I/O, file positions, stat, clocks and environment.
+PASS: local manifest format/order, 64-bit sizes, invalid entries, traversal and symlink rejection.
+macos: compiled 8/141
+macos: compiled 16/141
+macos: compiled 24/141
+macos: compiled 32/141
+macos: compiled 40/141
+macos: compiled 48/141
+macos: compiled 56/141
+macos: compiled 64/141
+macos: compiled 72/141
+macos: compiled 80/141
+macos: compiled 88/141
+macos: compiled 96/141
+macos: compiled 104/141
+macos: compiled 112/141
+macos: compiled 120/141
+macos: compiled 128/141
+macos: compiled 136/141
+macos: compiled 141/141
+macos: reused 131 verified compiler objects
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 36.2 MiB (sample, not peak).
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 39.3 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 37.3 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5568.49 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.8 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 36.5 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 35.0 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5690.35 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; commands 158; uploads 21; readbacks 15; surface frames 0; draws 11; pipelines 4 (hits 7); last opcode FENCE
+Offscreen fixtures; no game scene is claimed.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native startup: process 37.9 MiB (highest 1-second sample 37.9 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 47.2 MiB (highest 1-second sample 47.2 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5555.18 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP
+This is an integration checkpoint, not a game scene.
+
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.0 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 36.7 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.2 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5116.82 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.7 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 34.4 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.5 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5673.09 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; commands 158; uploads 21; readbacks 15; surface frames 0; draws 11; pipelines 4 (hits 7); last opcode FENCE
+Offscreen fixtures; no game scene is claimed.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native startup: process 38.3 MiB (highest 1-second sample 38.3 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 44.2 MiB (highest 1-second sample 44.2 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 7343.37 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP
+This is an integration checkpoint, not a game scene.
+
+ios: compiled 8/141
+ios: compiled 16/141
+ios: compiled 24/141
+ios: compiled 32/141
+ios: compiled 40/141
+ios: compiled 48/141
+ios: compiled 56/141
+ios: compiled 64/141
+ios: compiled 72/141
+ios: compiled 80/141
+ios: compiled 88/141
+ios: compiled 96/141
+ios: compiled 104/141
+ios: compiled 112/141
+ios: compiled 120/141
+ios: compiled 128/141
+ios: compiled 136/141
+ios: compiled 141/141
+ios: reused 131 verified compiler objects
+native-build/Payload/NativeProbe.app/Info.plist: OK
+native-build/Payload/NativeProbe.app/NativeProbe: Mach-O 64-bit executable arm64
+native-build/Payload/NativeProbe.app/NativeProbe:
+Load command 11
+      cmd LC_BUILD_VERSION
+  cmdsize 32
+ platform IOS
+    minos 17.0
+      sdk 18.5
+   ntools 1
+     tool LD
+  version 1167.5
+native-build/Payload/NativeProbe.app/NativeProbe:
+	/System/Library/Frameworks/UIKit.framework/UIKit (compatibility version 1.0.0, current version 8506.1.101)
+	/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 3502.0.0)
+	/System/Library/Frameworks/Metal.framework/Metal (compatibility version 1.0.0, current version 368.12.0)
+	/System/Library/Frameworks/GameController.framework/GameController (compatibility version 1.0.0, current version 12.5.2)
+	/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers (compatibility version 1.0.0, current version 709.0.0)
+	/System/Library/Frameworks/QuartzCore.framework/QuartzCore (compatibility version 1.2.0, current version 1.11.0)
+	/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics (compatibility version 64.0.0, current version 1889.5.3)
+	/System/Library/Frameworks/IOSurface.framework/IOSurface (compatibility version 1.0.0, current version 1.0.0)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1900.180.0)
+	/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
+	/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation (compatibility version 150.0.0, current version 3502.0.0)
+8135acee45f9c21833e6e8e180e42c1465959efaae98a747fff1a7c6038773df  GTA-Native-Probe-unsigned.ipa
+PASS: unsigned ARM64 iPhone diagnostic IPA packaged.

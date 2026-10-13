@@ -1,0 +1,37 @@
+NATIVE 0.10 — DIAGNOSTIC STACK / STARTUP CONTINUATION
+
+0.9 physical-device evidence: 5,558 GPU commands, 29 draws, one presentation;
+unsupported env.emscripten_stack_snapshot stopped the engine with trap 5.
+52.4 MiB after cleanup. This did not verify a Prologue game scene.
+
+The two diagnostic stack imports use Emscripten's standalone behavior:
+return zero for an unavailable Wasm-PC snapshot and zero frames for unwind;
+the unwind buffer is not accessed. This is diagnostic stack capture, not
+exception unwinding. Native addresses must not be mistaken for Wasm offsets.
+No engine assertions, fatal-error handlers or gameplay logic are bypassed.
+The actual CaptureStackTrace implementation (function 2853) explicitly handles
+an empty trace and zero-terminates its own array. The ABI/name/signature are
+pinned against the original engine; main and worker regression checks use
+that existing engine function, without new exports or instruction patches.
+
+Official standalone reference, inspected 2026-10-13:
+https://chromium.googlesource.com/external/github.com/emscripten-core/emscripten/+/d44702cc3d96f44bdb14980c915d8cd48e9b5e92/system/lib/standalone/standalone.c
+Exact bundled browser reference: work/minimal-engine/game.js.
+
+Startup logging no longer permanently cuts off after 80 lines. One fixed
+buffer below 32 KiB per runtime keeps 32 recent message groups and eight
+first diagnostic lines; identical adjacent lines coalesce. The existing
+5-second UI status timer drains logs in batches, with a final shutdown drain.
+No extra polling thread, per-line heap allocation, whole-file cache, native
+stack walk or expensive symbolication is added to the engine logging path.
+Long lines are explicitly marked truncated; omitted groups are counted.
+
+This fixes the observed host dependency and improves the next startup report.
+The cause that requested the diagnostic trace is not known from 0.9 because
+the old log cap had already hidden subsequent engine messages. Do not claim
+that all engine errors are gone or that a native game scene is verified.
+
+Next device step: Trace Prologue startup with the existing web folder.
+Continue stage 3 until successive real Prologue game frames are verified;
+then stage 4 connects controls/audio/lifecycle. Five roadmap stages remain.
+PC packages, deployed main and previous IPAs must remain untouched.

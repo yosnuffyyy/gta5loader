@@ -1,7 +1,33 @@
 {
   "version": "0.9",
-  "status": "PENDING",
-  "requestedTest": "Trace Prologue startup; report visual progress, live status and Stop result",
+  "source": "user-supplied physical iPhone report",
+  "status": "ADVANCED TO NEXT HOST DEPENDENCY",
+  "device": "iPhone 16 Pro Max / A18 Pro",
+  "os": "iOS 27.0.1",
+  "gameFolder": "web",
+  "assetIndexFiles": 5814,
+  "stop": {
+    "trap": 5,
+    "error": "env.emscripten_stack_snapshot",
+    "exit": 1
+  },
+  "gpu": {
+    "commands": 5558,
+    "uploads": 45,
+    "readbacks": 0,
+    "surfaceFrames": 1,
+    "draws": 29,
+    "pipelines": 1,
+    "pipelineHits": 28,
+    "lastOpcode": "CREATE_SHADER"
+  },
+  "processMiB": {
+    "initial": 15.9,
+    "startupSample": 55.5,
+    "afterCleanup": 52.4
+  },
+  "heapCommittedMiB": 596.1,
+  "interpretation": "0.9 returned a specific host failure and cleanup report instead of the previous unreported stall. Presentation/draw counts do not verify a real game scene; the precise wait repair responsible is not established.",
   "realSceneVerified": false,
   "playable": false,
   "stage3": "IN PROGRESS",

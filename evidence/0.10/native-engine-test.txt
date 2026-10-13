@@ -1,0 +1,391 @@
+PROCESS 1
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 36.2 MiB (sample, not peak).
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 39.3 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 37.3 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5568.49 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.8 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 36.5 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 35.0 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5690.35 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; commands 158; uploads 21; readbacks 15; surface frames 0; draws 11; pipelines 4 (hits 7); last opcode FENCE
+Offscreen fixtures; no game scene is claimed.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native startup: process 37.9 MiB (highest 1-second sample 37.9 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 47.2 MiB (highest 1-second sample 47.2 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5555.18 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP
+This is an integration checkpoint, not a game scene.
+PROCESS 2
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.0 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 36.7 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.2 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5116.82 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.7 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 34.4 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.5 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5673.09 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; commands 158; uploads 21; readbacks 15; surface frames 0; draws 11; pipelines 4 (hits 7); last opcode FENCE
+Offscreen fixtures; no game scene is claimed.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native startup: process 38.3 MiB (highest 1-second sample 38.3 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 44.2 MiB (highest 1-second sample 44.2 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 7343.37 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP
+This is an integration checkpoint, not a game scene.

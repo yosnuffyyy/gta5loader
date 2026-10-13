@@ -23,7 +23,9 @@ IPA: GTA-Native-Probe-0.9-unsigned.ipa
 Bytes: 102010314
 SHA256: 84882ef4608b29d11079a553742672ac3cbb24621c7e46b9b5365746227799a1
 
-Physical iPhone 0.9 Prologue continuation and Stop behavior: PENDING.
+Physical iPhone 0.9: reached 5,558 GPU commands, 29 draws and one surface
+frame, then env.emscripten_stack_snapshot trapped. Exit 1 and cleanup report
+returned (52.4 MiB after cleanup). Actual game scene remains unverified.
 The mailbox gap and unbounded drawable acquisition are concrete code defects;
 the phone must establish which repair advances its observed blue-screen stall.
 Stage 3 remains in progress; five stages left. PC folders and main unchanged.

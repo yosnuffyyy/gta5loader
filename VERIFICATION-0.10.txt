@@ -1,0 +1,31 @@
+NATIVE 0.10 VERIFICATION
+Source c4b49510a051b62a66322dd73537e96ba5fa72f3
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38484190708
+Job 115593749422: PASS
+
+PASS: four real engine runtime runs; 32 worker instances additionally call
+the actual CaptureStackTrace. Empty trace, zero/one/32 slots, skip depths,
+zero termination, output guards and no-write unavailable unwind checked.
+No additional engine exports or instruction patches.
+PASS: bounded log ASan/UBSan test: recent tail after line 80, first errors,
+repeat coalescing, marked truncation, callback reentry, concurrent writers.
+Fixed log state below 32 KiB, no new polling thread or per-line allocation.
+PASS: prior mailbox baseline reproduction and fixed wait/exception suite;
+48 synchronous worker-to-owner proxies per engine run, saves/ABI/TLS/files.
+PASS: two GPU ring/DRAW replays, each 158 commands, 11 draws, 4 pipelines;
+BC sampling, original packed shader outputs, ring bounds and sanitizer checks.
+Separate original shader fixture: zero validation/runtime errors.
+Two actual graphics main checkpoints stop deliberately before archive bytes.
+PASS: complete Mac/iPhone compile and unsigned ARM64 iOS17+ package audit.
+Verified cached objects: macos: 131; ios: 131.
+71 source entries match Git tree; artifact ZIP hashes and IPA digest checked.
+Nine earlier IPAs preserved unchanged. PC folders/main untouched.
+
+IPA GTA-Native-Probe-0.10-unsigned.ipa
+Bytes 102016397
+SHA256 8135acee45f9c21833e6e8e180e42c1465959efaae98a747fff1a7c6038773df
+
+Physical iPhone continuation beyond 0.9 stack import: PENDING.
+Original diagnostic cause was hidden by the old lifetime log cutoff.
+No assertion/fatal handler bypass and no real-game scene claim.
+(stage 3 in progress) (5 stages left)
