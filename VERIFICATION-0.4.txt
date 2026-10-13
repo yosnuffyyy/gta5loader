@@ -1,0 +1,64 @@
+NATIVE 0.4 — ASSET/WORKER CHECKPOINT VERIFICATION
+Source: f6e5600969f7fd35dc096cb37d0690f64956ee01
+Branch: native-ios-prototype
+Release run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38454643214
+Release job: 115494109729
+All release job steps PASS, 2026-10-13.
+
+PASS: unchanged engine digest and eleven diagnostic exports; 91,026 engine
+functions, original wait/notify/shared-growth/SIMD/bulk-memory checks.
+PASS: selected manifest validation and stable file ID ordering, malformed
+entries, duplicate paths, signed/64-bit size validation, traversal and
+symlink rejection. The selected folder is read-only.
+PASS: actual engine HTTPFS lookup and queued pread; head/tail comparisons,
+short EOF, EOF, invalid IDs, offsets and destination buffers.
+PASS: eight diagnostic pthreads in two batches; separate TLS/stacks,
+concurrent saves and queued asset reads, synchronous environment and
+open/stat/read/close proxies (including missing-file errno), joined cleanup.
+PASS: actual main launches two initial game workers, both execute to native
+waits, and requests x64/audio/audio.rpf. This checkpoint leaves that first
+archive request pending, cancels waits and joins workers deliberately.
+No placeholder archive is parsed and no rendered frame is claimed.
+PASS: four complete runtime runs: two in each of two fresh Mac processes.
+Existing save persistence checks pass on repeated runs. CI sample files are
+synthetic fixtures; actual iPhone file data still needs the device check.
+PASS: 138 source/runtime units compiled or reused per target, 131 verified
+objects reused for Mac and iPhone. All tests ran again on the release source.
+
+Reader allocation: one 64 KiB scratch buffer, at most eight cached file
+handles, one sleeping I/O thread. No whole-archive or HTTP response cache.
+Game file bytes are copied only for requested ranges. Metadata remains in
+memory; this is not a claim that the complete game fits a particular budget.
+Mac initialized-engine samples: 32.9, 33.3, 35.8 and 33.6 MiB.
+Worker-batch samples: 33.9–44.7 MiB; workers may already have finished.
+Committed virtual heap: 564.1 MiB. These are not peaks or iPhone measurements.
+
+IPA: GTA-Native-Probe-0.4-unsigned.ipa
+Bytes: 99641600
+SHA-256: 8f9a1e58643a236156637aacfd0cb1b47a12c0b83da5b6ab387757fa051e48ff
+PASS: downloaded ZIP digests match GitHub metadata; IPA digest matches CI.
+PASS: archive path/symlink checks; ARM64 iPhone executable, iOS 17 minimum,
+version 0.4.0/build 4, same bundle io.github.yosnuffyyy.gtanativeprobe.
+PASS: no signature/provisioning profile, WebKit/JavaScriptCore dependency,
+or writable-executable segment; required metadata and licenses included.
+PASS: all 35 source/build file hashes match source-manifest.json.
+PASS: working 0.1/0.2/0.3 IPAs retain their original recorded hashes.
+
+0.4 physical iPhone result: PENDING. Select the extracted web folder including
+data/manifest.json, run Asset + worker tests, copy the report, close/reopen,
+select the folder again and repeat. Install over 0.3 with the same signing
+setup. Existing PC and Safari installations are separate.
+
+Remaining: archive/scene loading, additional job/host/async coverage, Metal
+renderer, audio output, gameplay input and sustained Prologue/Sandbox play.
+Graphics-enabled main requests its GPU backend before game-worker startup;
+this CPU checkpoint deliberately omits -wgpu. It does not finish stage 4.
+The tests resolve C++ path keys on the initialized engine owner, then read
+on diagnostic pthreads. Generic libc pthreads lack the game's allocator
+setup wrapper; calling C++ lookup from them caused the pre-release trap.
+That failure was fixed without weakening concurrent queued-read tests.
+Release evidence is under evidence/0.4. Earlier failed CI runs are recorded
+in work/native-stage4/session-state.json; no failing IPA was delivered.
+
+Isolation: neither protected Desktop PC folder accessed; main remains at
+its recorded de7664a8e6448096716c5a341250d32d4f594fd1 revision.

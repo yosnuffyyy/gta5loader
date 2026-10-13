@@ -1,16 +1,15 @@
-NATIVE PROTOTYPE 0.3 — WINDOWS INSTALLATION
+NATIVE PROTOTYPE 0.4 — WINDOWS INSTALLATION
 
-If 0.1 or 0.2 is installed, use the same Sideloadly setup and Apple account
-to install GTA-Native-Probe-0.3-unsigned.ipa over it. Keep the same bundle
-identifier. There is no need to reinstall the Windows prerequisites.
-Both original IPAs are preserved: GTA-Native-Probe-unsigned.ipa (0.1) and
-GTA-Native-Probe-0.2-unsigned.ipa (verified on the user's iPhone).
+Install GTA-Native-Probe-0.4-unsigned.ipa over 0.3 with the same Sideloadly
+setup, Apple account and bundle identifier. No Windows prerequisite changes
+or game-file reinstall are needed. The working 0.1, 0.2 and 0.3 IPAs remain
+preserved for rollback.
 
-In 0.3, select the extracted web folder with Check local web folder, then tap
-Run threads + startup tests. Copy the complete report. Close/reopen the app and
-repeat to check that the probe save persisted. Select the folder again after
-reopening; this checkpoint does not yet store a persistent folder bookmark.
-See NATIVE-0.3.txt for the exact test scope and remaining native work.
+Select the extracted web folder using Check local web folder. It must include
+data/manifest.json and your existing game files. Tap Run asset + worker tests.
+Copy the complete report. Close/reopen the app, select the folder again and
+repeat. This checkpoint does not yet persist the folder bookmark.
+See NATIVE-0.4.txt and VERIFICATION-0.4.txt for tested scope and remaining work.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
 It is separate from both the working PC game and the Safari installation.
@@ -22,19 +21,21 @@ It is separate from both the working PC game and the Safari installation.
    versions. Do not uninstall existing Apple software without checking those
    instructions and your sync/backup needs.
 2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.3-unsigned.ipa.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.4-unsigned.ipa.
 4. Use the normal Apple ID signing/install mode with your free Apple account.
    Enter the password and any two-factor code only in the local signing tool.
    No account credentials, certificates or private keys belong in GitHub.
 5. Install. If requested, enable Developer Mode in iPhone Settings > Privacy
    & Security, and trust your developer profile in Settings > General >
    VPN & Device Management. Follow the iPhone's restart/confirmation prompts.
-6. Open GTA Native Probe and tap Run native engine tests. Copy its report.
-   This checks actual converted engine functions and native Metal access.
-   PASS does not yet establish game compatibility or sustained memory use.
-7. Optionally tap Check local web folder and select the existing extracted
-   web folder in Files. The folder must contain data/. Only three 64 KiB
-   samples are read; no 21 GB copy or installation happens in this prototype.
+6. Open GTA Native Probe, tap Check local web folder and select the extracted
+   web folder in Files. It must contain data/manifest.json and game files.
+   Tap Run asset + worker tests and copy the complete report. Close/reopen,
+   reselect the folder and repeat to check persistent saves and cleanup.
+7. The separate Run native engine tests button retains the basic converted
+   engine and Metal diagnostic. Neither test starts gameplay. Folder checks
+   and asset tests use bounded sample reads; no 21 GB copy or installation
+   happens in this prototype.
    Safari's private installed-file storage is not accessible to a native app;
    select the original extracted folder in Files, if you still have it.
 8. Optionally pair a controller in Settings > Bluetooth. Return to the app

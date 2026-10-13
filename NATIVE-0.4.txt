@@ -14,4 +14,5 @@ Not gameplay: archive loading, more worker/services coverage, renderer,
 audio output and sustained phone gameplay remain pending.
 Requires extracted web folder including data/manifest.json, selected each
 app launch. Native branch only. PC folders and deployed main are protected.
-Build/device validation is pending until recorded in VERIFICATION-0.4.txt.
+Mac runtime tests, iPhone build and package audit PASS. Physical iPhone
+validation remains pending; see VERIFICATION-0.4.txt.

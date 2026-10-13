@@ -8,6 +8,8 @@ Branch: native-ios-prototype
 0.3 threading checkpoint: 435a73d09ae0556d9692691100da9aaf41a07c59
 0.3: two user-reported iPhone threading checkpoints PASS; actual asset samples
 pass in run 1 and are skipped (no folder) in run 2. See VERIFICATION-0.3.txt.
+0.4 asset/worker checkpoint: f6e5600969f7fd35dc096cb37d0690f64956ee01
+0.4 Mac repeated runtime tests and iPhone package audit PASS; device pending.
 Baseline: confirmed v7 engine.
 PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
 user instruction. Native work uses independent workspace copies only.
@@ -34,7 +36,7 @@ user instruction. Native work uses independent workspace copies only.
    Controller input has not been reported. The 19.2 MiB after-test footprint
    is measured after freeing the engine, not during gameplay or at peak use.
 
-4. Native host and threaded startup — IN PROGRESS (0.3 checkpoint)
+4. Native host and threaded startup — IN PROGRESS (0.4 CPU checkpoint; device pending)
    4a. Implemented: real engine constructors and main-thread TLS, rooted
        read-only game files, app-private probe saves, retained 64-bit file
        ABI, monotonic/realtime clocks and fixed native environment. Native
@@ -57,6 +59,16 @@ user instruction. Native work uses independent workspace copies only.
        Still pending: active game-worker workloads and event loops, broader
        proxy/async operations, asset I/O protocol, remaining platform calls
        and continuing threaded main() startup to the renderer boundary.
+   4c. 0.4 implements selected-manifest validation and the original shared
+       asset request queue with one 64 KiB reader buffer and up to eight
+       cached file handles. Tests use actual engine HTTPFS lookup/pread,
+       sample bytes, EOF, invalid requests and concurrent engine workers.
+       Initial game workers launch from main; the CPU checkpoint deliberately
+       stops at the first archive read, before delivering archive bytes.
+       Build and device results must be checked in VERIFICATION-0.4.txt.
+       Graphics-enabled main requests its GPU backend before these workers;
+       CPU checkpoint success does not establish renderer readiness. More
+       job dispatch, host/async services and archive startup remain pending.
    Gate remains: real threaded startup without unsupported imports or
    fabricated successes. The 0.3 checkpoint is not completion of stage 4.
 

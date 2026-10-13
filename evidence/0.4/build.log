@@ -1,0 +1,474 @@
+native-ios/Info.plist: OK
+Verified and assembled v7 engine: 66172903 bytes e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e
+PASS: unchanged engine string/memory/math functions in WebAssembly reference.
+Cloning into 'native-build/wabt'...
+Submodule 'third_party/picosha2' (https://github.com/okdshin/PicoSHA2) registered for path 'third_party/picosha2'
+Submodule 'third_party/simde' (https://github.com/simd-everywhere/simde) registered for path 'third_party/simde'
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wabt/third_party/picosha2'...
+Cloning into '/Users/runner/work/gta5loader/gta5loader/native-build/wabt/third_party/simde'...
+From https://github.com/okdshin/PicoSHA2
+ * branch            27fcf6979298949e8a462e16d09a0351c18fcaf2 -> FETCH_HEAD
+Submodule path 'third_party/picosha2': checked out '27fcf6979298949e8a462e16d09a0351c18fcaf2'
+From https://github.com/simd-everywhere/simde
+ * branch            71fd833d9666141edcd1d3c109a80e228303d8d7 -> FETCH_HEAD
+Submodule path 'third_party/simde': checked out '71fd833d9666141edcd1d3c109a80e228303d8d7'
+Added checked native atomic wait/notify emission.
+Added 74 checked shared-memory SIMD helpers and corrected lane/splat/zero dispatch.
+Added bounds-checked shared bulk memory operations with overlap semantics.
+Shared page count and committed byte size now use atomic publication.
+-- The C compiler identification is AppleClang 17.0.0.17000013
+-- The CXX compiler identification is AppleClang 17.0.0.17000013
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Git: /opt/homebrew/bin/git (found version "2.55.0")
+-- Looking for alloca.h
+-- Looking for alloca.h - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Looking for setjmp.h
+-- Looking for setjmp.h - found
+-- Looking for snprintf
+-- Looking for snprintf - found
+-- Looking for strcasecmp
+-- Looking for strcasecmp - found
+-- Looking for openssl/sha.h
+-- Looking for openssl/sha.h - found
+-- Using OpenSSL libcrypto for SHA-256
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of ssize_t
+-- Check size of ssize_t - done
+-- Check size of size_t
+-- Check size of size_t - done
+-- Looking for __i386__
+-- Looking for __i386__ - not found
+-- Looking for __SSE2_MATH__
+-- Looking for __SSE2_MATH__ - not found
+-- Configuring done (8.9s)
+-- Generating done (0.6s)
+-- Build files have been written to: /Users/runner/work/gta5loader/gta5loader/native-build/wabt-build
+[  1%] Generating gen-wasm2c-prebuilt
+[  1%] Built target gen-wasm2c-prebuilt-target
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/apply-names.cc.o
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader-ir.cc.o
+[  7%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader-logging.cc.o
+[  9%] Building CXX object CMakeFiles/wabt.dir/src/binary-reader.cc.o
+[ 11%] Building CXX object CMakeFiles/wabt.dir/src/binary-writer-spec.cc.o
+[ 13%] Building CXX object CMakeFiles/wabt.dir/src/binary-writer.cc.o
+[ 15%] Building CXX object CMakeFiles/wabt.dir/src/binary.cc.o
+[ 17%] Building CXX object CMakeFiles/wabt.dir/src/binding-hash.cc.o
+[ 19%] Building CXX object CMakeFiles/wabt.dir/src/color.cc.o
+[ 21%] Building CXX object CMakeFiles/wabt.dir/src/common.cc.o
+[ 23%] Building CXX object CMakeFiles/wabt.dir/src/config.cc.o
+[ 25%] Building CXX object CMakeFiles/wabt.dir/src/error-formatter.cc.o
+[ 26%] Building CXX object CMakeFiles/wabt.dir/src/expr-visitor.cc.o
+[ 28%] Building CXX object CMakeFiles/wabt.dir/src/feature.cc.o
+[ 30%] Building CXX object CMakeFiles/wabt.dir/src/filenames.cc.o
+[ 32%] Building CXX object CMakeFiles/wabt.dir/src/generate-names.cc.o
+[ 34%] Building CXX object CMakeFiles/wabt.dir/src/ir-util.cc.o
+[ 36%] Building CXX object CMakeFiles/wabt.dir/src/ir.cc.o
+[ 38%] Building CXX object CMakeFiles/wabt.dir/src/leb128.cc.o
+[ 40%] Building CXX object CMakeFiles/wabt.dir/src/lexer-source-line-finder.cc.o
+[ 42%] Building CXX object CMakeFiles/wabt.dir/src/lexer-source.cc.o
+[ 44%] Building CXX object CMakeFiles/wabt.dir/src/literal.cc.o
+[ 46%] Building C object CMakeFiles/wabt.dir/src/opcode-code-table.c.o
+[ 48%] Building CXX object CMakeFiles/wabt.dir/src/opcode.cc.o
+[ 50%] Building CXX object CMakeFiles/wabt.dir/src/option-parser.cc.o
+[ 51%] Building CXX object CMakeFiles/wabt.dir/src/resolve-names.cc.o
+[ 53%] Building CXX object CMakeFiles/wabt.dir/src/sha256.cc.o
+[ 55%] Building CXX object CMakeFiles/wabt.dir/src/shared-validator.cc.o
+[ 57%] Building CXX object CMakeFiles/wabt.dir/src/stream.cc.o
+[ 59%] Building CXX object CMakeFiles/wabt.dir/src/token.cc.o
+[ 61%] Building CXX object CMakeFiles/wabt.dir/src/tracing.cc.o
+[ 63%] Building CXX object CMakeFiles/wabt.dir/src/type-checker.cc.o
+[ 65%] Building CXX object CMakeFiles/wabt.dir/src/utf8.cc.o
+[ 67%] Building CXX object CMakeFiles/wabt.dir/src/validator.cc.o
+[ 69%] Building CXX object CMakeFiles/wabt.dir/src/wast-lexer.cc.o
+[ 71%] Building CXX object CMakeFiles/wabt.dir/src/wast-parser.cc.o
+[ 73%] Building CXX object CMakeFiles/wabt.dir/src/wat-writer.cc.o
+[ 75%] Building CXX object CMakeFiles/wabt.dir/src/c-writer.cc.o
+[ 76%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_header_top.cc.o
+[ 78%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_header_bottom.cc.o
+[ 80%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_source_includes.cc.o
+[ 82%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_source_declarations.cc.o
+[ 84%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_simd_source_declarations.cc.o
+[ 86%] Building CXX object CMakeFiles/wabt.dir/src/prebuilt/wasm2c_atomicops_source_declarations.cc.o
+[ 88%] Building CXX object CMakeFiles/wabt.dir/src/interp/binary-reader-interp.cc.o
+[ 90%] Building CXX object CMakeFiles/wabt.dir/src/interp/interp.cc.o
+[ 92%] Building CXX object CMakeFiles/wabt.dir/src/interp/interp-util.cc.o
+[ 94%] Building CXX object CMakeFiles/wabt.dir/src/interp/istream.cc.o
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+  507 |     case Opcode::Select:
+      |     ^
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: note: insert '[[fallthrough]];' to silence this warning
+  507 |     case Opcode::Select:
+      |     ^
+      |     [[fallthrough]]; 
+/Users/runner/work/gta5loader/gta5loader/native-build/wabt/src/interp/istream.cc:507:5: note: insert 'break;' to avoid fall-through
+  507 |     case Opcode::Select:
+      |     ^
+      |     break; 
+1 warning generated.
+[ 96%] Linking CXX static library libwabt.a
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wasm2c.dir/src/tools/wasm2c.cc.o
+[100%] Linking CXX executable wasm2c
+[100%] Built target wasm2c
+[  1%] Built target gen-wasm2c-prebuilt-target
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wasm-validate.dir/src/tools/wasm-validate.cc.o
+[100%] Linking CXX executable wasm-validate
+[100%] Built target wasm-validate
+[  1%] Built target gen-wasm2c-prebuilt-target
+[ 96%] Built target wabt
+[ 98%] Building CXX object CMakeFiles/wat2wasm.dir/src/tools/wat2wasm.cc.o
+[100%] Linking CXX executable wat2wasm
+[100%] Built target wat2wasm
+PASS: compiled wait/notify, timeout, mismatch, alignment, bounds, mixed widths, address/memory isolation, concurrent waiters, growth and cancelled-wait cleanup.
+PASS: 73 shared SIMD load/store, splat, extend, zero and lane cases match WebAssembly; unaligned accesses and bounds traps checked.
+
+PASS: shared bulk init/fill/copy match WebAssembly, both overlap directions, zero length at boundary, dropped data and bounds trap without partial writes.
+
+1.0G	native-build/generated
+     130
+PASS: complete engine converted to C with native wait/notify calls.
+Generated native host bridge with explicit unsupported imports and real tail-call forwarding.
+Created synthetic file fixtures; no game assets copied into the app.
+PASS: native host errors, rooted paths, symlink refusal, vectored I/O, file positions, stat, clocks and environment.
+PASS: local manifest format/order, 64-bit sizes, invalid entries, traversal and symlink rejection.
+macos: compiled 8/138
+macos: compiled 16/138
+macos: compiled 24/138
+macos: compiled 32/138
+macos: compiled 40/138
+macos: compiled 48/138
+macos: compiled 56/138
+macos: compiled 64/138
+macos: compiled 72/138
+macos: compiled 80/138
+macos: compiled 88/138
+macos: compiled 96/138
+macos: compiled 104/138
+macos: compiled 112/138
+macos: compiled 120/138
+macos: compiled 128/138
+macos: compiled 136/138
+macos: compiled 138/138
+macos: reused 137 verified compiler objects
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 32.9 MiB (sample, not peak).
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 44.5 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 33.9 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5900.41 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.3 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 36.7 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.1 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5757.19 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 35.8 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 44.7 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 42.3 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5528.60 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.6 MiB (sample, not peak).
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 34.0 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 34.3 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5354.18 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+
+ios: compiled 8/138
+ios: compiled 16/138
+ios: compiled 24/138
+ios: compiled 32/138
+ios: compiled 40/138
+ios: compiled 48/138
+ios: compiled 56/138
+ios: compiled 64/138
+ios: compiled 72/138
+ios: compiled 80/138
+ios: compiled 88/138
+ios: compiled 96/138
+ios: compiled 104/138
+ios: compiled 112/138
+ios: compiled 120/138
+ios: compiled 128/138
+ios: compiled 136/138
+ios: compiled 138/138
+ios: reused 131 verified compiler objects
+native-build/Payload/NativeProbe.app/Info.plist: OK
+native-build/Payload/NativeProbe.app/NativeProbe: Mach-O 64-bit executable arm64
+native-build/Payload/NativeProbe.app/NativeProbe:
+Load command 11
+      cmd LC_BUILD_VERSION
+  cmdsize 32
+ platform IOS
+    minos 17.0
+      sdk 18.5
+   ntools 1
+     tool LD
+  version 1167.5
+native-build/Payload/NativeProbe.app/NativeProbe:
+	/System/Library/Frameworks/UIKit.framework/UIKit (compatibility version 1.0.0, current version 8506.1.101)
+	/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 3502.0.0)
+	/System/Library/Frameworks/Metal.framework/Metal (compatibility version 1.0.0, current version 368.12.0)
+	/System/Library/Frameworks/GameController.framework/GameController (compatibility version 1.0.0, current version 12.5.2)
+	/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers (compatibility version 1.0.0, current version 709.0.0)
+	/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
+	/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation (compatibility version 150.0.0, current version 3502.0.0)
+8f9a1e58643a236156637aacfd0cb1b47a12c0b83da5b6ab387757fa051e48ff  GTA-Native-Probe-unsigned.ipa
+PASS: unsigned ARM64 iPhone diagnostic IPA packaged.

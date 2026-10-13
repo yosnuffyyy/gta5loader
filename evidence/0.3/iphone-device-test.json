@@ -52,5 +52,5 @@
     "Higher post-cleanup footprint than 0.2 alone does not establish a leak"
   ],
   "userDirection": "Record results for next week and stop development to conserve usage; wait for user to resume. No automation scheduled.",
-  "synchronization": "Local notes only; not pushed to GitHub"
+  "synchronization": "Recorded on native-ios-prototype with the 0.4 source update on 2026-10-13"
 }
