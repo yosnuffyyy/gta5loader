@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 1865,
-      "sha256": "7bc3f5d289e752b941772683df45733f2ce9f44bbbec661df71e0dfd57062a4b"
+      "bytes": 1910,
+      "sha256": "1855a0bd54f78a5ec40e45b6a9da83072e761f63cb09a13e0ed46f53f0aa2bd2"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -38,8 +38,8 @@
     },
     {
       "path": "native-ios/ci-test-wait.sh",
-      "bytes": 1899,
-      "sha256": "5b11aa42d3deecf66de8d49e5e65afedca04ff9c2dcc2aace786ed3021ef3f48"
+      "bytes": 875,
+      "sha256": "2dd6c2aadedae3fa272c4595b26d7e2e9bb5e17e6d8a6128e18750c07dcbbfc1"
     },
     {
       "path": "native-ios/compile-native.mjs",
@@ -83,8 +83,8 @@
     },
     {
       "path": "native-ios/native_wait.c",
-      "bytes": 7271,
-      "sha256": "7a07baaa103e8553a916b86e7cded5a376af10fe782e58ffe87d99235d975627"
+      "bytes": 7248,
+      "sha256": "cfffcbf1737cb8227c84fe11afd5b8cc56a7d595b469c1d102763b86b1bad15a"
     },
     {
       "path": "native-ios/native_wait.h",
@@ -300,6 +300,11 @@
       "path": "native-ios/test_wait.c",
       "bytes": 4800,
       "sha256": "c1917f710a03f9e73b879094f22320f6afaf4c76a303f197c3a3947ae0016614"
+    },
+    {
+      "path": "native-ios/threading/ci-test-mailbox.sh",
+      "bytes": 1103,
+      "sha256": "5a789bb09d4ad1ea91d8b51d2236dbb459c5a6aacba6445208313988cd2fc583"
     },
     {
       "path": "native-ios/threading/native_pump.h",

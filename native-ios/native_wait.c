@@ -27,9 +27,7 @@ static Bucket buckets[128];
 __attribute__((weak)) bool native_wait_cancelled(void){return false;}
 __attribute__((weak)) void native_wait_service(void){}
 typedef struct PollGuard {
-  struct PollGuard *previous;
   wasm_rt_jmp_buf checkpoint;
-  WASM_RT_UNWIND_TARGET *unwind;
 } PollGuard;
 static _Thread_local PollGuard *poll_guard;
 void native_wait_trap_redirect(wasm_rt_trap_t code){
@@ -39,7 +37,9 @@ void native_wait_trap_redirect(wasm_rt_trap_t code){
 // Callouts may reenter the engine, notify this bucket, trap or throw. They run
 // without bucket locks; a local checkpoint preserves the outer engine handler.
 static wasm_rt_trap_t poll_services(bool *cancelled){
-  PollGuard guard={.previous=poll_guard,.unwind=wasm_rt_get_unwind_target()};
+  PollGuard *const previous=poll_guard;
+  WASM_RT_UNWIND_TARGET *const unwind=wasm_rt_get_unwind_target();
+  PollGuard guard={0};
   poll_guard=&guard;
   wasm_rt_trap_t trap=WASM_RT_SETJMP(guard.checkpoint);
   if(!trap){
@@ -48,7 +48,7 @@ static wasm_rt_trap_t poll_services(bool *cancelled){
     if(!*cancelled)native_wait_service();
     if(!*cancelled)*cancelled=native_wait_cancelled();
   }
-  wasm_rt_set_unwind_target(guard.unwind);poll_guard=guard.previous;
+  wasm_rt_set_unwind_target(unwind);poll_guard=previous;
   return trap;
 }
 static void propagate(wasm_rt_trap_t trap,bool cancelled){
