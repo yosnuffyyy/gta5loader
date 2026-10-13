@@ -1,11 +1,30 @@
 {
   "version": "0.7",
-  "status": "PENDING",
-  "requestedTests": [
-    "GPU queue + startup: native BC 1; 11 format cases PASS",
-    "If checkpoint passes, real Prologue archive trace; copy first error/report"
-  ],
-  "stage3": "IN PROGRESS",
-  "realSceneVerified": false,
-  "playable": false
+  "status": "QUEUE/BC/STARTUP PASS; REAL ARCHIVE TRACE REACHED DRAW",
+  "source": "User-pasted physical iPhone reports",
+  "device": "iPhone 16 Pro Max / Apple A18 Pro GPU",
+  "os": "27.0.1",
+  "assetIndexFiles": 5814,
+  "queueCheckpoint": {
+    "result": "PASS", "exit": 0,
+    "nativeBC": true, "sampledFormatCases": 11,
+    "pixelsPerFormatCase": 16, "commands": 27,
+    "uploads": 3, "readbacks": 5, "surfaceFrames": 0,
+    "engineMetalReady": true, "stoppedBeforeArchiveBytes": true,
+    "engineCommands": 0, "engineSurfaceFrames": 0,
+    "beforeMiB": 12.2, "highestSampleMiB": 49.2,
+    "heapCommittedMiB": 596.1, "cleanupMiB": 23.3
+  },
+  "realArchiveTrace": {
+    "result": "UNIMPLEMENTED DRAW BOUNDARY", "exit": 1, "trap": 5,
+    "archivesParsed": true, "commands": 790, "uploads": 17,
+    "readbacks": 0, "surfaceFrames": 0, "lastOpcode": "DRAW (32)",
+    "vertexShader": {"id": 54, "hash": "028921879df627f5", "name": "im::VS_TransformUnlit_IM"},
+    "fragmentShader": {"id": 91, "hash": "943b0ad9542193ff", "name": "im::PS_TexturedUnlit_IM"},
+    "beforeMiB": 13.6, "highestReportedSampleMiB": 54.3,
+    "heapCommittedMiB": 596.1, "cleanupMiB": 38.4
+  },
+  "memoryCaveat": "Reported samples, not exact peaks or gameplay budgets",
+  "next": "Native draw path and original startup shader shared-ring pixel replay",
+  "stage3": "IN PROGRESS", "realSceneVerified": false, "playable": false
 }

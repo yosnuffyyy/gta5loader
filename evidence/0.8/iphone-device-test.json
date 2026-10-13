@@ -1,0 +1,11 @@
+{
+  "version": "0.8",
+  "status": "PENDING",
+  "requestedTests": [
+    "GPU queue + startup: original startup DRAW, BC and queue fixtures PASS",
+    "Trace real Prologue startup; copy full report and describe any visible loading image"
+  ],
+  "stage3": "IN PROGRESS",
+  "realSceneVerified": false,
+  "playable": false
+}

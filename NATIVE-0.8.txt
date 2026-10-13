@@ -1,0 +1,53 @@
+NATIVE 0.8 — STARTUP DRAW INTEGRATION
+
+CI run 38478228432 passed the final snapshot/draw, shader/BC, CPU and host
+regressions. The unsigned ARM64 IPA passed its local package audit. Physical
+iPhone 0.8 draw output and real archive continuation remain pending.
+
+The physical 0.7 compression fixture and engine checkpoint passed on A18 Pro.
+Its real archive trace reached DRAW after 790 commands and 17 uploads, using
+im::VS_TransformUnlit_IM / im::PS_TexturedUnlit_IM. No scene was presented.
+
+0.8 implements the native shared-ring DRAW handler and a local shader loader.
+It reads the selected web folder's shader index and just the requested range
+from a shader pack, or the individual WGSL/constant files as a fallback.
+Runtime shader reads use no network or whole-pack cache. Traversal and
+symbolic links are rejected; index/source/table lengths are bounded.
+Packed constants follow the browser translator ABI. Native shader modules,
+samplers, texture views and binding groups are reused. The draw path supports
+direct/indexed/instanced and basic indirect commands, vertex semantics and
+buffer offsets, common color/depth/blend/raster state, scissor and viewport.
+
+Draws sharing targets remain in the same render pass. Constants occupy three
+fixed 512 KiB GPU slots and one 512 KiB CPU mirror (2 MiB total). Slots are
+reused only after GPU completion. Pipeline cache holds at most 128 entries.
+GPU uploads, copies, destruction, readback and presentation first submit
+pending draws to preserve resource ordering. Constant-only shadow updates
+keep the pass open: each draw already owns its constant snapshot. The replay
+checks different constants on the left/right halves of one image. No
+per-draw CPU/GPU completion wait.
+
+The diagnostic replay uses the exact original shader pair from the phone
+trace through the production DRAW handler. It compares every pixel for ten
+16x16 offscreen cases: starts/base vertex, direct/indexed/instanced/indirect
+commands, constants and first-constant offset, blending, scissor, depth
+rejection and depth pass. Eleven draws reuse four native pipelines. The BC
+and original queue checks remain. These fixtures do not prove game rendering.
+
+Pending operations fail explicitly with their first error. Storage bindings,
+depth/color sampling proxies, single-sample alpha-to-coverage variants,
+inter-stage location remapping, indirect built-in ID rebasing, compute and
+other unimplemented commands remain pending. No draw is skipped to make
+startup appear successful. Audio output, gameplay controls and sustained
+native gameplay are still pending. Stage 3 remains IN PROGRESS.
+Sampler border addressing, mirror-once and mip bias retain the existing
+browser adapter's approximations; their exact D3D behavior is not claimed.
+
+Install over 0.7 using the same signing account and app identifier. Preserve
+the extracted web files and previous IPA. Select the extracted web folder,
+run GPU queue + startup tests, then Trace Prologue startup if those pass.
+Copy both reports. If there is a visible loading image, describe it too;
+surface frame counters alone cannot establish correct real game frames.
+Stop native startup is available. Do not clear installed game data.
+
+PC packages and the deployed main branch remain outside native development.

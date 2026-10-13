@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.7 BC capability fix; stage 3 remains active.
+Updated 2026-10-13. Native 0.8 original startup DRAW integration; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -25,8 +25,10 @@ trace path. General scene draws are still pending, so it is not playable.
 The 0.6 queue/startup checkpoint passed on A18 Pro. Its real archive trace
 parsed audio archives, then hit missing BC capability at command 710.
 0.7 patches the backend's macOS-only BC condition to query actual Metal
-support on iOS, preserving compressed storage. Physical BC sampling and
-further archive continuation need verification; the scene gate is unchanged.
+support on iOS, preserving compressed storage. Physical 0.7 BC sampling passed; the archive trace reached DRAW at command
+790. Native 0.8 adds the draw consumer and a bounded local shader loader,
+with an original startup shader replay. Physical draws/archive continuation
+and successive correct real game frames are still required.
 
 STAGE 1 — COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
 Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.json.

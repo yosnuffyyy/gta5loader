@@ -1,0 +1,45 @@
+NATIVE 0.8 — ORIGINAL STARTUP DRAW INTEGRATION
+Source fa541dbe9a3c999dc51f70a1e4f8684287a605ee
+Run https://github.com/yosnuffyyy/gta5loader/actions/runs/38478228432
+Job 115574374172; CI PASS.
+
+PASS: two Mac shared-ring DRAW replays using the exact original IM shader
+pair from the physical 0.7 trace. Ten 16x16 output cases per replay; every
+pixel compared, one-byte tolerance. Eleven draws use four cached pipelines
+with seven cache hits. Covers direct/indexed/instanced/basic indirect draw,
+starts/base vertex, changed packed constants and first-constant offset,
+blending, scissor and depth reject/pass. Split image verifies independent
+constant snapshots while shadow uploads keep one render pass open.
+PASS: bounded local pack-range reads, individual-source fallback, traversal,
+symlink, absolute-path, oversize and offset bounds rejection. Isolated
+temporary fixtures; selected game files are not modified.
+PASS: each replay 158 commands, 21 uploads and 15 readbacks; BC1-BC7 native
+sampling in 11 formats. Original separate game shader fixture: three draws,
+4096 pixels each, zero validation/runtime errors.
+PASS: concurrent ring and address/undefined sanitizers, host/index/wait/SIMD/
+bulk checks, four CPU runtime regressions, persistent saves and two actual
+graphics main entries deliberately stopped before archive bytes. No actual
+engine surface frames or scene are established by these checks.
+PASS: Mac/iPhone compilation, pinned offline/locked backend source build,
+63 native/build source files verified against local manifest and Git tree.
+Engine cache retained: macos:131, ios:131 objects reused.
+PASS: artifact ZIP size/digests, checked extraction and IPA digest match CI.
+ARM64 device/min iOS17, 0.8.0/build8, unchanged app ID, unsigned/no profile,
+no WebKit/JSC and no writable-executable segments. Original shader digests
+and exact BC capability patch/source build evidence are bundled.
+PASS: seven previous IPA hashes unchanged; deployed main unchanged. Neither
+protected Desktop PC game directory was read or used.
+
+IPA: GTA-Native-Probe-0.8-unsigned.ipa
+Bytes: 102008462
+SHA256: 065af3d1316d7b2675ec4b401acff929b78a80b35950c4b204327f66130f1c0b
+
+Physical iPhone 0.8 output cases, local shader loading from the selected web
+folder, real archive continuation and correct successive scene frames:
+PENDING. Stage 3 remains IN PROGRESS; five stages left. See NATIVE-0.8.txt
+for remaining bindings, shader variants, GPU operations, audio and input.
+
+Pre-delivery run 38477183255 caught a C API enum sentinel mismatch; fixed.
+Run 38477710775 passed draw/CPU regression and ARM64 packaging before it was
+cancelled during cache save after the final snapshot batching test was added.
+Only the final fully verified source/build is delivered.

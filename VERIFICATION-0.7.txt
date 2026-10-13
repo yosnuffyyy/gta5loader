@@ -29,7 +29,14 @@ IPA: GTA-Native-Probe-0.7-unsigned.ipa
 Bytes: 101970980
 SHA256: 6dae9106c4bb9a7fc5402c03efa525f695a8903f6c699cf6d893c91a167d7050
 
-Physical iPhone 0.7 BC query, sampling and archive continuation: PENDING.
+Physical iPhone 0.7 BC sampling and queue/startup checkpoint: PASS.
+Real archive continuation reached the unimplemented DRAW boundary.
+UPDATE: physical iPhone report received. BC1-BC7 (11 cases), shared ring and
+graphics startup checkpoint PASS. Real archive trace reached first DRAW
+after 790 commands/17 uploads (previously BC1 creation at 710 commands).
+First shader pair: im VS 028921879df627f5 / PS 943b0ad9542193ff.
+Exit 1 is the intentional unimplemented-DRAW failure, not a verified scene.
+See evidence/0.7/iphone-device-test.json. No surface frames were reported.
 Stage 3 IN PROGRESS; five stages left. General scene drawing/compute and
 remaining GPU operations, audio output, input and gameplay are pending.
 No actual native scene or playable game is claimed. See NATIVE-0.7.txt.
