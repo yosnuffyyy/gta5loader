@@ -1,0 +1,1504 @@
+{
+  "date": "2026-10-13",
+  "scope": "Static reference mapping plus observed 0.4 startup. Not a full dynamic Prologue trace.",
+  "reference": [
+    {
+      "name": "game.js",
+      "bytes": 128654,
+      "sha256": "4a73cd529cfd2a3a4837dad995259e8ce0cff00fb6c1a66e52ef3dc739a08b20"
+    },
+    {
+      "name": "loader.js",
+      "bytes": 11296,
+      "sha256": "f58b31bd241117f0e0cfc75c2678dcb239a6c43552fcf93375ac973d04350566"
+    },
+    {
+      "name": "io_worker.js",
+      "bytes": 41287,
+      "sha256": "0a4af4b05dfa38d4c80ec94d8a75a2f7d38c58885fd26388ed39e9c918ea0c8b"
+    },
+    {
+      "name": "wgpu_worker.js",
+      "bytes": 195086,
+      "sha256": "aa459280079845062ca88c232874ca3e2a4c8b2832343b54353e229fe394eea8"
+    }
+  ],
+  "hostImports": [
+    {
+      "module": "env",
+      "name": "__pthread_create_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_accept4",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_connect",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fcntl64",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fstat64",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ftruncate64",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getcwd",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getdents64",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockname",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockopt",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ioctl",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_lstat64",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_mkdirat",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_newfstatat",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_openat",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_poll",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_recvfrom",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_renameat",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_rmdir",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_sendto",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_setsockopt",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_shutdown",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_socket",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_stat64",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_statfs64",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "__syscall_unlinkat",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "_abort_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_init_main_thread_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_notify_mailbox_postmessage",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_receive_on_main_thread_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_system",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_cleanup",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_mailbox_await",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_set_strongref",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_throw_longjmp",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "_gmtime_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_localtime_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "_mktime_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "_tzset_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int_sync_on_main_thread",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_check_blocking_allowed",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_date_now",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_exit_with_live_runtime",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_heap_max",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_now",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_num_logical_cores",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_resize_heap",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_snapshot",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_unwind_buffer",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "exit",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ij",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_iji",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijji",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijjiii",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjiiijij",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjij",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vj",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjii",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjij",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjj",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjjii",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "wasm_audio_publish_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_hang_line_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_has_page_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_io_start_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_manifest_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_input_publish_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_module_int_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_now_ms",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_print_line_js",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_delete_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_page_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_put_js",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "env",
+      "name": "wgpu_start_worker",
+      "status": "explicit unsupported trap"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "clock_time_get",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_get",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_sizes_get",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_close",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pread",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pwrite",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_read",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_seek",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_write",
+      "status": "checkpoint implementation"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "proc_exit",
+      "status": "explicit unsupported trap"
+    }
+  ],
+  "graphics": {
+    "transport": "Shared memory ring; little-endian int32 words and inline payloads",
+    "dataOffsetBytes": 64,
+    "header": {
+      "head": 0,
+      "tail": 1,
+      "state": 2,
+      "executed": 3,
+      "validationErrors": 4,
+      "sleeping": 5
+    },
+    "states": {
+      "starting": 0,
+      "running": 1,
+      "failed": 2
+    },
+    "command": "opcode u32; payloadWords u32; payload; WRAP returns to byte 64",
+    "opcodes": [
+      {
+        "name": "NOP",
+        "opcode": 0
+      },
+      {
+        "name": "WRAP",
+        "opcode": 1
+      },
+      {
+        "name": "INIT",
+        "opcode": 2
+      },
+      {
+        "name": "CREATE_TEXTURE",
+        "opcode": 3
+      },
+      {
+        "name": "DESTROY_OBJECT",
+        "opcode": 4
+      },
+      {
+        "name": "CLEAR_RT",
+        "opcode": 5
+      },
+      {
+        "name": "CLEAR_DS",
+        "opcode": 6
+      },
+      {
+        "name": "PRESENT",
+        "opcode": 7
+      },
+      {
+        "name": "FENCE",
+        "opcode": 8
+      },
+      {
+        "name": "SCREENSHOT",
+        "opcode": 9
+      },
+      {
+        "name": "LOG",
+        "opcode": 10
+      },
+      {
+        "name": "CREATE_BUFFER",
+        "opcode": 11
+      },
+      {
+        "name": "UPLOAD_BUFFER",
+        "opcode": 12
+      },
+      {
+        "name": "UPLOAD_TEXTURE",
+        "opcode": 13
+      },
+      {
+        "name": "CREATE_SHADER",
+        "opcode": 14
+      },
+      {
+        "name": "CREATE_LAYOUT",
+        "opcode": 15
+      },
+      {
+        "name": "CREATE_STATE",
+        "opcode": 16
+      },
+      {
+        "name": "CREATE_SRV",
+        "opcode": 17
+      },
+      {
+        "name": "SET_SHADER",
+        "opcode": 18
+      },
+      {
+        "name": "SET_INPUT_LAYOUT",
+        "opcode": 19
+      },
+      {
+        "name": "SET_TOPOLOGY",
+        "opcode": 20
+      },
+      {
+        "name": "SET_VERTEX_BUFFERS",
+        "opcode": 21
+      },
+      {
+        "name": "SET_INDEX_BUFFER",
+        "opcode": 22
+      },
+      {
+        "name": "SET_CBUFFERS",
+        "opcode": 23
+      },
+      {
+        "name": "SET_SRVS",
+        "opcode": 24
+      },
+      {
+        "name": "SET_SAMPLERS",
+        "opcode": 25
+      },
+      {
+        "name": "SET_RENDER_TARGETS",
+        "opcode": 26
+      },
+      {
+        "name": "SET_BLEND",
+        "opcode": 27
+      },
+      {
+        "name": "SET_DEPTH_STENCIL",
+        "opcode": 28
+      },
+      {
+        "name": "SET_RASTER",
+        "opcode": 29
+      },
+      {
+        "name": "SET_VIEWPORTS",
+        "opcode": 30
+      },
+      {
+        "name": "SET_SCISSORS",
+        "opcode": 31
+      },
+      {
+        "name": "DRAW",
+        "opcode": 32
+      },
+      {
+        "name": "CLEAR_STATE",
+        "opcode": 33
+      },
+      {
+        "name": "COPY_REGION",
+        "opcode": 34
+      },
+      {
+        "name": "COPY_RESOURCE",
+        "opcode": 35
+      },
+      {
+        "name": "RESOLVE",
+        "opcode": 36
+      },
+      {
+        "name": "CREATE_UAV",
+        "opcode": 37
+      },
+      {
+        "name": "SET_UAVS",
+        "opcode": 38
+      },
+      {
+        "name": "DISPATCH",
+        "opcode": 39
+      },
+      {
+        "name": "CLEAR_UAV",
+        "opcode": 40
+      },
+      {
+        "name": "GENERATE_MIPS",
+        "opcode": 41
+      },
+      {
+        "name": "READBACK",
+        "opcode": 42
+      },
+      {
+        "name": "COPY_COUNTER",
+        "opcode": 43
+      },
+      {
+        "name": "CREATE_QUERY",
+        "opcode": 44
+      },
+      {
+        "name": "BEGIN_QUERY",
+        "opcode": 45
+      },
+      {
+        "name": "END_QUERY",
+        "opcode": 46
+      },
+      {
+        "name": "UPLOAD_BUFFER_NO_OVERWRITE",
+        "opcode": 47
+      }
+    ],
+    "handlers": [
+      {
+        "name": "post",
+        "parameters": "msg",
+        "line": 43
+      },
+      {
+        "name": "logLine",
+        "parameters": "s",
+        "line": 45
+      },
+      {
+        "name": "mapFormat",
+        "parameters": "f, bind",
+        "line": 70
+      },
+      {
+        "name": "dumpErrors",
+        "parameters": "",
+        "line": 127
+      },
+      {
+        "name": "w32",
+        "parameters": "addr",
+        "line": 146
+      },
+      {
+        "name": "refreshViews",
+        "parameters": "",
+        "line": 148
+      },
+      {
+        "name": "getEncoder",
+        "parameters": "",
+        "line": 157
+      },
+      {
+        "name": "endPass",
+        "parameters": ") { if (pass",
+        "line": 158
+      },
+      {
+        "name": "newPassSt",
+        "parameters": "",
+        "line": 160
+      },
+      {
+        "name": "flush",
+        "parameters": "reason",
+        "line": 167
+      },
+      {
+        "name": "logOnce",
+        "parameters": "key, msg",
+        "line": 178
+      },
+      {
+        "name": "vertexFormat",
+        "parameters": "dxgi",
+        "line": 189
+      },
+      {
+        "name": "makeSampler",
+        "parameters": "words",
+        "line": 207
+      },
+      {
+        "name": "wf",
+        "parameters": "w",
+        "line": 224
+      },
+      {
+        "name": "parseWgsl",
+        "parameters": "text",
+        "line": 228
+      },
+      {
+        "name": "layoutEntry",
+        "parameters": "b, stage",
+        "line": 266
+      },
+      {
+        "name": "packUniforms",
+        "parameters": "text",
+        "line": 285
+      },
+      {
+        "name": "loadShaderIndex",
+        "parameters": "",
+        "line": 313
+      },
+      {
+        "name": "fetchRetry",
+        "parameters": "url, init",
+        "line": 326
+      },
+      {
+        "name": "fetchText",
+        "parameters": "url",
+        "line": 335
+      },
+      {
+        "name": "shaderSourcesReady",
+        "parameters": "",
+        "line": 338
+      },
+      {
+        "name": "shaderIndexReady",
+        "parameters": "",
+        "line": 345
+      },
+      {
+        "name": "packBytes",
+        "parameters": "k",
+        "line": 358
+      },
+      {
+        "name": "packShader",
+        "parameters": "rec",
+        "line": 369
+      },
+      {
+        "name": "fetchShaderSource",
+        "parameters": "sh",
+        "line": 378
+      },
+      {
+        "name": "pumpShaderQueue",
+        "parameters": "",
+        "line": 408
+      },
+      {
+        "name": "prefetchShader",
+        "parameters": "sh",
+        "line": 417
+      },
+      {
+        "name": "ensureShaderSources",
+        "parameters": "",
+        "line": 422
+      },
+      {
+        "name": "a2cModule",
+        "parameters": "prog",
+        "line": 432
+      },
+      {
+        "name": "shaderProgram",
+        "parameters": "sh",
+        "line": 442
+      },
+      {
+        "name": "initDevice",
+        "parameters": "msg",
+        "line": 478
+      },
+      {
+        "name": "textureBytes",
+        "parameters": "desc",
+        "line": 531
+      },
+      {
+        "name": "createTexture",
+        "parameters": "id, dim, w, h, d, mips, arraySize, dxgi, bind, samples",
+        "line": 550
+      },
+      {
+        "name": "dumpMemBreakdown",
+        "parameters": "",
+        "line": 572
+      },
+      {
+        "name": "createBuffer",
+        "parameters": "id, size, bind, misc, stride",
+        "line": 585
+      },
+      {
+        "name": "uploadBuffer",
+        "parameters": "id, offset, size, dataOff, noOverwrite",
+        "line": 602
+      },
+      {
+        "name": "uploadTexture",
+        "parameters": "id, mip, slice, x, y, z, w, h, d, bytesPerRow, rowsPerImage, size, dataOff",
+        "line": 618
+      },
+      {
+        "name": "createShader",
+        "parameters": "p, n",
+        "line": 636
+      },
+      {
+        "name": "createLayout",
+        "parameters": "p",
+        "line": 648
+      },
+      {
+        "name": "layoutSlots",
+        "parameters": "els",
+        "line": 658
+      },
+      {
+        "name": "createState",
+        "parameters": "p, n",
+        "line": 665
+      },
+      {
+        "name": "createUav",
+        "parameters": "p",
+        "line": 672
+      },
+      {
+        "name": "createSrv",
+        "parameters": "p",
+        "line": 677
+      },
+      {
+        "name": "resetState",
+        "parameters": "",
+        "line": 698
+      },
+      {
+        "name": "viewFormat",
+        "parameters": "dxgi, tex",
+        "line": 712
+      },
+      {
+        "name": "targetView",
+        "parameters": "t, dxgi, mip, slice, dimension",
+        "line": 714
+      },
+      {
+        "name": "uniformAlloc",
+        "parameters": "size",
+        "line": 736
+      },
+      {
+        "name": "stageReserve",
+        "parameters": "chunk, off, n",
+        "line": 756
+      },
+      {
+        "name": "flushUniforms",
+        "parameters": "",
+        "line": 770
+      },
+      {
+        "name": "packCopy",
+        "parameters": "prog, stage",
+        "line": 779
+      },
+      {
+        "name": "dummyTexture",
+        "parameters": "b",
+        "line": 832
+      },
+      {
+        "name": "dummySampler",
+        "parameters": "cmp",
+        "line": 844
+      },
+      {
+        "name": "dummyBuffer",
+        "parameters": "binding",
+        "line": 849
+      },
+      {
+        "name": "srvView",
+        "parameters": "srv, b",
+        "line": 856
+      },
+      {
+        "name": "proxyPipeline",
+        "parameters": "kind",
+        "line": 898
+      },
+      {
+        "name": "floatToDepthProxy",
+        "parameters": "t",
+        "line": 913
+      },
+      {
+        "name": "markColorDirty",
+        "parameters": "t",
+        "line": 951
+      },
+      {
+        "name": "depthProxy",
+        "parameters": "t, kind",
+        "line": 953
+      },
+      {
+        "name": "markDepthDirty",
+        "parameters": "t",
+        "line": 989
+      },
+      {
+        "name": "internHash",
+        "parameters": "o",
+        "line": 997
+      },
+      {
+        "name": "bindGroupLayoutFor",
+        "parameters": "prog, stage, group",
+        "line": 1001
+      },
+      {
+        "name": "depthStencilFor",
+        "parameters": "dss, dsFormat, roDepth, roStencil",
+        "line": 1013
+      },
+      {
+        "name": "blendFor",
+        "parameters": "state, rtIndex",
+        "line": 1031
+      },
+      {
+        "name": "vertexFormatBytes",
+        "parameters": "f",
+        "line": 1045
+      },
+      {
+        "name": "vertexBuffersFor",
+        "parameters": "vs, layout, strides",
+        "line": 1052
+      },
+      {
+        "name": "vertexModule",
+        "parameters": "vsProg, flat, remap",
+        "line": 1076
+      },
+      {
+        "name": "interStageRemap",
+        "parameters": "vsProg, psProg",
+        "line": 1095
+      },
+      {
+        "name": "vsOutputStruct",
+        "parameters": "text",
+        "line": 1115
+      },
+      {
+        "name": "locationsIn",
+        "parameters": "text, stage",
+        "line": 1119
+      },
+      {
+        "name": "remapLocations",
+        "parameters": "text, stage, map",
+        "line": 1125
+      },
+      {
+        "name": "pixelModule",
+        "parameters": "psProg, a2c, remap",
+        "line": 1131
+      },
+      {
+        "name": "getPipeline",
+        "parameters": "vsObj, psObj, vsProg, psProg, layout, rtInfo, dsFormat",
+        "line": 1145
+      },
+      {
+        "name": "pipelineDescFor",
+        "parameters": "vsObj, psObj, vsProg, psProg, layout, strides, topoIdx, stripFmt, blendState, dss, rs, rtInfo, dsFormat, roDepth, roStencil",
+        "line": 1210
+      },
+      {
+        "name": "compileSync",
+        "parameters": "c, desc, vbReq",
+        "line": 1262
+      },
+      {
+        "name": "pumpPipelineCompiles",
+        "parameters": "",
+        "line": 1280
+      },
+      {
+        "name": "compileAsync",
+        "parameters": "c,desc,vbReq,onDone",
+        "line": 1287
+      },
+      {
+        "name": "pipelineRecipe",
+        "parameters": "vsObj, psObj, layout, strides, topoIdx, stripFmt, blendState, dss, rs, rtInfo, dsFormat, roDepth, roStencil",
+        "line": 1322
+      },
+      {
+        "name": "recipeKey",
+        "parameters": "rc",
+        "line": 1330
+      },
+      {
+        "name": "compileAhead",
+        "parameters": "rc, key",
+        "line": 1334
+      },
+      {
+        "name": "aheadStep",
+        "parameters": "",
+        "line": 1357
+      },
+      {
+        "name": "recordRecipe",
+        "parameters": "rc, key",
+        "line": 1373
+      },
+      {
+        "name": "idbOpen",
+        "parameters": "",
+        "line": 1379
+      },
+      {
+        "name": "idbList",
+        "parameters": "db",
+        "line": 1382
+      },
+      {
+        "name": "loadRecipes",
+        "parameters": "",
+        "line": 1385
+      },
+      {
+        "name": "saveRecipes",
+        "parameters": "",
+        "line": 1404
+      },
+      {
+        "name": "ensurePass",
+        "parameters": "",
+        "line": 1418
+      },
+      {
+        "name": "prepareDepthProxies",
+        "parameters": "prog, stage",
+        "line": 1465
+      },
+      {
+        "name": "zeroVertexBuffer",
+        "parameters": "",
+        "line": 1490
+      },
+      {
+        "name": "replayBG",
+        "parameters": "e",
+        "line": 1492
+      },
+      {
+        "name": "idSources",
+        "parameters": "prog, group",
+        "line": 1499
+      },
+      {
+        "name": "boundId",
+        "parameters": "stage, k, x",
+        "line": 1510
+      },
+      {
+        "name": "readIds",
+        "parameters": "stage, src",
+        "line": 1511
+      },
+      {
+        "name": "sameIds",
+        "parameters": "stage, src, ids",
+        "line": 1512
+      },
+      {
+        "name": "stageBG",
+        "parameters": "stage, prog, group",
+        "line": 1513
+      },
+      {
+        "name": "ent",
+        "parameters": "binding, res, off, size",
+        "line": 1558
+      },
+      {
+        "name": "buildEntries",
+        "parameters": "",
+        "line": 1559
+      },
+      {
+        "name": "noteSamplerApprox",
+        "parameters": "st, prog, slot",
+        "line": 1567
+      },
+      {
+        "name": "stageBindGroup",
+        "parameters": "stage, prog, group, bgl",
+        "line": 1575
+      },
+      {
+        "name": "bgUse",
+        "parameters": "o) { if (o",
+        "line": 1673
+      },
+      {
+        "name": "trimBindGroups",
+        "parameters": "",
+        "line": 1684
+      },
+      {
+        "name": "noteApprox",
+        "parameters": "feature, detail",
+        "line": 1698
+      },
+      {
+        "name": "skipDraw",
+        "parameters": "why",
+        "line": 1699
+      },
+      {
+        "name": "setBG",
+        "parameters": "enc, index, g",
+        "line": 1704
+      },
+      {
+        "name": "isBound",
+        "parameters": "id",
+        "line": 1710
+      },
+      {
+        "name": "setScissorOnce",
+        "parameters": "x, y, w, h",
+        "line": 1715
+      },
+      {
+        "name": "doDraw",
+        "parameters": "p",
+        "line": 1722
+      },
+      {
+        "name": "dumpDraw",
+        "parameters": "kind, count, inst, start, baseVertex, vsProg, psProg, layout, g0, g1, allSrv",
+        "line": 1851
+      },
+      {
+        "name": "probeUavs",
+        "parameters": "",
+        "line": 1876
+      },
+      {
+        "name": "probeSmallSrvs",
+        "parameters": "",
+        "line": 1895
+      },
+      {
+        "name": "probeTarget",
+        "parameters": "",
+        "line": 1920
+      },
+      {
+        "name": "dumpFrameStats",
+        "parameters": "",
+        "line": 1937
+      },
+      {
+        "name": "dumpAllTargets",
+        "parameters": "",
+        "line": 1944
+      },
+      {
+        "name": "subresourceOf",
+        "parameters": "t, sub",
+        "line": 1951
+      },
+      {
+        "name": "mipSize",
+        "parameters": "t, mip",
+        "line": 1955
+      },
+      {
+        "name": "blockBytes",
+        "parameters": "format",
+        "line": 1962
+      },
+      {
+        "name": "texelBytesOf",
+        "parameters": "format",
+        "line": 1963
+      },
+      {
+        "name": "scratch",
+        "parameters": "size",
+        "line": 1970
+      },
+      {
+        "name": "copyThroughBuffer",
+        "parameters": "s, ss, d, ds, w, h, hasBox, l, t, dx, dy",
+        "line": 1974
+      },
+      {
+        "name": "copyRegion",
+        "parameters": "dstId, dstSub, dx, dy, dz, srcId, srcSub, hasBox, l, t, f, r, b, bk",
+        "line": 1986
+      },
+      {
+        "name": "copyResource",
+        "parameters": "dstId, srcId",
+        "line": 2018
+      },
+      {
+        "name": "resolve",
+        "parameters": "dstId, dstSub, srcId, srcSub",
+        "line": 2035
+      },
+      {
+        "name": "queryStore",
+        "parameters": "q, result, seq",
+        "line": 2057
+      },
+      {
+        "name": "createQuery",
+        "parameters": "id, type, addr",
+        "line": 2066
+      },
+      {
+        "name": "beginOcclusionInPass",
+        "parameters": "",
+        "line": 2073
+      },
+      {
+        "name": "endOcclusionInPass",
+        "parameters": "",
+        "line": 2081
+      },
+      {
+        "name": "beginQuery",
+        "parameters": "id",
+        "line": 2084
+      },
+      {
+        "name": "endQuery",
+        "parameters": "id, seq",
+        "line": 2091
+      },
+      {
+        "name": "pooledBuffer",
+        "parameters": "size, usage",
+        "line": 2106
+      },
+      {
+        "name": "releaseBuffer",
+        "parameters": "b, size, usage",
+        "line": 2110
+      },
+      {
+        "name": "recordResolves",
+        "parameters": "",
+        "line": 2119
+      },
+      {
+        "name": "mapResolves",
+        "parameters": "res",
+        "line": 2147
+      },
+      {
+        "name": "onSubmitted",
+        "parameters": "",
+        "line": 2162
+      },
+      {
+        "name": "counterBuffer",
+        "parameters": "bufObj",
+        "line": 2170
+      },
+      {
+        "name": "setUavCounter",
+        "parameters": "uavId, value",
+        "line": 2179
+      },
+      {
+        "name": "logCounter",
+        "parameters": "uavId",
+        "line": 2193
+      },
+      {
+        "name": "copyCounter",
+        "parameters": "dstId, offset, uavId",
+        "line": 2205
+      },
+      {
+        "name": "computePipelineFor",
+        "parameters": "csObj, prog",
+        "line": 2215
+      },
+      {
+        "name": "doDispatch",
+        "parameters": "x, y, z",
+        "line": 2244
+      },
+      {
+        "name": "clearUav",
+        "parameters": "id, isFloat, values",
+        "line": 2274
+      },
+      {
+        "name": "generateMips",
+        "parameters": "srvId",
+        "line": 2315
+      },
+      {
+        "name": "blockInfo",
+        "parameters": "format",
+        "line": 2353
+      },
+      {
+        "name": "readback",
+        "parameters": "p",
+        "line": 2362
+      },
+      {
+        "name": "clearView",
+        "parameters": "t, mip, slice",
+        "line": 2409
+      },
+      {
+        "name": "clearRT",
+        "parameters": "id, mip, slice, r, g, b, a",
+        "line": 2413
+      },
+      {
+        "name": "clearDS",
+        "parameters": "id, mip, slice, flags, depth, stencil",
+        "line": 2422
+      },
+      {
+        "name": "makeBlit",
+        "parameters": "",
+        "line": 2434
+      },
+      {
+        "name": "crc32",
+        "parameters": "buf",
+        "line": 2453
+      },
+      {
+        "name": "encodePng",
+        "parameters": "w, h, rgba",
+        "line": 2462
+      },
+      {
+        "name": "readString",
+        "parameters": "w, lenBytes",
+        "line": 2477
+      },
+      {
+        "name": "halfToFloat",
+        "parameters": "h",
+        "line": 2483
+      },
+      {
+        "name": "screenshot",
+        "parameters": "id, path",
+        "line": 2505
+      },
+      {
+        "name": "floatStats",
+        "parameters": "id",
+        "line": 2549
+      },
+      {
+        "name": "nanReadTexel",
+        "parameters": "t, x, y, tw, th, mip = 0",
+        "line": 2593
+      },
+      {
+        "name": "nanDetail",
+        "parameters": "bx, by, gx, gy, tw, th",
+        "line": 2613
+      },
+      {
+        "name": "nanScanAfterDraw",
+        "parameters": "",
+        "line": 2628
+      },
+      {
+        "name": "present",
+        "parameters": "id",
+        "line": 2665
+      },
+      {
+        "name": "setRange",
+        "parameters": "dst, start, n, src",
+        "line": 2792
+      },
+      {
+        "name": "yieldTask",
+        "parameters": "",
+        "line": 2801
+      },
+      {
+        "name": "runCommands",
+        "parameters": "tail, head",
+        "line": 2804
+      },
+      {
+        "name": "loop",
+        "parameters": "",
+        "line": 2920
+      },
+      {
+        "name": "start",
+        "parameters": "msg",
+        "line": 2952
+      }
+    ],
+    "completion": "FENCE: split low/high u64 pointer plus u32 value; publish and notify only after GPU completion. READBACK uses destination and completion flag; query slots also require delivery.",
+    "shaderSource": "FNV1a64 hash -> shaders/index.json -> WGSL and optional constants; packed files have byte offsets/lengths",
+    "constantBuffers": "Original packUniforms merges uniform bindings other than 15 into stage-local binding 0. Preserve 16-byte aligned member offsets, stage groups and dynamic uniform offsets.",
+    "requiredBehavior": [
+      "resource IDs and deferred destruction",
+      "texture formats and compressed-format feature negotiation",
+      "buffer/texture upload and readback",
+      "draws including indexed/instanced/indirect",
+      "compute dispatch and UAVs",
+      "render/depth/blend/raster state and vertex layout",
+      "queries, counters, copies, resolves and mip generation",
+      "shader variants and pipeline/bind-group caching",
+      "surface presentation and frame-slot reuse after GPU completion"
+    ]
+  },
+  "observedCpuStartup": [
+    "constructors/TLS and host environment",
+    "read-only selected manifest and samples",
+    "eight diagnostic workers",
+    "main publishes input/audio pointers",
+    "initial real dependency workers",
+    "root /game/ mounted",
+    "audio.rpf request deliberately intercepted"
+  ],
+  "graphicsStartup": "Graphics-enabled main invokes wgpu_start_worker before the CPU checkpoint workers; backend readiness must be real.",
+  "unverified": [
+    "Archive parsing and scene loading",
+    "All workload-specific embedded host dispatch operations",
+    "Full worker counts, callbacks and job coverage",
+    "Actual Prologue command/shader trace",
+    "Native GPU integration and display",
+    "Audio playback, gameplay input, pause/resume and sustained performance"
+  ]
+}

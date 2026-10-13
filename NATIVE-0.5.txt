@@ -1,0 +1,33 @@
+NATIVE 0.5 — RENDERER FEASIBILITY (ROADMAP STAGE 2)
+Adds a pinned native WebGPU/Metal candidate and an offscreen actual-game
+shader fixture. The previous 0.4 asset/worker tests are retained unchanged.
+The game engine and GPU command ring are not yet connected to this backend.
+
+Fixture: postfx::VS_Passthrough and postfx::PS_PassThrough, translated WGSL
+from build 8b0b5899ed, transformed with the exact reference packUniforms.
+Tests vertex input, separate stage groups, packed arrays with member offsets,
+texture/sampler binding, uniform updates, GPU completion and readback.
+Three 64x64 draws compare all output pixels with independently computed
+RGBA values; tolerance is one byte per channel for unorm rounding.
+Fixture resources are small/bounded; pipeline/compiler/backend allocations
+must be measured on device. No gameplay memory-budget claim is made.
+
+Backend candidate: official wgpu-native v29.0.1.1 static ARM64 libraries,
+downloaded with pinned release SHA-256 and length checks. Only Metal is
+requested by this fixture. No JavaScript/WebKit runtime is used.
+Direct Metal was compared at architecture level: it would need WGSL->MSL
+translation, reflection and WebGPU validation/layout equivalents. Native
+WebGPU is the first candidate because it preserves the reference shader/API
+semantics. Keep final selection provisional until the device gate passes.
+
+Mac CI compiles/links the fixture and runs it if Metal is available. An
+explicit no-Metal SKIP is not an iPhone GPU pass. Native ARM64 compilation
+and IPA audit are separate gates. Current build/device results: PENDING.
+
+Device test: install over the prior probe with the existing signing setup.
+Tap Run renderer feasibility; no game folder is needed. Copy the full report,
+close/reopen and repeat. Exit 0, all pixel checks and zero validation/runtime
+errors establish this representative draw gate, not full game rendering.
+
+Next: GPU ring consumer, resource/state/binding integration, broader shaders,
+compute/format coverage and actual archive/scene startup; audio and gameplay.

@@ -1,0 +1,48 @@
+ROADMAP STAGE 1 — BASELINE AND DEPENDENCIES, 2026-10-13
+
+Both user-reported 0.4 iPhone runs passed: selected 5,814-file index, actual
+queued asset samples, persistent saves, concurrency and joined shutdown.
+See evidence/0.4/iphone-device-test.json for measurements and limitations.
+
+Observed CPU path: constructors/TLS -> file/environment services -> selected
+manifest -> diagnostic workers -> main publishes input/audio pointers ->
+initial game dependency workers -> intercepted audio.rpf request. Archive
+parsing and following scene startup have not been dynamically verified.
+
+Graphics-enabled path: wgpu_start_worker(ring,size,dbg) runs before these
+workers. It needs actual backend readiness and a GPU-owning command consumer.
+The engine cannot progress behind a fabricated success for an idle backend.
+
+STARTUP-DEPENDENCIES.json pins all four JS references, maps 48 GPU opcodes
+and 161 helper functions with source lines, and records 85 imported host
+function statuses. This is source mapping, not a full Prologue dynamic trace.
+
+Ring: 64-byte header; opcode u32 + payload word count u32 + inline payload.
+Words 0=head, 1=tail, 2=state, 3=executed, 4=errors, 5=sleeping. Acquire
+producer publication; publish consumed tail only after command bytes are no
+longer referenced. Preserve wrap/bounds checks and split 64-bit pointers.
+Fences/readbacks/queries publish results and notify only after the required
+GPU work completes. Errors must wake blocked producers during shutdown.
+
+Shader path: CREATE_SHADER stage/FNV1a64 hash -> shaders/index.json -> WGSL
+plus optional constants, individually or via packed byte ranges. Preserve
+the original packUniforms transformation: stage-local binding 0, ordered
+constant-buffer members and aligned offsets; binding 15 remains separate.
+Vertex layouts, reflected textures/samplers, variants and graphics state
+determine pipeline/bind-group creation. A native WebGPU candidate provides
+WGSL translation and validation; direct Metal requires explicit equivalents.
+
+Required remaining work: actual archive data and resulting file operations;
+workload-specific job/async/mailbox dispatch; GPU resources/uploads/state,
+draws/compute/UAVs/copies/resolves/mips/queries/counters/readbacks/fences and
+presentation; format/feature negotiation; audio, gameplay input, persistent
+folder access and app interruptions. Import names alone do not establish
+coverage of their embedded dispatch operations.
+
+Next: prove representative game shaders on the native candidate, then extend
+the ring consumer and real startup together. Keep reads bounded and GPU
+resource retirement tied to completion. Diagnostic footprints are not a
+gameplay memory budget.
+
+Stage 1 gate COMPLETE: two device reports and concrete dependency map.
+Stage 2 gate PENDING: representative game draw on physical iPhone.

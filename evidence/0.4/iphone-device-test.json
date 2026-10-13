@@ -1,0 +1,52 @@
+{
+  "recordedDate": "2026-10-13",
+  "source": "Two user-pasted physical iPhone reports; not independently captured",
+  "version": "0.4",
+  "device": "iPhone (previously identified as iPhone 16 Pro Max)",
+  "os": "iOS 27.0.1",
+  "sourceCommit": "f6e5600969f7fd35dc096cb37d0690f64956ee01",
+  "result": "Both asset/worker checkpoint runs PASS; Exit 0",
+  "passedInBoth": [
+    "Real constructors and main-thread TLS",
+    "Persistent probe save from previous run",
+    "64-bit file ABI, errors and rooted path/write protections",
+    "Three real file head/tail samples",
+    "5,814-entry selected index; actual engine HTTPFS lookup and queued read byte comparisons, EOF and invalid request rejection",
+    "Eight diagnostic engine pthreads in two batches: TLS/stacks, shared heap, mailbox/proxy replies, concurrent save and queued asset reads, joined cleanup",
+    "Actual main launched two game workers, both reached waits; first x64/audio/audio.rpf request intercepted before archive loading; joined cleanup"
+  ],
+  "runs": [
+    {
+      "folder": "web",
+      "beforeMiB": 11.8,
+      "initializedMiB": 46.6,
+      "workerBatchMiB": [
+        61.8,
+        62.1
+      ],
+      "afterCleanupMiB": 28.5,
+      "committedHeapMiB": 564.1,
+      "indexFiles": 5814,
+      "exit": 0
+    },
+    {
+      "folder": "web",
+      "beforeMiB": 12.1,
+      "initializedMiB": 46.7,
+      "workerBatchMiB": [
+        62.3,
+        62
+      ],
+      "afterCleanupMiB": 28.4,
+      "committedHeapMiB": 564.1,
+      "indexFiles": 5814,
+      "exit": 0
+    }
+  ],
+  "limitations": [
+    "Memory samples are not peaks or gameplay budgets",
+    "Virtual committed heap differs from physical footprint",
+    "Two runs do not prove absence of all leaks",
+    "Archive/scene loading, native rendering, audio output and gameplay remain pending"
+  ]
+}

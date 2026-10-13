@@ -1,102 +1,147 @@
-NATIVE IPHONE PROTOTYPE — SEPARATE DEVELOPMENT BRANCH
+NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
+Updated 2026-10-13. Planning only; no runtime changes in this revision.
 
-Repository: yosnuffyyy/gta5loader
-Branch: native-ios-prototype
-0.1 baseline build: 971e32f49c952822f5086ddeea9f70671f637c7d
-0.2 runtime checkpoint: ec11683005cb9003ba2beb9055556fc28f96f9b8
-0.2 build/package gates pass; two user-reported iPhone runtime checks pass.
-0.3 threading checkpoint: 435a73d09ae0556d9692691100da9aaf41a07c59
-0.3: two user-reported iPhone threading checkpoints PASS; actual asset samples
-pass in run 1 and are skipped (no folder) in run 2. See VERIFICATION-0.3.txt.
-0.4 asset/worker checkpoint: f6e5600969f7fd35dc096cb37d0690f64956ee01
-0.4 Mac repeated runtime tests and iPhone package audit PASS; device pending.
-Baseline: confirmed v7 engine.
-PC package moved to Desktop\GTA-Browser-Offline-PC, then frozen by the
-user instruction. Native work uses independent workspace copies only.
+OBJECTIVE AND CURRENT POSITION
+Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
+First deliver a playable, conservative Prologue; then Sandbox and quality.
+0.1-0.3 passed the reported physical iPhone diagnostic checkpoints.
+0.4 source: f6e5600969f7fd35dc096cb37d0690f64956ee01.
+0.4 passed four Mac runtime runs, ARM64 compilation and IPA audit. Two user-
+reported iPhone runs passed on 2026-10-13. It runs two initial game workers and deliberately stops
+BEFORE delivering the first archive bytes. Native gameplay is not verified.
+See VERIFICATION-0.4.txt. Diagnostic memory samples are not a gameplay budget.
 
-1. Baseline and host interface — COMPLETE
-   Recorded the engine digest, 91,026 defined functions, 85 host imports,
-   shared memory layout and the retained 64-bit engine ABI.
+CRITICAL PATH
+Renderer feasibility -> integrated engine/archive startup -> real game frame
+-> input/audio -> sustained Prologue -> Sandbox -> improved quality.
+Graphics-enabled main requests the GPU before the workers reached by the
+CPU checkpoint. Do not finish all CPU startup behind a fake-success GPU stub.
+The 0.4 phone check passed; renderer investigation is now active.
 
-2. Native compiler path — COMPLETE ON MAC
-   Pinned WABT 1.0.42, added wait/notify, shared SIMD and shared bulk-memory
-   support. Compiled concurrency fixtures, 73 SIMD cases and bulk-memory
-   comparisons against WebAssembly pass. The full engine converts to C.
+STAGE 1 — COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
+Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.json.
+- Collect two 0.4 iPhone runs with the actual extracted web folder selected.
+- Trace startup imports, embedded host operations, file queues and GPU messages
+  in independent game.js, io_worker.js and wgpu_worker.js references.
+- Record command layouts, synchronization, shader inputs, resource lifetime
+  and the concrete host/archive dependencies required by Prologue.
+- Distinguish implemented-and-tested, untested and missing operations. One
+  implemented import name does not prove all its dispatched behaviors work.
+- Keep bounded logs with first error, startup phase and resource counters.
+Gate: reproducible device baseline and startup/renderer dependency map.
+Fix device failures while continuing independent renderer investigation.
 
-3. Native engine diagnostic — CPU, METAL AND FILE DEVICE CHECKS PASS
-   All 133 native source files compiled for both Mac and iPhone. Actual engine
-   instantiation, strings, comparison, math, byte order and memory growth
-   probes pass on the Mac runner. The unsigned ARM64 IPA passed a local
-   package/dependency/checksum audit. UIKit, Metal readback, folder samples
-   and a controller button test are included. Gameplay is not started.
-   User report, 2026-10-12: installed and ran on iPhone 16 Pro Max / iOS
-   27.0.1. Engine probes passed with exit 0; Metal buffer fill/readback passed
-   on A18 Pro; all three file samples passed after selecting the correct
-   folder. The earlier file failures were a folder-selection mistake.
-   Controller input has not been reported. The 19.2 MiB after-test footprint
-   is measured after freeing the engine, not during gameplay or at peak use.
+STAGE 2 — PROVE A NATIVE RENDERER ROUTE EARLY
+This is the largest uncertainty; investigate it before broadening the port.
+- Inspect the actual graphics protocol and shaders before choosing a backend.
+- Compare a Metal-backed native WebGPU implementation with a direct Metal
+  adapter. Verify current iOS ARM64 support, shader compatibility, licensing,
+  package size and memory cost in a small feasibility build.
+- Choose ONE route after representative tests; do not build two renderers or
+  assume a desktop backend works on iPhone.
+- Implement enough device/surface setup, buffers, textures, bindings, pipeline
+  state and submission to replay a representative game draw with its original
+  layouts. Include compute/readback operations if the selected trace needs them.
+- Bound upload memory. Retire/reuse resources only after GPU completion.
+- Record actual validation messages and failed shader/pipeline identifiers.
+Gate: a representative game shader and draw work correctly on iPhone through
+this backend, without unresolved validation errors. A Metal fill or triangle
+alone does not establish engine rendering. If blocked, resolve the precise
+limitation or evaluate the other route before broad integration.
 
-4. Native host and threaded startup — IN PROGRESS (0.4 CPU checkpoint; device pending)
-   4a. Implemented: real engine constructors and main-thread TLS, rooted
-       read-only game files, app-private probe saves, retained 64-bit file
-       ABI, monotonic/realtime clocks and fixed native environment. Native
-       host and full engine runtime tests pass on Mac, including save
-       persistence across processes. iPhone ARM64 compilation and package
-       audit pass. Physical iPhone 0.2 checkpoint validated in two user-
-       reported runs on 2026-10-12: constructors/TLS, persistent save, file
-       ABI and all three real game-file head/tail samples pass; exit 0.
-       Initialized-engine footprint samples: 45.5 and 46.0 MiB; committed
-       virtual heap: 564.1 MiB. These are not peak or gameplay measurements.
-       Shared size/pages metadata uses atomic publication with committed
-       size published before the new page count. A compiled concurrent
-       grow/read fixture passes on Mac.
-   4b. 0.3 implements and tests real engine pthread create/exit/join in two
-       batches of four diagnostic workers, per-worker TLS/instances, mailbox
-       delivery and synchronous environment-query proxies. Native descriptor
-       access is synchronized; worker memory is freed after native joins.
-       Actual main() enters and deliberately stops at its first game-worker
-       request. The requested game workload is not launched at this gate.
-       Still pending: active game-worker workloads and event loops, broader
-       proxy/async operations, asset I/O protocol, remaining platform calls
-       and continuing threaded main() startup to the renderer boundary.
-   4c. 0.4 implements selected-manifest validation and the original shared
-       asset request queue with one 64 KiB reader buffer and up to eight
-       cached file handles. Tests use actual engine HTTPFS lookup/pread,
-       sample bytes, EOF, invalid requests and concurrent engine workers.
-       Initial game workers launch from main; the CPU checkpoint deliberately
-       stops at the first archive read, before delivering archive bytes.
-       Build and device results must be checked in VERIFICATION-0.4.txt.
-       Graphics-enabled main requests its GPU backend before these workers;
-       CPU checkpoint success does not establish renderer readiness. More
-       job dispatch, host/async services and archive startup remain pending.
-   Gate remains: real threaded startup without unsupported imports or
-   fabricated successes. The 0.3 checkpoint is not completion of stage 4.
+STAGE 3 — REAL ENGINE STARTUP AND FIRST RENDERED GAME SCENE
+- Replace the deliberate archive stop in a development build with real queued
+  reads, preserving the successful checkpoint and IPA for rollback.
+- Implement remaining Prologue host services, worker jobs, mailbox and async
+  completion behavior as actual startup reaches them. Required unsupported
+  operations must explain the failure rather than fabricate success.
+- Connect the native renderer to the real engine command stream: lifetimes,
+  synchronization, copies, formats, shader variants and required readbacks.
+- Start at conservative resolution with expensive optional effects disabled;
+  preserve mission geometry, actors and required resources.
+- Retain bounded file reads. Track transient memory, archive and GPU resource
+  lifetime. Avoid whole-archive caches and unnecessary file duplication.
+Gate: the real engine loads Prologue and presents successive correct game
+frames on iPhone. Record startup peaks and frame times. This is a visual test,
+not yet the playable release. Alternate renderer/startup fixes as dependencies
+require; the two subsystems cannot be completed independently in isolation.
 
-5. Real engine frame on Metal — PENDING
-   Port the existing GPU command protocol and shaders to a native backend.
-   Preserve resource lifetimes and layouts. Measure allocations and capture
-   detailed validation errors, then verify an actual game frame on iPhone.
+STAGE 4 — CONTROLS, AUDIO AND BASIC APP LIFECYCLE
+- Feed touch movement, look and actions into actual engine input state.
+- Connect GameController input for paired supported controllers; change prompts
+  on actual input, prefer events over idle polling, and clear held inputs on
+  disconnect/backgrounding. Include essential pause/menu controls.
+- Consume the engine audio queue through bounded native output buffers. Keep
+  callbacks free of disk reads, blocking locks and routine allocation. Check
+  format, timing, underruns, mission dialogue and cutscene synchronization.
+- Retain selected-folder access where supported and handle expired permission
+  clearly. Keep saves app-private. Handle interruptions and pause/resume.
+Gate: player movement/look/actions, progressing mission audio and functional
+pause/resume. Verify controllers separately on physical hardware. A button
+probe alone is not proof that gameplay controls work.
 
-6. Playable Prologue — PENDING
-   Connect native audio, touch and GameController input. Test the exact
-   cutscene/door transition that failed in v9, including audio progression.
-   Gate: sustained play, working controls, and correct pause/resume behavior.
+STAGE 5 — FIRST PLAYABLE IPHONE TEST
+- Play through the vault/door/cutscene transition that crashed the browser
+  version and continue into the following gameplay section.
+- Exercise a repeatable route for at least 10 minutes, pause/resume and cold
+  restarts. Test save/load when the mission allows it. Measure memory peaks
+  and trends rather than only post-cleanup samples.
+- Diagnose CPU, GPU, I/O, memory and shader stalls separately. Fix reproducible
+  resets, missing visuals, deadlocks and mission-progression blockers.
+- Compare compiler optimization on measured hot paths without changing ABI,
+  atomic or floating-point semantics. Do not blindly remove bounds checks.
+Gate: deliver an EXPERIMENTAL PLAYABLE PROLOGUE IPA with measured performance,
+tested route and explicit limitations. Target stable 30 FPS, but report actual
+results rather than promise a frame rate. Do not wait for Sandbox or high
+resolution before delivering this playable test.
 
-7. Sandbox and sustained device tests — PENDING
-   Test world streaming and travel, thermal behavior, memory peaks, controller
-   disconnects and foreground/background transitions. Native apps still have
-   iOS memory limits. A successful diagnostic does not predict this budget.
+STAGE 6 — SANDBOX AND SUSTAINED STABILITY
+- Enable open-world startup conservatively; exercise fixed walking/driving
+  routes. Add low pedestrian and traffic density in separate increments.
+- Run 20-30 minute sessions, measuring heat-related slowdown, memory trends,
+  repeated scene loads, launches and controller reconnects.
+- Fix retained resources, temporary allocation peaks, queue pressure and shader
+  stalls. Bound caches and evict only resources that are no longer in use.
+Gate: repeatable Sandbox travel without resets/deadlocks or continuing retained
+memory growth on the tested route. Document remaining limits and artifacts.
 
-8. Quality improvements — PENDING
-   Optimize measured bottlenecks, then increase resolution, pedestrians and
-   traffic individually. Keep a stable low-memory profile and compare the
-   same scenes before and after each change.
+STAGE 7 — HIGHER QUALITY WITH MEASURED HEADROOM
+- Compare identical routes before/after changes: median and slow frame times,
+  CPU/GPU timing where available, memory peaks and thermal state.
+- Raise resolution independently of pedestrian/traffic density, then tune
+  textures, draw distance and effects one setting at a time.
+- Reduce redundant state/pipeline work, copies and CPU/GPU waits where profiles
+  identify them. Consider adaptive resolution only for demonstrated GPU load;
+  it will not solve a CPU or engine-heap bottleneck.
+- Keep a tested conservative preset and rollback after regressions.
+Gate: visible improvements with sustained measured performance and a stable
+fallback. No maximum-settings promise or assumed universal iOS memory budget.
 
-Signing route
-GitHub Actions builds an unsigned IPA. Windows Sideloadly signs and installs
-it using the user's free Apple account. Account sign-in, two-factor approval,
-USB trust and Developer Mode prompts are completed locally by the user.
-Free-account signing needs refreshing every seven days. No Apple credentials
-or signing keys enter this repository; no JIT entitlement is required.
+HOW TO FINISH FASTER WITHOUT REWORK
+- Concentrate on the Prologue path. Defer networking, unrelated optional host
+  services, broad controller models, cosmetic UI work and high settings.
+- Reuse verified compiler/engine work and independent reference code. Avoid
+  speculative engine rewrites or binary patches.
+- Reuse content-verified CI objects. During iteration test affected subsystems;
+  before delivery run the relevant full regression gate and IPA audit.
+- Keep diagnostics automated inside development builds. Request phone tests at
+  architecture/visual/playable milestones, or for device-specific evidence,
+  instead of shipping an IPA for each tiny implementation step.
+- Use representative command/asset fixtures where practical to reproduce bugs
+  cheaply. Fixtures and Mac runs never replace physical iPhone validation.
+- Apply memory discipline from the start; tune performance using actual game
+  workloads. A successful diagnostic does not prove a gameplay memory budget.
+- No reliable completion date yet. Re-estimate after renderer feasibility and
+  the first actual game frame; these expose the largest remaining unknowns.
 
-See INSTALL-ON-IPHONE.txt, NATIVE-ARCHITECTURE.txt and HOST-INTERFACE.json.
+ISOLATION AND DELIVERY
+Native work only: outputs/GTA-Native-Prototype and independent work folders.
+Do not read, modify, test or use either protected Desktop PC game folder.
+Do not recreate outputs/GTA-Browser-Offline. Keep main and the deployed website
+unchanged. Publish native code only to native-ios-prototype. Preserve IPAs.
+GitHub Actions builds unsigned ARM64 IPAs; use the existing local signing
+setup for installation. No account credentials in the repository. A native
+app still has iOS memory and hardware limits.
+
+Historical roadmap: work/native-stage4/ROADMAP-before-playable-plan.txt.
+This is planned work; no pending implementation stage is marked complete.

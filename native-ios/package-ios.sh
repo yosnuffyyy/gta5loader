@@ -6,12 +6,17 @@ sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" \
   -fobjc-arc -O1 -Inative-ios -framework UIKit -framework Foundation \
   -framework Metal -framework GameController -framework UniformTypeIdentifiers \
-  -Wl,-no_adhoc_codesign native-ios/App.m @native-build/ios/objects.txt -o "$app/NativeProbe"
+  -framework QuartzCore -framework CoreGraphics -framework IOSurface -lc++ \
+  -Wl,-no_adhoc_codesign native-ios/App.m @native-build/ios/objects.txt native-build/ios/native_renderer.o native-build/wgpu/ios/lib/libwgpu_native.a -o "$app/NativeProbe"
 cp native-ios/Info.plist "$app/Info.plist"
 cp native-ios/file-probes.json "$app/file-probes.json"
 cp native-build/wabt/LICENSE "$app/WABT-LICENSE.txt"
 cp native-build/wabt/third_party/simde/COPYING "$app/SIMDe-LICENSE.txt"
 cp native-build/evidence/engine-inventory.json "$app/engine-inventory.json"
+cp native-build/wgpu/LICENSE.MIT "$app/wgpu-native-LICENSE.MIT"
+cp native-build/wgpu/LICENSE.APACHE "$app/wgpu-native-LICENSE.APACHE"
+cp native-ios/renderer/backend.json "$app/renderer-backend.json"
+cp native-ios/renderer/shader-fixtures.json "$app/shader-fixtures.json"
 plutil -lint "$app/Info.plist"
 file "$app/NativeProbe" | tee native-build/evidence/ios-binary.txt
 xcrun vtool -show-build "$app/NativeProbe" | tee -a native-build/evidence/ios-binary.txt

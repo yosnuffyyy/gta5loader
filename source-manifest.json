@@ -1,10 +1,10 @@
 {
-  "scope": "Native prototype 0.4 asset/worker checkpoint; engine instructions and diagnostic exports unchanged",
+  "scope": "Native 0.5 renderer feasibility; 0.4 engine/runtime unchanged",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 15485,
-      "sha256": "8957a0206c8d9a5571eefe9c66dbd55b6923413dbd82b3f94681a332058b94bb"
+      "bytes": 16783,
+      "sha256": "f3907e4f8e70b259bf61536bfb1f1cbeaab8b072a04d0a1fe150e05592602f2f"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 1766,
-      "sha256": "cdc1506beb92053e77db3bb1a14fb601092eae2a323e902dbe172cd215c51cc1"
+      "bytes": 1809,
+      "sha256": "64e1ae5d437788b2889620d6699781e4f663d6a794323dccd2011bdb2afeb618"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1618,
-      "sha256": "86803ce46115327175f0304f6fbf39408f4476a5d1116e71e575742e95d9f8fa"
+      "sha256": "463bb0f7aff3f122b43a58b878a5bfe378e1cc8930c2dfc2dc7952197a0e0001"
     },
     {
       "path": "native-ios/native_host.c",
@@ -93,8 +93,8 @@
     },
     {
       "path": "native-ios/package-ios.sh",
-      "bytes": 1412,
-      "sha256": "d5722545a2c754d7b9ae9b191aaf6a7aa00d04a17503ce714b17f7b3dd1b6e47"
+      "bytes": 1838,
+      "sha256": "757f6b192836d8f52e23271d5bc1fbc783694927df532d7bf6ed751d531abd1b"
     },
     {
       "path": "native-ios/patch-bulk.mjs",
@@ -135,6 +135,56 @@
       "path": "native-ios/probe.h",
       "bytes": 426,
       "sha256": "9f4c176aa4694e54be5e206330360dbe88bdfaa858d377a2eedf1bb53ff06cb8"
+    },
+    {
+      "path": "native-ios/renderer/backend.json",
+      "bytes": 580,
+      "sha256": "b47471b4d473cb33d3882532300005c19dcaa40ced159d18faf19deb251e7958"
+    },
+    {
+      "path": "native-ios/renderer/build-renderer.sh",
+      "bytes": 1090,
+      "sha256": "11e6717c7a5c39d7f92f90be733e55685a3b41fde8e59f67d08da914e77b803e"
+    },
+    {
+      "path": "native-ios/renderer/native_renderer.c",
+      "bytes": 14890,
+      "sha256": "e2960e1894d82ca596f36664eeeffa4b44d7110ecc5ba1986d0e94216e60b81d"
+    },
+    {
+      "path": "native-ios/renderer/native_renderer.h",
+      "bytes": 270,
+      "sha256": "ecd423c7650b0a82a8c817ca2ee069bdd1f284d667534f3c932d4a20c86d1a84"
+    },
+    {
+      "path": "native-ios/renderer/prepare-renderer.mjs",
+      "bytes": 1993,
+      "sha256": "fd8ce625aa3cb824058cd7ae184e4c90b3669b3c23a85559f92a5beecdd583c7"
+    },
+    {
+      "path": "native-ios/renderer/ps.wgsl",
+      "bytes": 822,
+      "sha256": "5c165ca6158cd7827bd1c86bc526a5299dc360065e14b2272fd95214a7d42a51"
+    },
+    {
+      "path": "native-ios/renderer/renderer_cli.m",
+      "bytes": 391,
+      "sha256": "fdcc2990b970c76b3e67e04d9e72659fa6326c80ada3eacb4ee62759f3bd87af"
+    },
+    {
+      "path": "native-ios/renderer/shader-fixtures.json",
+      "bytes": 1481,
+      "sha256": "8f7885d46d6af1b501c63038eeca1c75c995461c821a04fdb3f01689a40fbf1a"
+    },
+    {
+      "path": "native-ios/renderer/shader_fixture.h",
+      "bytes": 2150,
+      "sha256": "443a3b6ec276b5e011bc30d7e430699043da4c8072a11c82465b52efb2faa27c"
+    },
+    {
+      "path": "native-ios/renderer/vs.wgsl",
+      "bytes": 813,
+      "sha256": "5cfb68fa4dce1c654bdd1d0af73efd745fa4c0d174e68154965bc54d77915515"
     },
     {
       "path": "native-ios/test-bulk.mjs",

@@ -5,6 +5,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <mach/mach.h>
 #include "probe.h"
+#include "renderer/native_renderer.h"
 
 static NSString *Footprint(void) {
     task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;
@@ -20,6 +21,7 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) UIButton *runButton;
 @property(nonatomic,strong) UIButton *filesButton;
 @property(nonatomic,strong) UIButton *runtimeButton;
+@property(nonatomic,strong) UIButton *rendererButton;
 @property(nonatomic,strong) NSURL *gameFolder;
 @property(nonatomic,strong) UILabel *controllerLabel;
 @property(nonatomic,assign) BOOL busy;
@@ -42,8 +44,9 @@ static void RuntimeProgress(void *context,const char *line) {
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
     [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
-    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.4";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
-    UILabel *description=[[UILabel alloc]init];description.text=@"Asset and worker checkpoint: tests local files through the engine’s shared request queue, then launches real game workers and stops at the first archive request. Select your extracted web folder, including data/manifest.json. This is not gameplay.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.5";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
+    UILabel *description=[[UILabel alloc]init];description.text=@"Renderer feasibility: runs actual game postfx shaders through native WebGPU and Metal, then checks their output pixels. No game folder is needed for this test. The previous asset/worker checkpoint is also available. Gameplay integration is pending.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    self.rendererButton=[self button:@"Run renderer feasibility" action:@selector(runRenderer)];[stack addArrangedSubview:self.rendererButton];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
     self.runtimeButton=[self button:@"Run asset + worker tests" action:@selector(runRuntime)];[stack addArrangedSubview:self.runtimeButton];
@@ -52,7 +55,7 @@ static void RuntimeProgress(void *context,const char *line) {
     [self.report.heightAnchor constraintEqualToConstant:240].active=YES;
     [stack addArrangedSubview:[self button:@"Copy report" action:@selector(copyReport)]];
     NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
-    self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. Select the extracted web folder, then run threads + startup tests. Run it a second time to check that the probe save persisted. The basic engine test is also available.";
+    self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. Run renderer feasibility to test the native graphics backend. The asset/worker checkpoint needs the extracted web folder selected first.";
     if([defaults boolForKey:@"probeRunning"])self.report.text=[@"Previous test ended without a result. The app may have been closed or terminated.\n\n" stringByAppendingString:self.report.text];
     [defaults setBool:NO forKey:@"probeRunning"];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(controllerChanged:) name:GCControllerDidConnectNotification object:nil];
@@ -60,7 +63,7 @@ static void RuntimeProgress(void *context,const char *line) {
     [self refreshControllers];
 }
 - (void)dealloc {[NSNotificationCenter.defaultCenter removeObserver:self];}
-- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;}
+- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;}
 - (void)append:(NSString *)text {
     self.report.text=[self.report.text stringByAppendingFormat:@"\n%@",text];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
@@ -89,6 +92,17 @@ static void RuntimeProgress(void *context,const char *line) {
             [self append:[NSString stringWithFormat:@"%@\nExit: %d\n%@\n%@",result,code,memory,metal]];
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
+    }});
+}
+- (void)runRenderer {
+    if(self.busy)return;[self setWorking:YES];
+    self.report.text=[NSString stringWithFormat:@"Native renderer feasibility 0.5\niOS %@ / %@\n%@\nCompiling actual game shaders and checking offscreen draws…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
+    [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
+    [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
+        char report[4096]={0};int code=native_renderer_probe(report,sizeof(report),NULL,0);
+        NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid renderer report";NSString *memory=Footprint();
+        dispatch_async(dispatch_get_main_queue(),^{[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter renderer cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];});
     }});
 }
 - (void)runRuntime {

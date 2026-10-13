@@ -44,7 +44,7 @@ or writable-executable segment; required metadata and licenses included.
 PASS: all 35 source/build file hashes match source-manifest.json.
 PASS: working 0.1/0.2/0.3 IPAs retain their original recorded hashes.
 
-0.4 physical iPhone result: PENDING. Select the extracted web folder including
+0.4 physical iPhone result: PASS in two user-reported runs, 2026-10-13. Select the extracted web folder including
 data/manifest.json, run Asset + worker tests, copy the report, close/reopen,
 select the folder again and repeat. Install over 0.3 with the same signing
 setup. Existing PC and Safari installations are separate.

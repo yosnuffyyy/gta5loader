@@ -1,0 +1,17 @@
+{
+  "name": "wgpu-native",
+  "version": "v29.0.1.1",
+  "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+  "license": "MIT OR Apache-2.0",
+  "selection": "Candidate for native Metal-backed WebGPU; physical game-shader fixture gate pending",
+  "ios": {
+    "asset": "wgpu-ios-aarch64-release.zip",
+    "bytes": 13593993,
+    "sha256": "e36c9913b9e5095a530fa9121c50b16a4e3dd020e1eebf601f2f47ce24d56941"
+  },
+  "macos": {
+    "asset": "wgpu-macos-aarch64-release.zip",
+    "bytes": 13733288,
+    "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e"
+  }
+}
