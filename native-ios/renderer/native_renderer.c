@@ -23,7 +23,10 @@ typedef struct {
 static double seconds(void){struct timespec ts;clock_gettime(CLOCK_MONOTONIC,&ts);return ts.tv_sec+ts.tv_nsec/1e9;}
 static void error(Probe *p,const char *phase,WGPUStringView message){
  pthread_mutex_lock(&p->lock);
- if(atomic_fetch_add(&p->errors,1)==0){size_t n=message.data?(message.length==WGPU_STRLEN?strlen(message.data):message.length):0;if(n>900)n=900;snprintf(p->first_error,sizeof(p->first_error),"%s: %.*s",phase,(int)n,message.data?message.data:"");}
+ unsigned count=atomic_load_explicit(&p->errors,memory_order_relaxed);
+ if(count==0){size_t n=message.data?(message.length==WGPU_STRLEN?strlen(message.data):message.length):0;if(n>900)n=900;snprintf(p->first_error,sizeof(p->first_error),"%s: %.*s",phase,(int)n,message.data?message.data:"");}
+ /* Publish only after the immutable first message has been initialized. */
+ atomic_store_explicit(&p->errors,count+1,memory_order_release);
  pthread_mutex_unlock(&p->lock);
 }
 static void adapter_cb(WGPURequestAdapterStatus s,WGPUAdapter a,WGPUStringView m,void *u,void *v){
