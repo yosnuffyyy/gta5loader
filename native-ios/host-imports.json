@@ -42,5 +42,7 @@
   "__syscall_mkdirat": "return host_mkdir(arg0,arg1,arg2,arg3);",
   "wgpu_start_worker": "native_graphics_start(arg0,arg1,arg2,arg3);",
   "wasm_has_page_js": "return native_has_display();",
-  "wasm_userdata_page_js": "return 0; /* native rooted save I/O is synchronous; no browser page persistence bridge */"
+  "wasm_userdata_page_js": "return 0; /* native rooted save I/O is synchronous; no browser page persistence bridge */",
+  "emscripten_stack_snapshot": "return native_stack_snapshot(arg0);",
+  "emscripten_stack_unwind_buffer": "(void)arg0; (void)arg1; (void)arg2; (void)arg3; return 0; /* Emscripten standalone ABI: no Wasm PCs, no buffer writes. Not exception unwinding. */"
 }

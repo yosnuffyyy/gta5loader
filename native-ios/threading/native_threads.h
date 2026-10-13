@@ -26,4 +26,6 @@ void native_graphics_start(struct w2c_env*,uint64_t,uint64_t,uint64_t);
 void native_main_scene(struct w2c_env*);
 bool native_boot_finish(struct w2c_env*,char*,size_t);
 uint32_t native_has_display(void);
+uint64_t native_stack_snapshot(struct w2c_env*);
+void native_stack_probe(struct w2c_env*,w2c_gta*,uint64_t);
 #endif

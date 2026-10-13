@@ -1,5 +1,6 @@
 #include "native_threads.h"
 #include "native_pump.h"
+#include "native_log.h"
 #include "native_wait.h"
 #include "platform/native_paths.h"
 #include "renderer/native_gpu.h"
@@ -55,6 +56,8 @@ struct NativeThreads {
  _Atomic unsigned game_started;
  _Atomic bool archive_boundary;
  unsigned generations;
+ NativeLog log;
+ _Atomic bool stack_notice;
 };
 static _Thread_local NativeThreads *current;
 static _Thread_local NativeWorker *worker;
@@ -66,7 +69,7 @@ static NativeThreads *scene_runtime;
 void native_scene_status(char *text,size_t size){
  pthread_mutex_lock(&scene_status_mutex);NativeThreads *r=scene_runtime;
  if(!r)snprintf(text,size,"Native startup has no active runtime.");
- else {char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));}
+ else {native_log_flush(&r->log,r->host->progress,r->host->progress_context);char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));}
  pthread_mutex_unlock(&scene_status_mutex);
 }
 void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
@@ -74,6 +77,18 @@ void native_scene_reset_stop(void){atomic_store(&scene_stop,false);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
 static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
+bool native_thread_log(struct w2c_env *h,const char *line){
+ if(!current||current->host!=h||!current->boot_mode)return false;
+ native_log_push(&current->log,line);return true;
+}
+uint64_t native_stack_snapshot(struct w2c_env *h){
+ /* Emscripten standalone ABI: no Wasm-PC snapshot is available in native
+    AOT. An empty trace is supported by the engine's CaptureStackTrace.
+    Never hand native instruction pointers to a Wasm symbol-map parser. */
+ if(current&&!atomic_exchange(&current->stack_notice,true))
+  host_log(h,"Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.");
+ return 0;
+}
 static uint64_t now_ns(void){struct timespec t;checked(clock_gettime(CLOCK_MONOTONIC,&t));return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
 static void signal_change(NativeThreads *r){checked(pthread_mutex_lock(&r->mutex));checked(pthread_cond_broadcast(&r->changed));checked(pthread_mutex_unlock(&r->mutex));}
 static double probe_proxy(struct w2c_env *h,w2c_gta *e,uint64_t p,unsigned index,unsigned n,const uint64_t *args){
@@ -112,7 +127,7 @@ void native_thread_error(struct w2c_env *h,const char *name){
 }
 NativeThreads *native_threads_begin(struct w2c_env *h){
  check(h,!current,"thread runtime already active");NativeThreads *r=calloc(1,sizeof(*r));check(h,r!=NULL,"thread runtime allocation");
- r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));servicing_mailbox=false;clock_ticks=0;current=r;return r;
+ r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));native_log_init(&r->log);servicing_mailbox=false;clock_ticks=0;current=r;return r;
 }
 void native_mailbox_register(struct w2c_env *h,uint64_t tcb){
  check(h,host_range(h,tcb,208)&&(tcb%8)==0,"invalid thread mailbox");
@@ -146,6 +161,7 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  worker->errno_address=engine_errno(e);
  uint64_t sp=w2c_gta_emscripten_stack_get_current(e),p=w2c_gta_0x5Femscripten_stack_alloc(e,80*1024);
  check(h,sp<=host_u64(h,worker->tcb+80)&&p>=host_u64(h,worker->tcb+80)-host_u64(h,worker->tcb+88),"worker shadow stack bounds");
+ native_stack_probe(h,e,p);
  host_put32(h,worker->errno_address,(uint32_t)(100+id));
  atomic_fetch_add(&r->ready,1);signal_change(r);
  uint64_t deadline=now_ns()+10000000000ull;
@@ -307,7 +323,7 @@ void native_threads_end(NativeThreads *r){
  native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
  checked(pthread_mutex_lock(&scene_status_mutex));if(scene_runtime==r)scene_runtime=NULL;checked(pthread_mutex_unlock(&scene_status_mutex));
- native_gpu_end(r->gpu);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;servicing_mailbox=false;clock_ticks=0;free(r);
+ native_gpu_end(r->gpu);native_log_flush(&r->log,r->host->progress,r->host->progress_context);native_log_destroy(&r->log);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;servicing_mailbox=false;clock_ticks=0;free(r);
 }
 uint32_t native_calendar(struct w2c_env *h,uint64_t seconds,uint64_t p,bool local){
  (void)local;if(!host_range(h,p,56))return 1;time_t value=(time_t)(int64_t)seconds;struct tm tm;
@@ -376,6 +392,7 @@ bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
  NativeThreads *r=current;if(!r){snprintf(summary,capacity,"Native GPU service was not started.");return false;}atomic_store(&r->stopping,true);signal_change(r);native_gpu_stop(r->gpu);native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++){NativeWorker *w=&r->workers[i];if(w->occupied&&!w->joined){checked(pthread_join(w->thread,NULL));w->joined=true;}if(w->failure&&!h->failure)h->failure=w->failure;}
  const char *gpu_failure=native_gpu_error(r->gpu),*io_failure=native_assets_failure(r->assets);if(gpu_failure&&!h->failure)h->failure=gpu_failure;if(io_failure&&!h->failure)h->failure=io_failure;native_gpu_summary(r->gpu,summary,capacity);
+ native_log_flush(&r->log,h->progress,h->progress_context);native_log_diagnostics(&r->log,h->progress,h->progress_context);
  if(r->gpu_checkpoint){const char *path=native_assets_boundary(r->assets);bool reached=atomic_load(&r->archive_boundary)&&native_gpu_ready(r->gpu)&&r->input&&r->audio&&path&&!strcmp(path,"x64/audio/audio.rpf")&&!h->failure;return reached;}
  if(!h->failure&&!atomic_load(&scene_stop))h->failure=now_ns()>r->deadline?"native scene startup timed out (180 seconds)":"native scene engine stopped without a verified scene";
  return !h->failure&&atomic_load(&scene_stop);

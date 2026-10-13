@@ -70,8 +70,11 @@ void host_close(struct w2c_env *h) {
  if(h->save_root>=0)close(h->save_root);
 }
 void host_log(struct w2c_env *h,const char *line) {
- // Bound progress output while preserving named failures in the final report.
- lock(&log_mutex); if(h->progress&&h->log_lines++<80)h->progress(h->progress_context,line); unlock(&log_mutex);
+#ifndef NATIVE_HOST_UNIT
+ if(native_thread_log(h,line))return;
+#endif
+ // Constructor/checkpoint output is brief; real startup uses the bounded tail.
+ lock(&log_mutex); if(h->progress)h->progress(h->progress_context,line); unlock(&log_mutex);
 }
 _Noreturn void host_unavailable(struct w2c_env *h,const char *name) {
  #ifdef NATIVE_HOST_UNIT

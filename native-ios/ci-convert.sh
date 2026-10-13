@@ -17,6 +17,8 @@ node native-ios/patch-bulk.mjs native-build/wabt
 node native-ios/patch-shared-metadata.mjs native-build/wabt
 node native-ios/patch-wait-unwind.mjs native-build/wabt
 bash native-ios/threading/ci-test-mailbox.sh
+clang -std=gnu11 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer native-ios/threading/test_native_log.c -o native-build/test-native-log
+native-build/test-native-log | tee native-build/evidence/native-log-test.txt
 cmake -S native-build/wabt -B native-build/wabt-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_LIBWASM=OFF
 cmake --build native-build/wabt-build --target wasm2c wasm-validate wat2wasm -j 3
 native-build/wabt-build/wasm-validate native-build/engine-probe.wasm --enable-threads

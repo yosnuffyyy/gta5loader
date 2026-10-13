@@ -1,5 +1,6 @@
 #include "native_host.h"
 #include "threading/native_threads.h"
+#include "gta-impl.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
 #include <fcntl.h>
@@ -18,6 +19,21 @@ static void message(struct w2c_env *h,const char *format,...) {
  if(h->progress)h->progress(h->progress_context,line);
 }
 static void require(struct w2c_env *h,bool ok,const char *what){if(!ok)host_unavailable(h,what);}
+void native_stack_probe(struct w2c_env *h,w2c_gta *engine,uint64_t scratch){
+ unsigned char before[272],after[272];memset(before,0xa5,sizeof(before));
+ require(h,w2c_env_emscripten_stack_snapshot(h)==0,"native snapshot must not fabricate a Wasm PC");
+ host_store(h,scratch,before,sizeof(before));
+ require(h,w2c_env_emscripten_stack_unwind_buffer(h,0,scratch+8,32)==0,"empty standalone unwind differs");
+ require(h,w2c_env_emscripten_stack_unwind_buffer(h,UINT64_MAX,UINT64_MAX,UINT32_MAX)==0,"unavailable trace must not access the output buffer");
+ host_load(h,after,scratch,sizeof(after));require(h,!memcmp(before,after,sizeof(before)),"empty unwind changed output");
+ const unsigned sizes[]={0,1,32,32},skips[]={0,0,2,99};
+ for(unsigned c=0;c<4;c++){
+  host_store(h,scratch,before,sizeof(before));
+  w2c_gta_f2853(engine,scratch+8,sizes[c],skips[c]);
+  host_load(h,after,scratch,sizeof(after));
+  for(unsigned i=0;i<sizeof(after);i++)require(h,after[i]==(i>=8&&i<8+sizes[c]*8?0:0xa5),"real CaptureStackTrace empty-trace bounds/terminator differs");
+ }
+}
 static void putstr(struct w2c_env *h,uint64_t p,const char *s){host_store(h,p,s,strlen(s)+1);}
 static uint64_t open_engine(struct w2c_env *h,uint64_t scratch,const char *path,const char *mode) {
  putstr(h,scratch,path);putstr(h,scratch+4096,mode);
@@ -142,7 +158,8 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
 #endif
   uint64_t stack=w2c_gta_emscripten_stack_get_current(engine);
   uint64_t scratch=w2c_gta_0x5Femscripten_stack_alloc(engine,80*1024);
-  saves(h,scratch);abi(h,scratch);
+  saves(h,scratch);abi(h,scratch);native_stack_probe(h,engine,scratch);
+  message(h,"PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.");
   if(game_folder)assets(h,scratch);else message(h,"SKIP: actual game-file reads; select the extracted web folder to include them.");
   require(h,h->failure==NULL,"native file close reported an error");
   require(h,game_folder!=NULL,"select the extracted web folder for the asset checkpoint");
