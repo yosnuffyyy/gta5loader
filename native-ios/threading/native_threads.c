@@ -30,6 +30,7 @@ typedef struct NativeWorker {
  _Atomic bool finished,wait_observed;
  bool cancelled;
  const char *failure;
+ const char *phase;
 } NativeWorker;
 struct NativeThreads {
  struct w2c_env *host;
@@ -54,6 +55,7 @@ static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h
 static uint64_t now_ns(void){struct timespec t;checked(clock_gettime(CLOCK_MONOTONIC,&t));return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
 static void signal_change(NativeThreads *r){checked(pthread_mutex_lock(&r->mutex));checked(pthread_cond_broadcast(&r->changed));checked(pthread_mutex_unlock(&r->mutex));}
 static double probe_proxy(struct w2c_env *h,w2c_gta *e,uint64_t p,unsigned index,unsigned n,const uint64_t *args){
+ if(worker)worker->phase=index==18?"proxy open":index==7?"proxy stat":index==35?"proxy read":index==32?"proxy close":"proxy call";
  for(unsigned i=0;i<n;i++){host_put64(h,p+16*i,1);host_put64(h,p+16*i+8,args[i]);}
  return w2c_gta_0x5Femscripten_run_js_on_main_thread(e,index,0,n*16,p,1);
 }
@@ -99,6 +101,7 @@ void native_thread_cleanup(struct w2c_env *h,uint64_t tcb){
 }
 static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  NativeThreads *r=current;struct w2c_env *h=r->host;
+ worker->phase="diagnostic TLS and barrier";
  check(h,r->probe_mode&&worker&&worker->engine==e,"diagnostic dispatch instance mismatch");
  check(h,w2c_gta_pthread_self(e)==worker->tcb,"worker pthread_self differs");
  worker->errno_address=engine_errno(e);
@@ -116,6 +119,7 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  uint32_t err=0;host_load(h,&err,worker->errno_address,4);check(h,err==100+id,"thread-local errno was overwritten");
  char path[96];snprintf(path,sizeof(path),"/userdata/.native-thread-%llu",(unsigned long long)id);
  host_store(h,p,path,strlen(path)+1);host_store(h,p+128,"wb",3);
+ worker->phase="concurrent libc save IO";
  uint64_t f=w2c_gta_native_probe_fopen(e,p,p+128);check(h,f!=0,"concurrent engine fopen failed");
  unsigned char expected[4096];for(unsigned i=0;i<sizeof(expected);i++)expected[i]=(unsigned char)(i*29+id);
  host_store(h,p+512,expected,sizeof(expected));
@@ -134,6 +138,7 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  check(h,probe_proxy(h,e,packed,32,1,(uint64_t[]){descriptor})==0,"proxied close failed");
  check(h,unlinkat(h->save_root,path+10,0)==0,"thread probe file cleanup failed");
  check(h,probe_proxy(h,e,packed,18,4,(uint64_t[]){(uint64_t)(int64_t)-100,p,0,0})==-44,"proxied missing-file errno differs");
+ worker->phase="concurrent engine asset samples";
  if(r->assets)native_assets_thread_probe(r->assets,e,p,(unsigned)id);
  w2c_gta_0x5Femscripten_stack_restore(e,sp);atomic_fetch_add(&r->completed,1);return id+123;
 }
@@ -160,6 +165,7 @@ static void *run_worker(void *arg){
   uint64_t result=((uint64_t(*)(w2c_gta*,uint64_t))entry.func)(entry.module_instance,w->arg);
   w2c_gta_0x5Femscripten_thread_exit(w->engine,result);
  }else if(!w->failure){if(atomic_load(&r->stopping))w->cancelled=true;else w->failure="worker engine trap";}
+ if(trap&&w->failure){char line[256];snprintf(line,sizeof(line),"Worker trap %d, entry %llu, phase %s: %s",trap,(unsigned long long)w->routine,w->phase?w->phase:"startup",w->failure);report(h,line);}
  if(w->failure)atomic_store(&r->stopping,true);
  if(instantiated)wasm2c_gta_free(w->engine);free(w->engine);w->engine=NULL;
  wasm_rt_free_thread();atomic_store(&w->finished,true);signal_change(r);worker=NULL;current=NULL;return NULL;
@@ -242,6 +248,9 @@ double native_proxy_receive(struct w2c_env *h,uint32_t index,uint64_t asmaddr,ui
 }
 void native_threads_end(NativeThreads *r){
  if(!r)return;atomic_store(&r->stopping,true);signal_change(r);
+ // The reader callback refers to r. Join it before freeing this context,
+ // including unexpected engine failures with a queued request outstanding.
+ native_assets_stop(r->assets);
  for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
  checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;free(r);
 }

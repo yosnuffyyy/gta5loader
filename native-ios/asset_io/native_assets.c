@@ -24,7 +24,7 @@ struct NativeAssets {
  _Atomic bool stopping,armed;
  _Atomic unsigned requests;
  _Atomic(const char*) failure;
- const char *boundary;
+ _Atomic(const char*) boundary;
  void (*on_boundary)(void*);void *context;
  struct {int fd;uint32_t id;uint64_t stamp;} cache[CACHE_HANDLES];
  uint64_t stamp;
@@ -69,7 +69,7 @@ static void *read_loop(void *context){
    uint32_t id=atomic_load(word(a,p+4)),length=atomic_load(word(a,p+24));
    uint64_t offset=host_u64(a->host,p+8),dst=host_u64(a->host,p+16);
    if(atomic_load(&a->armed)){
-    if(id<a->index.count)a->boundary=a->index.files[id].path;
+    if(id<a->index.count)atomic_store(&a->boundary,a->index.files[id].path);
     else atomic_store(&a->failure,"startup requested invalid archive ID");
     // Deliberate CPU checkpoint: leave the request pending and cancel engine
     // waits. No dummy archive bytes are supplied or parsed as game data.
@@ -92,9 +92,12 @@ NativeAssets *native_assets_begin(struct w2c_env *h){
  char line[160];snprintf(line,sizeof(line),"Local asset index: %u files; bounded reader: one 64 KiB buffer, at most 8 open files.",a->index.count);if(h->progress)h->progress(h->progress_context,line);
  return a;
 }
-void native_assets_end(NativeAssets *a){
+void native_assets_stop(NativeAssets *a){
  if(!a)return;atomic_store(&a->stopping,true);
- if(a->started){native_notify(&a->host->memory,a->table,1);if(pthread_join(a->thread,NULL))abort();}
+ if(a->started){native_notify(&a->host->memory,a->table,1);if(pthread_join(a->thread,NULL))abort();a->started=false;}
+}
+void native_assets_end(NativeAssets *a){
+ if(!a)return;native_assets_stop(a);
  for(unsigned i=0;i<CACHE_HANDLES;i++)if(a->cache[i].fd>=0)close(a->cache[i].fd);
  native_asset_index_free(&a->index);free(a);
 }
@@ -108,7 +111,7 @@ void native_assets_start(NativeAssets *a,uint64_t table){
  check(a,pthread_create(&a->thread,NULL,read_loop,a)==0,"asset reader thread creation failed");a->started=true;
 }
 void native_assets_arm(NativeAssets *a,void(*callback)(void*),void *context){a->on_boundary=callback;a->context=context;atomic_store(&a->armed,true);}
-const char *native_assets_boundary(NativeAssets *a){return a?a->boundary:NULL;}
+const char *native_assets_boundary(NativeAssets *a){return a?atomic_load(&a->boundary):NULL;}
 const char *native_assets_failure(NativeAssets *a){return a?atomic_load(&a->failure):NULL;}
 static void sample(NativeAssets *a,w2c_gta *e,uint64_t scratch,unsigned sample){
  static const char *paths[]={"common/data/levels/gta5/paths.xml","x64/anim/cutscene/cuts_prologue.rpf","x64/levels/gta5/_prologue/plg_01.rpf"};

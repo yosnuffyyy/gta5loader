@@ -11,6 +11,7 @@ bool native_asset_index_parse(const void*,size_t,NativeAssetIndex*,char*,size_t)
 void native_asset_index_free(NativeAssetIndex*);
 NativeAssets *native_assets_begin(struct w2c_env*);
 void native_assets_end(NativeAssets*);
+void native_assets_stop(NativeAssets*);
 uint32_t native_assets_manifest(NativeAssets*,uint64_t,uint32_t);
 void native_assets_start(NativeAssets*,uint64_t);
 void native_assets_probe(NativeAssets*,uint64_t);
