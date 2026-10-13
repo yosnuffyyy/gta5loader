@@ -1,0 +1,57 @@
+{
+  "recordedDate": "2026-10-13",
+  "source": "User-pasted physical iPhone reports; not independently captured",
+  "version": "0.5",
+  "sourceCommit": "643c4dd7a8dc6a97fc6e4fbe0c174760fe1e3eb3",
+  "device": "iPhone, previously identified by user as iPhone 16 Pro Max",
+  "os": "iOS 27.0.1",
+  "rendererRuns": [
+    {
+      "backend": "wgpu-native 29.0.1.1 / Metal",
+      "gpu": "Apple A18 Pro GPU",
+      "beforeMiB": 11.9,
+      "afterCleanupMiB": 67.2,
+      "originalGameShaders": 2,
+      "draws": 3,
+      "pixelsComparedPerDraw": 4096,
+      "channelToleranceBytes": 1,
+      "validationRuntimeErrors": 0,
+      "passed": [
+        "Original postfx vertex and fragment WGSL with reference packed constant-buffer layouts",
+        "Texture/sampler binding and vertex input",
+        "Three draws with changed RGB and alpha uniforms",
+        "All output pixels compared, GPU readback and resource cleanup"
+      ],
+      "exit": 0
+    }
+  ],
+  "assetWorkerRun": {
+    "reportHeader": "Native prototype 0.4 — asset/worker checkpoint",
+    "headerNote": "The 0.5 app intentionally retains the 0.4 checkpoint and its report header; user submitted this as the combined-build regression check",
+    "folder": "web",
+    "indexFiles": 5814,
+    "beforeMiB": 13.9,
+    "initializedMiB": 48.8,
+    "workerBatchMiB": [63.9, 63.9],
+    "afterCleanupMiB": 30.0,
+    "committedHeapMiB": 564.1,
+    "passed": [
+      "Constructors and main-thread TLS",
+      "Previous persistent probe save and save I/O",
+      "64-bit file ABI, rooted path/write protections and invalid-buffer errors",
+      "Three actual game file head/tail samples",
+      "Engine HTTPFS lookup, queued byte comparisons, EOF and invalid request rejection",
+      "Eight diagnostic pthreads in two batches with isolated TLS/stacks, shared heap, mailbox/proxy replies, concurrent saves and queued reads, joined cleanup",
+      "Main launched two actual game workers; both reached waits; first audio.rpf request intercepted deliberately; all workers joined"
+    ],
+    "exit": 0
+  },
+  "remainingGate": "Second renderer run after closing/reopening the app is pending; do not mark roadmap stage 2 complete yet",
+  "limitations": [
+    "Offscreen representative shader fixture, not an actual game scene or engine ring integration",
+    "Memory values are samples, not peaks or a gameplay budget",
+    "Post-cleanup footprint alone does not establish a leak or identify retained allocations",
+    "Whether the app restarted between the submitted renderer and CPU reports was not stated",
+    "Archive/scene loading, broader shader/compute/format coverage, audio output and gameplay remain pending"
+  ]
+}

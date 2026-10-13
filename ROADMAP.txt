@@ -11,7 +11,8 @@ reported iPhone runs passed on 2026-10-13. It runs two initial game workers and 
 BEFORE delivering the first archive bytes. Native gameplay is not verified.
 See VERIFICATION-0.4.txt. Diagnostic memory samples are not a gameplay budget.
 0.5 game-shader fixture passed on Mac Metal; iPhone build/package audit passed.
-Physical iPhone renderer validation is pending. See VERIFICATION-0.5.txt.
+First iPhone renderer run and combined-app CPU checkpoint passed. A second
+renderer run after close/reopen is pending. See VERIFICATION-0.5.txt.
 
 CRITICAL PATH
 Renderer feasibility -> integrated engine/archive startup -> real game frame
@@ -33,7 +34,7 @@ Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.jso
 Gate: reproducible device baseline and startup/renderer dependency map.
 Fix device failures while continuing independent renderer investigation.
 
-STAGE 2 — IN PROGRESS: MAC DRAW/BUILD PASS; IPHONE DRAW PENDING
+STAGE 2 — IN PROGRESS: IPHONE DRAW PASS; REPEAT CHECK PENDING
 This is the largest uncertainty; investigate it before broadening the port.
 - Inspect the actual graphics protocol and shaders before choosing a backend.
 - Compare a Metal-backed native WebGPU implementation with a direct Metal

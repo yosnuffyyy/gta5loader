@@ -23,8 +23,9 @@ semantics. Keep final selection provisional until the device gate passes.
 Mac CI compiles/links the fixture and runs it if Metal is available. An
 explicit no-Metal SKIP is not an iPhone GPU pass. Native ARM64 compilation
 and IPA audit are separate gates. Mac Metal shader draws, ARM64 compilation,
-four CPU regression runs and local IPA audit PASS. Physical iPhone draw
-validation remains PENDING; see VERIFICATION-0.5.txt.
+four CPU regression runs and local IPA audit PASS. First physical iPhone
+renderer run and combined-app asset/worker regression PASS. A second
+renderer run after close/reopen remains PENDING; see VERIFICATION-0.5.txt.
 
 Device test: install over the prior probe with the existing signing setup.
 Tap Run renderer feasibility; no game folder is needed. Copy the full report,

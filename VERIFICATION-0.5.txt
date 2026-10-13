@@ -35,10 +35,13 @@ or writable-executable segment; required metadata and license files present.
 PASS: all 45 native source/build file hashes match source-manifest.json.
 PASS: working 0.1, 0.2, 0.3 and 0.4 IPA hashes unchanged.
 
-Physical iPhone 0.5 gate: PENDING. Run renderer feasibility twice, closing
-and reopening between runs. No folder needed. Also select web and run the
-asset/worker checkpoint once, since the combined executable link changed.
-These measurements are still needed before claiming stage 2 completed.
+Physical iPhone 0.5: first renderer run PASS on Apple A18 Pro GPU, Exit 0,
+zero validation/runtime errors. Before 11.9 MiB; after cleanup 67.2 MiB.
+Combined-app asset/worker regression PASS, Exit 0, selected 5,814-file index.
+Initialized engine 48.8 MiB; worker batches 63.9/63.9 MiB; cleanup 30.0 MiB.
+These are user-reported samples, not peaks, leak diagnosis or gameplay limits.
+See evidence/0.5/iphone-device-test.json. The second renderer run after
+closing/reopening remains PENDING before stage 2 is marked complete.
 
 Development failures caught before delivery:
 - Run 38459154250: cleanup attempted a second unmap of an unmapped buffer.
