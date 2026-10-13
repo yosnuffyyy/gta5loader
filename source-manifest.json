@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 20433,
-      "sha256": "f1edb2d7fb79b21617bd199a807c670f1b8ecf7efb6fa950a72776f3d656a271"
+      "bytes": 24238,
+      "sha256": "fa0cb05bdac6324711894c2ce0e2212ee9cbed7487a07bb9f3ba14861142e419"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -163,8 +163,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 34091,
-      "sha256": "1de60986f67a9491d50f1bda6c07dfe5f306c038ea121e8df97ad612f7964ef9"
+      "bytes": 44248,
+      "sha256": "73935e9dc1b07d65674d95c8c5237ebebdc673c41582786e82c3d973235297d0"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -263,3 +263,4 @@
     }
   ]
 }
+

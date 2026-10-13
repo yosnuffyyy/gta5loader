@@ -30,6 +30,7 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) UIButton *filesButton;
 @property(nonatomic,strong) UIButton *runtimeButton;
 @property(nonatomic,strong) UIButton *rendererButton;
+@property(nonatomic,strong) UIButton *integrationButton;
 @property(nonatomic,strong) UIButton *sceneButton;
 @property(nonatomic,strong) UIButton *stopButton;
 @property(nonatomic,strong) NativeSurfaceView *surfaceView;
@@ -37,12 +38,17 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) NSURL *gameFolder;
 @property(nonatomic,strong) UILabel *controllerLabel;
 @property(nonatomic,assign) BOOL busy;
+@property(nonatomic,strong) NSLock *logLock;
+@property(nonatomic,strong) NSMutableString *pendingLog;
+@property(nonatomic,assign) BOOL logScheduled;
+@property(nonatomic,assign) NSTimeInterval lastPersist;
 - (void)append:(NSString *)text;
+- (void)queueProgress:(NSString *)text;
 @end
 static void RuntimeProgress(void *context,const char *line) {
     ProbeController *controller=(__bridge ProbeController *)context;
     NSString *text=[NSString stringWithUTF8String:line]?:@"Invalid runtime log";
-    dispatch_sync(dispatch_get_main_queue(),^{[controller append:text];});
+    [controller queueProgress:text];
 }
 @implementation ProbeController
 - (UIButton *)button:(NSString *)title action:(SEL)action {
@@ -51,7 +57,7 @@ static void RuntimeProgress(void *context,const char *line) {
     [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];return button;
 }
 - (void)viewDidLoad {
-    [super viewDidLoad];self.view.backgroundColor=UIColor.systemBackgroundColor;
+    [super viewDidLoad];self.logLock=[[NSLock alloc]init];self.pendingLog=[NSMutableString string];self.view.backgroundColor=UIColor.systemBackgroundColor;
     UIScrollView *scroll=[[UIScrollView alloc]init];scroll.translatesAutoresizingMaskIntoConstraints=NO;[self.view addSubview:scroll];
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
     [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
@@ -61,6 +67,7 @@ static void RuntimeProgress(void *context,const char *line) {
     self.surfaceView=[[NativeSurfaceView alloc]init];self.surfaceView.backgroundColor=UIColor.blackColor;self.surfaceView.hidden=YES;[self.surfaceView.heightAnchor constraintEqualToAnchor:self.surfaceView.widthAnchor multiplier:9.0/16.0].active=YES;[stack addArrangedSubview:self.surfaceView];
     self.sceneButton=[self button:@"Start native Prologue (experimental)" action:@selector(runScene)];[stack addArrangedSubview:self.sceneButton];
     self.stopButton=[self button:@"Stop native startup" action:@selector(stopScene)];self.stopButton.enabled=NO;[stack addArrangedSubview:self.stopButton];
+    self.integrationButton=[self button:@"Run GPU queue + startup tests" action:@selector(runIntegration)];[stack addArrangedSubview:self.integrationButton];
     self.rendererButton=[self button:@"Run renderer feasibility" action:@selector(runRenderer)];[stack addArrangedSubview:self.rendererButton];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
@@ -78,10 +85,17 @@ static void RuntimeProgress(void *context,const char *line) {
     [self refreshControllers];
 }
 - (void)dealloc {[NSNotificationCenter.defaultCenter removeObserver:self];}
-- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;}
+- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];}
+- (void)flushProgress {
+    [self.logLock lock];NSString *text=[self.pendingLog copy];[self.pendingLog setString:@""];self.logScheduled=NO;[self.logLock unlock];if(text.length)[self append:text];
+}
+- (void)queueProgress:(NSString *)text {
+    [self.logLock lock];[self.pendingLog appendFormat:@"\n%@",text];if(self.pendingLog.length>16384)[self.pendingLog deleteCharactersInRange:NSMakeRange(0,self.pendingLog.length-12288)];BOOL schedule=!self.logScheduled;self.logScheduled=YES;[self.logLock unlock];
+    if(schedule)dispatch_after(dispatch_time(DISPATCH_TIME_NOW,50*NSEC_PER_MSEC),dispatch_get_main_queue(),^{[self flushProgress];});
+}
 - (void)append:(NSString *)text {
-    self.report.text=[self.report.text stringByAppendingFormat:@"\n%@",text];
-    [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
+    NSString *joined=[self.report.text stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Earlier startup messages omitted to bound log memory.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.text=joined;
+    NSTimeInterval now=NSProcessInfo.processInfo.systemUptime;if(now-self.lastPersist>=1){[NSUserDefaults.standardUserDefaults setObject:joined forKey:@"lastReport"];self.lastPersist=now;}
 }
 - (void)controllerChanged:(NSNotification *)notification {dispatch_async(dispatch_get_main_queue(),^{[self refreshControllers];});}
 - (void)refreshControllers {
@@ -104,12 +118,23 @@ static void RuntimeProgress(void *context,const char *line) {
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid report";
         NSString *memory=Footprint();NSString *metal=[self testMetal];
         dispatch_async(dispatch_get_main_queue(),^{
-            [self append:[NSString stringWithFormat:@"%@\nExit: %d\n%@\n%@",result,code,memory,metal]];
+            [self flushProgress];[self append:[NSString stringWithFormat:@"%@\nExit: %d\n%@\n%@",result,code,memory,metal]];
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
     }});
 }
 - (void)stopScene {if(self.sceneRunning){native_scene_request_stop();self.stopButton.enabled=NO;[self append:@"Stopping native startup and joining workers…"];}}
+- (void)runIntegration {
+    if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
+    NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
+    if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:@"FAIL: integration save folder unavailable"];return;}
+    [self setWorking:YES];self.report.text=[NSString stringWithFormat:@"Native integration 0.6 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking the shared GPU command stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent];[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
+    NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
+        char report[4096]={0};int code=native_gpu_replay_probe(report,sizeof(report));RuntimeProgress((__bridge void*)self,report);
+        if(code==0){BOOL scoped=[folder startAccessingSecurityScopedResource];code=native_graphics_checkpoint(folder.fileSystemRepresentation,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];}
+        NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid integration report";NSString *memory=Footprint();dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter integration cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];});
+    }}];thread.stackSize=4*1024*1024;thread.name=@"Native GPU integration checkpoint";thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
+}
 - (void)runScene {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     self.sceneRunning=YES;[self setWorking:YES];self.surfaceView.hidden=NO;[self.view layoutIfNeeded];
@@ -121,7 +146,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid startup report";NSString *memory=Footprint();
-        dispatch_async(dispatch_get_main_queue(),^{[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self setWorking:NO];});
+        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self setWorking:NO];});
     }}];thread.stackSize=4*1024*1024;thread.name=@"Native scene startup";thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
 }
 - (void)runRenderer {
@@ -132,7 +157,7 @@ static void RuntimeProgress(void *context,const char *line) {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
         char report[4096]={0};int code=native_renderer_probe(report,sizeof(report),NULL,0);
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid renderer report";NSString *memory=Footprint();
-        dispatch_async(dispatch_get_main_queue(),^{[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter renderer cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];});
+        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter renderer cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];});
     }});
 }
 - (void)runRuntime {
@@ -141,7 +166,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
     NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];
     NSError *error=nil;
-    if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:[NSString stringWithFormat:@"FAIL: app save folder — %@",error.localizedDescription]];return;}
+    if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self flushProgress];[self append:[NSString stringWithFormat:@"FAIL: app save folder — %@",error.localizedDescription]];return;}
     [self setWorking:YES];
     self.report.text=[NSString stringWithFormat:@"Native prototype 0.4 — asset/worker checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
@@ -155,7 +180,7 @@ static void RuntimeProgress(void *context,const char *line) {
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid runtime report";
         NSString *memory=Footprint();
         dispatch_async(dispatch_get_main_queue(),^{
-            [self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter engine cleanup: %@",result,code,memory]];
+            [self flushProgress];[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter engine cleanup: %@",result,code,memory]];
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
     }}];
@@ -221,3 +246,4 @@ static void RuntimeProgress(void *context,const char *line) {
 @implementation AppDelegate
 @end
 int main(int argc,char **argv){@autoreleasepool{return UIApplicationMain(argc,argv,nil,NSStringFromClass(AppDelegate.class));}}
+
