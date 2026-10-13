@@ -37,6 +37,7 @@ struct NativeGpu {
  uint64_t buffer_bytes,texture_bytes;_Atomic uint32_t last_op;
  _Atomic uint32_t live_phase;
  _Atomic uint64_t live_commands,live_frames,live_draws,live_shader;
+ _Atomic uint64_t drawable_timeouts;
  uint64_t last_sample,last_report;double highest_footprint;
  bool bc_enabled,test_bc;unsigned bc_formats_tested;
  DrawState draw;
@@ -110,7 +111,12 @@ static bool hardware(NativeGpu *g){
  WGPURequestDeviceCallbackInfo dc=WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;dc.mode=WGPUCallbackMode_AllowProcessEvents;dc.callback=got_device;dc.userdata1=g;atomic_store(&g->callback_done,false);wgpuAdapterRequestDevice(g->adapter,&dd,dc);if(!wait_callback(g)||!g->device)return false;
  g->queue=wgpuDeviceGetQueue(g->device);if(!check(g,g->queue!=NULL,"Native GPU queue creation"))return false;
  g->bc_enabled=wgpuDeviceHasFeature(g->device,WGPUFeatureName_TextureCompressionBC);
- if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);}
+ if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);
+  // wgpu-hal 29.0.3 configure disables this timeout. Our diagnostic view can
+  // scroll offscreen; never let nextDrawable prevent Stop/join indefinitely.
+  CAMetalLayer *layer=(__bridge CAMetalLayer*)g->layer;layer.allowsNextDrawableTimeout=YES;
+  if(!check(g,layer.allowsNextDrawableTimeout,"Metal drawable timeout was not enabled"))return false;
+ }
  return !atomic_load(&g->failed);
 }
 static WGPUCommandEncoder encoder(NativeGpu *g){WGPUCommandEncoderDescriptor d=WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;return wgpuDeviceCreateCommandEncoder(g->device,&d);}
@@ -181,6 +187,7 @@ static bool present(NativeGpu *g,uint32_t id){
   WGPURenderPipelineDescriptor d=WGPU_RENDER_PIPELINE_DESCRIPTOR_INIT;d.vertex.module=g->blit_shader;d.vertex.entryPoint=(WGPUStringView){"vs",WGPU_STRLEN};d.fragment=&fragment;g->blit=wgpuDeviceCreateRenderPipeline(g->device,&d);if(!check(g,g->blit!=NULL,"Native presentation pipeline"))return false;
  }
  WGPUSurfaceTexture drawable=WGPU_SURFACE_TEXTURE_INIT;atomic_store(&g->live_phase,5);wgpuSurfaceGetCurrentTexture(g->surface,&drawable);atomic_store(&g->live_phase,1);
+ if(!drawable.texture&&drawable.status==WGPUSurfaceGetCurrentTextureStatus_Timeout){atomic_fetch_add(&g->drawable_timeouts,1);return !atomic_load(&g->failed);}
  if(!check(g,drawable.texture&&(drawable.status==WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal||drawable.status==WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal),"Native drawable unavailable"))return false;
  WGPUTextureView out=wgpuTextureCreateView(drawable.texture,NULL),in=view(o,0,0);WGPUBindGroupLayout layout=wgpuRenderPipelineGetBindGroupLayout(g->blit,0);
  WGPUBindGroupEntry entry=WGPU_BIND_GROUP_ENTRY_INIT;entry.binding=0;entry.textureView=in;WGPUBindGroupDescriptor bg=WGPU_BIND_GROUP_DESCRIPTOR_INIT;bg.layout=layout;bg.entryCount=1;bg.entries=&entry;WGPUBindGroup group=wgpuDeviceCreateBindGroup(g->device,&bg);
@@ -290,7 +297,7 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  if(trap)fail(g,"GPU service shared-memory trap");
  else if(hardware(g)&&(!g->test_bc||(bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
-   if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed))fail(g,g->ring.error);break;}
+   if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,g->ring.error);break;}
    if(!draw_flush(g))break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
    if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head)native_wait32(&g->host->memory,g->ring.base,head,100000000);atomic_store(heap_word(g,g->ring.base+20),0);}
   }
@@ -306,7 +313,7 @@ void native_gpu_snapshot(NativeGpu *g,char *text,size_t size){
  if(!g){snprintf(text,size,"GPU not started");return;}
  static const char *phases[]={"initializing","command execution","local shader read","WGSL compile","pipeline compile","drawable acquisition","GPU completion wait","queue idle","GPU cleanup"};
  uint32_t phase=atomic_load(&g->live_phase);
- snprintf(text,size,"GPU %s; commands %llu; frames %llu; draws %llu; last %s; shader %016llx",phase<9?phases[phase]:"unknown",(unsigned long long)atomic_load(&g->live_commands),(unsigned long long)atomic_load(&g->live_frames),(unsigned long long)atomic_load(&g->live_draws),gpu_opcode_name(atomic_load(&g->last_op)),(unsigned long long)atomic_load(&g->live_shader));
+ snprintf(text,size,"GPU %s; commands %llu; frames %llu; draws %llu; drawable timeouts %llu; last %s; shader %016llx",phase<9?phases[phase]:"unknown",(unsigned long long)atomic_load(&g->live_commands),(unsigned long long)atomic_load(&g->live_frames),(unsigned long long)atomic_load(&g->live_draws),(unsigned long long)atomic_load(&g->drawable_timeouts),gpu_opcode_name(atomic_load(&g->last_op)),(unsigned long long)atomic_load(&g->live_shader));
 }
 void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; draws %llu; pipelines %llu (hits %llu); last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,gpu_opcode_name(g->last_op));}
 
