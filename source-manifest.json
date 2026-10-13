@@ -83,8 +83,8 @@
     },
     {
       "path": "native-ios/native_wait.c",
-      "bytes": 7196,
-      "sha256": "418cf897cc11361db2584e1309fe5a7c6ee9ec15f003b7b73a29002bc8b81a45"
+      "bytes": 7271,
+      "sha256": "7a07baaa103e8553a916b86e7cded5a376af10fe782e58ffe87d99235d975627"
     },
     {
       "path": "native-ios/native_wait.h",

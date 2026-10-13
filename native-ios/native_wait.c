@@ -33,7 +33,8 @@ typedef struct PollGuard {
 } PollGuard;
 static _Thread_local PollGuard *poll_guard;
 void native_wait_trap_redirect(wasm_rt_trap_t code){
-  if(poll_guard)WASM_RT_LONGJMP(poll_guard->checkpoint,code);
+  // WABT's LONGJMP expands to several statements, not a do/while macro.
+  if(poll_guard){WASM_RT_LONGJMP(poll_guard->checkpoint,code);}
 }
 // Callouts may reenter the engine, notify this bucket, trap or throw. They run
 // without bucket locks; a local checkpoint preserves the outer engine handler.
