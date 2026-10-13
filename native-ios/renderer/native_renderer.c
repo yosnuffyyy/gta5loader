@@ -93,7 +93,7 @@ static bool draw_and_check(Probe *p,unsigned pass,uint8_t *output){
 }
 static void cleanup(Probe *p){
  atomic_store(&p->closing,true);
- if(p->readback)wgpuBufferUnmap(p->readback);
+ if(p->readback&&wgpuBufferGetMapState(p->readback)!=WGPUBufferMapState_Unmapped)wgpuBufferUnmap(p->readback);
  for(unsigned i=0;i<2;i++){if(p->groups[i])wgpuBindGroupRelease(p->groups[i]);if(p->layouts[i])wgpuBindGroupLayoutRelease(p->layouts[i]);}
  if(p->pipeline)wgpuRenderPipelineRelease(p->pipeline);
  if(p->sampler)wgpuSamplerRelease(p->sampler);

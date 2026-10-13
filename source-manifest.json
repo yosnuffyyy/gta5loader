@@ -148,8 +148,8 @@
     },
     {
       "path": "native-ios/renderer/native_renderer.c",
-      "bytes": 14890,
-      "sha256": "e2960e1894d82ca596f36664eeeffa4b44d7110ecc5ba1986d0e94216e60b81d"
+      "bytes": 14955,
+      "sha256": "4a5684f327b1ff6fc4fedc628921ba25bde1fee2ec6eecc3ccdc463f53b4405c"
     },
     {
       "path": "native-ios/renderer/native_renderer.h",
