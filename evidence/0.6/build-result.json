@@ -134,7 +134,7 @@
     ]
   },
   "previousIPAs": "All five byte-for-byte unchanged",
-  "iphone06": "PENDING",
+  "iphone06": "QUEUE/STARTUP PASS; real archive trace stopped at BC1 feature gating",
   "stage1": "COMPLETE",
   "stage2": "COMPLETE",
   "stage3": "IN PROGRESS",

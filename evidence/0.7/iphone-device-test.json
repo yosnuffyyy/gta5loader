@@ -1,0 +1,11 @@
+{
+  "version": "0.7",
+  "status": "PENDING",
+  "requestedTests": [
+    "GPU queue + startup: native BC 1; 11 format cases PASS",
+    "If checkpoint passes, real Prologue archive trace; copy first error/report"
+  ],
+  "stage3": "IN PROGRESS",
+  "realSceneVerified": false,
+  "playable": false
+}

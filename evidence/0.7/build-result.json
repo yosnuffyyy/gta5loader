@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-13",
+  "version": "0.7",
+  "sourceCommit": "a42e4cfc8739815b321269e73fdf4f2d77412d9f",
+  "run": 38474606873,
+  "job": 115562107748,
+  "runURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38474606873",
+  "ci": "PASS",
+  "macCPURegressions": 4,
+  "macGPURingReplays": 2,
+  "commandsPerReplay": 27,
+  "uploadsPerReplay": 3,
+  "readbacksPerReplay": 5,
+  "macBCFormatCases": 11,
+  "bcPixelsComparedPerCase": 16,
+  "bcComparison": "BC1-5 format interpolation bounds, exact endpoints; other values one byte",
+  "macGraphicsMainCheckpoints": 2,
+  "graphicsMainStopsBeforeArchiveBytes": true,
+  "graphicsMainCommands": 0,
+  "graphicsMainSurfaceFrames": 0,
+  "ringUnitCommands": 100000,
+  "ringAddressUndefinedSanitizers": "PASS",
+  "priorShaderFixture": "PASS, three draws; zero errors",
+  "cachedObjects": [
+    {
+      "target": "macos",
+      "count": 131
+    },
+    {
+      "target": "ios",
+      "count": 131
+    }
+  ],
+  "sourceBuildFilesVerified": 55,
+  "patch": {
+    "name": "Metal BC capability detection",
+    "wgpuHalVersion": "29.0.3",
+    "originalCrateSHA256": "31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f",
+    "originalAdapterSHA256": "6da21d590125e601015862dd2a66e4dae2fdd5e35d80624dd2c6cca52099d9bf",
+    "patchedAdapterSHA256": "dd57c51d4c50610f60e8eb0895d4f04ddccd1772756b5989f93dfccb047ffdd1",
+    "before": "            format_bc: os_type == super::OsType::Macos,",
+    "after": "            // Local native-iPhone patch: ask Metal rather than excluding iOS.\n            // Unsupported devices remain unsupported; no feature is fabricated.\n            format_bc: os_type == super::OsType::Macos\n                || (available!(ios = 16.4, tvos = 16.4, visionos = 1.0)\n                    && device_class_responds_to(device, sel!(supportsBCTextureCompression))\n                    && device.supportsBCTextureCompression()),",
+    "scope": "Only the BC capability condition; normal validation and compressed storage preserved"
+  },
+  "sourceBackend": {
+    "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+    "rust": "1.93.1",
+    "features": [
+      "metal",
+      "wgsl"
+    ],
+    "locked": true,
+    "offlineBuild": true,
+    "patch": {
+      "name": "Metal BC capability detection",
+      "wgpuHalVersion": "29.0.3",
+      "originalCrateSHA256": "31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f",
+      "originalAdapterSHA256": "6da21d590125e601015862dd2a66e4dae2fdd5e35d80624dd2c6cca52099d9bf",
+      "patchedAdapterSHA256": "dd57c51d4c50610f60e8eb0895d4f04ddccd1772756b5989f93dfccb047ffdd1",
+      "before": "            format_bc: os_type == super::OsType::Macos,",
+      "after": "            // Local native-iPhone patch: ask Metal rather than excluding iOS.\n            // Unsupported devices remain unsupported; no feature is fabricated.\n            format_bc: os_type == super::OsType::Macos\n                || (available!(ios = 16.4, tvos = 16.4, visionos = 1.0)\n                    && device_class_responds_to(device, sel!(supportsBCTextureCompression))\n                    && device.supportsBCTextureCompression()),",
+      "scope": "Only the BC capability condition; normal validation and compressed storage preserved"
+    },
+    "libraries": [
+      {
+        "target": "macos",
+        "bytes": 29671048,
+        "sha256": "640c233950bccffd05d3f29f13caf2119edf44f41fcdec8e63c9a566bf662eb3"
+      },
+      {
+        "target": "ios",
+        "bytes": 29459800,
+        "sha256": "ccb76e3c50e3c0ba13a62b2ed4e2393a486e8408a840948202be93a011891e29"
+      }
+    ]
+  },
+  "localAudit": {
+    "result": "PASS",
+    "architecture": "ARM64",
+    "platform": "iPhone device",
+    "minimumOS": "17.0",
+    "unsigned": true,
+    "hasWebKit": false,
+    "hasWritableExecutableSegment": false,
+    "ipaBytes": 101970980,
+    "ipaSHA256": "6dae9106c4bb9a7fc5402c03efa525f695a8903f6c699cf6d893c91a167d7050",
+    "version": "0.7.0",
+    "build": "7",
+    "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+    "engine": {
+      "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+      "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+      "modification": "Add eleven exports only; engine instructions unchanged",
+      "probes": [
+        {
+          "name": "memcmp",
+          "sourceName": "memcmp",
+          "index": 90814
+        },
+        {
+          "name": "strcmp",
+          "sourceName": "strcmp",
+          "index": 90930
+        },
+        {
+          "name": "strlen",
+          "sourceName": "strlen",
+          "index": 90939
+        },
+        {
+          "name": "sinf",
+          "sourceName": "sinf",
+          "index": 90918
+        },
+        {
+          "name": "cosf",
+          "sourceName": "cosf",
+          "index": 90732
+        },
+        {
+          "name": "fopen",
+          "sourceName": "fopen",
+          "index": 90775
+        },
+        {
+          "name": "fclose",
+          "sourceName": "fclose",
+          "index": 90762
+        },
+        {
+          "name": "fread",
+          "sourceName": "fread",
+          "index": 90782
+        },
+        {
+          "name": "fwrite",
+          "sourceName": "fwrite",
+          "index": 90790
+        },
+        {
+          "name": "fseeko",
+          "sourceName": "__fseeko",
+          "index": 90784
+        },
+        {
+          "name": "ftello",
+          "sourceName": "__ftello",
+          "index": 90788
+        }
+      ]
+    },
+    "dylibs": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/System/Library/Frameworks/GameController.framework/GameController",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+    ],
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "initialProtection": 0
+      },
+      {
+        "name": "__TEXT",
+        "initialProtection": 5
+      },
+      {
+        "name": "__DATA_CONST",
+        "initialProtection": 3
+      },
+      {
+        "name": "__DATA",
+        "initialProtection": 3
+      },
+      {
+        "name": "__LINKEDIT",
+        "initialProtection": 1
+      }
+    ]
+  },
+  "previousIPAs": "Six prior IPAs unchanged",
+  "iphone07": "PENDING",
+  "stage1": "COMPLETE",
+  "stage2": "COMPLETE",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false,
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "artifactArchives": [
+    {
+      "id": 11853761626,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 89682456,
+      "sha256": "2a107dc762b0dfbae1b22ab6ced0ea7e5b2d84aea4ea8d534fd7a23b5774c3b0"
+    },
+    {
+      "id": 11852694572,
+      "name": "native-compiler-evidence",
+      "bytes": 35937,
+      "sha256": "9817e076e98634c62811fc78048053afabe3483757b71a23ee55d7a6e499c104"
+    }
+  ],
+  "developmentRuns": [
+    {
+      "run": 38471464123,
+      "result": "CANCELLED",
+      "reason": "Separate existing engine and Rust cache paths to preserve verified objects"
+    },
+    {
+      "run": 38472979811,
+      "result": "FAILED",
+      "reason": "BC3 fixture expected alpha truncated before final UNORM quantization"
+    },
+    {
+      "run": 38473794512,
+      "result": "FAILED",
+      "reason": "BC5 hardware interpolation differed within specified compression precision bounds"
+    }
+  ]
+}

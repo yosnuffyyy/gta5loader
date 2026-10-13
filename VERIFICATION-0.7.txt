@@ -1,0 +1,46 @@
+NATIVE 0.7 — BC CAPABILITY FIX, 2026-10-13
+Source: a42e4cfc8739815b321269e73fdf4f2d77412d9f
+Branch: native-ios-prototype
+Run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38474606873
+Job: 115562107748; CI PASS.
+
+PASS: exact pinned wgpu-hal 29.0.3 source/hash guard; only BC condition
+changed from macOS-only to guarded Metal runtime query on supported iOS.
+Cargo.lock verified; vendored integrity table describes the explicit patch.
+Offline/locked Rust 1.93.1 Metal+WGSL builds for Mac ARM64 and iPhone ARM64.
+Patch source and compiled library digests recorded and bundled in the IPA.
+PASS: two Mac GPU replays, each 27 commands, 3 uploads and 5 readbacks.
+PASS: BC1-BC7 compressed hardware sampling: 11 linear/sRGB cases per replay,
+all 16 pixels each checked with format interpolation bounds, exact endpoints,
+other values one-byte tolerance. No CPU texture expansion.
+PASS: compressed BC1 ring creation/upload/copy/destruction validation.
+PASS: original game shader fixture, 3 draws, 4,096 pixels each, zero errors.
+PASS: 100,000 concurrent ring commands; address/undefined sanitizers; native
+wait/SIMD/bulk, host/index, four CPU regressions and two graphics-enabled
+main entries deliberately stopped BEFORE archive data. No engine frames.
+PASS: engine object cache preserved (macos:131, ios:131 reused objects); separate Rust cache.
+PASS: ARM64 iPhone package audit, iOS 17 minimum, version 0.7.0/build 7,
+unchanged bundle ID; unsigned/no profile; no WebKit/JSC or W+X segments.
+PASS: both artifact ZIP sizes/digests and IPA hash match GitHub/CI; safe
+extraction; all 55 native/build source hashes match manifest and Git tree.
+PASS: prior 0.1-0.6 IPAs preserved byte-for-byte; deployed main unchanged.
+
+IPA: GTA-Native-Probe-0.7-unsigned.ipa
+Bytes: 101970980
+SHA256: 6dae9106c4bb9a7fc5402c03efa525f695a8903f6c699cf6d893c91a167d7050
+
+Physical iPhone 0.7 BC query, sampling and archive continuation: PENDING.
+Stage 3 IN PROGRESS; five stages left. General scene drawing/compute and
+remaining GPU operations, audio output, input and gameplay are pending.
+No actual native scene or playable game is claimed. See NATIVE-0.7.txt.
+
+Development run 38471464123 was cancelled after source backend and original
+shader checks passed: combined cache paths prevented engine-object reuse.
+The workflow now keeps the existing engine cache path and caches Rust
+separately. No failing or cancelled IPA was delivered.
+
+Two pre-delivery fixture runs failed: 38472979811 used intermediate integer
+truncation for the BC3 expected alpha; 38473794512 then exposed a BC5
+interpolation difference permitted by the compression specification. The
+final run uses the documented per-format interpolation bounds and exact
+endpoint checks. GPU validation remained enabled in every run.

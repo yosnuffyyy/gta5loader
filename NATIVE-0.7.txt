@@ -1,0 +1,48 @@
+NATIVE 0.7 — METAL BC COMPRESSION CAPABILITY FIX
+
+The physical 0.6 GPU queue/startup checkpoint passed on the A18 Pro. Its real
+archive trace mounted audio archives including PROLOGUE, then stopped after
+710 GPU commands at BC1 texture creation. The selected files were being read
+and parsed; this specific failure was the renderer's missing BC feature.
+
+The pinned wgpu-hal 29.0.3 source enabled BC only when the OS was macOS.
+0.7 builds the same native backend source/locked dependencies with one local
+capability change: supported iOS devices are queried through Metal's
+supportsBCTextureCompression property, with OS/selector guards. Devices that
+do not support BC remain unsupported. Normal WebGPU validation stays enabled.
+Textures keep their compressed GPU storage; no full-size CPU conversion or
+additional game-file copies are introduced. The backend includes Metal and
+WGSL support; unused graphics backends and shader input languages are omitted.
+Original/patched source hashes, compiler and library digests are recorded in
+the build evidence and included in the IPA.
+
+CI run 38474606873 passed the Mac compression/ring, original shader and CPU
+regression checks; the ARM64 iPhone IPA passed the local package audit.
+Physical iPhone 0.7 compression and archive continuation remain pending.
+
+The existing GPU queue button now also samples known BC1-BC7 blocks through
+the GPU. Eleven linear/sRGB format cases check all 16 pixels each. Exact
+endpoints remain exact; BC1-5 interpolants use the format's specified error
+bounds, sRGB conversion and final UNORM quantization. Other non-endpoint
+values retain a one-byte tolerance. The ring fixture adds BC1 creation, upload,
+copy and destruction to the original replay. Original game-shader and CPU
+regression tests remain available. These are offscreen fixtures, not scenes.
+
+Install GTA-Native-Probe-0.7-unsigned.ipa with the same signing method and
+bundle ID. Keep 0.6 for rollback; do not reinstall or clear game files.
+1. Select the actual extracted web folder.
+2. Run GPU queue + startup tests and copy the full report. It should report
+   native BC 1, BC sample formats 11 and PASS for the compression test.
+3. If that passes, run Trace Prologue startup and copy its report. If it fails,
+   the first unsupported operation and active shader hashes guide the next
+   integration change. Stop native startup is available.
+
+General scene draw/compute pipelines, remaining GPU operations, audio output
+and gameplay controls are still pending. Stage 3 remains IN PROGRESS, with
+five stages left including stage 3. A BC fixture passing does not complete
+the stage; successive correct real game frames on iPhone are required.
+Both protected Desktop PC packages and deployed main stay outside this work.
+
+Sources inspected: pinned Cargo.lock and registry wgpu-hal 29.0.3 source;
+https://github.com/gfx-rs/wgpu/blob/v29.0.3/wgpu-hal/src/metal/adapter.rs
+https://developer.apple.com/documentation/metal/mtldevice/supportsbctexturecompression
