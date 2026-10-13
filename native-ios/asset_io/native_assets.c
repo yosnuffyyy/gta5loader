@@ -29,6 +29,7 @@ struct NativeAssets {
  struct {int fd;uint32_t id;uint64_t stamp;} cache[CACHE_HANDLES];
  uint64_t stamp;
  unsigned char scratch[65536];
+ uint32_t sample_ids[3];
 };
 static void check(NativeAssets *a,bool ok,const char *why){if(!ok)host_unavailable(a->host,why);}
 static _Atomic uint32_t *word(NativeAssets *a,uint64_t p){return (_Atomic uint32_t*)(a->host->memory.data+p);}
@@ -116,10 +117,21 @@ const char *native_assets_failure(NativeAssets *a){return a?atomic_load(&a->fail
 static void sample(NativeAssets *a,w2c_gta *e,uint64_t scratch,unsigned sample){
  static const char *paths[]={"common/data/levels/gta5/paths.xml","x64/anim/cutscene/cuts_prologue.rpf","x64/levels/gta5/_prologue/plg_01.rpf"};
  char path[256];snprintf(path,sizeof(path),"/game/%s",paths[sample]);host_store(a->host,scratch,path,strlen(path)+1);
- int32_t id=(int32_t)engine_lookup(e,scratch,scratch+256,scratch+264);check(a,id>=0&&(unsigned)id<a->index.count,"engine HTTPFS lookup failed");
+ int32_t id;
+ if(e==a->host->engine){
+  id=(int32_t)engine_lookup(e,scratch,scratch+256,scratch+264);
+  check(a,id>=0&&(unsigned)id<a->index.count,"engine HTTPFS lookup failed");
+  check(a,host_u64(a->host,scratch+256)==a->index.files[id].size,"engine/native manifest sizes differ");
+  a->sample_ids[sample]=(uint32_t)id;
+ }else{
+  // Diagnostic pthreads have libc TLS, but do not run the game's allocator
+  // setup wrapper. Resolve C++ path keys on the initialized engine owner;
+  // worker tests exercise the real per-thread queued pread path with IDs.
+  id=(int32_t)a->sample_ids[sample];
+ }
  check(a,!strcmp(a->index.files[id].path,paths[sample]),"engine/native manifest file IDs differ");
  int fd=native_asset_open(a->host->game_root,paths[sample]);check(a,fd>=0,"asset comparison open failed");
- struct stat st;bool valid=!fstat(fd,&st)&&st.st_size>=65536&&(uint64_t)st.st_size==host_u64(a->host,scratch+256);
+ struct stat st;bool valid=!fstat(fd,&st)&&st.st_size>=65536&&(uint64_t)st.st_size==a->index.files[id].size;
  if(!valid){close(fd);host_unavailable(a->host,"sample file size differs from selected manifest");}
  unsigned char expected[65536],actual[65536];
  // Read direct comparison bytes first and close the OS descriptor before any

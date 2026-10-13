@@ -8,8 +8,8 @@
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
-      "bytes": 8632,
-      "sha256": "a790f9ffe25c92e86c8120763da2c2a2b1814441d879c36dfdc51f91bf8accf3"
+      "bytes": 9102,
+      "sha256": "823f391e6d6c4f36c4c3af65410c99aaa2ae44319403e2e2ce8d4759b9644742"
     },
     {
       "path": "native-ios/asset_io/native_assets.h",
