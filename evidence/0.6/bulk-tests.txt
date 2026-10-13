@@ -1,0 +1,1 @@
+PASS: shared bulk init/fill/copy match WebAssembly, both overlap directions, zero length at boundary, dropped data and bounds trap without partial writes.

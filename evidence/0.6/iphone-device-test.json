@@ -1,0 +1,12 @@
+{
+  "version": "0.6",
+  "status": "PENDING",
+  "device": "User's iPhone 16 Pro Max / Apple A18 Pro",
+  "requestedTests": [
+    "Select the actual extracted web folder; run GPU queue + startup tests and copy the full report",
+    "Run Trace Prologue startup; copy the full report or retained report after an iOS termination"
+  ],
+  "stage3Gate": "Successive correct real game frames on iPhone; not a synthetic replay or early startup",
+  "realSceneVerified": false,
+  "playable": false
+}

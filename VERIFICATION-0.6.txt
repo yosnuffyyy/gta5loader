@@ -1,0 +1,47 @@
+NATIVE 0.6 — COMMAND/STARTUP INTEGRATION, 2026-10-13
+Source: ba7b4cdf076633a798360ba952b12e322e4c716f
+Branch: native-ios-prototype
+Run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38468111367
+Job: 115539950773. CI PASS.
+
+PASS: 100,000 concurrent shared-ring commands, wrap and malformed input.
+PASS: isolated ring test under address and undefined-behavior sanitizers.
+PASS: two Mac Metal shared-ring replays: each 21 commands, 2 uploads and
+5 readbacks; buffer copies, texture clear/copy, A8 expansion, event query
+and GPU-completion fence. Known bytes and pixels compared.
+PASS: two actual graphics-enabled main entries with native Metal readiness,
+input/audio publication and first audio.rpf request. Deliberately stopped
+BEFORE archive bytes; zero engine GPU commands and zero surface frames.
+These checkpoints do not prove real scene rendering.
+PASS: original postfx shader fixture, three draws, all 4,096 pixels per draw
+compared with one-byte tolerance; zero validation/runtime errors.
+PASS: four CPU runtime regressions across two processes: constructors, TLS,
+saves, file ABI, asset samples, eight pthreads per run, mailbox/proxy replies
+and joined shutdown. Native wait, SIMD, bulk, host and index tests pass.
+PASS: ARM64 iPhone compilation; 140 cached objects reused per target.
+PASS: default SDK linker with unreachable-section stripping; no fallback.
+PASS: both artifact ZIP byte counts/digests match GitHub; IPA matches CI.
+PASS: ZIP path/symlink checks, ARM64 iPhone platform, minimum iOS 17, version
+0.6.0/build 6, unchanged bundle ID, unsigned/no profile, no WebKit/JSC or
+writable-executable segments; licenses and metadata present.
+PASS: all 52 native source/build files match the local manifest and Git tree.
+PASS: all five previous working IPA versions remain unchanged.
+
+IPA: GTA-Native-Probe-0.6-unsigned.ipa
+Bytes: 102726024
+SHA-256: f4f804df2812959b65150de77d866651d4d293b127e47d699a396965cd298ef5
+
+Physical iPhone 0.6: PENDING. See NATIVE-0.6.txt for the two new tests.
+Real archive continuation and Metal surface presentation remain unverified.
+General scene draw/compute pipelines and further GPU operations are pending;
+audio output, player controls and gameplay are not implemented in this test.
+See GPU-COMMAND-COVERAGE-0.6.json for precise handler/replay scope.
+
+Stage 3 IN PROGRESS; five stages left including stage 3. No native scene or
+playable test is claimed. Both protected PC folders were not accessed;
+deployed main remains de7664a8e6448096716c5a341250d32d4f594fd1.
+
+Development failure caught before delivery: run 38466430246 failed native
+GPU compilation because the runtime exception header was absent. It was
+fixed; runs 38466978794, 38467643561 and this final run passed. No failed IPA
+was delivered.

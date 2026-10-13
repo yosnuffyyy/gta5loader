@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Planning only; no runtime changes in this revision.
+Updated 2026-10-13. Native 0.6 integration diagnostic; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -19,7 +19,9 @@ Renderer feasibility -> integrated engine/archive startup -> real game frame
 -> input/audio -> sustained Prologue -> Sandbox -> improved quality.
 Graphics-enabled main requests the GPU before the workers reached by the
 CPU checkpoint. Do not finish all CPU startup behind a fake-success GPU stub.
-The 0.4 phone check passed; renderer investigation is now active.
+The 0.4 phone check and 0.5 phone shader gate passed; engine/GPU integration
+is now active. Native 0.6 adds a shared command consumer and real-archive
+trace path. General scene draws are still pending, so it is not playable.
 
 STAGE 1 — COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
 Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.json.

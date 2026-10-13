@@ -53,7 +53,7 @@ Development failures caught before delivery:
   branch-island range error. Unreachable-section stripping resolved release
   linking with the default SDK linker. No failing IPA was delivered.
 
-Remaining: physical renderer gate, GPU ring/resource/state/binding integration,
+Stage 2 physical renderer gate is complete. Remaining: GPU ring/resource/state/binding integration,
 more shader/compute/format coverage, archive/scene startup, audio, gameplay
 input and sustained Prologue/Sandbox. A small fixture does not establish a
 gameplay memory budget. Both protected PC folders and deployed main stayed

@@ -45,4 +45,9 @@ resource retirement tied to completion. Diagnostic footprints are not a
 gameplay memory budget.
 
 Stage 1 gate COMPLETE: two device reports and concrete dependency map.
-Stage 2 gate PENDING: representative game draw on physical iPhone.
+Stage 2 gate COMPLETE: two physical iPhone game-shader fixture runs and the
+combined-app CPU checkpoint passed. See VERIFICATION-0.5.txt.
+Stage 3 IN PROGRESS: native 0.6 command service and archive trace path.
+See GPU-COMMAND-COVERAGE-0.6.json for handler and actual replay coverage.
+General scene draws/compute and physical real-archive continuation remain
+pending. No real native game scene or gameplay is verified.
