@@ -313,8 +313,8 @@
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 28960,
-      "sha256": "9c661358a7268af4b5c42a18ebbaff2e772843091682a23eb84f3c0cd3bb30d3"
+      "bytes": 29196,
+      "sha256": "79df8b555417d558c1e8a75f11581a7efdb78454230202988684309453b1ffc6"
     },
     {
       "path": "native-ios/threading/native_threads.h",

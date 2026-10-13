@@ -220,6 +220,9 @@ uint32_t native_thread_create(struct w2c_env *h,uint64_t tcb,uint64_t attr,uint6
  if(atomic_load(&r->stopping))return 6;
  if(!host_range(h,tcb,208)||(tcb%8)!=0)return 28;
  checked(pthread_mutex_lock(&r->mutex));NativeWorker *w=NULL;
+ // Shutdown publishes stopping before acquiring this same mutex. A creator
+ // that passed the earlier fast check must not launch after the join sweep.
+ if(atomic_load(&r->stopping)){checked(pthread_mutex_unlock(&r->mutex));return 6;}
  for(unsigned i=0;i<MAX_WORKERS;i++)if(!r->workers[i].occupied){w=&r->workers[i];break;}
  if(!w){checked(pthread_mutex_unlock(&r->mutex));return 6;}
  *w=(NativeWorker){.runtime=r,.tcb=tcb,.routine=routine,.arg=arg,.occupied=true};
