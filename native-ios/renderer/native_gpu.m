@@ -35,6 +35,8 @@ struct NativeGpu {
  WGPUSurface surface;WGPURenderPipeline blit;WGPUShaderModule blit_shader;
  CFMutableDictionaryRef objects;uint64_t presents,surface_frames,uploads,readbacks;
  uint64_t buffer_bytes,texture_bytes;_Atomic uint32_t last_op;
+ _Atomic uint32_t live_phase;
+ _Atomic uint64_t live_commands,live_frames,live_draws,live_shader;
  uint64_t last_sample,last_report;double highest_footprint;
  bool bc_enabled,test_bc;unsigned bc_formats_tested;
  DrawState draw;
@@ -68,7 +70,7 @@ static bool wait_callback(NativeGpu *g){uint64_t deadline=now_ns()+15000000000ul
  if(now_ns()>deadline){fail(g,"Native GPU callback timeout (15 seconds)");return false;}
  struct timespec d={0,1000000};nanosleep(&d,NULL);
  }return !atomic_load(&g->failed);}
-static bool completed(NativeGpu *g){atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);return wait_callback(g);}
+static bool completed(NativeGpu *g){uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);atomic_store(&g->live_phase,previous);return ok;}
 static Object *object(NativeGpu *g,uint32_t id){return id?(Object*)CFDictionaryGetValue(g->objects,(const void*)(uintptr_t)id):NULL;}
 static Object *create(NativeGpu *g,uint32_t id,uint32_t kind){if(!check(g,id&&!object(g,id),"Zero or duplicate GPU object ID"))return NULL;Object *o=calloc(1,sizeof(*o));if(!check(g,o!=NULL,"GPU object metadata allocation"))return NULL;o->id=id;o->kind=kind;CFDictionarySetValue(g->objects,(const void*)(uintptr_t)id,o);return o;}
 static void draw_program_free(DrawProgram *);
@@ -178,7 +180,7 @@ static bool present(NativeGpu *g,uint32_t id){
   WGPUFragmentState fragment=WGPU_FRAGMENT_STATE_INIT;fragment.module=g->blit_shader;fragment.entryPoint=(WGPUStringView){"fs",WGPU_STRLEN};fragment.targetCount=1;fragment.targets=&color;
   WGPURenderPipelineDescriptor d=WGPU_RENDER_PIPELINE_DESCRIPTOR_INIT;d.vertex.module=g->blit_shader;d.vertex.entryPoint=(WGPUStringView){"vs",WGPU_STRLEN};d.fragment=&fragment;g->blit=wgpuDeviceCreateRenderPipeline(g->device,&d);if(!check(g,g->blit!=NULL,"Native presentation pipeline"))return false;
  }
- WGPUSurfaceTexture drawable=WGPU_SURFACE_TEXTURE_INIT;wgpuSurfaceGetCurrentTexture(g->surface,&drawable);
+ WGPUSurfaceTexture drawable=WGPU_SURFACE_TEXTURE_INIT;atomic_store(&g->live_phase,5);wgpuSurfaceGetCurrentTexture(g->surface,&drawable);atomic_store(&g->live_phase,1);
  if(!check(g,drawable.texture&&(drawable.status==WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal||drawable.status==WGPUSurfaceGetCurrentTextureStatus_SuccessSuboptimal),"Native drawable unavailable"))return false;
  WGPUTextureView out=wgpuTextureCreateView(drawable.texture,NULL),in=view(o,0,0);WGPUBindGroupLayout layout=wgpuRenderPipelineGetBindGroupLayout(g->blit,0);
  WGPUBindGroupEntry entry=WGPU_BIND_GROUP_ENTRY_INIT;entry.binding=0;entry.textureView=in;WGPUBindGroupDescriptor bg=WGPU_BIND_GROUP_DESCRIPTOR_INIT;bg.layout=layout;bg.entryCount=1;bg.entries=&entry;WGPUBindGroup group=wgpuDeviceCreateBindGroup(g->device,&bg);
@@ -251,7 +253,7 @@ static bool end_query(NativeGpu *g,const uint8_t *p){Object *q=object(g,gpu_word
 
 static void reset_state(NativeGpu *g){memset(g->shader,0,sizeof(g->shader));g->layout=0;g->topology=4;memset(g->vb,0,sizeof(g->vb));memset(g->ib,0,sizeof(g->ib));memset(g->cb,0,sizeof(g->cb));memset(g->srv,0,sizeof(g->srv));memset(g->smp,0,sizeof(g->smp));memset(g->uav,0,sizeof(g->uav));memset(g->targets,0,sizeof(g->targets));memset(g->blend,0,sizeof(g->blend));for(unsigned i=1;i<5;i++)g->blend[i]=0x3f800000;g->blend[5]=UINT32_MAX;memset(g->depth,0,sizeof(g->depth));g->raster=0;g->viewports[0]=g->scissors[0]=0;}
 #include "native_draw.inc"
-static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
+static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;atomic_store(&g->live_phase,1);atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
  /* Submit pending draws before resource mutations, copies, fences or present.
     State commands can remain in the current pass. Queue writes never overtake
     an earlier draw that reads the same resource. */
@@ -289,17 +291,23 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  else if(hardware(g)&&(!g->test_bc||(bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed))fail(g,g->ring.error);break;}
-   if(!draw_flush(g))break;sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
+   if(!draw_flush(g))break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
    if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head)native_wait32(&g->host->memory,g->ring.base,head,100000000);atomic_store(heap_word(g,g->ring.base+20),0);}
   }
  }
- if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");release_hardware(g);wasm_rt_free_thread();}return NULL;}
+ if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");atomic_store(&g->live_phase,8);release_hardware(g);wasm_rt_free_thread();}return NULL;}
 NativeGpu *native_gpu_create(struct w2c_env *h,void *layer,void(*cancel)(void*),void *context){NativeGpu *g=calloc(1,sizeof(*g));if(!g)return NULL;reset_state(g);g->host=h;g->cancel=cancel;g->context=context;g->objects=CFDictionaryCreateMutable(NULL,0,NULL,NULL);if(!g->objects){free(g);return NULL;}pthread_mutex_init(&g->error_lock,NULL);if(layer)g->layer=(__bridge_retained void*)(__bridge id)layer;return g;}
 void native_gpu_start(NativeGpu *g,uint64_t ring,uint64_t size,uint64_t dbg){(void)dbg;if(!g)return;if(!check(g,!g->started&&size<=UINT32_MAX,"Duplicate/invalid GPU service start"))return;if(!gpu_ring_init(&g->ring,(void*)g->host->memory.data,&g->host->memory.size,ring,(uint32_t)size,g,execute,wake)){fail(g,g->ring.error);return;}g->ring_valid=true;if(!check(g,pthread_create(&g->thread,NULL,loop,g)==0,"GPU service pthread creation"))return;g->started=true;}
 void native_gpu_stop(NativeGpu *g){if(!g)return;atomic_store(&g->stop,true);if(g->started){wake(g,g->ring.base);pthread_join(g->thread,NULL);g->started=false;}}
 void native_gpu_end(NativeGpu *g){if(!g)return;native_gpu_stop(g);if(g->layer){id held=CFBridgingRelease(g->layer);(void)held;}CFRelease(g->objects);pthread_mutex_destroy(&g->error_lock);free(g);}
 const char *native_gpu_error(NativeGpu *g){return g&&atomic_load_explicit(&g->failed,memory_order_acquire)?g->error:NULL;}
 bool native_gpu_ready(NativeGpu *g){return g&&atomic_load(&g->ready);}
+void native_gpu_snapshot(NativeGpu *g,char *text,size_t size){
+ if(!g){snprintf(text,size,"GPU not started");return;}
+ static const char *phases[]={"initializing","command execution","local shader read","WGSL compile","pipeline compile","drawable acquisition","GPU completion wait","queue idle","GPU cleanup"};
+ uint32_t phase=atomic_load(&g->live_phase);
+ snprintf(text,size,"GPU %s; commands %llu; frames %llu; draws %llu; last %s; shader %016llx",phase<9?phases[phase]:"unknown",(unsigned long long)atomic_load(&g->live_commands),(unsigned long long)atomic_load(&g->live_frames),(unsigned long long)atomic_load(&g->live_draws),gpu_opcode_name(atomic_load(&g->last_op)),(unsigned long long)atomic_load(&g->live_shader));
+}
 void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; draws %llu; pipelines %llu (hits %llu); last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,gpu_opcode_name(g->last_op));}
 
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.

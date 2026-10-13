@@ -54,7 +54,8 @@ static DrawProgram *draw_program(NativeGpu *g,Object *o){
  if(!check(g,o&&o->kind==14&&o->meta[1]<2,"Draw requires a vertex/fragment shader"))return NULL;if(o->program)return o->program;
  DrawProgram *p=calloc(1,sizeof(*p));if(!check(g,p!=NULL,"Shader program allocation"))return NULL;o->program=p;p->stage=o->meta[1];snprintf(p->hash,sizeof(p->hash),"%08x%08x",o->meta[3],o->meta[2]);
  @autoreleasepool {
-  id constants=nil;NSString *source=draw_source(g,p->hash,&constants);if(!check(g,source!=nil,"Invalid UTF-8 shader source"))return NULL;
+  atomic_store(&g->live_shader,strtoull(p->hash,NULL,16));atomic_store(&g->live_phase,2);
+  id constants=nil;NSString *source=draw_source(g,p->hash,&constants);atomic_store(&g->live_phase,1);if(!check(g,source!=nil,"Invalid UTF-8 shader source"))return NULL;
   NSMutableString *text=[source mutableCopy];NSString *decl=@"@group\\((\\d+)u?\\)\\s*@binding\\((\\d+)u?\\)\\s*var<uniform>\\s+(\\w+)\\s*:\\s*(\\w+)\\s*;";
   NSMutableArray *members=[NSMutableArray array];NSArray *matches=draw_matches(decl,text);
   for(NSTextCheckingResult *m in [matches reverseObjectEnumerator]){unsigned group=draw_capture(text,m,1).intValue,slot=draw_capture(text,m,2).intValue;if(slot==15)continue;
@@ -96,7 +97,7 @@ static DrawProgram *draw_program(NativeGpu *g,Object *o){
   }
   WGPUBindGroupLayoutDescriptor ld=WGPU_BIND_GROUP_LAYOUT_DESCRIPTOR_INIT;ld.entryCount=p->count;ld.entries=entries;p->layout=wgpuDeviceCreateBindGroupLayout(g->device,&ld);
   if([constants isKindOfClass:NSArray.class]){NSArray *values=constants;if(!check(g,values.count<=16384,"Special constants exceed 256 KiB"))return NULL;size_t bytes=values.count?values.count*16:16;uint32_t *data=calloc(1,bytes);if(!check(g,data!=NULL,"Special constant storage allocation"))return NULL;for(unsigned i=0;i<values.count;i++){uint64_t v;if(!draw_uint(values[i],&v)||v>UINT32_MAX){free(data);fail(g,"Invalid special constant table value");return NULL;}data[i*4]=(uint32_t)v;}WGPUBufferDescriptor bd=WGPU_BUFFER_DESCRIPTOR_INIT;bd.size=bytes;bd.usage=WGPUBufferUsage_Uniform|WGPUBufferUsage_CopyDst;p->constants=wgpuDeviceCreateBuffer(g->device,&bd);if(p->constants)wgpuQueueWriteBuffer(g->queue,p->constants,0,data,bytes);free(data);}
-  p->source=strdup(text.UTF8String);if(!check(g,p->source!=NULL,"Shader source copy allocation"))return NULL;WGPUShaderSourceWGSL wgsl=WGPU_SHADER_SOURCE_WGSL_INIT;wgsl.code=(WGPUStringView){p->source,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&wgsl.chain;md.label=(WGPUStringView){p->hash,WGPU_STRLEN};p->module=wgpuDeviceCreateShaderModule(g->device,&md);
+  p->source=strdup(text.UTF8String);if(!check(g,p->source!=NULL,"Shader source copy allocation"))return NULL;WGPUShaderSourceWGSL wgsl=WGPU_SHADER_SOURCE_WGSL_INIT;wgsl.code=(WGPUStringView){p->source,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&wgsl.chain;md.label=(WGPUStringView){p->hash,WGPU_STRLEN};atomic_store(&g->live_phase,3);p->module=wgpuDeviceCreateShaderModule(g->device,&md);atomic_store(&g->live_phase,1);
   if(!check(g,p->module&&p->layout&&!atomic_load(&g->failed),"Shader module/layout validation failed"))return NULL;
  }return p;
 }

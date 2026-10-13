@@ -18,6 +18,7 @@ static pthread_mutex_t grow_mutex=PTHREAD_MUTEX_INITIALIZER;
 static void lock(pthread_mutex_t *m){if(pthread_mutex_lock(m))abort();}
 static void unlock(pthread_mutex_t *m){if(pthread_mutex_unlock(m))abort();}
 #ifndef NATIVE_HOST_UNIT
+#include "threading/native_pump.h"
 void native_thread_error(struct w2c_env*,const char*);
 #endif
 static uint32_t wasi_errno(int e) {
@@ -192,6 +193,9 @@ static uint32_t unlocked_resize(struct w2c_env *h,uint64_t size) {
  return wasm_rt_grow_memory_shared(&h->memory,wanted-current)!=UINT64_MAX;
 }
 double host_now(struct w2c_env *h,bool wall) {
+#ifndef NATIVE_HOST_UNIT
+ native_thread_tick(h);
+#endif
  return (double)(wall?ns(CLOCK_REALTIME):h->wall_origin+(ns(CLOCK_MONOTONIC)-h->mono_origin))/1000000.0;
 }
 uint32_t host_clock(struct w2c_env *h,uint32_t id,uint64_t p) {

@@ -9,5 +9,6 @@ void native_gpu_end(NativeGpu*);
 const char *native_gpu_error(NativeGpu*);
 bool native_gpu_ready(NativeGpu*);
 void native_gpu_summary(NativeGpu*,char*,size_t);
+void native_gpu_snapshot(NativeGpu*,char*,size_t);
 bool native_gpu_replay_test(struct w2c_env*,char*,size_t);
 #endif

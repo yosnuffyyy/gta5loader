@@ -1,4 +1,6 @@
 #include "native_threads.h"
+#include "native_pump.h"
+#include "native_wait.h"
 #include "platform/native_paths.h"
 #include "renderer/native_gpu.h"
 #include "renderer/native_launch.h"
@@ -30,7 +32,7 @@ typedef struct NativeWorker {
  w2c_gta *engine;
  uint64_t tcb,routine,arg,errno_address;
  bool occupied,joined,cleanup;
- _Atomic bool finished,wait_observed;
+ _Atomic bool finished,wait_observed,mailbox_pending;
  bool cancelled;
  const char *failure;
  const char *phase;
@@ -43,11 +45,12 @@ struct NativeThreads {
  pthread_cond_t changed;
  NativeWorker workers[MAX_WORKERS];
  _Atomic bool stopping;
+ _Atomic bool mailbox_pending;
  _Atomic unsigned ready,completed,proxies;
  bool probe_mode,main_mode,reached_main_boundary,boot_mode,gpu_checkpoint,display;
  NativeGpu *gpu;
  char failure_text[256];
- uint64_t requested_routine,input,audio,audio_capacity,deadline;
+ uint64_t requested_routine,input,audio,audio_capacity,deadline,probe_completion;
  NativeAssets *assets;
  _Atomic unsigned game_started;
  _Atomic bool archive_boundary;
@@ -55,7 +58,17 @@ struct NativeThreads {
 };
 static _Thread_local NativeThreads *current;
 static _Thread_local NativeWorker *worker;
+static _Thread_local bool servicing_mailbox;
+static _Thread_local unsigned clock_ticks;
 static _Atomic bool scene_stop;
+static pthread_mutex_t scene_status_mutex=PTHREAD_MUTEX_INITIALIZER;
+static NativeThreads *scene_runtime;
+void native_scene_status(char *text,size_t size){
+ pthread_mutex_lock(&scene_status_mutex);NativeThreads *r=scene_runtime;
+ if(!r)snprintf(text,size,"Native startup has no active runtime.");
+ else {char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));}
+ pthread_mutex_unlock(&scene_status_mutex);
+}
 void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
 void native_scene_reset_stop(void){atomic_store(&scene_stop,false);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
@@ -76,6 +89,22 @@ bool native_wait_cancelled(void){
  if(native_assets_failure(current->assets)||native_gpu_error(current->gpu)||(current->boot_mode&&atomic_load(&scene_stop))){atomic_store(&current->stopping,true);}
  return atomic_load(&current->stopping);
 }
+void native_wait_service(void){
+ if(!current||servicing_mailbox)return;
+ _Atomic bool *pending=worker?&worker->mailbox_pending:&current->mailbox_pending;
+ if(!atomic_exchange_explicit(pending,false,memory_order_acquire))return;
+ servicing_mailbox=true;
+ w2c_gta_0x5Femscripten_check_mailbox(worker?worker->engine:current->host->engine);
+ servicing_mailbox=false;
+}
+void native_thread_tick(struct w2c_env *h){
+ (void)h;if(!current)return;
+ // Full deadline/IO checks are amortized on clock-heavy engine loops.
+ if(atomic_load_explicit(&current->stopping,memory_order_relaxed)||
+    (current->boot_mode&&atomic_load_explicit(&scene_stop,memory_order_relaxed)))wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
+ if((++clock_ticks&255)==0&&native_wait_cancelled())wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
+ native_wait_service();
+}
 w2c_gta *native_current_engine(struct w2c_env *h){return worker?worker->engine:h->engine;}
 void native_thread_error(struct w2c_env *h,const char *name){
  if(worker){if(!worker->failure)worker->failure=name;}
@@ -83,7 +112,7 @@ void native_thread_error(struct w2c_env *h,const char *name){
 }
 NativeThreads *native_threads_begin(struct w2c_env *h){
  check(h,!current,"thread runtime already active");NativeThreads *r=calloc(1,sizeof(*r));check(h,r!=NULL,"thread runtime allocation");
- r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));current=r;return r;
+ r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));servicing_mailbox=false;clock_ticks=0;current=r;return r;
 }
 void native_mailbox_register(struct w2c_env *h,uint64_t tcb){
  check(h,host_range(h,tcb,208)&&(tcb%8)==0,"invalid thread mailbox");
@@ -94,12 +123,13 @@ void native_mailbox_register(struct w2c_env *h,uint64_t tcb){
 }
 void native_mailbox_notify(struct w2c_env *h,uint64_t target,uint64_t sender){
  (void)sender;check(h,current!=NULL,"mailbox without native thread runtime");
- NativeThreads *r=current;bool found=target==h->mailbox;
+ NativeThreads *r=current;bool found=false;pthread_t destination;
  checked(pthread_mutex_lock(&r->mutex));
- for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&r->workers[i].tcb==target)found=true;
+ if(target==h->mailbox){found=true;destination=r->owner;atomic_store_explicit(&r->mailbox_pending,true,memory_order_release);}
+ for(unsigned i=0;i<MAX_WORKERS&&!found;i++)if(r->workers[i].occupied&&r->workers[i].tcb==target){found=true;destination=r->workers[i].thread;atomic_store_explicit(&r->workers[i].mailbox_pending,true,memory_order_release);}
  checked(pthread_cond_broadcast(&r->changed));checked(pthread_mutex_unlock(&r->mutex));
+ if(found)native_wait_poke(&h->memory,destination);
  // Emscripten tolerates notifications racing with thread removal.
- (void)found;
 }
 void native_thread_cleanup(struct w2c_env *h,uint64_t tcb){
  check(h,current!=NULL,"cleanup without native thread runtime");NativeThreads *r=current;
@@ -149,7 +179,12 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  check(h,probe_proxy(h,e,packed,18,4,(uint64_t[]){(uint64_t)(int64_t)-100,p,0,0})==-44,"proxied missing-file errno differs");
  worker->phase="concurrent engine asset samples";
  if(r->assets)native_assets_thread_probe(r->assets,e,p,(unsigned)id);
- w2c_gta_0x5Femscripten_stack_restore(e,sp);atomic_fetch_add(&r->completed,1);return id+123;
+ w2c_gta_0x5Femscripten_stack_restore(e,sp);
+ if(atomic_fetch_add(&r->completed,1)+1==PROBE_LIMIT){
+  atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+r->probe_completion),1,memory_order_release);
+  native_notify(&h->memory,r->probe_completion,1);
+ }
+ return id+123;
 }
 static void *run_worker(void *arg){
  NativeWorker *w=arg;NativeThreads *r=w->runtime;struct w2c_env *h=r->host;current=r;worker=w;
@@ -212,10 +247,15 @@ static void wait_finished(NativeThreads *r){
 }
 void native_threads_probe(struct w2c_env *h,uint64_t p){
  NativeThreads *r=current;check(h,r&&!worker,"worker probe must run on engine owner");
- uint64_t main_errno=engine_errno(h->engine);host_put32(h,main_errno,777);r->probe_mode=true;
+ uint64_t main_errno=engine_errno(h->engine);host_put32(h,main_errno,777);r->probe_mode=true;r->probe_completion=p+64;
  for(unsigned round=0;round<2;round++){
   atomic_store(&r->ready,0);atomic_store(&r->completed,0);atomic_store(&r->proxies,0);
+  host_put32(h,r->probe_completion,0);
   for(unsigned i=0;i<PROBE_LIMIT;i++)check(h,engine_create(h->engine,p+8*i,0,0,1+i+round*PROBE_LIMIT)==0,"engine pthread_create failed");
+  // Owner sleeps indefinitely while workers synchronously proxy back to it.
+  // The old explicit diagnostic mailbox pump masked this deadlock.
+  uint32_t waited=native_wait32(&h->memory,r->probe_completion,0,-1);
+  check(h,waited<=1&&atomic_load(&r->completed)==PROBE_LIMIT,"mailbox delivery during owner wait failed");
   wait_finished(r);
   for(unsigned i=0;i<PROBE_LIMIT;i++){NativeWorker *w=&r->workers[i];checked(pthread_join(w->thread,NULL));w->joined=true;check(h,!w->failure,w->failure?w->failure:"worker failed");}
   for(unsigned i=0;i<PROBE_LIMIT;i++){
@@ -228,6 +268,7 @@ void native_threads_probe(struct w2c_env *h,uint64_t p){
  }
  uint32_t err;host_load(h,&err,main_errno,4);check(h,err==777,"main thread TLS overwritten");r->probe_mode=false;
  report(h,"PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.");
+ report(h,"PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.");
 }
 static uint64_t proxy_arg(struct w2c_env *h,uint64_t p){
  uint64_t tag=host_u64(h,p),bits=host_u64(h,p+8);if(tag==1)return bits;
@@ -262,7 +303,8 @@ void native_threads_end(NativeThreads *r){
  native_gpu_stop(r->gpu);
  native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
- native_gpu_end(r->gpu);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;free(r);
+ checked(pthread_mutex_lock(&scene_status_mutex));if(scene_runtime==r)scene_runtime=NULL;checked(pthread_mutex_unlock(&scene_status_mutex));
+ native_gpu_end(r->gpu);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;servicing_mailbox=false;clock_ticks=0;free(r);
 }
 uint32_t native_calendar(struct w2c_env *h,uint64_t seconds,uint64_t p,bool local){
  (void)local;if(!host_range(h,p,56))return 1;time_t value=(time_t)(int64_t)seconds;struct tm tm;
@@ -318,7 +360,7 @@ bool native_main_reached(struct w2c_env *h){
 }
 static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
 uint32_t native_has_display(void){return current&&current->display?1:0;}
-void native_boot_prepare(struct w2c_env *h,void *layer,bool checkpoint){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");}
+void native_boot_prepare(struct w2c_env *h,void *layer,bool checkpoint){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");checked(pthread_mutex_lock(&scene_status_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
 void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
