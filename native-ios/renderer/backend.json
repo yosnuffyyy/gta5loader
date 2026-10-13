@@ -3,7 +3,7 @@
   "version": "v29.0.1.1",
   "commit": "6aed50955d934ac36049ba8d002034841633ae02",
   "license": "MIT OR Apache-2.0",
-  "selection": "Candidate for native Metal-backed WebGPU; physical game-shader fixture gate pending",
+  "selection": "Metal/WGSL native backend; shader feasibility passed on iPhone. Local source patch queries actual Metal BC capability on iOS; physical BC test pending.",
   "ios": {
     "asset": "wgpu-ios-aarch64-release.zip",
     "bytes": 13593993,
@@ -13,5 +13,15 @@
     "asset": "wgpu-macos-aarch64-release.zip",
     "bytes": 13733288,
     "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e"
+  },
+  "localPatch": {
+    "wgpuHal": "29.0.3",
+    "change": "Metal BC capability detection",
+    "rust": "1.93.1",
+    "features": [
+      "metal",
+      "wgsl"
+    ],
+    "preserveCompressedTextures": true
   }
 }

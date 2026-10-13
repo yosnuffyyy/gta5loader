@@ -31,8 +31,14 @@ IPA: GTA-Native-Probe-0.6-unsigned.ipa
 Bytes: 102726024
 SHA-256: f4f804df2812959b65150de77d866651d4d293b127e47d699a396965cd298ef5
 
-Physical iPhone 0.6: PENDING. See NATIVE-0.6.txt for the two new tests.
-Real archive continuation and Metal surface presentation remain unverified.
+Physical iPhone 0.6: queue replay and graphics-enabled archive boundary PASS,
+Exit 0, Apple A18 Pro GPU; process 12.6 MiB before / 23.4 MiB after cleanup.
+The real archive trace parsed and mounted audio archives including PROLOGUE,
+then stopped at CREATE_TEXTURE: missing BC compression capability. Exit 1,
+710 commands, 7 uploads, zero presented frames; cleanup sample 38.9 MiB.
+These are user-reported samples, not exact peaks or a leak diagnosis.
+See evidence/0.6/iphone-device-test.json. Native surface presentation is still
+unverified; real archive continuation is observed through this BC failure.
 General scene draw/compute pipelines and further GPU operations are pending;
 audio output, player controls and gameplay are not implemented in this test.
 See GPU-COMMAND-COVERAGE-0.6.json for precise handler/replay scope.

@@ -17,7 +17,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684
         with:
-          path: native-build/object-cache
+          path: |
+            native-build/object-cache
+            native-build/rust-target
           key: native-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: native-v2-${{ runner.os }}-${{ runner.arch }}-
       - name: Test, compile and package native engine prototype
@@ -25,7 +27,9 @@ jobs:
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684
         if: always() && !cancelled()
         with:
-          path: native-build/object-cache
+          path: |
+            native-build/object-cache
+            native-build/rust-target
           key: native-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload compiler evidence
         if: always()

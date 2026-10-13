@@ -32,6 +32,8 @@ cp native-build/wgpu/LICENSE.MIT "$app/wgpu-native-LICENSE.MIT"
 cp native-build/wgpu/LICENSE.APACHE "$app/wgpu-native-LICENSE.APACHE"
 cp native-ios/renderer/backend.json "$app/renderer-backend.json"
 cp native-ios/renderer/shader-fixtures.json "$app/shader-fixtures.json"
+cp native-build/evidence/metal-bc-patch.json "$app/metal-bc-patch.json"
+cp native-build/evidence/renderer-backend.json "$app/renderer-build.json"
 plutil -lint "$app/Info.plist"
 file "$app/NativeProbe" | tee native-build/evidence/ios-binary.txt
 xcrun vtool -show-build "$app/NativeProbe" | tee -a native-build/evidence/ios-binary.txt

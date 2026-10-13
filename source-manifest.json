@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.6 engine graphics command service and startup integration; stage 3 in progress",
+  "scope": "Native 0.7 Metal BC capability fix and physical compression fixture; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 24293,
-      "sha256": "936fe866dc75fd81003f00071cfc2fdc18801b7db6ea6c6a5ce165e92617e4c1"
+      "bytes": 24324,
+      "sha256": "b1f8452f8188b4cca6b9c38e30870c2604ac112a546a9a64f96ec3f056fe2e6f"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 4982,
-      "sha256": "a57f90766a9493416edf61fbdb4c008be5c5ddf6efc16a52706fa083cfd9dbb9"
+      "bytes": 5019,
+      "sha256": "1d9f65e68a7b8060a03ddc3a1d49388c0cbe17aff762516d578b6f86f207f5a3"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1618,
-      "sha256": "11c01e596668029e00122dd72016e2b45f2754330a63f6869189400c48a90d5f"
+      "sha256": "76ee462a72cf7eebf1bb4800fbc1697f62da35bc5c6482e19c5ee64c870d2138"
     },
     {
       "path": "native-ios/native_host.c",
@@ -93,8 +93,8 @@
     },
     {
       "path": "native-ios/package-ios.sh",
-      "bytes": 2769,
-      "sha256": "6194971e0dbe4c37780a6c32210940ccd3ee8cd0dadc1c86b381c4e92cf53f47"
+      "bytes": 2915,
+      "sha256": "1c209d67e1ec35913f1fb8f30f6d497de81de4afae38f2080a4fc8b74b98e6b5"
     },
     {
       "path": "native-ios/patch-bulk.mjs",
@@ -138,13 +138,23 @@
     },
     {
       "path": "native-ios/renderer/backend.json",
-      "bytes": 580,
-      "sha256": "b47471b4d473cb33d3882532300005c19dcaa40ced159d18faf19deb251e7958"
+      "bytes": 857,
+      "sha256": "089804e15de3e48b72f7f86bfdf72e84d27114ba8dbcf0f128ac499102082a73"
+    },
+    {
+      "path": "native-ios/renderer/bc_fixture.inc",
+      "bytes": 7846,
+      "sha256": "e2e9e2891a67bd8d181ca56631eaf32e2e0c4962d7063ff7cca449e858dc7929"
+    },
+    {
+      "path": "native-ios/renderer/build-patched-backend.sh",
+      "bytes": 2291,
+      "sha256": "2ac724dec828ecce4ef92e50405259bf5a820720c9fc190ac2e96fa491c8dfe5"
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 1592,
-      "sha256": "c70ef5008547abdf4733ef04abdb6a6b1c5d7810d6feee96a8b0f07ba338a386"
+      "bytes": 1642,
+      "sha256": "4e303921362d658547807bf95ee591748ce4e676cdd496ede2164c98ddb81bfa"
     },
     {
       "path": "native-ios/renderer/gpu_ring.c",
@@ -163,8 +173,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 45875,
-      "sha256": "e016fd2ea62a398d985f3d1d29d3e992c8ca2c25effb4243d01febe10c06f7dd"
+      "bytes": 47186,
+      "sha256": "d4f52d506b3e37b1e4c28bf2578011784a71e9b783c1f51219f8e2ea9331641c"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -187,9 +197,14 @@
       "sha256": "28f60c019eb44837f5d13bd0eb1c628486f6f51d44b28c337f5316101c50a534"
     },
     {
+      "path": "native-ios/renderer/patch-metal-bc.mjs",
+      "bytes": 2091,
+      "sha256": "047054d67e7c9207143ce3981d36a8686daa330b24df7549e542bb2cf6dc05c0"
+    },
+    {
       "path": "native-ios/renderer/prepare-renderer.mjs",
-      "bytes": 2727,
-      "sha256": "f13bc0bf4dbe3cfdf98552e5f238899c55fde24bdb484e2c42082e914ed15712"
+      "bytes": 2744,
+      "sha256": "14e4f6688cad78769c9a51387701c5729c2889586a6869272127afb89cf61251"
     },
     {
       "path": "native-ios/renderer/ps.wgsl",
@@ -258,8 +273,8 @@
     },
     {
       "path": ".github/workflows/native-ios.yml",
-      "bytes": 1679,
-      "sha256": "767f29cc4ec86d13f0c423343d17d37c48c4a692f33a2cf8143299fd337128a4"
+      "bytes": 1781,
+      "sha256": "ce5bb086a804574a308c4668be4b4c7f88a9aaf702f20d94f98887c4359b043b"
     }
   ]
 }

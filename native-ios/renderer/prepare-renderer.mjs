@@ -8,7 +8,7 @@ fs.mkdirSync(out,{recursive:true});
 const evidence={...pin,downloaded:[],shaderFixtures:JSON.parse(fs.readFileSync(dir+'/shader-fixtures.json'))};
 const apiResponse=await fetch('https://raw.githubusercontent.com/gfx-rs/wgpu-native/'+pin.commit+'/src/unimplemented.rs');if(!apiResponse.ok)throw Error('Cannot audit backend API coverage');
 const unimplemented=await apiResponse.text();
-const calls=[...new Set([...['native_renderer.c','native_gpu.m'].map(p=>fs.readFileSync(dir+'/'+p,'utf8')).join('\n').matchAll(/\b(wgpu[A-Z]\w*)\s*\(/g)].map(m=>m[1]))].sort();
+const calls=[...new Set([...['native_renderer.c','native_gpu.m','bc_fixture.inc'].map(p=>fs.readFileSync(dir+'/'+p,'utf8')).join('\n').matchAll(/\b(wgpu[A-Z]\w*)\s*\(/g)].map(m=>m[1]))].sort();
 for(const name of calls)if(new RegExp('fn\\s+'+name+'\\s*\\(').test(unimplemented))throw Error('Backend export is unimplemented: '+name);
 evidence.exportCoverage={calls,unimplementedSourceSHA256:hash(unimplemented),result:'No fixture call targets an unimplemented backend export; not a full behavioral coverage claim'};
 for(const r of evidence.shaderFixtures.records){if(hash(fs.readFileSync(dir+'/'+r.stage+'.wgsl'))!==r.packedSHA256)throw Error('Shader fixture changed: '+r.stage);}

@@ -5,6 +5,7 @@ native-build/test-gpu-ring | tee native-build/evidence/native-gpu-ring-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_gpu_ring.c native-ios/renderer/gpu_ring.c -o native-build/test-gpu-ring-sanitized
 native-build/test-gpu-ring-sanitized | tee native-build/evidence/native-gpu-ring-sanitized-test.txt
 node native-ios/renderer/prepare-renderer.mjs
+bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do
   if [ "$target" = ios ]; then sdkname=iphoneos; else sdkname=macosx; fi
   sdk=$(xcrun --sdk "$sdkname" --show-sdk-path)

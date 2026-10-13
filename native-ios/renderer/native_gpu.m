@@ -30,6 +30,7 @@ struct NativeGpu {
  CFMutableDictionaryRef objects;uint64_t presents,surface_frames,uploads,readbacks;
  uint64_t buffer_bytes,texture_bytes;_Atomic uint32_t last_op;
  uint64_t last_sample,last_report;double highest_footprint;
+ bool bc_enabled,test_bc;unsigned bc_formats_tested;
  uint32_t shader[3],layout,topology,vb[16][3],ib[3],cb[3][16][3],srv[3][128],smp[3][16],uav[3][8];
  uint32_t targets[37],blend[6],depth[2],raster,viewports[97],scissors[65];
 };
@@ -92,17 +93,19 @@ static bool hardware(NativeGpu *g){
  WGPURequestAdapterOptions ao=WGPU_REQUEST_ADAPTER_OPTIONS_INIT;ao.backendType=WGPUBackendType_Metal;ao.compatibleSurface=g->surface;
  WGPURequestAdapterCallbackInfo ac=WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;ac.mode=WGPUCallbackMode_AllowProcessEvents;ac.callback=got_adapter;ac.userdata1=g;atomic_store(&g->callback_done,false);wgpuInstanceRequestAdapter(g->instance,&ao,ac);if(!wait_callback(g)||!g->adapter)return false;
  WGPUAdapterInfo ai=WGPU_ADAPTER_INFO_INIT;if(!check(g,wgpuAdapterGetInfo(g->adapter,&ai)==WGPUStatus_Success,"Native adapter information"))return false;size_t n=ai.device.length==WGPU_STRLEN?(ai.device.data?strlen(ai.device.data):0):ai.device.length;if(n>190)n=190;snprintf(g->adapter_name,sizeof(g->adapter_name),"%.*s",(int)n,ai.device.data?ai.device.data:"");wgpuAdapterInfoFreeMembers(ai);
- WGPUFeatureName wanted[]={WGPUFeatureName_TextureCompressionBC,WGPUFeatureName_Depth32FloatStencil8,WGPUFeatureName_Float32Filterable,WGPUFeatureName_IndirectFirstInstance,WGPUFeatureName_RG11B10UfloatRenderable,WGPUFeatureName_BGRA8UnormStorage,WGPUFeatureName_DepthClipControl};WGPUFeatureName features[16];size_t count=0;
+ WGPUFeatureName wanted[]={WGPUFeatureName_TextureCompressionBC,WGPUFeatureName_TextureCompressionBCSliced3D,WGPUFeatureName_Depth32FloatStencil8,WGPUFeatureName_Float32Filterable,WGPUFeatureName_IndirectFirstInstance,WGPUFeatureName_RG11B10UfloatRenderable,WGPUFeatureName_BGRA8UnormStorage,WGPUFeatureName_DepthClipControl};WGPUFeatureName features[16];size_t count=0;
  for(unsigned i=0;i<sizeof(wanted)/sizeof(wanted[0]);i++)if(wgpuAdapterHasFeature(g->adapter,wanted[i]))features[count++]=wanted[i];
  WGPULimits limits=WGPU_LIMITS_INIT;if(!check(g,wgpuAdapterGetLimits(g->adapter,&limits)==WGPUStatus_Success,"Native adapter limits query"))return false;limits.maxImmediateSize=WGPU_LIMIT_U32_UNDEFINED; /* This adapter does not use the optional immediates feature. */
  WGPUDeviceDescriptor dd=WGPU_DEVICE_DESCRIPTOR_INIT;dd.requiredLimits=&limits;dd.requiredFeatures=features;dd.requiredFeatureCount=count;dd.uncapturedErrorCallbackInfo.callback=device_error;dd.uncapturedErrorCallbackInfo.userdata1=g;dd.deviceLostCallbackInfo.mode=WGPUCallbackMode_AllowProcessEvents;dd.deviceLostCallbackInfo.callback=lost;dd.deviceLostCallbackInfo.userdata1=g;
  WGPURequestDeviceCallbackInfo dc=WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;dc.mode=WGPUCallbackMode_AllowProcessEvents;dc.callback=got_device;dc.userdata1=g;atomic_store(&g->callback_done,false);wgpuAdapterRequestDevice(g->adapter,&dd,dc);if(!wait_callback(g)||!g->device)return false;
  g->queue=wgpuDeviceGetQueue(g->device);if(!check(g,g->queue!=NULL,"Native GPU queue creation"))return false;
+ g->bc_enabled=wgpuDeviceHasFeature(g->device,WGPUFeatureName_TextureCompressionBC);
  if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);}
  return !atomic_load(&g->failed);
 }
 static WGPUCommandEncoder encoder(NativeGpu *g){WGPUCommandEncoderDescriptor d=WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;return wgpuDeviceCreateCommandEncoder(g->device,&d);}
 static bool submit(NativeGpu *g,WGPUCommandEncoder e){if(!e)return check(g,false,"GPU encoder creation");WGPUCommandBufferDescriptor d=WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;WGPUCommandBuffer c=wgpuCommandEncoderFinish(e,&d);wgpuCommandEncoderRelease(e);if(!c)return check(g,false,"GPU command buffer creation");wgpuQueueSubmit(g->queue,1,&c);wgpuCommandBufferRelease(c);return !atomic_load(&g->failed);}
+#include "bc_fixture.inc"
 static WGPUTextureView view(Object *o,uint32_t mip,uint32_t slice){WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=WGPUTextureViewDimension_2D;d.baseMipLevel=mip;d.mipLevelCount=1;d.baseArrayLayer=slice;d.arrayLayerCount=1;return wgpuTextureCreateView(o->texture,&d);}
 static bool create_buffer(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_word(p,0),11);if(!o)return false;o->size=gpu_word(p,1);o->bind=gpu_word(p,2);o->misc=gpu_word(p,3);o->stride=gpu_word(p,4);if(!check(g,o->size&&o->size<=1024*1024*1024,"GPU buffer size unsupported"))return false;
  if(o->bind&4){o->shadow=calloc(1,o->size);if(!check(g,o->shadow!=NULL,"Constant-buffer shadow allocation"))return false;}
@@ -113,7 +116,12 @@ static bool create_texture(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu
  o->td.dimension=dim==3?WGPUTextureDimension_3D:dim==1?WGPUTextureDimension_1D:WGPUTextureDimension_2D;o->td.size=(WGPUExtent3D){gpu_word(p,2),dim==1?1:gpu_word(p,3),gpu_word(p,dim==3?4:6)};o->td.mipLevelCount=gpu_word(p,5);o->td.sampleCount=gpu_word(p,9);o->td.format=format(dxgi,o->bind);
  if(!check(g,dim>=1&&dim<=3&&o->td.format!=WGPUTextureFormat_Undefined,"Unsupported texture dimension/DXGI format"))return false;
  o->td.usage=WGPUTextureUsage_CopySrc|WGPUTextureUsage_CopyDst;if(o->bind&8)o->td.usage|=WGPUTextureUsage_TextureBinding;if(o->bind&(0x20|0x40))o->td.usage|=WGPUTextureUsage_RenderAttachment|WGPUTextureUsage_TextureBinding;if(o->bind&0x80)o->td.usage|=WGPUTextureUsage_StorageBinding;if(!(o->bind&(8|0x20|0x40|0x80)))o->td.usage|=WGPUTextureUsage_TextureBinding;if(o->td.sampleCount>1)o->td.usage&=~(WGPUTextureUsage_CopySrc|WGPUTextureUsage_CopyDst|WGPUTextureUsage_StorageBinding);
- if(o->td.format==WGPUTextureFormat_RGBA8Unorm){o->views[0]=WGPUTextureFormat_RGBA8UnormSrgb;o->td.viewFormatCount=1;o->td.viewFormats=o->views;}if(o->td.format==WGPUTextureFormat_BGRA8Unorm){o->views[0]=WGPUTextureFormat_BGRA8UnormSrgb;o->td.viewFormatCount=1;o->td.viewFormats=o->views;}
+ switch(o->td.format){
+ #define PAIR(a,b) case WGPUTextureFormat_##a:o->views[0]=WGPUTextureFormat_##b;break;case WGPUTextureFormat_##b:o->views[0]=WGPUTextureFormat_##a;break;
+ PAIR(RGBA8Unorm,RGBA8UnormSrgb) PAIR(BGRA8Unorm,BGRA8UnormSrgb) PAIR(BC1RGBAUnorm,BC1RGBAUnormSrgb) PAIR(BC2RGBAUnorm,BC2RGBAUnormSrgb) PAIR(BC3RGBAUnorm,BC3RGBAUnormSrgb) PAIR(BC7RGBAUnorm,BC7RGBAUnormSrgb)
+ #undef PAIR
+ default:break;
+ }if(o->views[0]!=WGPUTextureFormat_Undefined){o->td.viewFormatCount=1;o->td.viewFormats=o->views;}
  o->texture=wgpuDeviceCreateTexture(g->device,&o->td);return check(g,o->texture!=NULL,"GPU texture allocation")&&!atomic_load(&g->failed);
 }
 static bool clear(NativeGpu *g,const uint8_t *p,bool depth){Object *o=object(g,gpu_word(p,0));if(!check(g,o&&o->texture,"Clear requires a texture"))return false;WGPUTextureView v=view(o,gpu_word(p,1),gpu_word(p,2));if(!v)return false;WGPUCommandEncoder e=encoder(g);WGPURenderPassDescriptor pd=WGPU_RENDER_PASS_DESCRIPTOR_INIT;
@@ -263,21 +271,21 @@ static void release_hardware(NativeGpu *g){atomic_store(&g->closing,true);CFDict
 static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  wasm_rt_init_thread();wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(trap)fail(g,"GPU service shared-memory trap");
- else if(hardware(g)){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
+ else if(hardware(g)&&(!g->test_bc||bc_sample_test(g))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed))fail(g,g->ring.error);break;}
    sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
    if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head)native_wait32(&g->host->memory,g->ring.base,head,100000000);atomic_store(heap_word(g,g->ring.base+20),0);}
   }
  }
- release_hardware(g);wasm_rt_free_thread();}return NULL;}
+ if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");release_hardware(g);wasm_rt_free_thread();}return NULL;}
 NativeGpu *native_gpu_create(struct w2c_env *h,void *layer,void(*cancel)(void*),void *context){NativeGpu *g=calloc(1,sizeof(*g));if(!g)return NULL;reset_state(g);g->host=h;g->cancel=cancel;g->context=context;g->objects=CFDictionaryCreateMutable(NULL,0,NULL,NULL);if(!g->objects){free(g);return NULL;}pthread_mutex_init(&g->error_lock,NULL);if(layer)g->layer=(__bridge_retained void*)(__bridge id)layer;return g;}
 void native_gpu_start(NativeGpu *g,uint64_t ring,uint64_t size,uint64_t dbg){(void)dbg;if(!g)return;if(!check(g,!g->started&&size<=UINT32_MAX,"Duplicate/invalid GPU service start"))return;if(!gpu_ring_init(&g->ring,(void*)g->host->memory.data,&g->host->memory.size,ring,(uint32_t)size,g,execute,wake)){fail(g,g->ring.error);return;}g->ring_valid=true;if(!check(g,pthread_create(&g->thread,NULL,loop,g)==0,"GPU service pthread creation"))return;g->started=true;}
 void native_gpu_stop(NativeGpu *g){if(!g)return;atomic_store(&g->stop,true);if(g->started){wake(g,g->ring.base);pthread_join(g->thread,NULL);g->started=false;}}
 void native_gpu_end(NativeGpu *g){if(!g)return;native_gpu_stop(g);if(g->layer){id held=CFBridgingRelease(g->layer);(void)held;}CFRelease(g->objects);pthread_mutex_destroy(&g->error_lock);free(g);}
 const char *native_gpu_error(NativeGpu *g){return g&&atomic_load_explicit(&g->failed,memory_order_acquire)?g->error:NULL;}
 bool native_gpu_ready(NativeGpu *g){return g&&atomic_load(&g->ready);}
-void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));}
+void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));}
 
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -286,6 +294,7 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
  if(atomic_load(&h->memory.size)<131072){snprintf(report,capacity,"FAIL: replay needs a separate shared-memory fixture");return false;}
  uint64_t base=atomic_load(&h->memory.size)-131072,dst=base+65536,flag=base+64000;
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g){snprintf(report,capacity,"FAIL: replay service allocation");return false;}
+ g->test_bc=true;
  host_put32(h,base,64);native_gpu_start(g,base,32768,0);uint64_t deadline=now_ns()+15000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec d={0,1000000};nanosleep(&d,NULL);}
  bool ok=native_gpu_ready(g);uint32_t tail=64;uint32_t cmd[64];
@@ -308,6 +317,10 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
  memset(cmd,0,sizeof(cmd));cmd[0]=15;cmd[9]=(uint32_t)(dst+768);cmd[10]=(dst+768)>>32;cmd[11]=16;cmd[12]=64;cmd[14]=64;EMIT(42,17);
  cmd[0]=16;cmd[1]=0;cmd[2]=(uint32_t)(flag+8);cmd[3]=(flag+8)>>32;EMIT(44,4);
  cmd[0]=16;EMIT(45,1);cmd[1]=7;EMIT(46,2);EMIT(33,0);
+ cmd[0]=17;cmd[1]=2;cmd[2]=4;cmd[3]=4;cmd[4]=1;cmd[5]=1;cmd[6]=1;cmd[7]=71;cmd[8]=8;cmd[9]=1;EMIT(3,10);
+ memset(cmd,0,sizeof(cmd));cmd[0]=17;cmd[6]=4;cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;bc_color((uint8_t*)(cmd+12));EMIT(13,14);
+ cmd[0]=18;cmd[1]=2;cmd[2]=4;cmd[3]=4;cmd[4]=1;cmd[5]=1;cmd[6]=1;cmd[7]=71;cmd[8]=8;cmd[9]=1;EMIT(3,10);
+ cmd[0]=18;cmd[1]=17;EMIT(35,2);cmd[0]=17;EMIT(4,1);cmd[0]=18;EMIT(4,1);
  cmd[0]=(uint32_t)(flag+4);cmd[1]=(flag+4)>>32;cmd[2]=99;host_put32(h,flag+4,0);EMIT(8,3);
  #undef EMIT
  atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);
@@ -318,7 +331,7 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
   uint8_t pixels[64];for(unsigned copy=0;copy<2;copy++){host_load(h,pixels,dst+256+copy*256,64);for(unsigned i=0;i<16;i++)if(abs(pixels[i*4]-64)>1||abs(pixels[i*4+1]-128)>1||abs(pixels[i*4+2]-191)>1||pixels[i*4+3]!=255)ok=false;}
   host_load(h,pixels,dst+768,64);for(unsigned i=0;i<16;i++)if(pixels[i*4]||pixels[i*4+1]||pixels[i*4+2]||pixels[i*4+3]!=i*17)ok=false;if(atomic_load(heap_word(g,flag+8))!=7||host_u64(h,flag+16)!=1)ok=false;
  }
- char summary[400];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native GPU shared-ring replay, buffer uploads/copies/readbacks, texture clear/copy/readback, bounded A8 expansion, event query and GPU-completion fence.\n%s\n%s",ok?"PASS":"FAIL",summary,native_gpu_error(g)?native_gpu_error(g):"No game scene is claimed by this fixture.");native_gpu_end(g);return ok;
+ char summary[400];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.\n%s: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case compared (1-byte tolerance); compressed BC1 ring upload/copy/destruction.\n%s\n%s",ok?"PASS":"FAIL",g->bc_formats_tested==11?"PASS":"FAIL",summary,native_gpu_error(g)?native_gpu_error(g):"Offscreen fixtures; no game scene is claimed.");native_gpu_end(g);return ok;
 }
 int native_gpu_replay_probe(char *report,size_t capacity){
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h){snprintf(report,capacity,"FAIL: replay host allocation");return 1;}host_init(h);

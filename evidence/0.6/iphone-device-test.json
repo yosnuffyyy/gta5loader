@@ -1,11 +1,29 @@
 {
   "version": "0.6",
-  "status": "PENDING",
-  "device": "User's iPhone 16 Pro Max / Apple A18 Pro",
-  "requestedTests": [
-    "Select the actual extracted web folder; run GPU queue + startup tests and copy the full report",
-    "Run Trace Prologue startup; copy the full report or retained report after an iOS termination"
-  ],
+  "status": "QUEUE/STARTUP PASS; REAL ARCHIVE TRACE STOPPED AT BC CAPABILITY",
+  "source": "User-pasted physical iPhone reports",
+  "device": "iPhone 16 Pro Max / Apple A18 Pro GPU",
+  "os": "27.0.1",
+  "assetIndexFiles": 5814,
+  "queueCheckpoint": {
+    "result": "PASS", "exit": 0,
+    "commands": 21, "uploads": 2, "readbacks": 5,
+    "engineMetalReady": true, "stoppedBeforeArchiveBytes": true,
+    "engineCommands": 0, "surfaceFrames": 0,
+    "beforeMiB": 12.6, "highestSampleMiB": 49.2, "heapCommittedMiB": 596.1, "cleanupMiB": 23.4
+  },
+  "realArchiveTrace": {
+    "result": "UNSUPPORTED CAPABILITY FAILURE", "exit": 1, "trap": 5,
+    "actualArchivesParsed": true,
+    "reportedMountsInclude": ["x64/audio/audio.rpf", "x64/audio/sfx/PROLOGUE.rpf", "x64/audio/sfx/RADIO_12_REGGAE.rpf"],
+    "lastReportedMount": "x64/audio/sfx/RADIO_13_JAZZ.rpf",
+    "failure": "wgpuDeviceCreateTexture: Bc1RgbaUnorm requires TEXTURE_COMPRESSION_BC, not enabled",
+    "lastOpcode": "CREATE_TEXTURE (3)", "commands": 710, "uploads": 7,
+    "readbacks": 0, "surfaceFrames": 0,
+    "beforeMiB": 13.8, "highestReportedSampleMiB": 57.3, "heapCommittedMiB": 596.1, "cleanupMiB": 38.9
+  },
+  "memoryCaveat": "User-reported samples; not exact peaks, memory limits or evidence of a leak",
+  "investigation": "Pinned wgpu-hal 29.0.3 sets format_bc only for macOS. Next build queries actual Metal BC support on iOS and tests compressed sampling.",
   "stage3Gate": "Successive correct real game frames on iPhone; not a synthetic replay or early startup",
   "realSceneVerified": false,
   "playable": false
