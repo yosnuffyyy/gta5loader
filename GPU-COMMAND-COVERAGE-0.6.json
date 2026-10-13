@@ -1,0 +1,273 @@
+{
+  "version": "0.6",
+  "roadmapStage": 3,
+  "stageStatus": "IN PROGRESS",
+  "meaning": "Source coverage inventory. A native handler is not proof of an actual game draw or dynamic coverage.",
+  "opcodes": [
+    {
+      "opcode": 0,
+      "name": "NOP",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Reference no-op"
+    },
+    {
+      "opcode": 1,
+      "name": "WRAP",
+      "status": "UNIT TESTED",
+      "note": "Ring wrap; concurrent unit test"
+    },
+    {
+      "opcode": 2,
+      "name": "INIT",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Reference no-op"
+    },
+    {
+      "opcode": 3,
+      "name": "CREATE_TEXTURE",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Replay only RGBA8 and A8 2D fixtures"
+    },
+    {
+      "opcode": 4,
+      "name": "DESTROY_OBJECT",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 5,
+      "name": "CLEAR_RT",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING"
+    },
+    {
+      "opcode": 6,
+      "name": "CLEAR_DS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Depth clear not replayed"
+    },
+    {
+      "opcode": 7,
+      "name": "PRESENT",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Metal surface handler; physical surface test pending"
+    },
+    {
+      "opcode": 8,
+      "name": "FENCE",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING"
+    },
+    {
+      "opcode": 9,
+      "name": "SCREENSHOT",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "opcode": 10,
+      "name": "LOG",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Bounds validated; routine text is discarded"
+    },
+    {
+      "opcode": 11,
+      "name": "CREATE_BUFFER",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING"
+    },
+    {
+      "opcode": 12,
+      "name": "UPLOAD_BUFFER",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING"
+    },
+    {
+      "opcode": 13,
+      "name": "UPLOAD_TEXTURE",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "A8 conversion scratch <=256 KiB"
+    },
+    {
+      "opcode": 14,
+      "name": "CREATE_SHADER",
+      "status": "METADATA ONLY"
+    },
+    {
+      "opcode": 15,
+      "name": "CREATE_LAYOUT",
+      "status": "METADATA ONLY"
+    },
+    {
+      "opcode": 16,
+      "name": "CREATE_STATE",
+      "status": "METADATA ONLY"
+    },
+    {
+      "opcode": 17,
+      "name": "CREATE_SRV",
+      "status": "METADATA ONLY"
+    },
+    {
+      "opcode": 18,
+      "name": "SET_SHADER",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 19,
+      "name": "SET_INPUT_LAYOUT",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 20,
+      "name": "SET_TOPOLOGY",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 21,
+      "name": "SET_VERTEX_BUFFERS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 22,
+      "name": "SET_INDEX_BUFFER",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 23,
+      "name": "SET_CBUFFERS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 24,
+      "name": "SET_SRVS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 25,
+      "name": "SET_SAMPLERS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 26,
+      "name": "SET_RENDER_TARGETS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 27,
+      "name": "SET_BLEND",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 28,
+      "name": "SET_DEPTH_STENCIL",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 29,
+      "name": "SET_RASTER",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 30,
+      "name": "SET_VIEWPORTS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 31,
+      "name": "SET_SCISSORS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING"
+    },
+    {
+      "opcode": 32,
+      "name": "DRAW",
+      "status": "UNSUPPORTED",
+      "note": "No shader reflection, general graphics pipeline or scene draw implementation"
+    },
+    {
+      "opcode": 33,
+      "name": "CLEAR_STATE",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING"
+    },
+    {
+      "opcode": 34,
+      "name": "COPY_REGION",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Buffer region replay; texture region handler not replayed; cross-format copies unsupported"
+    },
+    {
+      "opcode": 35,
+      "name": "COPY_RESOURCE",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Same-format texture and buffer replay"
+    },
+    {
+      "opcode": 36,
+      "name": "RESOLVE",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Color resolve handler not replayed"
+    },
+    {
+      "opcode": 37,
+      "name": "CREATE_UAV",
+      "status": "METADATA ONLY"
+    },
+    {
+      "opcode": 38,
+      "name": "SET_UAVS",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Counter resets rejected; binding IDs only"
+    },
+    {
+      "opcode": 39,
+      "name": "DISPATCH",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "opcode": 40,
+      "name": "CLEAR_UAV",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "opcode": 41,
+      "name": "GENERATE_MIPS",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "opcode": 42,
+      "name": "READBACK",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Buffer and single-sample RGBA8/BGRA8 only; <=64 MiB scratch"
+    },
+    {
+      "opcode": 43,
+      "name": "COPY_COUNTER",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "opcode": 44,
+      "name": "CREATE_QUERY",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Query slot metadata; fixture uses EVENT only"
+    },
+    {
+      "opcode": 45,
+      "name": "BEGIN_QUERY",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "Occlusion query begin rejected"
+    },
+    {
+      "opcode": 46,
+      "name": "END_QUERY",
+      "status": "SMALL MAC REPLAY SUBSET PASSED; IPHONE PENDING",
+      "note": "EVENT fixture; timestamp/disjoint handler; occlusion/statistics unsupported"
+    },
+    {
+      "opcode": 47,
+      "name": "UPLOAD_BUFFER_NO_OVERWRITE",
+      "status": "NATIVE HANDLER; DYNAMIC COVERAGE PENDING",
+      "note": "Shares buffer upload handler; opcode not replayed"
+    }
+  ],
+  "pending": [
+    "WGSL loading and original constant packing/reflection in general engine draw path",
+    "Graphics/compute pipelines and required texture/depth variants",
+    "Real archive continuation on iPhone",
+    "Successive correct game scene frames on iPhone",
+    "Audio output and gameplay controls"
+  ]
+}
