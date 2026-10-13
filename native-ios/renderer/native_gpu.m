@@ -285,7 +285,7 @@ static void release_hardware(NativeGpu *g){atomic_store(&g->closing,true);draw_c
 static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  wasm_rt_init_thread();wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(trap)fail(g,"GPU service shared-memory trap");
- else if(hardware(g)&&(!g->test_bc||bc_sample_test(g))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
+ else if(hardware(g)&&(!g->test_bc||(bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed))fail(g,g->ring.error);break;}
    if(!draw_flush(g))break;sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));

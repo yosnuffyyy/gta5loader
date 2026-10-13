@@ -16,7 +16,7 @@ static WGPUVertexFormat draw_vertex_format(uint32_t f,unsigned *bytes){switch(f)
  VF(31,Snorm8x4,4) VF(32,Sint8x4,4) VF(49,Unorm8x2,2) VF(50,Uint8x2,2)
  VF(51,Snorm8x2,2) VF(52,Sint8x2,2) VF(87,Unorm8x4BGRA,4) VF(24,Unorm10_10_10_2,4)
  #undef VF
- default:*bytes=0;return WGPUVertexFormat_Undefined;
+ default:*bytes=0;return WGPUVertexFormat_Force32;
 }}
 static bool draw_state_words(NativeGpu *g,uint32_t id,uint32_t kind,uint32_t *dst,unsigned count){if(!id)return true;Object *o=object(g,id);if(!check(g,o&&o->kind==16&&o->words==count+2&&o->meta[1]==kind,"Invalid draw state object/descriptor size"))return false;memcpy(dst,o->meta+2,count*4);return true;}
 static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgram *vp,DrawProgram *pp){
@@ -34,7 +34,7 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  DrawPipeline *p=s->pipelines+slot;if(p->pipeline)wgpuRenderPipelineRelease(p->pipeline);memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}
  for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;const uint32_t *sig=NULL;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]){sig=v;break;}}if(!sig)continue;
-  unsigned slot=e[3],bytes=0;if(!check(g,slot<16&&e[5]<=1&&(e[5]==0||e[6]==1)&&sig[2]<32,"Unsupported vertex slot/location/instance step rate"))return NULL;WGPUVertexFormat vf=draw_vertex_format(e[2],&bytes);if(!check(g,vf!=WGPUVertexFormat_Undefined&&e[4]<=UINT32_MAX-bytes,"Unsupported vertex format/offset"))return NULL;
+  unsigned slot=e[3],bytes=0;if(!check(g,slot<16&&e[5]<=1&&(e[5]==0||e[6]==1)&&sig[2]<32,"Unsupported vertex slot/location/instance step rate"))return NULL;WGPUVertexFormat vf=draw_vertex_format(e[2],&bytes);if(!check(g,bytes&&e[4]<=UINT32_MAX-bytes,"Unsupported vertex format/offset"))return NULL;
   WGPUVertexAttribute *a=&attributes[slot][buffers[slot].attributeCount++];*a=(WGPUVertexAttribute)WGPU_VERTEX_ATTRIBUTE_INIT;a->format=vf;a->offset=e[4];a->shaderLocation=sig[2];buffers[slot].stepMode=e[5]?WGPUVertexStepMode_Instance:WGPUVertexStepMode_Vertex;p->instance[slot]=e[5]!=0;p->stride[slot]=key.strides[slot];if(e[4]+bytes>p->last[slot])p->last[slot]=e[4]+bytes;if(slot+1>p->slots)p->slots=slot+1;
  }
  WGPUBindGroupLayout bgl[2]={vp->layout,pp?pp->layout:NULL};WGPUBindGroupLayout empty=NULL;if(!pp){WGPUBindGroupLayoutDescriptor e=WGPU_BIND_GROUP_LAYOUT_DESCRIPTOR_INIT;empty=wgpuDeviceCreateBindGroupLayout(g->device,&e);bgl[1]=empty;}

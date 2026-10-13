@@ -36,7 +36,7 @@ static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
   }
  }
  NSDictionary *index=(__bridge NSDictionary*)g->draw.index;id rec=index[@(hash)];
- if(!check(g,[rec isKindOfClass:NSDictionary.class]&&[rec[@"ok"] boolValue],"Local shader index missing shader or marks translation unavailable"))return nil;
+ if(!check(g,[rec isKindOfClass:NSDictionary.class]&&[rec[@"ok"] isKindOfClass:NSNumber.class]&&[rec[@"ok"] boolValue],"Local shader index missing shader or marks translation unavailable"))return nil;
  NSData *source=nil;NSArray *range=rec[@"p"];
  if([range isKindOfClass:NSArray.class]&&range.count==4){uint64_t pack,offset,wl,cl;
   if(!check(g,draw_uint(range[0],&pack)&&draw_uint(range[1],&offset)&&draw_uint(range[2],&wl)&&draw_uint(range[3],&cl)&&wl<=1024*1024&&cl<=256*1024&&wl&&offset<=INT64_MAX-wl-cl,"Invalid shader pack range"))return nil;
@@ -45,7 +45,7 @@ static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
   NSString *path=[NSString stringWithFormat:@"%s/%@",g->draw.directory,file];NSData *data=draw_read(g->host->game_root,path.UTF8String,offset,wl+cl,false);
   if(data){source=[data subdataWithRange:NSMakeRange(0,(NSUInteger)wl)];if(cl)*constants=draw_json([data subdataWithRange:NSMakeRange((NSUInteger)wl,(NSUInteger)cl)]);}
  }
- if(!source){char path[160];snprintf(path,sizeof(path),"%s/%s.wgsl",g->draw.directory,hash);source=draw_read(g->host->game_root,path,0,0,true);if(rec[@"consts"]){snprintf(path,sizeof(path),"%s/%s.consts.json",g->draw.directory,hash);*constants=draw_json(draw_read(g->host->game_root,path,0,0,true));}}
+ if(!source){char path[160];snprintf(path,sizeof(path),"%s/%s.wgsl",g->draw.directory,hash);source=draw_read(g->host->game_root,path,0,0,true);if([rec[@"consts"] isKindOfClass:NSNumber.class]&&[rec[@"consts"] boolValue]){snprintf(path,sizeof(path),"%s/%s.consts.json",g->draw.directory,hash);*constants=draw_json(draw_read(g->host->game_root,path,0,0,true));}}
  if(!check(g,source&&source.length<=1024*1024,"Local shader source unavailable or exceeds 1 MiB"))return nil;
  return [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
 }

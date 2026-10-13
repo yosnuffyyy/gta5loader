@@ -6,6 +6,10 @@ const pin=JSON.parse(fs.readFileSync(dir+'/backend.json'));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 fs.mkdirSync(out,{recursive:true});
 const evidence={...pin,downloaded:[],shaderFixtures:JSON.parse(fs.readFileSync(dir+'/shader-fixtures.json'))};
+evidence.startupDrawFixtures=JSON.parse(fs.readFileSync(dir+'/draw-fixtures.json'));
+const startupHeader=fs.readFileSync(dir+'/draw_fixture_sources.inc','utf8');
+for(const r of evidence.startupDrawFixtures.records){const m=startupHeader.match(new RegExp('draw_fixture_'+r.stage+'\\[\\]=(.*);'));if(!m)throw Error('Missing original startup shader '+r.stage);const b=Buffer.from(JSON.parse(m[1]));if(b.length!==r.bytes||hash(b)!==r.sourceSHA256)throw Error('Startup shader digest mismatch '+r.stage);}
+fs.copyFileSync(dir+'/draw-fixtures.json','native-build/evidence/draw-fixtures.json');
 const apiResponse=await fetch('https://raw.githubusercontent.com/gfx-rs/wgpu-native/'+pin.commit+'/src/unimplemented.rs');if(!apiResponse.ok)throw Error('Cannot audit backend API coverage');
 const unimplemented=await apiResponse.text();
 const calls=[...new Set([...['native_renderer.c','native_gpu.m',...fs.readdirSync(dir).filter(n=>n.endsWith('.inc'))].map(p=>fs.readFileSync(dir+'/'+p,'utf8')).join('\n').matchAll(/\b(wgpu[A-Z]\w*)\s*\(/g)].map(m=>m[1]))].sort();

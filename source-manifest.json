@@ -93,8 +93,8 @@
     },
     {
       "path": "native-ios/package-ios.sh",
-      "bytes": 2915,
-      "sha256": "1c209d67e1ec35913f1fb8f30f6d497de81de4afae38f2080a4fc8b74b98e6b5"
+      "bytes": 2983,
+      "sha256": "50477781819b5bfb9d1d2b158d928fe66141ebb63eedabcc26e2089d72eaa8e7"
     },
     {
       "path": "native-ios/patch-bulk.mjs",
@@ -167,9 +167,14 @@
       "sha256": "7d52604451f2dec6eb714d91a861c24906c384641b51199d2cadeb5e30619e1f"
     },
     {
+      "path": "native-ios/renderer/draw_loader_test.inc",
+      "bytes": 2953,
+      "sha256": "26ad5e92b671bc83c626cbfb344841bb49569dd5c01b5b0704553eb6a346664e"
+    },
+    {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 11428,
-      "sha256": "cf7516d38b01ebb44d487635104e7fde7369f2495252773fcb558903a9a8325e"
+      "bytes": 11401,
+      "sha256": "f2b96c9653751be3e44b8fa9a06ae8fc49de99f43b9d1e5546853d6bbabcda87"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -178,8 +183,8 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 13728,
-      "sha256": "23d47932ff8c3c921d65f840536b8848b966cdd02eb5f9fb2577e9d84a0ea03c"
+      "bytes": 13830,
+      "sha256": "90ffccfbb9f15e83aeb084a04ff42de07192d48426cbadc33b9a154ece7d6cff"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
@@ -198,8 +203,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 16350,
-      "sha256": "128a0b846319ceab7c7433964541a30b16cd4eab6cdbc58e60ed8dc4cc2a1a8f"
+      "bytes": 16553,
+      "sha256": "691c6c0130ffd066889cc790d47de4fea6dde39ba232f3680149e0f50ab16b7f"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -208,8 +213,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 49173,
-      "sha256": "22e32cec64fb4826e502a090e277e2022ff3295671b619b7e82361fdcaf33bbb"
+      "bytes": 49196,
+      "sha256": "9400405a13aabfcdeb6f1ec24c911a9ad5bbc9c110b4e37acdabf2adca62c559"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -238,8 +243,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
-      "bytes": 2780,
-      "sha256": "affe49cb4db7c51978f03c9a42263081b49ae2bd8753245d842f1ce987eae12e"
+      "bytes": 3367,
+      "sha256": "d1ca178674c7614565f8d6315594c23587ef3e5a13a851f8b73369e483e50f16"
     },
     {
       "path": "native-ios/renderer/ps.wgsl",
