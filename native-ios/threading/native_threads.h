@@ -21,4 +21,9 @@ void native_thread_error(struct w2c_env*,const char*);
 void native_set_assets(NativeAssets*);
 NativeAssets *native_current_assets(void);
 uint32_t native_language(struct w2c_env*,uint64_t,uint64_t,uint64_t);
+void native_boot_prepare(struct w2c_env*,void*,bool);
+void native_graphics_start(struct w2c_env*,uint64_t,uint64_t,uint64_t);
+void native_main_scene(struct w2c_env*);
+bool native_boot_finish(struct w2c_env*,char*,size_t);
+uint32_t native_has_display(void);
 #endif

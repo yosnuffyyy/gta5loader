@@ -23,6 +23,24 @@
         "All output pixels compared, GPU readback and resource cleanup"
       ],
       "exit": 0
+    },
+    {
+      "backend": "wgpu-native 29.0.1.1 / Metal",
+      "gpu": "Apple A18 Pro GPU",
+      "beforeMiB": 9.8,
+      "afterCleanupMiB": 58.2,
+      "originalGameShaders": 2,
+      "draws": 3,
+      "pixelsComparedPerDraw": 4096,
+      "channelToleranceBytes": 1,
+      "validationRuntimeErrors": 0,
+      "passed": [
+        "Original postfx vertex and fragment WGSL with reference packed constant-buffer layouts",
+        "Texture/sampler binding and vertex input",
+        "Three draws with changed RGB and alpha uniforms",
+        "All output pixels compared, GPU readback and resource cleanup"
+      ],
+      "exit": 0
     }
   ],
   "assetWorkerRun": {
@@ -32,8 +50,11 @@
     "indexFiles": 5814,
     "beforeMiB": 13.9,
     "initializedMiB": 48.8,
-    "workerBatchMiB": [63.9, 63.9],
-    "afterCleanupMiB": 30.0,
+    "workerBatchMiB": [
+      63.9,
+      63.9
+    ],
+    "afterCleanupMiB": 30,
     "committedHeapMiB": 564.1,
     "passed": [
       "Constructors and main-thread TLS",
@@ -46,12 +67,13 @@
     ],
     "exit": 0
   },
-  "remainingGate": "Second renderer run after closing/reopening the app is pending; do not mark roadmap stage 2 complete yet",
+  "remainingGate": "COMPLETE: two physical A18 Pro renderer runs PASS with zero errors, plus combined-app CPU checkpoint PASS",
   "limitations": [
     "Offscreen representative shader fixture, not an actual game scene or engine ring integration",
     "Memory values are samples, not peaks or a gameplay budget",
     "Post-cleanup footprint alone does not establish a leak or identify retained allocations",
     "Whether the app restarted between the submitted renderer and CPU reports was not stated",
     "Archive/scene loading, broader shader/compute/format coverage, audio output and gameplay remain pending"
-  ]
+  ],
+  "roadmapStage2": "COMPLETE; stage 3 active"
 }

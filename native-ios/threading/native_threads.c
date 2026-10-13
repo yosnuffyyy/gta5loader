@@ -1,5 +1,7 @@
 #include "native_threads.h"
 #include "platform/native_paths.h"
+#include "renderer/native_gpu.h"
+#include "renderer/native_launch.h"
 #include "gta-impl.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
@@ -20,7 +22,8 @@
 #define engine_create w2c_gta_f90879
 #define engine_join w2c_gta_f90884
 #define engine_errno w2c_gta_f90695
-#define LIMIT 4
+#define MAX_WORKERS 32
+#define PROBE_LIMIT 4
 typedef struct NativeWorker {
  struct NativeThreads *runtime;
  pthread_t thread;
@@ -31,16 +34,19 @@ typedef struct NativeWorker {
  bool cancelled;
  const char *failure;
  const char *phase;
+ char failure_text[256];
 } NativeWorker;
 struct NativeThreads {
  struct w2c_env *host;
  pthread_t owner;
  pthread_mutex_t mutex;
  pthread_cond_t changed;
- NativeWorker workers[LIMIT];
+ NativeWorker workers[MAX_WORKERS];
  _Atomic bool stopping;
  _Atomic unsigned ready,completed,proxies;
- bool probe_mode,main_mode,reached_main_boundary;
+ bool probe_mode,main_mode,reached_main_boundary,boot_mode,gpu_checkpoint,display;
+ NativeGpu *gpu;
+ char failure_text[256];
  uint64_t requested_routine,input,audio,audio_capacity,deadline;
  NativeAssets *assets;
  _Atomic unsigned game_started;
@@ -49,6 +55,8 @@ struct NativeThreads {
 };
 static _Thread_local NativeThreads *current;
 static _Thread_local NativeWorker *worker;
+static _Atomic bool scene_stop;
+void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
 static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
@@ -64,7 +72,7 @@ bool native_wait_cancelled(void){
  if(!current)return false;
  if(worker&&current->main_mode)atomic_store(&worker->wait_observed,true);
  if(now_ns()>current->deadline){atomic_store(&current->stopping,true);}
- if(native_assets_failure(current->assets)){atomic_store(&current->stopping,true);}
+ if(native_assets_failure(current->assets)||native_gpu_error(current->gpu)||(current->boot_mode&&atomic_load(&scene_stop))){atomic_store(&current->stopping,true);}
  return atomic_load(&current->stopping);
 }
 w2c_gta *native_current_engine(struct w2c_env *h){return worker?worker->engine:h->engine;}
@@ -87,7 +95,7 @@ void native_mailbox_notify(struct w2c_env *h,uint64_t target,uint64_t sender){
  (void)sender;check(h,current!=NULL,"mailbox without native thread runtime");
  NativeThreads *r=current;bool found=target==h->mailbox;
  checked(pthread_mutex_lock(&r->mutex));
- for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&r->workers[i].tcb==target)found=true;
+ for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&r->workers[i].tcb==target)found=true;
  checked(pthread_cond_broadcast(&r->changed));checked(pthread_mutex_unlock(&r->mutex));
  // Emscripten tolerates notifications racing with thread removal.
  (void)found;
@@ -95,7 +103,7 @@ void native_mailbox_notify(struct w2c_env *h,uint64_t target,uint64_t sender){
 void native_thread_cleanup(struct w2c_env *h,uint64_t tcb){
  check(h,current!=NULL,"cleanup without native thread runtime");NativeThreads *r=current;
  checked(pthread_mutex_lock(&r->mutex));
- for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&r->workers[i].tcb==tcb)r->workers[i].cleanup=true;
+ for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&r->workers[i].tcb==tcb)r->workers[i].cleanup=true;
  checked(pthread_mutex_unlock(&r->mutex));
  // Never free engine TLS/stack while its native thread can still execute.
 }
@@ -110,7 +118,7 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  host_put32(h,worker->errno_address,(uint32_t)(100+id));
  atomic_fetch_add(&r->ready,1);signal_change(r);
  uint64_t deadline=now_ns()+10000000000ull;
- while(atomic_load(&r->ready)<LIMIT){check(h,now_ns()<deadline&&!atomic_load(&r->stopping),"worker barrier timeout");struct timespec delay={0,1000000};nanosleep(&delay,NULL);}
+ while(atomic_load(&r->ready)<PROBE_LIMIT){check(h,now_ns()<deadline&&!atomic_load(&r->stopping),"worker barrier timeout");struct timespec delay={0,1000000};nanosleep(&delay,NULL);}
  // Genuine engine mailbox/proxy machinery. Each typed proxy argument uses
  // the original 16-byte tag/value encoding from game.js.
  host_put64(h,p,1);host_put64(h,p+8,p+128);host_put64(h,p+16,1);host_put64(h,p+24,p+136);
@@ -176,7 +184,7 @@ uint32_t native_thread_create(struct w2c_env *h,uint64_t tcb,uint64_t attr,uint6
  if(atomic_load(&r->stopping))return 6;
  if(!host_range(h,tcb,208)||(tcb%8)!=0)return 28;
  checked(pthread_mutex_lock(&r->mutex));NativeWorker *w=NULL;
- for(unsigned i=0;i<LIMIT;i++)if(!r->workers[i].occupied){w=&r->workers[i];break;}
+ for(unsigned i=0;i<MAX_WORKERS;i++)if(!r->workers[i].occupied){w=&r->workers[i];break;}
  if(!w){checked(pthread_mutex_unlock(&r->mutex));return 6;}
  *w=(NativeWorker){.runtime=r,.tcb=tcb,.routine=routine,.arg=arg,.occupied=true};
  pthread_attr_t a;int error=pthread_attr_init(&a);
@@ -187,7 +195,7 @@ static void wait_finished(NativeThreads *r){
  uint64_t deadline=now_ns()+15000000000ull;
  bool sampled=false;
  for(;;){
-  if(!sampled&&atomic_load(&r->ready)==LIMIT){
+  if(!sampled&&atomic_load(&r->ready)==PROBE_LIMIT){
    sampled=true;
 #ifdef __APPLE__
    task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;
@@ -195,7 +203,7 @@ static void wait_finished(NativeThreads *r){
 #endif
   }
   w2c_gta_0x5Femscripten_check_mailbox(r->host->engine);
-  bool all=true;for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&!atomic_load(&r->workers[i].finished))all=false;
+  bool all=true;for(unsigned i=0;i<PROBE_LIMIT;i++)if(r->workers[i].occupied&&!atomic_load(&r->workers[i].finished))all=false;
   if(all)return;check(r->host,now_ns()<deadline,"native workers timed out");
   struct timespec until;checked(clock_gettime(CLOCK_REALTIME,&until));until.tv_nsec+=10000000;if(until.tv_nsec>=1000000000){until.tv_sec++;until.tv_nsec-=1000000000;}
   checked(pthread_mutex_lock(&r->mutex));int rc=pthread_cond_timedwait(&r->changed,&r->mutex,&until);checked(pthread_mutex_unlock(&r->mutex));check(r->host,rc==0||rc==ETIMEDOUT,"native worker wait failed");
@@ -206,16 +214,16 @@ void native_threads_probe(struct w2c_env *h,uint64_t p){
  uint64_t main_errno=engine_errno(h->engine);host_put32(h,main_errno,777);r->probe_mode=true;
  for(unsigned round=0;round<2;round++){
   atomic_store(&r->ready,0);atomic_store(&r->completed,0);atomic_store(&r->proxies,0);
-  for(unsigned i=0;i<LIMIT;i++)check(h,engine_create(h->engine,p+8*i,0,0,1+i+round*LIMIT)==0,"engine pthread_create failed");
+  for(unsigned i=0;i<PROBE_LIMIT;i++)check(h,engine_create(h->engine,p+8*i,0,0,1+i+round*PROBE_LIMIT)==0,"engine pthread_create failed");
   wait_finished(r);
-  for(unsigned i=0;i<LIMIT;i++){NativeWorker *w=&r->workers[i];checked(pthread_join(w->thread,NULL));w->joined=true;check(h,!w->failure,w->failure?w->failure:"worker failed");}
-  for(unsigned i=0;i<LIMIT;i++){
+  for(unsigned i=0;i<PROBE_LIMIT;i++){NativeWorker *w=&r->workers[i];checked(pthread_join(w->thread,NULL));w->joined=true;check(h,!w->failure,w->failure?w->failure:"worker failed");}
+  for(unsigned i=0;i<PROBE_LIMIT;i++){
    NativeWorker *w=&r->workers[i];check(h,w->errno_address!=main_errno,"worker shares main errno");
    for(unsigned j=0;j<i;j++)check(h,w->errno_address!=r->workers[j].errno_address,"workers share TLS");
    check(h,engine_join(h->engine,host_u64(h,p+8*i))==0,"engine pthread_join failed");
   }
-  for(unsigned i=0;i<LIMIT;i++){NativeWorker *w=&r->workers[i];check(h,w->cleanup,"engine join omitted worker cleanup");w2c_gta_0x5Femscripten_thread_free_data(h->engine,w->tcb);w->occupied=false;}
-  check(h,atomic_load(&r->completed)==LIMIT&&atomic_load(&r->proxies)==6*LIMIT,"worker/proxy completion count differs");r->generations++;
+  for(unsigned i=0;i<PROBE_LIMIT;i++){NativeWorker *w=&r->workers[i];check(h,w->cleanup,"engine join omitted worker cleanup");w2c_gta_0x5Femscripten_thread_free_data(h->engine,w->tcb);w->occupied=false;}
+  check(h,atomic_load(&r->completed)==PROBE_LIMIT&&atomic_load(&r->proxies)==6*PROBE_LIMIT,"worker/proxy completion count differs");r->generations++;
  }
  uint32_t err;host_load(h,&err,main_errno,4);check(h,err==777,"main thread TLS overwritten");r->probe_mode=false;
  report(h,"PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.");
@@ -239,7 +247,7 @@ double native_proxy_receive(struct w2c_env *h,uint32_t index,uint64_t asmaddr,ui
  case 33:case 34:check(h,bytes==80,"positioned IO proxy arity");result=host_io(h,a[0],a[1],a[2],a[4],index==34,true,a[3]);break;
  case 35:case 37:check(h,bytes==64,"IO proxy arity");result=host_io(h,a[0],a[1],a[2],a[3],index==37,false,0);break;
  case 36:check(h,bytes==64,"seek proxy arity");result=host_seek(h,a[0],a[1],a[2],a[3]);break;
- default:host_unavailable(h,"main-thread proxy operation not ported");
+ default:snprintf(current->failure_text,sizeof(current->failure_text),"Main-thread proxy %u not ported (argument bytes %u)",index,bytes);host_unavailable(h,current->failure_text);
  }
  atomic_fetch_add(&current->proxies,1);
  double answer=(index==2||index==7||index==18)?(double)(int32_t)result:(double)result;
@@ -250,9 +258,10 @@ void native_threads_end(NativeThreads *r){
  if(!r)return;atomic_store(&r->stopping,true);signal_change(r);
  // The reader callback refers to r. Join it before freeing this context,
  // including unexpected engine failures with a queued request outstanding.
+ native_gpu_stop(r->gpu);
  native_assets_stop(r->assets);
- for(unsigned i=0;i<LIMIT;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
- checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;free(r);
+ for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
+ native_gpu_end(r->gpu);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;free(r);
 }
 uint32_t native_calendar(struct w2c_env *h,uint64_t seconds,uint64_t p,bool local){
  (void)local;if(!host_range(h,p,56))return 1;time_t value=(time_t)(int64_t)seconds;struct tm tm;
@@ -264,16 +273,19 @@ void native_timezone(struct w2c_env *h,uint64_t zone,uint64_t dst,uint64_t stdna
  host_put64(h,zone,0);host_put32(h,dst,0);host_store(h,stdname,"UTC",4);host_store(h,dstname,"UTC",4);
 }
 void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool audio){
+ if(!audio&&(int64_t)address<0)return; /* Optional browser controller hook; no native pad is injected yet. */
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");
  if(audio){current->audio=address;current->audio_capacity=capacity;}else current->input=address;
- // Record handoff only: no audio output or gameplay input claimed here.
+ if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,1);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,640);host_put32(h,address+436,360);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
+ // Only initial focus/size/start-mode is published; gameplay input/audio are pending.
 }
 
 void native_set_assets(NativeAssets *a){if(!current)abort();check(current->host,!worker,"asset service owner");current->assets=a;}
 NativeAssets *native_current_assets(void){return current?current->assets:NULL;}
 static void archive_boundary(void *context){NativeThreads *r=context;atomic_store(&r->archive_boundary,true);atomic_store(&r->stopping,true);}
 uint32_t native_language(struct w2c_env *h,uint64_t code,uint64_t signature,uint64_t args){
- char sig[8];check(h,code==7980558&&host_string(h,signature,sig,sizeof(sig))&&!strcmp(sig,"pi")&&args%8==0&&host_range(h,args,12),"unsupported embedded host operation");
+ char sig[16];check(h,host_string(h,signature,sig,sizeof(sig)),"invalid embedded host signature");
+ if(code!=7980558||strcmp(sig,"pi")||args%8||!host_range(h,args,12)){char *error=worker?worker->failure_text:current->failure_text;snprintf(error,256,"Unsupported embedded host operation %llu, signature %.15s",(unsigned long long)code,sig);host_unavailable(h,error);}
  uint64_t out=host_u64(h,args);uint32_t cap;host_load(h,&cap,args+8,4);
  const char language[]="en-US";if(cap){size_t n=cap-1;if(n>sizeof(language)-1)n=sizeof(language)-1;check(h,host_range(h,out,n+1),"language buffer invalid");host_store(h,out,language,n);char zero=0;host_store(h,out+n,&zero,1);}return 0;
 }
@@ -289,7 +301,7 @@ void native_main_checkpoint(struct w2c_env *h){
 bool native_main_reached(struct w2c_env *h){
  NativeThreads *r=current;if(!r)return false;
  atomic_store(&r->stopping,true);signal_change(r);
- unsigned waited=0;for(unsigned i=0;i<LIMIT;i++){
+ unsigned waited=0;for(unsigned i=0;i<MAX_WORKERS;i++){
   NativeWorker *w=&r->workers[i];if(!w->occupied)continue;
   if(!w->joined){checked(pthread_join(w->thread,NULL));w->joined=true;}
   if(w->failure&&!h->failure)h->failure=w->failure;
@@ -302,4 +314,23 @@ bool native_main_reached(struct w2c_env *h){
  }
  if(!h->failure)h->failure=now_ns()>r->deadline?"startup checkpoint timed out":"startup did not reach verified archive boundary";
  return false;
+}
+static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
+uint32_t native_has_display(void){return current&&current->display?1:0;}
+void native_boot_prepare(struct w2c_env *h,void *layer,bool checkpoint){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");}
+void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
+void native_main_scene(struct w2c_env *h){
+ NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
+ const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu","-width=640","-height=360","-forceResolution","-noautoload","-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
+ uint64_t p=w2c_gta_0x5Femscripten_stack_alloc(h->engine,4096),cursor=p+512;unsigned count=sizeof(args)/sizeof(args[0]);
+ for(unsigned i=0;i<count;i++){host_put64(h,p+8*i,cursor);size_t bytes=strlen(args[i])+1;host_store(h,cursor,args[i],bytes);cursor+=bytes;}
+ host_put64(h,p+8*count,0);w2c_gta_0x5F_main_argc_argv(h->engine,count,p);host_unavailable(h,"native main returned before a game scene");
+}
+bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
+ NativeThreads *r=current;if(!r){snprintf(summary,capacity,"Native GPU service was not started.");return false;}atomic_store(&r->stopping,true);signal_change(r);native_gpu_stop(r->gpu);native_assets_stop(r->assets);
+ for(unsigned i=0;i<MAX_WORKERS;i++){NativeWorker *w=&r->workers[i];if(w->occupied&&!w->joined){checked(pthread_join(w->thread,NULL));w->joined=true;}if(w->failure&&!h->failure)h->failure=w->failure;}
+ const char *gpu_failure=native_gpu_error(r->gpu),*io_failure=native_assets_failure(r->assets);if(gpu_failure&&!h->failure)h->failure=gpu_failure;if(io_failure&&!h->failure)h->failure=io_failure;native_gpu_summary(r->gpu,summary,capacity);
+ if(r->gpu_checkpoint){const char *path=native_assets_boundary(r->assets);bool reached=atomic_load(&r->archive_boundary)&&native_gpu_ready(r->gpu)&&r->input&&r->audio&&path&&!strcmp(path,"x64/audio/audio.rpf")&&!h->failure;return reached;}
+ if(!h->failure&&!atomic_load(&scene_stop))h->failure=now_ns()>r->deadline?"native scene startup timed out (180 seconds)":"native scene engine stopped without a verified scene";
+ return !h->failure&&atomic_load(&scene_stop);
 }

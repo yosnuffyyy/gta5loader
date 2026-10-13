@@ -1,0 +1,9 @@
+#ifndef NATIVE_LAUNCH_H
+#define NATIVE_LAUNCH_H
+#include <stddef.h>
+#include "../probe.h"
+int native_scene_probe(const char*,const char*,void*,native_progress,void*,char*,size_t);
+int native_gpu_replay_probe(char*,size_t);
+int native_graphics_checkpoint(const char*,const char*,native_progress,void*,char*,size_t);
+void native_scene_request_stop(void);
+#endif

@@ -4,8 +4,16 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <mach/mach.h>
+#import <QuartzCore/CAMetalLayer.h>
 #include "probe.h"
 #include "renderer/native_renderer.h"
+#include "renderer/native_launch.h"
+
+@interface NativeSurfaceView : UIView
+@end
+@implementation NativeSurfaceView
++ (Class)layerClass {return CAMetalLayer.class;}
+@end
 
 static NSString *Footprint(void) {
     task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;
@@ -22,6 +30,10 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) UIButton *filesButton;
 @property(nonatomic,strong) UIButton *runtimeButton;
 @property(nonatomic,strong) UIButton *rendererButton;
+@property(nonatomic,strong) UIButton *sceneButton;
+@property(nonatomic,strong) UIButton *stopButton;
+@property(nonatomic,strong) NativeSurfaceView *surfaceView;
+@property(nonatomic,assign) BOOL sceneRunning;
 @property(nonatomic,strong) NSURL *gameFolder;
 @property(nonatomic,strong) UILabel *controllerLabel;
 @property(nonatomic,assign) BOOL busy;
@@ -44,8 +56,11 @@ static void RuntimeProgress(void *context,const char *line) {
     UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
     [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
-    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.5";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
-    UILabel *description=[[UILabel alloc]init];description.text=@"Renderer feasibility: runs actual game postfx shaders through native WebGPU and Metal, then checks their output pixels. No game folder is needed for this test. The previous asset/worker checkpoint is also available. Gameplay integration is pending.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.6";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
+    UILabel *description=[[UILabel alloc]init];description.text=@"Native startup integration: select your extracted web folder, then start the experimental Prologue path. It reads real archives and sends graphics commands to Metal. Remaining operations may stop startup with a detailed report. Gameplay integration is still in progress.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
+    self.surfaceView=[[NativeSurfaceView alloc]init];self.surfaceView.backgroundColor=UIColor.blackColor;self.surfaceView.hidden=YES;[self.surfaceView.heightAnchor constraintEqualToAnchor:self.surfaceView.widthAnchor multiplier:9.0/16.0].active=YES;[stack addArrangedSubview:self.surfaceView];
+    self.sceneButton=[self button:@"Start native Prologue (experimental)" action:@selector(runScene)];[stack addArrangedSubview:self.sceneButton];
+    self.stopButton=[self button:@"Stop native startup" action:@selector(stopScene)];self.stopButton.enabled=NO;[stack addArrangedSubview:self.stopButton];
     self.rendererButton=[self button:@"Run renderer feasibility" action:@selector(runRenderer)];[stack addArrangedSubview:self.rendererButton];
     self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
     self.filesButton=[self button:@"Check local web folder" action:@selector(selectFolder)];[stack addArrangedSubview:self.filesButton];
@@ -63,7 +78,7 @@ static void RuntimeProgress(void *context,const char *line) {
     [self refreshControllers];
 }
 - (void)dealloc {[NSNotificationCenter.defaultCenter removeObserver:self];}
-- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;}
+- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;}
 - (void)append:(NSString *)text {
     self.report.text=[self.report.text stringByAppendingFormat:@"\n%@",text];
     [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];
@@ -93,6 +108,21 @@ static void RuntimeProgress(void *context,const char *line) {
             [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];[self setWorking:NO];
         });
     }});
+}
+- (void)stopScene {if(self.sceneRunning){native_scene_request_stop();self.stopButton.enabled=NO;[self append:@"Stopping native startup and joining workers…"];}}
+- (void)runScene {
+    if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
+    self.sceneRunning=YES;[self setWorking:YES];self.surfaceView.hidden=NO;[self.view layoutIfNeeded];
+    CAMetalLayer *layer=(CAMetalLayer *)self.surfaceView.layer;layer.pixelFormat=MTLPixelFormatBGRA8Unorm;layer.framebufferOnly=YES;layer.drawableSize=CGSizeMake(640,360);layer.contentsGravity=kCAGravityResizeAspect;
+    NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
+    if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){self.sceneRunning=NO;[self setWorking:NO];[self append:@"FAIL: native save folder unavailable"];return;}
+    self.report.text=[NSString stringWithFormat:@"Native integration 0.6 — stage 3 in progress\niOS %@ / %@\n%@\nGame folder: %@\nStarting real engine, archive reader and native graphics…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent];
+    [NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
+    NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
+        BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];
+        NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid startup report";NSString *memory=Footprint();
+        dispatch_async(dispatch_get_main_queue(),^{[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self setWorking:NO];});
+    }}];thread.stackSize=4*1024*1024;thread.name=@"Native scene startup";thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
 }
 - (void)runRenderer {
     if(self.busy)return;[self setWorking:YES];

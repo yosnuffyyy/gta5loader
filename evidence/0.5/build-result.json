@@ -142,11 +142,12 @@
     "zipBytes": 27857,
     "zipSHA256": "e04954156418984b63b2cb60c6303273278ef152ae7f951a85e54eab2263b6e2"
   },
-  "physicalIPhone": "First A18 Pro renderer run PASS, zero errors; combined-app CPU checkpoint PASS; second renderer run pending",
+  "physicalIPhone": "Two A18 Pro renderer runs PASS, zero errors; combined-app CPU checkpoint PASS",
   "roadmap": {
     "stage1": "COMPLETE",
-    "stage2": "IN PROGRESS; physical draw pending",
-    "stagesLeft": 6
+    "stage2": "COMPLETE",
+    "stage3": "IN PROGRESS",
+    "stagesLeft": 5
   },
   "gameplay": "PENDING; no scene or engine ring integration yet",
   "mainExpected": "de7664a8e6448096716c5a341250d32d4f594fd1"

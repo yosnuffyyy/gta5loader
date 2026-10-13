@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+clang -std=gnu11 -Wall -Wextra -Werror -O1 native-ios/renderer/test_gpu_ring.c native-ios/renderer/gpu_ring.c -o native-build/test-gpu-ring
+native-build/test-gpu-ring | tee native-build/evidence/native-gpu-ring-test.txt
 node native-ios/renderer/prepare-renderer.mjs
 for target in macos ios; do
   if [ "$target" = ios ]; then sdkname=iphoneos; else sdkname=macosx; fi

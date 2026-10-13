@@ -23,17 +23,17 @@ for(const target of ['macos','ios']){
  const sdk=execFileSync('xcrun',['--sdk',target==='ios'?'iphoneos':'macosx','--show-sdk-path'],{encoding:'utf8'}).trim();
  const arch=target==='ios'?['-target','arm64-apple-ios17.0']:[];
  const flags=[...common,'-isysroot',sdk,...arch,target==='ios'?'-O1':'-O0'];
- const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c','native-ios/asset_io/native_asset_index.m','native-ios/asset_io/native_assets.c',root+'/generated/probe.c'];
+ const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c','native-ios/asset_io/native_asset_index.m','native-ios/asset_io/native_assets.c','native-ios/renderer/gpu_ring.c','native-ios/renderer/native_gpu.m','native-ios/renderer/native_scene.c',root+'/generated/probe.c'];
  let next=0,finished=0,reused=0;
  // Bound concurrent compiler memory; each partition contains hundreds of functions.
  await Promise.all(Array.from({length:2},async()=>{
   for(;;){const index=next++;if(index>=sources.length)return;
    const source=sources[index],object=folder+'/'+path.basename(source)+'.o';
-   const args=[...flags,...(source.endsWith('.m')?['-fobjc-arc']:[]),...(target==='macos'?['-DNATIVE_PROBE_CLI']:[]),'-c',source,'-o',object];
+   const args=[...flags,...(source.endsWith('.m')?['-fobjc-arc']:[]),...(source.endsWith('native_gpu.m')?['-I'+root+'/wgpu/'+target+'/include']:[]),...(target==='macos'?['-DNATIVE_PROBE_CLI']:[]),'-c',source,'-o',object];
    const item={dependencyHash,args,sourceHash:hash(fs.readFileSync(source))};
 // Extra header applies only to host consumers. Engine cache keys stay unchanged.
 if(!generated.includes(source)&&!runtime.includes(source)){
- item.hostHeaders=['native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h'].map(p=>[p,hash(fs.readFileSync(p))]);
+ item.hostHeaders=['native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h'].map(p=>[p,hash(fs.readFileSync(p))]);
 }
 const key=hash(JSON.stringify(item));
    const cached=cache+'/'+key+'.o',record=cache+'/'+key+'.sha256';
@@ -45,7 +45,7 @@ const key=hash(JSON.stringify(item));
  console.log(target+': reused '+reused+' verified compiler objects');
  const objects=sources.map(s=>folder+'/'+path.basename(s)+'.o');
  if(target==='macos'){
-  await run('clang',['-isysroot',sdk,...objects,'-Wl,-dead_strip','-framework','Foundation','-o',folder+'/native-probe']);
+  await run('clang',['-isysroot',sdk,...objects,root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',folder+'/native-probe']);
   let result='';
   for(let pass=1;pass<=2;pass++){
    const output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});
