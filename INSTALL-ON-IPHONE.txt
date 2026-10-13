@@ -1,15 +1,16 @@
-NATIVE PROTOTYPE 0.4 — WINDOWS INSTALLATION
+NATIVE PROTOTYPE 0.5 — WINDOWS INSTALLATION
 
-Install GTA-Native-Probe-0.4-unsigned.ipa over 0.3 with the same Sideloadly
+Install GTA-Native-Probe-0.5-unsigned.ipa over 0.4 with the same Sideloadly
 setup, Apple account and bundle identifier. No Windows prerequisite changes
-or game-file reinstall are needed. The working 0.1, 0.2 and 0.3 IPAs remain
+or game-file reinstall are needed. The working 0.1, 0.2, 0.3 and 0.4 IPAs remain
 preserved for rollback.
 
-Select the extracted web folder using Check local web folder. It must include
-data/manifest.json and your existing game files. Tap Run asset + worker tests.
-Copy the complete report. Close/reopen the app, select the folder again and
-repeat. This checkpoint does not yet persist the folder bookmark.
-See NATIVE-0.4.txt and VERIFICATION-0.4.txt for tested scope and remaining work.
+Tap Run renderer feasibility; no game folder is needed. Copy its complete
+report, close/reopen the app and repeat. Then select the extracted web folder
+(including data/manifest.json) and run Asset + worker tests once to verify the
+combined executable after its link-layout change. The folder must be selected
+again after each app launch. No game-file reinstall is needed.
+See NATIVE-0.5.txt and VERIFICATION-0.5.txt for tested scope and remaining work.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
 It is separate from both the working PC game and the Safari installation.
@@ -21,7 +22,7 @@ It is separate from both the working PC game and the Safari installation.
    versions. Do not uninstall existing Apple software without checking those
    instructions and your sync/backup needs.
 2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.4-unsigned.ipa.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.5-unsigned.ipa.
 4. Use the normal Apple ID signing/install mode with your free Apple account.
    Enter the password and any two-factor code only in the local signing tool.
    No account credentials, certificates or private keys belong in GitHub.

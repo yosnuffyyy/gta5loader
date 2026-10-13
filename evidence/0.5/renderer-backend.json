@@ -1,0 +1,140 @@
+{
+  "name": "wgpu-native",
+  "version": "v29.0.1.1",
+  "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+  "license": "MIT OR Apache-2.0",
+  "selection": "Candidate for native Metal-backed WebGPU; physical game-shader fixture gate pending",
+  "ios": {
+    "asset": "wgpu-ios-aarch64-release.zip",
+    "bytes": 13593993,
+    "sha256": "e36c9913b9e5095a530fa9121c50b16a4e3dd020e1eebf601f2f47ce24d56941"
+  },
+  "macos": {
+    "asset": "wgpu-macos-aarch64-release.zip",
+    "bytes": 13733288,
+    "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e"
+  },
+  "downloaded": [
+    {
+      "target": "macos",
+      "asset": "wgpu-macos-aarch64-release.zip",
+      "bytes": 13733288,
+      "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e",
+      "staticLibraryBytes": 34356312
+    },
+    {
+      "target": "ios",
+      "asset": "wgpu-ios-aarch64-release.zip",
+      "bytes": 13593993,
+      "sha256": "e36c9913b9e5095a530fa9121c50b16a4e3dd020e1eebf601f2f47ce24d56941",
+      "staticLibraryBytes": 34127312
+    }
+  ],
+  "shaderFixtures": {
+    "referenceWorkerSHA256": "aa459280079845062ca88c232874ca3e2a4c8b2832343b54353e229fe394eea8",
+    "records": [
+      {
+        "stage": "vs",
+        "hash": "b8698e91b33c5e70",
+        "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/b8698e91b33c5e70.wgsl",
+        "sourceSHA256": "c5a59fe852281c2240093fc58f7aab3f4b6cf7c3abb7fc11a6c643b8cd7cb940",
+        "packedSHA256": "5cfb68fa4dce1c654bdd1d0af73efd745fa4c0d174e68154965bc54d77915515",
+        "pack": {
+          "members": [
+            {
+              "binding": 5,
+              "name": "cb5_5",
+              "type": "cb84_struct",
+              "size": 1344,
+              "offset": 0
+            }
+          ],
+          "size": 1344,
+          "group": 0
+        }
+      },
+      {
+        "stage": "ps",
+        "hash": "6d214da591105085",
+        "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/6d214da591105085.wgsl",
+        "sourceSHA256": "89ff3946a35bd03e9a9cd8b9069cbab95474ee2213d0f967ba7670ae08dfe00b",
+        "packedSHA256": "5c165ca6158cd7827bd1c86bc526a5299dc360065e14b2272fd95214a7d42a51",
+        "pack": {
+          "members": [
+            {
+              "binding": 2,
+              "name": "cb2_2",
+              "type": "cb18_struct",
+              "size": 288,
+              "offset": 0
+            },
+            {
+              "binding": 5,
+              "name": "cb5_5",
+              "type": "cb86_struct",
+              "size": 1376,
+              "offset": 288
+            }
+          ],
+          "size": 1664,
+          "group": 1
+        }
+      }
+    ]
+  },
+  "exportCoverage": {
+    "calls": [
+      "wgpuAdapterGetInfo",
+      "wgpuAdapterInfoFreeMembers",
+      "wgpuAdapterRelease",
+      "wgpuAdapterRequestDevice",
+      "wgpuBindGroupLayoutRelease",
+      "wgpuBindGroupRelease",
+      "wgpuBufferDestroy",
+      "wgpuBufferGetConstMappedRange",
+      "wgpuBufferMapAsync",
+      "wgpuBufferRelease",
+      "wgpuBufferUnmap",
+      "wgpuCommandBufferRelease",
+      "wgpuCommandEncoderBeginRenderPass",
+      "wgpuCommandEncoderCopyTextureToBuffer",
+      "wgpuCommandEncoderFinish",
+      "wgpuCommandEncoderRelease",
+      "wgpuCreateInstance",
+      "wgpuDeviceCreateBindGroup",
+      "wgpuDeviceCreateBuffer",
+      "wgpuDeviceCreateCommandEncoder",
+      "wgpuDeviceCreateRenderPipeline",
+      "wgpuDeviceCreateSampler",
+      "wgpuDeviceCreateShaderModule",
+      "wgpuDeviceCreateTexture",
+      "wgpuDeviceDestroy",
+      "wgpuDeviceGetQueue",
+      "wgpuDevicePoll",
+      "wgpuDeviceRelease",
+      "wgpuInstanceProcessEvents",
+      "wgpuInstanceRelease",
+      "wgpuInstanceRequestAdapter",
+      "wgpuQueueRelease",
+      "wgpuQueueSubmit",
+      "wgpuQueueWriteBuffer",
+      "wgpuQueueWriteTexture",
+      "wgpuRenderPassEncoderDraw",
+      "wgpuRenderPassEncoderEnd",
+      "wgpuRenderPassEncoderRelease",
+      "wgpuRenderPassEncoderSetBindGroup",
+      "wgpuRenderPassEncoderSetPipeline",
+      "wgpuRenderPassEncoderSetVertexBuffer",
+      "wgpuRenderPipelineGetBindGroupLayout",
+      "wgpuRenderPipelineRelease",
+      "wgpuSamplerRelease",
+      "wgpuShaderModuleRelease",
+      "wgpuTextureCreateView",
+      "wgpuTextureDestroy",
+      "wgpuTextureRelease",
+      "wgpuTextureViewRelease"
+    ],
+    "unimplementedSourceSHA256": "a02e4f1e559eef18c6433006968733a94a7c6d4b114f8df83379cff07893eac6",
+    "result": "No fixture call targets an unimplemented backend export; not a full behavioral coverage claim"
+  }
+}

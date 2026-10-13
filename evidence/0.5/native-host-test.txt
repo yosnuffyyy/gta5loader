@@ -1,0 +1,1 @@
+PASS: native host errors, rooted paths, symlink refusal, vectored I/O, file positions, stat, clocks and environment.

@@ -1,0 +1,46 @@
+ROADMAP STAGE 2 — BACKEND CANDIDATE, 2026-10-13
+
+First candidate: wgpu-native v29.0.1.1, official static ARM64 Apple builds.
+Upstream commit: 6aed50955d934ac36049ba8d002034841633ae02.
+Release: https://github.com/gfx-rs/wgpu-native/releases/tag/v29.0.1.1
+Metal feature declaration: https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/Cargo.toml
+The build validates archive SHA-256 and length. iOS ZIP: 13,593,993 bytes;
+static library: 34,127,312 bytes. Static library size is not linked app size,
+resident memory or GPU memory. Final IPA and device costs are measured apart.
+License: MIT OR Apache-2.0; upstream license texts are bundled in the app.
+
+Why this is the first route
+The current game worker consumes WebGPU commands and translated WGSL, with
+resource reflection, packed uniform buffers and pipeline variants. A native
+implementation preserves those shader/API semantics and supplies validation,
+Metal translation and resource tracking. The JS command decoder still needs
+to be ported; native WebGPU does not automatically replace wgpu_worker.js.
+
+Direct Metal alternative
+Could expose explicit resource/submission control and remove some abstraction,
+but would still require a reliable WGSL translator, binding/vertex reflection,
+state translation, validation equivalents and all existing ring semantics.
+No measured performance or memory win is assumed. Rewriting every shader by
+hand would delay the playable path. Do not build both full backends at once.
+
+Candidate gate
+The 0.5 fixture uses original postfx VS_Passthrough and PS_PassThrough WGSL,
+with the exact reference constant-buffer packing. Three draws change RGB and
+alpha uniforms; every output pixel is checked against independent values.
+Mac GPU success, iPhone compilation and physical iPhone success are separate
+results. This is representative offscreen rendering, not a full scene or
+the engine ring consumer. Selection remains provisional until device PASS.
+
+Known API integration pitfall
+Some functions declared by webgpu.h are deliberately unimplemented by the
+pinned backend. wgpuBufferGetMapState is one such export. Track owned buffer
+mapping state explicitly; the build scans all fixture calls against the
+upstream unimplemented.rs list. This does not guarantee every implemented
+function/feature is correct, so runtime validation and device gates remain.
+
+After device PASS
+Keep this backend for the initial integration. Implement the ring consumer,
+selected-folder shader reads and real resource/state/binding paths. Test
+required compute, queries, indirect draws and texture formats with actual
+workloads. Capture capability/limit reports before selecting quality or
+fallbacks; the small RGBA fixture does not establish broad format coverage.

@@ -1,0 +1,56 @@
+NATIVE 0.5 — RENDERER FEASIBILITY VERIFICATION, 2026-10-13
+Source: 643c4dd7a8dc6a97fc6e4fbe0c174760fe1e3eb3
+Branch: native-ios-prototype
+Run: https://github.com/yosnuffyyy/gta5loader/actions/runs/38460902708
+Job: 115515491270. All release job steps PASS.
+
+PASS: pinned official native backend downloads, lengths and SHA-256.
+PASS: exported API audit against pinned upstream unimplemented.rs. The
+fixture does not call the declared-but-unimplemented buffer-state getter.
+PASS: original game postfx VS_Passthrough and PS_PassThrough, with reference
+uniform packing (vertex 1,344 bytes; fragment 1,664 bytes), ran through
+wgpu-native/Metal on the Mac runner's Apple Paravirtual device.
+PASS: texture/sampler binding, vertex input, three offscreen 64x64 draws
+with changed RGB/alpha uniforms, all 4,096 pixels compared per draw with
+one-byte channel tolerance, GPU readback and cleanup. Validation errors: 0.
+This tests representative original shader behavior, not a rendered scene.
+PASS: fixture compiled for Mac and ARM64 iPhone without warning suppression.
+PASS: original wait/notify, shared memory/SIMD/bulk-memory, host and manifest
+tests. Four complete engine runtime checks: two per fresh Mac process.
+PASS: persistent saves, actual queued asset reads, concurrent workers,
+mailbox/proxy delivery and deliberate first-archive boundary unchanged.
+PASS: 138 verified cached compiler objects reused per engine target.
+PASS: Mac engine tests linked with unreachable-section stripping.
+PASS: combined iPhone binary linked with the default SDK linker and
+unreachable-section stripping. The alternate-linker fallback was NOT used.
+
+IPA: GTA-Native-Probe-0.5-unsigned.ipa
+Bytes: 102673372
+SHA-256: 8e3e47f95c73e71ae5fdcb87494979a81389d2519e2cd5ec2fca673c2da8000a
+PASS: downloaded ZIP digests match GitHub; IPA digest matches CI.
+PASS: extraction path/symlink checks, ARM64 iPhone executable, iOS 17 minimum,
+version 0.5.0/build 5, unchanged io.github.yosnuffyyy.gtanativeprobe bundle.
+PASS: unsigned/no provisioning profile, no WebKit/JavaScriptCore dependency
+or writable-executable segment; required metadata and license files present.
+PASS: all 45 native source/build file hashes match source-manifest.json.
+PASS: working 0.1, 0.2, 0.3 and 0.4 IPA hashes unchanged.
+
+Physical iPhone 0.5 gate: PENDING. Run renderer feasibility twice, closing
+and reopening between runs. No folder needed. Also select web and run the
+asset/worker checkpoint once, since the combined executable link changed.
+These measurements are still needed before claiming stage 2 completed.
+
+Development failures caught before delivery:
+- Run 38459154250: cleanup attempted a second unmap of an unmapped buffer.
+- Run 38459403843: native buffer-state getter aborts because unimplemented.
+  Replaced by owned mapping state; added upstream API export coverage audit.
+- Run 38459734836: cancelled when error-message publication was synchronized.
+- Run 38459903920: shader and CPU checks passed; large ARM64 link hit a
+  branch-island range error. Unreachable-section stripping resolved release
+  linking with the default SDK linker. No failing IPA was delivered.
+
+Remaining: physical renderer gate, GPU ring/resource/state/binding integration,
+more shader/compute/format coverage, archive/scene startup, audio, gameplay
+input and sustained Prologue/Sandbox. A small fixture does not establish a
+gameplay memory budget. Both protected PC folders and deployed main stayed
+untouched; main is de7664a8e6448096716c5a341250d32d4f594fd1.
