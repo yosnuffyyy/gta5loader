@@ -16,7 +16,7 @@ typedef struct {
  WGPUBindGroupLayout layouts[2]; WGPUBindGroup groups[2];
  WGPUBuffer vertices,vs_uniforms,ps_uniforms,readback;
  WGPUTexture input,target; WGPUTextureView input_view,target_view; WGPUSampler sampler;
- atomic_bool adapter_done,device_done,map_done,closing;
+ atomic_bool adapter_done,device_done,map_done,map_active,closing;
  atomic_uint errors; WGPUMapAsyncStatus map_status;
  pthread_mutex_t lock; char first_error[1200]; char adapter_name[192];
 } Probe;
@@ -37,7 +37,7 @@ static void lost_cb(WGPUDevice const *d,WGPUDeviceLostReason r,WGPUStringView m,
  (void)d;(void)r;(void)v;Probe *p=u;if(!atomic_load(&p->closing))error(p,"device lost",m);
 }
 static void map_cb(WGPUMapAsyncStatus s,WGPUStringView m,void *u,void *v){
- (void)v;Probe *p=u;p->map_status=s;if(s!=WGPUMapAsyncStatus_Success)error(p,"readback mapping",m);atomic_store_explicit(&p->map_done,true,memory_order_release);
+ (void)v;Probe *p=u;p->map_status=s;if(s!=WGPUMapAsyncStatus_Success){atomic_store(&p->map_active,false);error(p,"readback mapping",m);}atomic_store_explicit(&p->map_done,true,memory_order_release);
 }
 static bool wait_for(Probe *p,atomic_bool *done){
  double deadline=seconds()+15;
@@ -77,23 +77,24 @@ static bool draw_and_check(Probe *p,unsigned pass,uint8_t *output){
  WGPUCommandBufferDescriptor cd=WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;WGPUCommandBuffer c=wgpuCommandEncoderFinish(e,&cd);wgpuCommandEncoderRelease(e);if(!c)return false;
  wgpuQueueSubmit(p->queue,1,&c);wgpuCommandBufferRelease(c);
  atomic_store_explicit(&p->map_done,false,memory_order_release);
+ atomic_store(&p->map_active,true);
  WGPUBufferMapCallbackInfo cb=WGPU_BUFFER_MAP_CALLBACK_INFO_INIT;cb.mode=WGPUCallbackMode_AllowProcessEvents;cb.callback=map_cb;cb.userdata1=p;
  wgpuBufferMapAsync(p->readback,WGPUMapMode_Read,0,PIXELS,cb);
  if(!wait_for(p,&p->map_done))return false;
  if(p->map_status!=WGPUMapAsyncStatus_Success)return false;
  const uint8_t *bytes=wgpuBufferGetConstMappedRange(p->readback,0,PIXELS);
- if(!bytes){wgpuBufferUnmap(p->readback);return false;}
+ if(!bytes){wgpuBufferUnmap(p->readback);atomic_store(&p->map_active,false);return false;}
  bool matches=true;
  for(unsigned y=0;y<SIDE&&matches;y++)for(unsigned x=0;x<SIDE&&matches;x++){
   uint8_t src[4];source_pixel(x,y,src);
   for(unsigned k=0;k<4;k++){int expected=(int)(src[k]*(k==3?alpha[pass]:rgb[pass])+.5f);int actual=bytes[(y*SIDE+x)*4+k];if(abs(actual-expected)>1){char m[192];snprintf(m,sizeof(m),"draw %u pixel %u,%u channel %u: got %d expected %d",pass,x,y,k,actual,expected);error(p,"game shader output differs",(WGPUStringView){m,WGPU_STRLEN});matches=false;break;}}
  }
  if(output&&matches)memcpy(output,bytes,PIXELS);
- wgpuBufferUnmap(p->readback);return matches&&atomic_load(&p->errors)==0;
+ wgpuBufferUnmap(p->readback);atomic_store(&p->map_active,false);return matches&&atomic_load(&p->errors)==0;
 }
 static void cleanup(Probe *p){
  atomic_store(&p->closing,true);
- if(p->readback&&wgpuBufferGetMapState(p->readback)!=WGPUBufferMapState_Unmapped)wgpuBufferUnmap(p->readback);
+ if(p->readback&&atomic_exchange(&p->map_active,false))wgpuBufferUnmap(p->readback);
  for(unsigned i=0;i<2;i++){if(p->groups[i])wgpuBindGroupRelease(p->groups[i]);if(p->layouts[i])wgpuBindGroupLayoutRelease(p->layouts[i]);}
  if(p->pipeline)wgpuRenderPipelineRelease(p->pipeline);
  if(p->sampler)wgpuSamplerRelease(p->sampler);

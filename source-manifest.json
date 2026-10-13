@@ -148,8 +148,8 @@
     },
     {
       "path": "native-ios/renderer/native_renderer.c",
-      "bytes": 14955,
-      "sha256": "4a5684f327b1ff6fc4fedc628921ba25bde1fee2ec6eecc3ccdc463f53b4405c"
+      "bytes": 15083,
+      "sha256": "79c79c3e9a358594dbe0a45a18d5d7b1f7452fa61cef044a602aa5de3a4e08a9"
     },
     {
       "path": "native-ios/renderer/native_renderer.h",
@@ -158,8 +158,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
-      "bytes": 1993,
-      "sha256": "fd8ce625aa3cb824058cd7ae184e4c90b3669b3c23a85559f92a5beecdd583c7"
+      "bytes": 2686,
+      "sha256": "d6ad076bf98f02bbb8962a44456c6500ea210fe36f5e45bf342015262c50f6a8"
     },
     {
       "path": "native-ios/renderer/ps.wgsl",
