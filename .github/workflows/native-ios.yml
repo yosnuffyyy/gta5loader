@@ -26,8 +26,18 @@ jobs:
           path: native-build/rust-target
           key: native-rust-bc-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('native-ios/renderer/backend.json', 'native-ios/renderer/patch-metal-bc.mjs', 'native-ios/renderer/build-patched-backend.sh') }}
           restore-keys: native-rust-bc-v1-${{ runner.os }}-${{ runner.arch }}-
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: native-build/shader-audit/shaders
+          key: native-shaders-v1-${{ hashFiles('native-ios/renderer/shader-audit-pins.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: native-shaders-v1-${{ hashFiles('native-ios/renderer/shader-audit-pins.json') }}-
       - name: Test, compile and package native engine prototype
         run: bash native-ios/ci-convert.sh
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684
+        if: always() && !cancelled()
+        with:
+          path: native-build/shader-audit/shaders
+          key: native-shaders-v1-${{ hashFiles('native-ios/renderer/shader-audit-pins.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684
         if: always() && !cancelled()
         with:

@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 7707,
-      "sha256": "1dec112dd7a0fbbe2ba786ed6fd786bae0478ba0d30f3b14287df9fcd314b7d0"
+      "bytes": 8009,
+      "sha256": "2ca43a02aa8e15794d67688690a0061f4b9f175c42774c08ae0682035a5aac0f"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -168,8 +168,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 4805,
-      "sha256": "1e4670756787f67f882d359408bf6b906aa1d8661a73784bba3160fb5880fa3b"
+      "bytes": 4701,
+      "sha256": "c43f7f8f74fc2ac121df8ff1787dffbe9e162678e65ae5b82e6c2e0d4653c1c1"
     },
     {
       "path": "native-ios/renderer/clip_fixture.inc",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-shader-audit.mjs",
-      "bytes": 1854,
-      "sha256": "0960c82b9d08739fc12e54c9a956dcc40a67bd0c1676fe4fdb0948dd2bd32ed9"
+      "bytes": 2240,
+      "sha256": "e58e8e2efb39d8282e155072d262487f7119d346296847eafb3778c1b146db77"
     },
     {
       "path": "native-ios/renderer/presentation_metrics.inc",
@@ -478,8 +478,8 @@
     },
     {
       "path": "native-ios/renderer/reference_fetch.mjs",
-      "bytes": 2548,
-      "sha256": "d9ebe57acdf8280f7729008a35b25d376a90e9191cbdd351333072b568341bac"
+      "bytes": 2726,
+      "sha256": "eeb6643028b8f894f9cc620a0868f197c52c44249ea5ee3a2e83df3c9ff3c03d"
     },
     {
       "path": "native-ios/renderer/renderer_cli.m",
@@ -718,8 +718,8 @@
     },
     {
       "path": ".github/workflows/native-ios.yml",
-      "bytes": 2551,
-      "sha256": "05c5835e0d4d72305b35886485aad9820047a19f919a2bee1e4ab25bd5e6cc92"
+      "bytes": 3259,
+      "sha256": "9a078239346954e694287d891edd6a5705a14ad703ff54be766fbef7a48b8b6f"
     }
   ]
 }

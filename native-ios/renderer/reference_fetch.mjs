@@ -8,17 +8,17 @@ async function request(url,read,{fetchImpl=fetch,delay=ms=>new Promise(r=>setTim
  throw Error('Unreachable reference retry state');
 }
 export async function readReference(url,options={}){return request(url,async r=>Buffer.from(await r.arrayBuffer()),options);}
-export async function readReferenceRanges(url,{expectedBytes=0,maxBytes=16*1024*1024,chunkBytes=256*1024,...options}={}){
+export async function readReferenceRanges(url,{expectedBytes=0,maxBytes=16*1024*1024,chunkBytes=64*1024,...options}={}){
  if(!Number.isSafeInteger(maxBytes)||maxBytes<1||maxBytes>16*1024*1024||!Number.isSafeInteger(expectedBytes)||expectedBytes<0||expectedBytes>maxBytes||!Number.isSafeInteger(chunkBytes)||chunkBytes<1||chunkBytes>1024*1024)throw Error('Reference range bound invalid');
  const chunks=[];let offset=0,total=expectedBytes;
  do {const end=total?Math.min(offset+chunkBytes,total)-1:offset+chunkBytes-1;
-  const part=await request(url,async response=>{
+  let part;try {part=await request(url,async response=>{
    const match=/^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get('content-range')||'');
    if(response.status!==206||!match){if(response.body)await response.body.cancel();throw Error('Reference server did not honor required byte range');}
    const [start,last,size]=match.slice(1).map(Number);
    if(![start,last,size].every(Number.isSafeInteger)||start!==offset||size<1||size>maxBytes||(total&&size!==total)||last!==Math.min(end,size-1)||last<start){if(response.body)await response.body.cancel();throw Error('Reference Content-Range mismatch');}
    const bytes=Buffer.from(await response.arrayBuffer());if(bytes.length!==last-start+1)throw Error('Reference range body length mismatch');return {bytes,total:size};
-  },{...options,headers:{Range:'bytes='+offset+'-'+end}});
+  },{...options,headers:{Range:'bytes='+offset+'-'+end,'Accept-Encoding':'identity'}});}catch(error){throw new Error('Reference '+new URL(url).pathname.split('/').pop()+' bytes '+offset+'-'+end+': '+error.message,{cause:error});}
   total=part.total;chunks.push(part.bytes);offset+=part.bytes.length;
  }while(offset<total);
  return Buffer.concat(chunks,total);

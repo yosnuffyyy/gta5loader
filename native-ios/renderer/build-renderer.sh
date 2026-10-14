@@ -29,8 +29,6 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-inter-stage-layout | tee native-build/evidence/native-inter-stage-layout-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_query_state.c -o native-build/test-query-state
  native-build/test-query-state | tee native-build/evidence/native-query-state-test.txt
- node native-ios/renderer/prepare-shader-audit.mjs
-node native-ios/renderer/test-inter-stage-source.mjs
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do
