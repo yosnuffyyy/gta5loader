@@ -16,6 +16,7 @@ static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!
  if(s->slot==0&&!completed(g))return false;return !atomic_load(&g->failed);
 }
 #include "draw_instance.inc"
+#include "draw_depth_proxy.inc"
 static WGPUAddressMode draw_address(uint32_t n){return n==1?WGPUAddressMode_Repeat:n==2||n==5?WGPUAddressMode_MirrorRepeat:WGPUAddressMode_ClampToEdge;}
 static WGPUSampler draw_sampler(NativeGpu *g,uint32_t id,bool compare){Object *o=object(g,id);
  if(o){if(!check(g,o->kind==16&&o->meta[1]==3&&o->words==15,"Invalid sampler descriptor"))return NULL;const uint32_t *w=o->meta+2;
@@ -31,9 +32,11 @@ static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
  if(o){uint32_t mip=srv->meta[5],count=srv->meta[6],first=srv->meta[7],layers=o->td.size.depthOrArrayLayers;
   if(!check(g,mip<o->td.mipLevelCount,"SRV mip outside texture"))return NULL;d.baseMipLevel=mip;d.mipLevelCount=!count||count==UINT32_MAX?o->td.mipLevelCount-mip:count;
   if(b->dim!=WGPUTextureViewDimension_3D){d.baseArrayLayer=first;d.arrayLayerCount=b->dim==WGPUTextureViewDimension_Cube?6:b->dim==WGPUTextureViewDimension_2D||b->dim==WGPUTextureViewDimension_1D?1:srv->meta[8]?srv->meta[8]:layers-first;if(!check(g,first<layers&&d.arrayLayerCount<=layers-first,"SRV array layers outside texture"))return NULL;}
-  if(draw_depth(o->td.format)){if(!check(g,b->sample==WGPUTextureSampleType_Depth,"Depth-as-color shader proxy is not yet ported"))return NULL;d.aspect=WGPUTextureAspect_DepthOnly;}
+  int kind=proxy_kind(o,b);WGPUTexture texture=o->texture;
+  if(kind>=0){if(!check(g,o->proxies[kind]&&o->proxies[kind]->texture,"Depth proxy was not prepared before binding"))return NULL;texture=o->proxies[kind]->texture;if(kind==2)d.aspect=WGPUTextureAspect_DepthOnly;}
+  else if(draw_depth(o->td.format))d.aspect=WGPUTextureAspect_DepthOnly;
   else if(srv->meta[3])d.format=format(srv->meta[3],0);
-  b->view=wgpuTextureCreateView(o->texture,&d);
+  b->view=wgpuTextureCreateView(texture,&d);
  }else {if(!b->dummy){WGPUTextureDescriptor t=WGPU_TEXTURE_DESCRIPTOR_INIT;t.dimension=b->dim==WGPUTextureViewDimension_3D?WGPUTextureDimension_3D:b->dim==WGPUTextureViewDimension_1D?WGPUTextureDimension_1D:WGPUTextureDimension_2D;t.size=(WGPUExtent3D){1,1,b->dim==WGPUTextureViewDimension_Cube||b->dim==WGPUTextureViewDimension_CubeArray?6:1};t.sampleCount=b->ms?4:1;t.mipLevelCount=1;t.format=b->sample==WGPUTextureSampleType_Uint?WGPUTextureFormat_RGBA8Uint:b->sample==WGPUTextureSampleType_Sint?WGPUTextureFormat_RGBA8Sint:b->sample==WGPUTextureSampleType_Depth?WGPUTextureFormat_Depth32Float:WGPUTextureFormat_RGBA8Unorm;t.usage=WGPUTextureUsage_TextureBinding;b->dummy=wgpuDeviceCreateTexture(g->device,&t);}if(b->dummy)b->view=wgpuTextureCreateView(b->dummy,&d);}
  b->view_id=id;b->view_epoch=g->draw.resource_epoch;return b->view;
 }
@@ -63,6 +66,7 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
  Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;
  DrawPipeline *pipeline=draw_pipeline(g,vs,ps,vp,pp);if(!pipeline)return false;
  if(kind>=4&&(pipeline->manual_instances||vp->vertex_id||vp->instance_id)){uint32_t args[5]={0};if(!draw_indirect_decode(g,payload,kind,args))return false;count=args[0];instances=args[1];start=args[2];base=kind==4?(int32_t)args[3]:0;first_instance=args[kind==4?4:3];kind=kind==4?3:2;if(!count||!instances)return true;}
+ if(!draw_prepare_proxies(g,vp)||(pp&&!draw_prepare_proxies(g,pp)))return false;
  if(!draw_uniforms(g))return false;unsigned needed=((vp->pack_size+g->draw.alignment-1)&~(g->draw.alignment-1))+(pp?((pp->pack_size+g->draw.alignment-1)&~(g->draw.alignment-1)):0);if(g->draw.offset>DRAW_UBO_BYTES-needed&&!draw_flush(g))return false;
  unsigned offsets[2];WGPUBindGroup groups[2]={draw_group(g,vp,&offsets[0]),NULL};if(pp)groups[1]=draw_group(g,pp,&offsets[1]);if(!groups[0]||(pp&&!groups[1]))return false;if(!draw_pass(g))return false;WGPURenderPassEncoder pass=g->draw.pass;wgpuRenderPassEncoderSetPipeline(pass,pipeline->pipeline);wgpuRenderPassEncoderSetBindGroup(pass,0,groups[0],vp->pack_size?1:0,offsets);if(pp)wgpuRenderPassEncoderSetBindGroup(pass,1,groups[1],pp->pack_size?1:0,offsets+1);
  bool indexed=kind==4||(kind<4&&(kind&1));unsigned vertex_first=indexed||vp->vertex_id?0:start,instance_first=vp->instance_id?0:first_instance;
@@ -92,6 +96,6 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
    if(pipeline->manual_instances)g->draw.instance_batches++;done+=batch;
   }
  }
- g->draw.draws++;return !atomic_load(&g->failed);
+ draw_dirty_targets(g);g->draw.draws++;return !atomic_load(&g->failed);
 }}
-static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline)wgpuRenderPipelineRelease(s->pipelines[i].pipeline);for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}
+static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline)wgpuRenderPipelineRelease(s->pipelines[i].pipeline);for(unsigned i=0;i<3;i++){if(s->proxy_pipelines[i])wgpuRenderPipelineRelease(s->proxy_pipelines[i]);if(s->proxy_layouts[i])wgpuBindGroupLayoutRelease(s->proxy_layouts[i]);}for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}

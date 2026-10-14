@@ -2,6 +2,7 @@
 enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=128,
        DRAW_UBO_BYTES=512*1024, DRAW_UBO_SLOTS=3 };
 typedef struct DrawProgram DrawProgram;
+typedef struct DepthProxy DepthProxy;
 typedef struct {
  uint32_t binding,kind,slot; WGPUTextureViewDimension dim;
  WGPUTextureSampleType sample; bool ms;
@@ -17,6 +18,8 @@ struct DrawProgram {
  uint32_t group_ids[DRAW_UBO_SLOTS][DRAW_BINDINGS];
  uint64_t group_epochs[DRAW_UBO_SLOTS];
  bool vertex_id,instance_id; char hash[17];
+ uint32_t proxy_ids[DRAW_BINDINGS]; uint64_t proxy_epoch;
+ bool proxy_scan_valid,proxy_any;
  char *source; uint32_t flat_inputs;
 };
 typedef struct {
@@ -35,4 +38,7 @@ typedef struct {
  uint64_t resource_epoch; CFDictionaryRef index; char directory[80];
  unsigned alignment;
  bool fixture; WGPUSampler dummy_sampler[2]; WGPUBuffer zero_vertex;
+ WGPURenderPipeline proxy_pipelines[3]; WGPUBindGroupLayout proxy_layouts[3];
+ uint64_t proxy_bytes,proxy_peak,proxy_refreshes,proxy_reuses;
+ unsigned proxy_allocations,proxy_passes,proxy_cases;
 } DrawState;

@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.14 D3D constant/divided instance streams and rebased indirect draws without vertex expansion; stage 3 in progress",
+  "scope": "Native 0.15 GPU depth/stencil/float SRV proxies; lazy requested-range refresh, source-write invalidation and bounded lifetime; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
       "bytes": 24880,
-      "sha256": "c07ff0749243c782f72048a11dd3ef294aaa4886ddbd65a9febf167dd7749163"
+      "sha256": "dbb1e13b197b1d399dbc63708246babf6bceb4783fa587b34886dc642f14d00b"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "82700436aaa254bffddc146d19402458e16525d7c2155570723da886a863341e"
+      "sha256": "5f11aec642a5aef961fb298e855879ab56ecbace0942743de069f0c40c2170d5"
     },
     {
       "path": "native-ios/native_host.c",
@@ -158,13 +158,33 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 2124,
-      "sha256": "0eb8c7f170a7c779652ecc2aca82f5c23935049088e308c422d77f6d74e29364"
+      "bytes": 2385,
+      "sha256": "026ec4b86599e1acebf682a9146f7a877e6816faba83d1dd2cb9d18b6514abe4"
+    },
+    {
+      "path": "native-ios/renderer/depth_proxy_layout.h",
+      "bytes": 1213,
+      "sha256": "d7023ae7ebeefbf332b466c6300fb76676b56d8d55255eb24ee8e6f4301614d9"
+    },
+    {
+      "path": "native-ios/renderer/depth_proxy_replay.inc",
+      "bytes": 3810,
+      "sha256": "92946aa949ef2f7c343c429e790e2e63da203211a7bba7b0860d1a1b021df9e7"
+    },
+    {
+      "path": "native-ios/renderer/depth_proxy_verify.inc",
+      "bytes": 778,
+      "sha256": "50f1b9a123415120534d4ca233fdef49e7d61c4d04063205f5f4dbba7fdf9110"
     },
     {
       "path": "native-ios/renderer/draw-fixtures.json",
       "bytes": 456,
       "sha256": "5eeb6b9461ba6abf8b1ea78b0f0512188180cfe2cd36b3de87f4e553c518d73c"
+    },
+    {
+      "path": "native-ios/renderer/draw_depth_proxy.inc",
+      "bytes": 10225,
+      "sha256": "be45dcfde4c7bd7945ab1959ae0da13547a7f8a69ed6795c2d01fd21ef2c7e6f"
     },
     {
       "path": "native-ios/renderer/draw_fixture_sources.inc",
@@ -193,13 +213,13 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 14400,
-      "sha256": "e4fb9a3913ebd852b4cdf08ded29f19e825142772c5c724674c6bda03fa00528"
+      "bytes": 15152,
+      "sha256": "e19c806890146514159745c45cc05ec4b3b5dd014d143aef62ee21bf0966c64c"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 1782,
-      "sha256": "0c9071262423203c44822bdb5fb665309f9c8bfbf38f0d7f4d154b831f9d962f"
+      "bytes": 2107,
+      "sha256": "22ea417cf5b5372d815d172647b8f2e286fa058c21e81962d429e360287f6474"
     },
     {
       "path": "native-ios/renderer/gpu_ring.c",
@@ -223,8 +243,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 18217,
-      "sha256": "4dde64da1959349925de13f2815bf59782de75c389253690077a7a1ac595de70"
+      "bytes": 18684,
+      "sha256": "6b872271c31e31963f607b4805cee377c982052b60bc6042fc18cf3bdb78b078"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -233,8 +253,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 50824,
-      "sha256": "4eab48101120ddd332680f2c67cea252fac6e276853e3da7a98d3fd46b9a68ec"
+      "bytes": 51762,
+      "sha256": "c0c9a8418b5ed315d7309fb52bf1738902ca6b20993859052ab5f8cb97e1b944"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -258,8 +278,8 @@
     },
     {
       "path": "native-ios/renderer/native_scene.c",
-      "bytes": 3481,
-      "sha256": "28f60c019eb44837f5d13bd0eb1c628486f6f51d44b28c337f5316101c50a534"
+      "bytes": 3482,
+      "sha256": "609d72bc19c24ebf8658d01eee702a03017c0c8d42c7188f50d0f64b91452624"
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
@@ -310,6 +330,11 @@
       "path": "native-ios/renderer/snorm_fixture.inc",
       "bytes": 8565,
       "sha256": "e74233e3994f04625c90bf4ce8e176e69f1f6d6bdbdf3960fc7c69e5ef99b702"
+    },
+    {
+      "path": "native-ios/renderer/test_depth_proxy_layout.c",
+      "bytes": 1068,
+      "sha256": "33fab66ccb25ad377a833a4d6c1b823201c2a32c60816ce9843ac688a15a9db7"
     },
     {
       "path": "native-ios/renderer/test_gpu_ring.c",
