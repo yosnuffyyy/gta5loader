@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.12 signed render-target capability repair; stage 3 remains active.
+Updated 2026-10-13. Native 0.13 raw texture readback continuation; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -54,7 +54,13 @@ The storage trap and InitRng -199 were absent from the supplied report.
 render targets. A nine-case signed-pixel regression guards this specific fix.
 CI 38490428285 passed, including two complete signed-target regressions and
 all existing GPU/CPU checks. The unsigned ARM64 IPA audit passed. Physical
-iPhone continuation past the 0.11 texture failure remains pending.
+iPhone 0.12 continued without that trap: 13,118 commands,174 draws and26
+presentations. It stopped at unsupported texture READBACK during water init.
+0.13 handles raw color/compressed readbacks and original CPU row/slice layout,
+with one reusable staging buffer bounded to1MiB. Stage3 still needs a real
+Prologue scene. CI38492329773 passed all regressions,including two full
+readback replays and layout sanitizer checks. ARM64 IPA audit passed.
+Physical0.13 continuation past the readback blocker is pending.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

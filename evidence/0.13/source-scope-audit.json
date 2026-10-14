@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "changedFiles": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/compile-native.mjs",
+    "native-ios/renderer/build-renderer.sh",
+    "native-ios/renderer/native_gpu.m",
+    "native-ios/renderer/native_readback.inc",
+    "native-ios/renderer/readback_layout.h",
+    "native-ios/renderer/readback_replay.inc",
+    "native-ios/renderer/readback_verify.inc",
+    "native-ios/renderer/test_readback_layout.c",
+    "source-manifest.json"
+  ],
+  "unchangedEngineInstructionsAndGeneratedBindings": true,
+  "unchangedBackendSourceAndBuild": true,
+  "unchangedGraphicsResolution": true,
+  "sourceEntries": 77,
+  "manifestFiles": 76,
+  "priorIpaCount": 12
+}

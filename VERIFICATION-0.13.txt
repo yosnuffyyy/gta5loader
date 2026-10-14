@@ -1,0 +1,39 @@
+NATIVE 0.13 VERIFICATION
+Source 68231cbd152b51f9ff9ab4af5734c1b27357b318
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38492329773
+Job 115620220490: PASS
+
+PASS: raw READBACK: two runs of36 additional cases across30 formats.
+Exact bytes, padded rows/slices and guards; mip/array/3D boxes, BC mip
+edges,A8 packing,buffer boxes; texture/buffer transfers over1MiB.
+One reusable staging buffer capped to1MiB; completion flags after copies.
+PASS: ASan/UBSan readback layout rejection and overflow/capacity tests.
+PASS: native Metal SNORM capability: two runs of nine cases each.
+R8/RG8/RGBA8 render, blend, upload, copy, raw signed readback and
+GPU sampling; all 16 pixels per case verified including negative values.
+Native texture storage and quality settings retained; A8 outputs repacked.
+PASS: four native real-engine runs plus 32 workers validate statvfs against
+the actual OS save volume, root paths, guards and libc errno translation.
+64 synchronous worker mailbox proxies per run include statfs success/errors.
+PASS: native host ASan/UBSan: capacity ABI and OS values, repeated reads and
+descriptor cleanup, invalid pointer/size rejection, path/symlink isolation;
+read-only entropy device seed reads, denied writes and other device paths.
+PASS: four real-engine wc_InitRng health tests, 128-byte RNG outputs and
+wc_FreeRng cleanup with intact output/state guards. No RNG engine code patched.
+PASS: existing constructor/TLS/save/I/O/asset, mailbox/cancellation/log,
+SIMD/bulk/wait and GPU regression suites. Two GPU ring/DRAW replays each run
+299 commands, 11 draws, four pipelines. Separate shader fixture: zero errors.
+Two graphics-enabled main checkpoints stop deliberately before archive bytes.
+PASS: complete Mac/iPhone compile and unsigned ARM64 iOS17+ package audit.
+Cached compiler objects: macos: 131; ios: 131.
+77 source entries match Git tree. Artifact ZIP and IPA checksums verified.
+Twelve earlier IPAs unchanged. PC folders/main untouched.
+
+IPA GTA-Native-Probe-0.13-unsigned.ipa
+Bytes 102034948
+SHA256 503cd5bbaba9c60270e389b47a8cb1033cb63022e83a0c2c9464beedc6724bca
+
+Physical iPhone continuation past 0.12 READBACK failure: PENDING.
+The 0.12 phone advanced through startup images but did not reach gameplay. No Prologue scene, playable test,
+Bink or Social Club repair claimed.
+(stage 3 in progress) (5 stages left)

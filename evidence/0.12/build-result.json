@@ -181,7 +181,7 @@
       }
     ]
   },
-  "iphone012": "PENDING",
+  "iphone012": "USER-REPORTED: legal/startup images continued; 13118 commands,174 draws,26 presentations. Trap unsupported texture READBACK at Water Init. Exit1,cleanup84.6MiB. No game scene.",
   "stage3": "IN PROGRESS",
   "stagesLeft": 5,
   "realSceneVerified": false,

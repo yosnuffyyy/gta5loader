@@ -28,7 +28,9 @@ IPA GTA-Native-Probe-0.12-unsigned.ipa
 Bytes 102021636
 SHA256 783300c861e79ced3a67c9e53660fe44b1659c8c30c600fe2fea783681381dfe
 
-Physical iPhone continuation past 0.11 SNORM target failure: PENDING.
+Physical iPhone 0.12: no SNORM validation trap; 13,118 commands, 1,647 uploads,
+26 surface frames and174 draws. Water initialization reached texture READBACK
+with an unimplemented format; Exit1; cleanup84.6MiB. Gameplay not reached.
 The 0.11 phone remained at legal notice. No Prologue scene, playable test,
 Bink or Social Club repair claimed.
 (stage 3 in progress) (5 stages left)

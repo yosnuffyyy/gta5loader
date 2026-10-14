@@ -1,0 +1,44 @@
+NATIVE 0.13 — RAW GPU READBACKS
+
+0.12 iPhone startup advanced to water initialization: 26 presentations,174
+draws,13,118 commands. It stopped at the old readback handler's two-format
+restriction. No Prologue scene or gameplay was observed. The report did not
+include the requested texture format, so no specific format is assumed.
+
+Raw texture readback now covers all mapped color and BC formats: 1/2/4/8/16
+bytes per texel, or8/16bytes per 4x4 compressed block. Float/half/signed/packed
+and compressed bits are copied without color conversion. Expanded A8 storage
+is repacked to the engine's original alpha bytes.
+Mip and array subresources, boxed regions,3D depth slices, destination row and
+slice pitches, block edge padding, output capacity and heap addresses are
+validated before copying. Invalid/multisampled/unsupported depth requests
+fail explicitly; the latter include DXGI/native format and subresource details.
+The first real texture readback also records format,dimensions and strides.
+
+The GPU service retains one reusable MAP_READ staging buffer while running,
+growing only as needed to at most 1 MiB. Larger transfers use bounded chunks;
+there is no whole-texture CPU allocation. Every chunk is unmapped before reuse.
+Completion is published to the engine only after all destination bytes are
+written. The staging buffer is destroyed at shutdown.
+This keeps the current synchronous completion contract; async overlap is
+reserved for measured performance work after startup works.
+
+Verified in CI38492329773: sanitizer-tested layout validation plus 36 additional shared-
+ring READBACK cases. Thirty formats compare exact upload bytes,including half-float
+NaN encodings, with padding/guard checks. Additional tests cover boxed mip/
+array and3D requests,compressed mip edges,alpha packing,buffer boxes,and
+texture/buffer transfers larger than 1 MiB. Check buffer reuse and final flags.
+Existing signed targets,BC sampling,original shader draws,host/thread/file
+and engine regressions remain required. Final results: VERIFICATION-0.13.txt.
+Compiler cache keys include the new layout header. Engine instructions,
+resolution,backend build and original asset files are unchanged.
+
+Next: install 0.13 over 0.12 with the same setup,select the existing extracted
+web folder,and Trace Prologue startup. Capture the full final report. Stage 3
+requires successive correct game-scene frames; controls/audio follow in4.
+PC packages and deployed main are untouched. Earlier IPAs are preserved.
+(stage 3 in progress) (5 stages left)
+
+References: independent work/minimal-engine/wgpu_worker.js READBACK protocol;
+https://www.w3.org/TR/webgpu/#dictdef-gputexelcopybufferlayout
+https://docs.rs/wgpu/latest/wgpu/struct.TexelCopyBufferLayout.html

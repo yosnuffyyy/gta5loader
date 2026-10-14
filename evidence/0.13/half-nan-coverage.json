@@ -1,0 +1,32 @@
+[
+  {
+    "test": 1,
+    "kind": "half NaN",
+    "offset": 50,
+    "bits": "7f5a"
+  },
+  {
+    "test": 1,
+    "kind": "half NaN",
+    "offset": 88,
+    "bits": "fdd8"
+  },
+  {
+    "test": 8,
+    "kind": "half NaN",
+    "offset": 6,
+    "bits": "7e59"
+  },
+  {
+    "test": 8,
+    "kind": "half NaN",
+    "offset": 44,
+    "bits": "fcd7"
+  },
+  {
+    "test": 12,
+    "kind": "half NaN",
+    "offset": 8,
+    "bits": "fcd7"
+  }
+]

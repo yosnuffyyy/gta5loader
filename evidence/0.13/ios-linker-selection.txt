@@ -1,0 +1,1 @@
+Default SDK linker with unreachable-section stripping.
