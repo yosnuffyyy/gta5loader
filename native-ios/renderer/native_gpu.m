@@ -135,7 +135,7 @@ static WGPUTextureFormat format(uint32_t dxgi,uint32_t bind){switch(dxgi){
 }}
 static bool hardware(NativeGpu *g){
  WGPUInstanceExtras extra={0};extra.chain.sType=(WGPUSType)WGPUSType_InstanceExtras;extra.backends=WGPUInstanceBackend_Metal;
- WGPUInstanceDescriptor id=WGPU_INSTANCE_DESCRIPTOR_INIT;id.nextInChain=&extra.chain;g->instance=wgpuCreateInstance(&id);if(!check(g,g->instance!=NULL,"Native GPU instance creation"))return false;
+ WGPUInstanceDescriptor instance_descriptor=WGPU_INSTANCE_DESCRIPTOR_INIT;instance_descriptor.nextInChain=&extra.chain;g->instance=wgpuCreateInstance(&instance_descriptor);if(!check(g,g->instance!=NULL,"Native GPU instance creation"))return false;
  if(g->layer){WGPUSurfaceSourceMetalLayer metal=WGPU_SURFACE_SOURCE_METAL_LAYER_INIT;metal.layer=g->layer;WGPUSurfaceDescriptor sd=WGPU_SURFACE_DESCRIPTOR_INIT;sd.nextInChain=&metal.chain;g->surface=wgpuInstanceCreateSurface(g->instance,&sd);if(!check(g,g->surface!=NULL,"Native Metal surface creation"))return false;}
  WGPURequestAdapterOptions ao=WGPU_REQUEST_ADAPTER_OPTIONS_INIT;ao.backendType=WGPUBackendType_Metal;ao.compatibleSurface=g->surface;
  WGPURequestAdapterCallbackInfo ac=WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;ac.mode=WGPUCallbackMode_AllowProcessEvents;ac.callback=got_adapter;ac.userdata1=g;atomic_store(&g->callback_done,false);wgpuInstanceRequestAdapter(g->instance,&ao,ac);if(!wait_callback(g)||!g->adapter)return false;
