@@ -18,9 +18,22 @@ static bool query_fixture(struct w2c_env *h,char *report,size_t capacity){
   if(ok)g->query_cases++;
  }
  if(ok&&(g->query_cases!=Q_TOTAL||g->query_pending_pages||g->query_gpu_bytes||g->query_active_count||g->query_pressure_waits||!g->query_stale||!g->query_pages_allocated||g->query_pages_allocated>QUERY_PAGES)){fail(g,"Query cleanup, stale suppression or bounded asynchronous pool verification failed");ok=false;}
- char summary[2200];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native counting occlusion/predicate queries: %u cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA sample masks, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.\n%s\n%s",ok?"PASS":"FAIL",g->query_cases,summary,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+ char summary[2200];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native counting occlusion/predicate queries: %u cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.\n%s\n%s",ok?"PASS":"FAIL",g->query_cases,summary,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+}
+static bool query_mask_boundary_fixture(struct w2c_env *h,uint32_t mask){
+ uint64_t base=atomic_load(&h->memory.size)-262144;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;
+ host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+15000000000ull;while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}bool ready=native_gpu_ready(g);uint32_t tail=64,cmd[128];
+ #define EMIT(op,count) do{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(count));host_store(h,base+tail+8,cmd,(count)*4);tail+=8+(count)*4;}while(0)
+ #include "query_setup.inc"
+ memset(cmd,0,sizeof(cmd));cmd[0]=13001;cmd[1]=2;cmd[2]=cmd[3]=16;cmd[4]=cmd[5]=cmd[6]=1;cmd[7]=28;cmd[8]=0x28;cmd[9]=4;EMIT(3,10);
+ memset(cmd,0,sizeof(cmd));cmd[0]=13001;EMIT(26,37);memset(cmd,0,sizeof(cmd));for(unsigned i=1;i<5;i++)cmd[i]=0x3f800000;cmd[5]=mask;EMIT(27,6);
+ memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
+ #undef EMIT
+ if(ready){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
+ native_gpu_stop(g);bool ok=ready&&native_gpu_error(g)&&strstr(native_gpu_error(g),"Metal partial/zero pipeline sample mask is not implemented by pinned backend")&&g->draw.draws==0&&g->buffer_bytes==0&&g->texture_bytes==0;native_gpu_end(g);return ok;
 }
 static bool query_invalid_fixture(struct w2c_env *h,unsigned which){
+ if(which>=6)return query_mask_boundary_fixture(h,which==6?5:0);
  uint64_t base=atomic_load(&h->memory.size)-262144,address=base+131072;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+15000000000ull;while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}uint32_t commands[]={44,4,11165,1,(uint32_t)address,(uint32_t)(address>>32),45,1,11165,45,1,11165};unsigned words=12;const char *expected="Occlusion Begin ordering";
  if(which==1){commands[6]=46;commands[7]=2;commands[9]=1;words=10;expected="Occlusion End without matching Begin";}

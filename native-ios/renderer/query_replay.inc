@@ -36,10 +36,11 @@ QB(9);QD();memset(cmd,0,sizeof(cmd));cmd[0]=112;cmd[1]=63*4;cmd[2]=4;float one=1
 QB(10);QD();QB(11);QD();QE(11);QD();QE(10);expected[10]=768;expected[11]=256;
 /* Reuse before submission cancels the old generation's visibility result. */
 QB(12);QD();cmd[0]=11177;cmd[1]=999;EMIT(46,2);cmd[0]=105;EMIT(29,1);memset(cmd,0,sizeof(cmd));cmd[0]=1;EMIT(31,5);QB(12);QD();QE(12);cmd[0]=104;EMIT(29,1);
-/* MSAA counts samples, including a two-sample mask and total rejection. */
+/* MSAA counts samples, including depth pass/rejection. Partial fixed sample
+   masks are an explicit unsupported backend boundary tested separately. */
 QT(120,119);QDEPTH(119,.5f);QB(13);QD();QE(13);expected[13]=1024;
-QMASK(5);QB(14);QD();QE(14);expected[14]=512;QMASK(0);QB(15);QD();QE(15);
-QMASK(UINT32_MAX);QT(116,122);QSTATE(121);memset(cmd,0,sizeof(cmd));cmd[0]=122;cmd[3]=3;float half=.5f;memcpy(cmd+4,&half,4);cmd[5]=7;EMIT(6,6);QB(16);QD();QE(16);QSTATE(0);QT(116,0);
+QMASK(UINT32_MAX);QSTATE(107);QZ(.25f);QB(14);QD();QE(14);expected[14]=1024;QZ(.75f);QB(15);QD();QE(15);
+QZ(0);QSTATE(0);QT(116,122);QSTATE(121);memset(cmd,0,sizeof(cmd));cmd[0]=122;cmd[3]=3;float half=.5f;memcpy(cmd+4,&half,4);cmd[5]=7;EMIT(6,6);QB(16);QD();QE(16);QSTATE(0);QT(116,0);
 /* Depth-only draws with no fragment shader or color writes. */
 cmd[0]=1;cmd[1]=0;EMIT(18,2);QT(0,117);QDEPTH(117,.5f);QSTATE(107);QB(17);QD();QE(17);expected[17]=256;cmd[0]=1;cmd[1]=102;EMIT(18,2);QSTATE(0);QT(116,0);
 /* Destroy a pending generation, reuse the same ID with a different address. */

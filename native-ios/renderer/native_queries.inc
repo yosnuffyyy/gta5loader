@@ -14,7 +14,7 @@ static void query_mapped(WGPUMapAsyncStatus status,WGPUStringView message,void *
   if(!data&&!cancel)fail(g,"Occlusion mapped results unavailable");
   if(data&&!cancel&&!atomic_load(&g->failed))for(unsigned i=0;i<page->used;i++){uint64_t samples;memcpy(&samples,data+i*8,8);QuerySegment *s=page->segments+i;
    for(unsigned j=0;j<s->count;j++){Object *q=object(g,s->owners[j].id);if(!q||q->kind!=44||q->query.token!=s->owners[j].token){g->query_stale++;continue;}
-    if(query_accept_state(&q->query,s->owners[j].token,samples)<0){fail(g,"Occlusion count overflow or duplicate segment completion");break;}query_publish(g,q);
+    if(query_accept_state(&q->query,s->owners[j].token,samples)<0){fail(g,"Occlusion duplicate segment completion");break;}query_publish(g,q);
    }
   }
   if(page->map)wgpuBufferUnmap(page->map);

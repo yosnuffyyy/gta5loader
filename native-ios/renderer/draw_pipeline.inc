@@ -30,6 +30,11 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!check(g,key.raster[0]==3,"Wireframe rasterization not yet ported"))return NULL;
  key.samples=1;unsigned colors=0;for(unsigned i=0;i<8;i++){Object *o=object(g,g->targets[4*i]);if(o){if(!check(g,o->texture!=NULL,"Color attachment is not a texture"))return NULL;key.formats[i]=g->targets[4*i+3]?format(g->targets[4*i+3],o->bind):o->td.format;key.samples=o->td.sampleCount;colors=i+1;}}
  Object *ds=object(g,g->targets[32]);if(ds){if(!check(g,ds->texture&&draw_depth(ds->td.format),"Depth attachment format invalid"))return NULL;key.formats[8]=ds->td.format;key.samples=ds->td.sampleCount;key.ro=g->targets[36];}
+ /* Pinned Metal HAL silently ignores multisample.mask (device.rs TODO).
+    Reject only masks that actually disable a covered sample. Do not fabricate
+    query counts or render unmasked pixels until an exact implementation exists. */
+ uint32_t sample_bits=key.samples>=32?UINT32_MAX:(1u<<key.samples)-1;
+ if(!check(g,(key.mask&sample_bits)==sample_bits,"Metal partial/zero pipeline sample mask is not implemented by pinned backend"))return NULL;
  DrawState *s=&g->draw;unsigned slot=0;for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *p=s->pipelines+i;if(p->pipeline&&!memcmp(&p->key,&key,sizeof(key))){p->age=++s->age;s->hits++;return p;}if(!p->pipeline){slot=i;break;}if(p->age<s->pipelines[slot].age)slot=i;}
  DrawPipeline *p=s->pipelines+slot;if(p->pipeline)wgpuRenderPipelineRelease(p->pipeline);memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}

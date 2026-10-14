@@ -228,8 +228,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 11827,
-      "sha256": "d053fd6611c500889c08fead3bf93e7db41a1521f41bcf5ddb32e2643a77fb2e"
+      "bytes": 12275,
+      "sha256": "6a711d7a8134e377077025a97241723f40254b19c7d28c0b1b5c3a6b90298828"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -313,8 +313,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 69319,
-      "sha256": "615e80943a7c11fb610ca9053f4f42b2e0566b5e01ec2a8186f2c6cf4c4d9e0d"
+      "bytes": 69332,
+      "sha256": "988a1bddfa6217a3a329fb8dacccfbdedaae11fa995f6ac7b4be7e987d4eea9a"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -328,8 +328,8 @@
     },
     {
       "path": "native-ios/renderer/native_queries.inc",
-      "bytes": 8864,
-      "sha256": "92ab612cbadce0b60b36a4f0456d235d6a9d4670e7bbc068966f7e9d1e73bcbf"
+      "bytes": 8846,
+      "sha256": "48f44401b0bd16d843e1dad33433e95ba68b8a312acc7d278e45214df463e137"
     },
     {
       "path": "native-ios/renderer/native_readback.inc",
@@ -398,13 +398,13 @@
     },
     {
       "path": "native-ios/renderer/query_fixture.inc",
-      "bytes": 4643,
-      "sha256": "3f001d4064e5ec9eb25648b033f244b521dcbc39e5d641f2721219a00abe0347"
+      "bytes": 6171,
+      "sha256": "389e295cb8a91be7ca6766f94876af566266caa267b2e2019ef2211a42c7abcd"
     },
     {
       "path": "native-ios/renderer/query_replay.inc",
-      "bytes": 4633,
-      "sha256": "fa16350c7c9628d39b3786906d91b25ffb4ac66138df46b18729a28abfcc1fea"
+      "bytes": 4739,
+      "sha256": "2698720281bf02291d921445bd9c3a0bcfcc52a342ed5bf8960ea40df6468d27"
     },
     {
       "path": "native-ios/renderer/query_setup.inc",
@@ -413,8 +413,8 @@
     },
     {
       "path": "native-ios/renderer/query_state.h",
-      "bytes": 1358,
-      "sha256": "dbb45fb78c78e3126c07b96f6f420ba81856d7454aced535caeeba2b7a991066"
+      "bytes": 1500,
+      "sha256": "2f9cf0d540376eaaabfa477adcc90286a2bdc99c8b26250f26dc303f06bda9e6"
     },
     {
       "path": "native-ios/renderer/query_stop_fixture.inc",
@@ -533,8 +533,8 @@
     },
     {
       "path": "native-ios/renderer/test_query_state.c",
-      "bytes": 1926,
-      "sha256": "4b7ffe76ad3b663f3468aa8955839ca350328de311027cee216e30b40ab675c3"
+      "bytes": 2138,
+      "sha256": "ae022f89538dbeb725117eac567f7b63b9db15821bc1526824760a569f28afbe"
     },
     {
       "path": "native-ios/renderer/test_readback_layout.c",
