@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <limits.h>
 #include <stdlib.h>
 
@@ -87,9 +88,7 @@ _Noreturn void host_unavailable(struct w2c_env *h,const char *name) {
 static HostFD *file(struct w2c_env *h,uint32_t fd){return fd>=3&&fd<HOST_FDS&&h->files[fd].fd>=0?&h->files[fd]:NULL;}
 // Walk each component relative to a granted root. Never follow symlinks or
 // expose arbitrary app/OS paths. Linux open flags are translated, not reused.
-static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags,uint64_t modeptr) {
- (void)modeptr;
- char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
+static uint32_t unlocked_open_text(struct w2c_env *h,uint32_t dirfd,char *text,uint32_t flags) {
  if((int32_t)dirfd!=-100)return (uint32_t)-58;
  char *p=text;if(*p=='/')p++;
  int root;bool readonly;
@@ -130,6 +129,11 @@ static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uin
   break;
  }
  close(parent);return result;
+}
+static uint32_t unlocked_open(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t flags,uint64_t modeptr) {
+ (void)modeptr;
+ char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
+ return unlocked_open_text(h,dirfd,text,flags);
 }
 static uint32_t unlocked_fd_close(struct w2c_env *h,uint32_t fd) {
  HostFD *f=file(h,fd);if(!f)return 8;
@@ -228,6 +232,44 @@ uint32_t host_path_stat(struct w2c_env *h,uint64_t path,uint64_t out){
  lock(&file_mutex);uint32_t fd=unlocked_open(h,(uint32_t)-100,path,0,0),result=fd;
  if((int32_t)fd>=0){result=unlocked_stat(h,fd,out);unlocked_fd_close(h,fd);}
  unlock(&file_mutex);return result;
+}
+uint32_t host_statfs(struct w2c_env *h,uint64_t path,uint64_t size,uint64_t out){
+ // This engine's memory64 libc passes a 120-byte statfs, not Apple's struct.
+ // Validate before I/O and leave the caller's bytes unchanged on failure.
+ if(size!=120)return (uint32_t)-28;
+ if(!path||!out||!host_range(h,out,120))return (uint32_t)-21;
+ char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;
+ size_t length=strlen(text);bool directory=length&&text[length-1]=='/';
+ while(length>1&&text[length-1]=='/')text[--length]=0;
+ const char *relative=text[0]=='/'?text+1:text;
+ bool readonly=!strcmp(relative,"data")||!strncmp(relative,"data/",5);
+ struct statvfs stats;uint32_t result=0,slot=0;int fd=-1;bool close_fd=false;
+ lock(&file_mutex);
+ // The virtual root/cwd reports the app's save volume. No engine string is
+ // interpreted as an absolute native path; data remains the granted folder.
+ if(!strcmp(text,"/")||!strcmp(text,".")||!strcmp(text,"/.")||!strcmp(relative,"userdata")){
+  fd=h->save_root;if(fd<0)result=(uint32_t)-44;
+ }else if(!strcmp(relative,"data")){
+  if(h->game_root<0)result=(uint32_t)-44;
+  else{fd=openat(h->game_root,"data",O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);close_fd=fd>=0;if(fd<0)result=(uint32_t)-wasi_errno(errno);}
+ }else{
+  slot=unlocked_open_text(h,(uint32_t)-100,text,directory?65536:0);
+  if((int32_t)slot<0)result=slot;else fd=h->files[slot].fd;
+ }
+ if(!result&&fstatvfs(fd,&stats))result=(uint32_t)-wasi_errno(errno);
+ if(slot>=3&&slot<HOST_FDS)unlocked_fd_close(h,slot);
+ if(close_fd)close(fd);
+ unlock(&file_mutex);
+ if(result)return result;
+ // Pack every byte explicitly, including zeroed padding/reserved fields.
+ // Block counts use f_frsize; preserve it separately from optimal I/O size.
+ uint64_t words[15]={0};
+ words[1]=stats.f_bsize;words[2]=stats.f_blocks;words[3]=stats.f_bfree;
+ words[4]=stats.f_bavail;words[5]=stats.f_files;words[6]=stats.f_ffree;
+ words[7]=(uint64_t)stats.f_fsid;words[8]=stats.f_namemax;
+ words[9]=stats.f_frsize?stats.f_frsize:stats.f_bsize;
+ words[10]=(readonly||(stats.f_flag&ST_RDONLY)?1u:0u)|(stats.f_flag&ST_NOSUID?2u:0u);
+ host_store(h,out,words,sizeof(words));return 0;
 }
 uint32_t host_mkdir(struct w2c_env *h,uint32_t dirfd,uint64_t path,uint32_t mode){
  (void)mode;char text[4096];if(!host_string(h,path,text,sizeof(text)))return (uint32_t)-21;

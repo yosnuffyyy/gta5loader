@@ -13,6 +13,7 @@
   "wasm_module_int_js": "return arg2;",
   "__syscall_openat": "return host_open(arg0,arg1,arg2,arg3,arg4);",
   "__syscall_fstat64": "return host_stat(arg0,arg1,arg2);",
+  "__syscall_statfs64": "return host_statfs(arg0,arg1,arg2,arg3);",
   "__syscall_ioctl": "return (u32)-59; /* ENOTTY: regular files and log streams have no terminal */",
   "__syscall_fcntl64": "return (u32)-58; /* unsupported descriptor controls */",
   "clock_time_get": "return host_clock(arg0->env,arg1,arg3);",

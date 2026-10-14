@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 const root=process.argv[2]||'native-build';
 const header=fs.readFileSync(root+'/generated/gta.h','utf8');
 const internal=fs.readFileSync(root+'/generated/gta-impl.h','utf8');
-for(const declaration of ['void w2c_gta_f2853(w2c_gta*, u64, u32, u32);','u32 w2c_gta_f90879(w2c_gta*, u64, u64, u64, u64);','u32 w2c_gta_f90884(w2c_gta*, u64);','u64 w2c_gta_f90695(w2c_gta*);','u32 w2c_gta_f194(w2c_gta*, u64, u64, u64);','u32 w2c_gta_f198(w2c_gta*, u32, u64, u64, u32);'])assert(internal.includes(declaration),'Thread binding ABI differs: '+declaration);
+for(const declaration of ['u32 w2c_gta_f90925(w2c_gta*, u64, u64);','void w2c_gta_f2853(w2c_gta*, u64, u32, u32);','u32 w2c_gta_f90879(w2c_gta*, u64, u64, u64, u64);','u32 w2c_gta_f90884(w2c_gta*, u64);','u64 w2c_gta_f90695(w2c_gta*);','u32 w2c_gta_f194(w2c_gta*, u64, u64, u64);','u32 w2c_gta_f198(w2c_gta*, u32, u64, u64, u32);'])assert(internal.includes(declaration),'Thread binding ABI differs: '+declaration);
 const declarations=[...header.matchAll(/\/\* import: '([^']+)' '([^']+)' \*\/\s+(void|u32|u64|f32|f64) (w2c_\w+)\(([^;]+)\);/g)];
 assert.equal(declarations.length,85,'Unexpected engine host interface');
 const implemented=JSON.parse(fs.readFileSync('native-ios/host-imports.json','utf8'));

@@ -7,13 +7,54 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/statvfs.h>
 static uint32_t open_path(struct w2c_env *h,const char *path,unsigned flags){host_store(h,64,path,strlen(path)+1);return host_open(h,(uint32_t)-100,64,flags,0);}
+static void capacity_tests(struct w2c_env *h){
+ unsigned char guard[136],actual[136];memset(guard,0xa5,sizeof(guard));
+ struct statvfs expected;assert(fstatvfs(h->save_root,&expected)==0);
+ const char *roots[]={"/userdata","userdata/","/",".","/.","/userdata/.native-statfs"};
+ uint32_t fd=open_path(h,roots[5],2|64|512);assert((int32_t)fd>=3);assert(host_fd_close(h,fd)==0);
+ for(unsigned repeat=0;repeat<100;repeat++)for(unsigned i=0;i<6;i++){
+  host_store(h,64,roots[i],strlen(roots[i])+1);host_store(h,8192,guard,sizeof(guard));
+  assert(host_statfs(h,64,120,8200)==0);host_load(h,actual,8192,sizeof(actual));
+  assert(!memcmp(guard,actual,8)&&!memcmp(guard+128,actual+128,8));
+  assert(host_u64(h,8208)==expected.f_bsize&&host_u64(h,8216)==expected.f_blocks);
+  assert(host_u64(h,8272)==(expected.f_frsize?expected.f_frsize:expected.f_bsize));
+  assert(host_u64(h,8264)==expected.f_namemax);
+  for(unsigned j=88;j<120;j++)assert(actual[8+j]==0);
+ }
+ // A root query does not require opening a descriptor slot. The named-file
+ // loop also catches descriptor leaks long before reaching the 64-slot bound.
+ for(unsigned i=3;i<HOST_FDS;i++)assert(h->files[i].fd==-1);
+ const char *data[]={"/data","/data/","data/common/data/levels/gta5/paths.xml"};
+ for(unsigned i=0;i<3;i++){
+  host_store(h,64,data[i],strlen(data[i])+1);assert(host_statfs(h,64,120,8200)==0);assert(host_u64(h,8280)&1);
+ }
+ const char *bad[]={"/userdata/../web","/userdata/link-file","/data/escape/anything","/etc","","/userdata/absent","/userdata/.native-statfs/"};
+ for(unsigned i=0;i<7;i++){
+  host_store(h,64,bad[i],strlen(bad[i])+1);host_store(h,8192,guard,sizeof(guard));
+  assert((int32_t)host_statfs(h,64,120,8200)<0);host_load(h,actual,8192,sizeof(actual));assert(!memcmp(guard,actual,sizeof(guard)));
+ }
+ host_store(h,64,"/userdata",10);host_store(h,8192,guard,sizeof(guard));
+ assert(host_statfs(h,64,119,8200)==(uint32_t)-28);
+ assert(host_statfs(h,64,121,8200)==(uint32_t)-28);
+ assert(host_statfs(h,64,UINT64_MAX,8200)==(uint32_t)-28);
+ assert(host_statfs(h,UINT64_MAX,120,8200)==(uint32_t)-21);
+ assert(host_statfs(h,0,120,8200)==(uint32_t)-21);
+ assert(host_statfs(h,64,120,0)==(uint32_t)-21);
+ assert(host_statfs(h,64,120,UINT64_MAX-60)==(uint32_t)-21);
+ assert(host_statfs(h,64,120,atomic_load(&h->memory.size)-119)==(uint32_t)-21);
+ host_load(h,actual,8192,sizeof(actual));assert(!memcmp(guard,actual,sizeof(guard)));
+ assert(unlinkat(h->save_root,".native-statfs",0)==0);
+ puts("PASS: native filesystem capacity ABI, live OS values, guarded output, size/pointer errors, rooted paths, symlink refusal and descriptor cleanup.");
+}
 int main(void){
  wasm_rt_init();struct w2c_env h={0};host_init(&h);
  wasm_rt_allocate_memory_shared(&h.memory,2,4,false,65536);
  h.game_root=open("native-build/fixtures/web",O_RDONLY|O_DIRECTORY);
  h.save_root=open("native-build/fixtures/saves",O_RDONLY|O_DIRECTORY);
  assert(h.game_root>=0&&h.save_root>=0);
+ capacity_tests(&h);
  host_store(&h,64,"/userdata",10);assert(host_path_stat(&h,64,8192)==0);
  host_store(&h,64,"/userdata/path-test",20);
  assert(host_mkdir(&h,(uint32_t)-100,64,0777)==0);

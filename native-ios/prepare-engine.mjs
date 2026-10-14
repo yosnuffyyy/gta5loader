@@ -23,7 +23,7 @@ while(r.p<bytes.length){let offset=r.p,id=bytes[r.p++],n=r.u(),start=r.p,end=sta
 const probes=['memcmp','strcmp','strlen','sinf','cosf','fopen','fclose','fread','fwrite','__fseeko','__ftello'].map(name=>{assert(names.has(name));return {name:name.replace(/^__/,''),sourceName:name,index:names.get(name)};});
 // Native 0.3 calls existing generated C symbols; no additional Wasm exports
 // or engine instructions are needed. Pin names as well as generated signatures.
-for(const [name,index] of [['rage::sysStack::CaptureStackTrace(unsigned long*, unsigned int, unsigned int)',2853],['__pthread_create',90879],['__pthread_join',90884],['__errno_location',90695],['wasm_httpfs_lookup',194],['wasm_httpfs_pread',198]])assert.equal(names.get(name),index,'Thread ABI changed: '+name);
+for(const [name,index] of [['statvfs',90925],['rage::sysStack::CaptureStackTrace(unsigned long*, unsigned int, unsigned int)',2853],['__pthread_create',90879],['__pthread_join',90884],['__errno_location',90695],['wasm_httpfs_lookup',194],['wasm_httpfs_pread',198]])assert.equal(names.get(name),index,'Thread ABI changed: '+name);
 const ex=sections.find(s=>s.id===7),er=reader(bytes,ex.start),oldCount=er.u();
 const additions=probes.map(({name,index})=>{let n=Buffer.from('native_probe_'+name);return Buffer.concat([leb(n.length),n,Buffer.from([0]),leb(index)]);});
 const payload=Buffer.concat([leb(oldCount+probes.length),bytes.subarray(er.p,ex.end),...additions]);

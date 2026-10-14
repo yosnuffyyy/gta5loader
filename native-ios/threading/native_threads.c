@@ -162,6 +162,7 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  uint64_t sp=w2c_gta_emscripten_stack_get_current(e),p=w2c_gta_0x5Femscripten_stack_alloc(e,80*1024);
  check(h,sp<=host_u64(h,worker->tcb+80)&&p>=host_u64(h,worker->tcb+80)-host_u64(h,worker->tcb+88),"worker shadow stack bounds");
  native_stack_probe(h,e,p);
+ native_storage_probe(h,e,p);
  host_put32(h,worker->errno_address,(uint32_t)(100+id));
  atomic_fetch_add(&r->ready,1);signal_change(r);
  uint64_t deadline=now_ns()+10000000000ull;
@@ -193,6 +194,9 @@ static uint64_t diagnostic_entry(w2c_gta *e,uint64_t id){
  check(h,probe_proxy(h,e,packed,32,1,(uint64_t[]){descriptor})==0,"proxied close failed");
  check(h,unlinkat(h->save_root,path+10,0)==0,"thread probe file cleanup failed");
  check(h,probe_proxy(h,e,packed,18,4,(uint64_t[]){(uint64_t)(int64_t)-100,p,0,0})==-44,"proxied missing-file errno differs");
+ host_store(h,p,"/userdata",10);
+ check(h,probe_proxy(h,e,packed,28,3,(uint64_t[]){p,120,p+71000})==0&&host_u64(h,p+71008)>0,"proxied filesystem capacity failed");
+ check(h,probe_proxy(h,e,packed,28,3,(uint64_t[]){p,119,p+71000})==-28,"proxied statfs size errno differs");
  worker->phase="concurrent engine asset samples";
  if(r->assets)native_assets_thread_probe(r->assets,e,p,(unsigned)id);
  w2c_gta_0x5Femscripten_stack_restore(e,sp);
@@ -283,11 +287,11 @@ void native_threads_probe(struct w2c_env *h,uint64_t p){
    check(h,engine_join(h->engine,host_u64(h,p+8*i))==0,"engine pthread_join failed");
   }
   for(unsigned i=0;i<PROBE_LIMIT;i++){NativeWorker *w=&r->workers[i];check(h,w->cleanup,"engine join omitted worker cleanup");w2c_gta_0x5Femscripten_thread_free_data(h->engine,w->tcb);w->occupied=false;}
-  check(h,atomic_load(&r->completed)==PROBE_LIMIT&&atomic_load(&r->proxies)==6*PROBE_LIMIT,"worker/proxy completion count differs");r->generations++;
+  check(h,atomic_load(&r->completed)==PROBE_LIMIT&&atomic_load(&r->proxies)==8*PROBE_LIMIT,"worker/proxy completion count differs");r->generations++;
  }
  uint32_t err;host_load(h,&err,main_errno,4);check(h,err==777,"main thread TLS overwritten");r->probe_mode=false;
  report(h,"PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.");
- report(h,"PASS: workers completed 48 synchronous main-thread proxies while the engine owner was inside indefinite atomic waits; no external mailbox pump.");
+ report(h,"PASS: workers completed 64 synchronous main-thread proxies including filesystem capacity and signed errors while the engine owner was inside indefinite atomic waits; no external mailbox pump.");
 }
 static uint64_t proxy_arg(struct w2c_env *h,uint64_t p){
  uint64_t tag=host_u64(h,p),bits=host_u64(h,p+8);if(tag==1)return bits;
@@ -304,6 +308,7 @@ double native_proxy_receive(struct w2c_env *h,uint32_t index,uint64_t asmaddr,ui
  case 2:check(h,bytes==64,"thread proxy arity");result=native_thread_create(h,a[0],a[1],a[2],a[3]);break;
  case 7:check(h,bytes==32,"stat proxy arity");result=host_stat(h,a[0],a[1]);break;
  case 18:check(h,bytes==64,"open proxy arity");result=host_open(h,a[0],a[1],a[2],a[3]);break;
+ case 28:check(h,bytes==48,"statfs proxy arity");result=host_statfs(h,a[0],a[1],a[2]);break;
  case 32:check(h,bytes==16,"close proxy arity");result=host_fd_close(h,a[0]);break;
  case 33:case 34:check(h,bytes==80,"positioned IO proxy arity");result=host_io(h,a[0],a[1],a[2],a[4],index==34,true,a[3]);break;
  case 35:case 37:check(h,bytes==64,"IO proxy arity");result=host_io(h,a[0],a[1],a[2],a[3],index==37,false,0);break;
@@ -311,7 +316,7 @@ double native_proxy_receive(struct w2c_env *h,uint32_t index,uint64_t asmaddr,ui
  default:snprintf(current->failure_text,sizeof(current->failure_text),"Main-thread proxy %u not ported (argument bytes %u)",index,bytes);host_unavailable(h,current->failure_text);
  }
  atomic_fetch_add(&current->proxies,1);
- double answer=(index==2||index==7||index==18)?(double)(int32_t)result:(double)result;
+ double answer=(index==2||index==7||index==18||index==28)?(double)(int32_t)result:(double)result;
  if(ctx){w2c_gta_0x5Femscripten_run_js_on_main_thread_done(h->engine,ctx,ctxargs,answer);return 0;}
  return answer;
 }

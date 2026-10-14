@@ -1,5 +1,6 @@
 #include "native_host.h"
 #include "threading/native_threads.h"
+#include "platform/native_paths.h"
 #include "gta-impl.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
@@ -10,6 +11,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #ifdef __APPLE__
 #include <mach/mach.h>
 #endif
@@ -35,6 +37,24 @@ void native_stack_probe(struct w2c_env *h,w2c_gta *engine,uint64_t scratch){
  }
 }
 static void putstr(struct w2c_env *h,uint64_t p,const char *s){host_store(h,p,s,strlen(s)+1);}
+void native_storage_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){
+ struct statvfs expected;require(h,fstatvfs(h->save_root,&expected)==0,"native volume query failed");
+ unsigned char guard[128],actual[128];memset(guard,0xa5,sizeof(guard));
+ const char *paths[]={"/userdata","/userdata/","/","."};
+ for(unsigned i=0;i<4;i++){
+  putstr(h,p,paths[i]);host_store(h,p+512,guard,sizeof(guard));
+  require(h,w2c_gta_f90925(engine,p,p+520)==0,"real engine statvfs failed");
+  host_load(h,actual,p+512,sizeof(actual));
+  require(h,!memcmp(actual,guard,8)&&!memcmp(actual+120,guard+120,8),"statvfs overwrote output guards");
+  require(h,host_u64(h,p+520)==expected.f_bsize&&host_u64(h,p+528)==(expected.f_frsize?expected.f_frsize:expected.f_bsize),"statvfs block-size ABI differs");
+  require(h,host_u64(h,p+536)==expected.f_blocks&&host_u64(h,p+600)==expected.f_namemax,"statvfs capacity/name-limit ABI differs");
+  require(h,host_u64(h,p+544)<=expected.f_blocks&&host_u64(h,p+552)<=expected.f_blocks,"statvfs free block counts invalid");
+ }
+ putstr(h,p,"/userdata/.native-no-such-statfs-file");host_store(h,p+512,guard,sizeof(guard));
+ require(h,(int32_t)w2c_gta_f90925(engine,p,p+520)==-1,"statvfs missing path succeeded");
+ uint32_t error;host_load(h,&error,w2c_gta_f90695(engine),4);require(h,error==44,"statvfs libc errno conversion differs");
+ host_load(h,actual,p+512,sizeof(actual));require(h,!memcmp(actual,guard,sizeof(guard)),"failed statvfs modified output");
+}
 static uint64_t open_engine(struct w2c_env *h,uint64_t scratch,const char *path,const char *mode) {
  putstr(h,scratch,path);putstr(h,scratch+4096,mode);
  return w2c_gta_native_probe_fopen(h->engine,scratch,scratch+4096);
@@ -158,7 +178,8 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
 #endif
   uint64_t stack=w2c_gta_emscripten_stack_get_current(engine);
   uint64_t scratch=w2c_gta_0x5Femscripten_stack_alloc(engine,80*1024);
-  saves(h,scratch);abi(h,scratch);native_stack_probe(h,engine,scratch);
+  saves(h,scratch);abi(h,scratch);native_stack_probe(h,engine,scratch);native_storage_probe(h,engine,scratch);
+  message(h,"PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.");
   message(h,"PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.");
   if(game_folder)assets(h,scratch);else message(h,"SKIP: actual game-file reads; select the extracted web folder to include them.");
   require(h,h->failure==NULL,"native file close reported an error");
