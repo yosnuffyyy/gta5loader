@@ -1,0 +1,227 @@
+{
+  "version": "0.14",
+  "sourceCommit": "a36f4aeb11390bb587d52a8870ce2f7894f3328d",
+  "sourceTree": "6f7b42bd1b2caac07cd86dc174b62c6210e460b5",
+  "run": 38496623732,
+  "job": 115633744790,
+  "runURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38496623732",
+  "artifacts": [
+    {
+      "id": 11864691456,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 89745417,
+      "digest": "sha256:8a50060711f9787c9e79e31a7961550b5f546dc37fbc7a2fb9b6d48b03894663"
+    },
+    {
+      "id": 11864097176,
+      "name": "native-compiler-evidence",
+      "bytes": 40110,
+      "digest": "sha256:e38b373272b566df89c6151b01349bf95f10f115e30f4cfa678a1ca6d8056611"
+    }
+  ],
+  "ci": "PASS",
+  "sourceFilesVerified": 82,
+  "instanceRegression": {
+    "runs": 2,
+    "casesPerRun": 10,
+    "pixelsPerCase": 256,
+    "rates": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "nonzeroStarts": true,
+    "mixedDivisors": true,
+    "zeroStride": true,
+    "instanceIds": true,
+    "boundedInstanceCounts": true,
+    "indirectArgumentBytes": [
+      16,
+      20
+    ],
+    "vertexExpansion": false,
+    "steppedDraws": 9,
+    "batches": 17,
+    "indirectDecodes": 2
+  },
+  "readbackRegression": {
+    "runs": 2,
+    "additionalCasesPerRun": 36,
+    "rawFormatCases": 30,
+    "mipArrayAnd3DBoxes": true,
+    "compressedEdges": true,
+    "alphaPacking": true,
+    "paddingGuards": true,
+    "over1MiBTransfers": true,
+    "completionFlags": true,
+    "stagingLimitBytes": 1048576,
+    "stagingAllocationsPerFixture": 4
+  },
+  "snormRegression": {
+    "runs": 2,
+    "formats": [
+      "R8Snorm",
+      "RG8Snorm",
+      "RGBA8Snorm"
+    ],
+    "casesPerRun": 9,
+    "pixelsPerCase": 16,
+    "checks": [
+      "signed clear",
+      "additive draw",
+      "byte upload",
+      "production resource copy",
+      "raw signed GPU readback",
+      "GPU texture sampling",
+      "cleanup"
+    ],
+    "engineStorage": "unchanged 8-bit signed"
+  },
+  "realEngineStorageChecks": {
+    "mainRuns": 4,
+    "workerRuns": 32,
+    "syscallBytes": 120,
+    "libcBytes": 112,
+    "proxyCallsPerRun": 64,
+    "guardsAndErrno": true
+  },
+  "realEngineRNGChecks": {
+    "runs": 4,
+    "initHealthTest": true,
+    "generateBytes": 128,
+    "free": true,
+    "outputGuards": true
+  },
+  "nativeHostSanitizers": "PASS",
+  "existingCPUAndGPUSuites": "PASS",
+  "cachedObjects": [
+    {
+      "target": "macos",
+      "count": 131
+    },
+    {
+      "target": "ios",
+      "count": 131
+    }
+  ],
+  "priorThirteenIPAs": "Unchanged",
+  "localAudit": {
+    "result": "PASS",
+    "architecture": "ARM64",
+    "platform": "iPhone device",
+    "minimumOS": "17.0",
+    "unsigned": true,
+    "hasWebKit": false,
+    "hasWritableExecutableSegment": false,
+    "ipaBytes": 102042043,
+    "ipaSHA256": "8df2971492f00a58f180ca66e124d5f5f6cef342f18da2c1b8a329a7623e013f",
+    "version": "0.14.0",
+    "build": "14",
+    "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+    "engine": {
+      "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+      "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+      "modification": "Add eleven exports only; engine instructions unchanged",
+      "probes": [
+        {
+          "name": "memcmp",
+          "sourceName": "memcmp",
+          "index": 90814
+        },
+        {
+          "name": "strcmp",
+          "sourceName": "strcmp",
+          "index": 90930
+        },
+        {
+          "name": "strlen",
+          "sourceName": "strlen",
+          "index": 90939
+        },
+        {
+          "name": "sinf",
+          "sourceName": "sinf",
+          "index": 90918
+        },
+        {
+          "name": "cosf",
+          "sourceName": "cosf",
+          "index": 90732
+        },
+        {
+          "name": "fopen",
+          "sourceName": "fopen",
+          "index": 90775
+        },
+        {
+          "name": "fclose",
+          "sourceName": "fclose",
+          "index": 90762
+        },
+        {
+          "name": "fread",
+          "sourceName": "fread",
+          "index": 90782
+        },
+        {
+          "name": "fwrite",
+          "sourceName": "fwrite",
+          "index": 90790
+        },
+        {
+          "name": "fseeko",
+          "sourceName": "__fseeko",
+          "index": 90784
+        },
+        {
+          "name": "ftello",
+          "sourceName": "__ftello",
+          "index": 90788
+        }
+      ]
+    },
+    "dylibs": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/System/Library/Frameworks/GameController.framework/GameController",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+    ],
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "initialProtection": 0
+      },
+      {
+        "name": "__TEXT",
+        "initialProtection": 5
+      },
+      {
+        "name": "__DATA_CONST",
+        "initialProtection": 3
+      },
+      {
+        "name": "__DATA",
+        "initialProtection": 3
+      },
+      {
+        "name": "__LINKEDIT",
+        "initialProtection": 1
+      }
+    ]
+  },
+  "iphone014": "PENDING",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false,
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}

@@ -194,7 +194,7 @@
       }
     ]
   },
-  "iphone013": "PENDING",
+  "iphone013": "USER-REPORTED: North Yankton title/Prologue intro reached. R8 texture readbacks completed;32KiB staging. 97155 commands,868 presentations,7660 draws. Vertex-layout combined guard trapped;Exit1;cleanup86.4MiB. Successive correct3D frames not verified.",
   "stage3": "IN PROGRESS",
   "stagesLeft": 5,
   "realSceneVerified": false,

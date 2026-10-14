@@ -1,0 +1,45 @@
+NATIVE 0.14 VERIFICATION
+Source a36f4aeb11390bb587d52a8870ce2f7894f3328d
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38496623732
+Job 115633744790: PASS
+
+PASS: instance input: two runs of10 cases;all256 pixels per case.
+Rates0/1/2/3,nonzero starts,mixed divisors,zero stride,instance IDs,
+indexed/indirect draws and buffer bounds. No vertex expansion.
+Per run:9 stepped engine draws in17 GPU batches;two indirect argument reads.
+PASS: ASan/UBSan D3D instance-counter semantics and widened arithmetic.
+PASS: raw READBACK: two runs of36 additional cases across30 formats.
+Exact bytes, padded rows/slices and guards; mip/array/3D boxes, BC mip
+edges,A8 packing,buffer boxes; texture/buffer transfers over1MiB.
+One reusable staging buffer capped to1MiB; completion flags after copies.
+PASS: ASan/UBSan readback layout rejection and overflow/capacity tests.
+PASS: native Metal SNORM capability: two runs of nine cases each.
+R8/RG8/RGBA8 render, blend, upload, copy, raw signed readback and
+GPU sampling; all 16 pixels per case verified including negative values.
+Native texture storage and quality settings retained; A8 outputs repacked.
+PASS: four native real-engine runs plus 32 workers validate statvfs against
+the actual OS save volume, root paths, guards and libc errno translation.
+64 synchronous worker mailbox proxies per run include statfs success/errors.
+PASS: native host ASan/UBSan: capacity ABI and OS values, repeated reads and
+descriptor cleanup, invalid pointer/size rejection, path/symlink isolation;
+read-only entropy device seed reads, denied writes and other device paths.
+PASS: four real-engine wc_InitRng health tests, 128-byte RNG outputs and
+wc_FreeRng cleanup with intact output/state guards. No RNG engine code patched.
+PASS: existing constructor/TLS/save/I/O/asset, mailbox/cancellation/log,
+SIMD/bulk/wait and GPU regression suites. Two GPU ring/DRAW replays each run
+440 commands,21 engine draws,10 pipelines. Separate shader fixture: zero errors.
+Two graphics-enabled main checkpoints stop deliberately before archive bytes.
+PASS: complete Mac/iPhone compile and unsigned ARM64 iOS17+ package audit.
+Cached compiler objects: macos: 131; ios: 131.
+82 source entries match Git tree. Artifact ZIP and IPA checksums verified.
+Thirteen earlier IPAs unchanged. PC folders/main untouched.
+
+IPA GTA-Native-Probe-0.14-unsigned.ipa
+Bytes 102042043
+SHA256 8df2971492f00a58f180ca66e124d5f5f6cef342f18da2c1b8a329a7623e013f
+
+Physical iPhone continuation past 0.13 vertex-input failure: PENDING.
+The0.13 phone reached North Yankton/Prologue intro;successive3D frames
+and gameplay remain unverified. No Prologue scene, playable test,
+Bink or Social Club repair claimed.
+(stage 3 in progress) (5 stages left)

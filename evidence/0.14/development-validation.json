@@ -1,0 +1,13 @@
+{
+  "initialFailedRuns": [
+    38494945459,
+    38496096635
+  ],
+  "failure": "New diagnostic fixture did not restore index and shader bindings after the preceding fixture cleared state.",
+  "reportedError": "Invalid index buffer/format/offset",
+  "correction": "Restored CBV/CBP/SRV/sampler/index bindings; preserved complete failed-process stdout for future diagnostics. Sparse used slots also map densely to GPU buffers.",
+  "finalRun": 38496623732,
+  "finalSource": "a36f4aeb11390bb587d52a8870ce2f7894f3328d",
+  "finalResult": "PASS: two full rendering/runtime runs; all original suites and new instance cases pass.",
+  "onlyFinalArtifactDelivered": true
+}

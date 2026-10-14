@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "changedFiles": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/compile-native.mjs",
+    "native-ios/renderer/build-renderer.sh",
+    "native-ios/renderer/draw_instance.inc",
+    "native-ios/renderer/draw_pipeline.inc",
+    "native-ios/renderer/draw_shader.inc",
+    "native-ios/renderer/draw_types.inc",
+    "native-ios/renderer/instance_replay.inc",
+    "native-ios/renderer/instance_verify.inc",
+    "native-ios/renderer/native_draw.inc",
+    "native-ios/renderer/native_gpu.m",
+    "native-ios/renderer/test_vertex_step.c",
+    "native-ios/renderer/vertex_step.h",
+    "source-manifest.json"
+  ],
+  "unchangedEngineInstructionsAndGeneratedBindings": true,
+  "unchangedBackendSourceAndBuild": true,
+  "unchangedGameShaderFiles": true,
+  "unchangedGraphicsResolution": true,
+  "sourceEntries": 82,
+  "manifestFiles": 81,
+  "priorIpaCount": 13
+}

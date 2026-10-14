@@ -1,0 +1,51 @@
+NATIVE 0.14 — CONSTANT AND DIVIDED INSTANCE STREAMS
+
+The 0.13 iPhone test reached the North Yankton title and Prologue intro.
+The R8Unorm water readback succeeded with 32 KiB staging. Startup executed
+97,155 GPU commands and7,660 draws before a combined vertex-layout guard
+stopped it. That error did not identify which field failed; no exact rate
+is inferred. The old guard rejected all instance rates except1.
+
+D3D allows instance rate 0 (constant) and rates greater than 1. The rate
+counter starts independently of StartInstanceLocation.0.14 preserves
+that behavior: the first record is StartInstanceLocation,then advances
+once per rate instances; rate 0 never advances.
+Constant streams use WebGPU arrayStride0 and the original buffer offset.
+Larger rates use constant bindings within draw runs,binding the next
+record only at divisor boundaries. Mixed divisors split at both streams'
+boundaries. No vertex expansion,CPU vertex shadow or new upload buffer is
+needed. Ordinary draws skip divisor scans and scratch initialization.
+Original uniform snapshots and instance ID continuity are retained.
+Only shader-used vertex slots are mapped to dense GPU bindings; gaps do not
+consume empty GPU slots. Engine slot numbers and shader locations are kept.
+
+Indirect draws requiring ID or divisor rebasing read just 16/20 argument
+bytes through the existing staging buffer,then use the direct bounded path.
+Other indirect draws remain on the GPU. This rare path adds a completion
+wait; performance tuning follows actual scene profiling.
+Per-slot class/rate consistency,buffer ranges and32-bit draw ranges are
+checked. Invalid layouts report VS hash,layout/element,slot,location,
+class,rate,format and offset. The16-slot/32-location limits remain explicit.
+
+Verified by CI38496623732: sanitizer-checked counter semantics,zero/one/larger rates,
+nonzero starts,mixed-divisor boundaries,capacity saturation and wide
+arithmetic. Ten shared-ring rendering cases compare all256 pixels each,
+using a diagnostic variant of the original IM shader that outputs instance
+ID. Covers rate 0/1/2/3,zero stride,mixed2/3,indexed and indirect commands,
+nonzero starting instance,buffer offsets and bounded instance counts.
+The original shader fixture remains unchanged and independently checked.
+All existing signed-texture,BC,raw-readback,host/thread/file and engine
+regressions remain required. Final results: VERIFICATION-0.14.txt.
+
+Engine instructions,game shader files,resolution and backend build are
+unchanged. Earlier IPAs are preserved. PC packages/main remain untouched.
+Next: install 0.14,select the existing web folder and Trace Prologue startup.
+Check whether actual characters/world appear after North Yankton. Stage 3
+requires successive correct scene frames;controls/audio follow in stage 4.
+(stage 3 in progress) (5 stages left)
+
+Primary references:
+https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm#8.4.1
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_input_element_desc
+https://www.w3.org/TR/webgpu/#dictdef-gpuvertexbufferlayout
+Independent reference: work/minimal-engine/wgpu_worker.js vertexBuffersFor/doDraw.

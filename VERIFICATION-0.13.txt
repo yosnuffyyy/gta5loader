@@ -33,7 +33,10 @@ IPA GTA-Native-Probe-0.13-unsigned.ipa
 Bytes 102034948
 SHA256 503cd5bbaba9c60270e389b47a8cb1033cb63022e83a0c2c9464beedc6724bca
 
-Physical iPhone continuation past 0.12 READBACK failure: PENDING.
+Physical iPhone0.13: R8Unorm128x128 readback completed;two readbacks,32KiB
+staging,one allocation. Prologue intro/North Yankton title reached.
+97,155 commands,868 surface frames,7,660 draws;vertex layout guard trapped.
+Reported process peak1,270.7MiB;heap1,326.1MiB;Exit1;cleanup86.4MiB.
 The 0.12 phone advanced through startup images but did not reach gameplay. No Prologue scene, playable test,
 Bink or Social Club repair claimed.
 (stage 3 in progress) (5 stages left)

@@ -1,0 +1,9 @@
+{
+  "version": "0.14",
+  "status": "PENDING",
+  "requestedTest": "Trace Prologue startup; copy full final report, including First engine diagnostics and GPU summary",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false
+}

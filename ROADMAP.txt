@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.13 raw texture readback continuation; stage 3 remains active.
+Updated 2026-10-13. Native 0.14 constant/divided instance streams; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -60,7 +60,13 @@ presentations. It stopped at unsupported texture READBACK during water init.
 with one reusable staging buffer bounded to1MiB. Stage3 still needs a real
 Prologue scene. CI38492329773 passed all regressions,including two full
 readback replays and layout sanitizer checks. ARM64 IPA audit passed.
-Physical0.13 continuation past the readback blocker is pending.
+Physical0.13 completed the R8 water readback and reached Prologue1 intro
+and the North Yankton title:868 presentations,7,660 draws,97,155 commands.
+It then hit the combined vertex slot/location/rate guard. No successive
+correct3D scene is yet verified.0.14 supports rate0/N instance data without
+vertex expansion,and records exact invalid descriptor fields. CI38496623732
+passed two full rendering/runtime runs and sanitizer checks;the unsigned
+ARM64 IPA audit passed. Physical0.14 scene continuation remains pending.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 
