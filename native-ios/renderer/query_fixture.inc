@@ -17,7 +17,7 @@ static bool query_fixture(struct w2c_env *h,char *report,size_t capacity){
   for(unsigned j=4;j<32&&ok;j++)if((j<8||j>=16)&&data[j]!=0xa5){fail(g,"Occlusion result wrote outside protocol words");ok=false;}
   if(ok)g->query_cases++;
  }
- if(ok&&(g->query_cases!=Q_TOTAL||g->query_pending_pages||g->query_gpu_bytes||g->query_active_count||g->query_pressure_waits||!g->query_stale||!g->query_pages_allocated||g->query_pages_allocated>QUERY_PAGES)){fail(g,"Query cleanup, stale suppression or bounded asynchronous pool verification failed");ok=false;}
+ if(ok&&(g->query_cases!=Q_TOTAL||g->query_pending_pages||g->query_gpu_bytes||g->query_active_count||g->query_pressure_waits||!g->query_stale||!g->query_pages_allocated||g->query_pages_allocated>QUERY_PAGES||g->query_resolved_slots!=g->query_segments||g->query_resolves!=g->query_map_requests||g->query_copies!=g->query_resolves||g->query_maps_completed!=g->query_map_requests)){fail(g,"Query cleanup, stale suppression or bounded asynchronous pool verification failed");ok=false;}
  char summary[2200];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native counting occlusion/predicate queries: %u cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.\n%s\n%s",ok?"PASS":"FAIL",g->query_cases,summary,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
 }
 static bool query_mask_boundary_fixture(struct w2c_env *h,uint32_t mask){
