@@ -263,8 +263,8 @@
     },
     {
       "path": "native-ios/renderer/native_compute.inc",
-      "bytes": 5548,
-      "sha256": "8f13b7fc63d0a1759f0b0397d1b9d1106c85789be3cbcaf3b452a1baf478b407"
+      "bytes": 5571,
+      "sha256": "4b8d2773706871bda47197c8265fc51ada9f0adb73f36394e935928200e38080"
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
