@@ -80,6 +80,9 @@ static void query_destroy_scope(NativeGpu *g,Object *q){
 static void query_cleanup(NativeGpu *g){
  for(unsigned i=0;i<QUERY_PAGES;i++)if(g->query_pages[i].busy)wgpuBufferUnmap(g->query_pages[i].map);
  if(g->device)wgpuDevicePoll(g->device,false,NULL); /* Cancellation, never a shutdown GPU-completion wait. Contexts survive through instance release. */
- for(unsigned i=0;i<QUERY_PAGES;i++){QueryPage *p=g->query_pages+i;if(p->set){wgpuQuerySetDestroy(p->set);wgpuQuerySetRelease(p->set);p->set=NULL;}if(p->resolve){wgpuBufferDestroy(p->resolve);wgpuBufferRelease(p->resolve);p->resolve=NULL;}if(p->map){wgpuBufferDestroy(p->map);wgpuBufferRelease(p->map);p->map=NULL;}}
+ /* Pinned wgpu-native 29.0.1.1 QuerySetDestroy drops the core ID; final
+    QuerySetRelease also drops it. We own the only public reference, so release
+    once. Submitted command buffers retain their internal resource references. */
+ for(unsigned i=0;i<QUERY_PAGES;i++){QueryPage *p=g->query_pages+i;if(p->set){wgpuQuerySetRelease(p->set);p->set=NULL;}if(p->resolve){wgpuBufferDestroy(p->resolve);wgpuBufferRelease(p->resolve);p->resolve=NULL;}if(p->map){wgpuBufferDestroy(p->map);wgpuBufferRelease(p->map);p->map=NULL;}}
  g->query_gpu_bytes=0;g->query_current=g->query_active_count=0;
 }

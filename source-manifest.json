@@ -328,8 +328,8 @@
     },
     {
       "path": "native-ios/renderer/native_queries.inc",
-      "bytes": 8657,
-      "sha256": "895a50b64e216f6726ff313bfe27921759cdc3db86ca9dd2b76eb91d2c310020"
+      "bytes": 8864,
+      "sha256": "92ab612cbadce0b60b36a4f0456d235d6a9d4670e7bbc068966f7e9d1e73bcbf"
     },
     {
       "path": "native-ios/renderer/native_readback.inc",
