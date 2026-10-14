@@ -163,8 +163,9 @@
       }
     ]
   },
-  "iphone015": "PENDING",
+  "iphone015": "USER-REPORTED PROLOGUE INTRO; SET_UAVS BLOCKER",
   "realSceneVerified": false,
   "playable": false,
-  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "iphone015Evidence": "iphone-device-test.json"
 }

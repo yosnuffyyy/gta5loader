@@ -1,0 +1,17 @@
+{
+  "sourceURL": "https://gta.deloskiyt.pl/data/common/data/ai/scenarios.meta",
+  "bytes": 1802223,
+  "sha256": "3a9dab765802b3259601a964fb04d812aa783fd5a19c24af97d0b5e174d02b50",
+  "xml": true,
+  "items": 4845,
+  "typedItems": 4495,
+  "untypedItems": 350,
+  "scenarioGroupMentions": 0,
+  "firstGroupContext": null,
+  "interpretation": "Counts of untyped Item tags alone do not prove corruption: fixed/static-type item collections can omit type. Compare the ScenarioTypeGroups section against the parser expectation; do not fabricate registrations.",
+  "scenarioTypeGroups": {
+    "topLevelItems": 16,
+    "typedTopLevelItems": 0
+  },
+  "conclusion": "Pinned upstream ScenarioTypeGroups top-level items omit the type attribute required by the observed native parser. This is independent of PC files. No registered class or local game asset was fabricated/modified."
+}

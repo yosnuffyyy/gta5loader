@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "commit": "340ae4d01af8115d4ce208b31900f64512d3b0a2",
+  "tree": "11972af03720e46ef9fe2a9a1abc26fdabf75b39",
+  "entries": 102,
+  "verification": "Local Git blob SHA-1 and byte count for all native/workflow/source-manifest entries match immutable Git tree",
+  "main": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}

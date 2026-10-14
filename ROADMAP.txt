@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.15 depth/stencil/float SRV proxies; stage 3 remains active.
+Updated 2026-10-14. Native 0.16 UAV/compute continuation; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -73,7 +73,18 @@ the depth-as-color SRV guard. Reported process sample1,242.2MiB;heap1,292.1MiB.
 lazy requested-mip/layer refresh and cached resources. Fourteen pixel cases
 check writes,unchanged reuse and cleanup. CI38576548448 passed both full renderer/runtime process runs,including all
 14 proxy cases and existing suites. ARM64 unsigned0.15 package audit passed.
-Physical0.15 scene continuation remains pending.
+Physical 0.15 passed that guard and reached the next Prologue draw dependency:
+100,640 commands, 8,208 draws, 886 presentations; SET_UAVS counter reset
+stopped startup. The animated intro camera starts after the repeated sphere
+requests end. No actual characters/world or gameplay was confirmed.
+0.16 adds ordered per-view UAV counters, preserve/reset/copy, exact storage
+bindings, compute, UAV clears, mip generation, bounded presented-pixel
+sampling and retained asset/parser/scene diagnostics. CI 38588558658 passed
+two full regressions, including original fill/copy output and 29 original
+compute pipeline compilations. Unsigned ARM64 IPA audit passed. Physical
+0.16 continuation past SET_UAVS is pending. The next gate remains successive
+correct North Yankton scene frames; then actual input/audio and sustained
+play. No stage is completed just because a package compiles or draws count.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

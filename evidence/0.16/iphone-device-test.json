@@ -1,0 +1,9 @@
+{
+  "version": "0.16",
+  "status": "PENDING",
+  "requestedTest": "Trace Prologue startup; report actual actors/world/camera/animation after North Yankton; stop after two minutes if possible and copy full final report including UAV/compute/presented pixels and asset/initialization diagnostics",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false
+}

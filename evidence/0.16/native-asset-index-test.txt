@@ -1,0 +1,1 @@
+PASS: local manifest format/order, 64-bit sizes, invalid entries, traversal and symlink rejection.

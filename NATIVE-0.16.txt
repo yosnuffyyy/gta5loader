@@ -1,0 +1,101 @@
+NATIVE 0.16 — UAV/COMPUTE CONTINUATION OF ROADMAP STAGE 3
+
+The physical 0.15 trace reached Prologue1/CUTSCENEINTRO, initialized its
+animated camera and executed 100,640 commands, 8,208 draws and 886
+presentations. SET_UAVS then stopped at counter reset. The prior depth-proxy
+guard was absent. These counts do not establish a correct 3D scene.
+
+UAV BINDING AND ORDERING
+0.16 gives APPEND/COUNTER UAV views independent hidden counters. A supplied
+count resets those counters; UINT_MAX preserves their contents. Counts on
+null/non-counter views have no effect as defined by D3D11, and are counted
+and logged. The renderer records resets in the shared GPU command order.
+A reusable 4 KiB staging buffer gives each reset a unique word until submit;
+staging reuse follows submission. COPY_COUNTER copies the current GPU value
+into a checked DWORD-aligned destination. No new per-reset GPU wait.
+
+FOLLOW-ON OPERATIONS
+The browser command path predicts storage bindings, DISPATCH, CLEAR_UAV,
+COPY_COUNTER and GENERATE_MIPS adjacent to this blocker. They are implemented
+and covered together rather than returning fabricated success:
+- Exact read-only/writable storage-buffer view ranges; unaligned starts use
+  cached GPU copy-in/copy-out proxies instead of CPU readbacks. The per-view
+  proxy ceiling is 64 MiB, total 128 MiB, allocated only when needed.
+- Storage texture mip/layer views and cached shader format variants. Each
+  program keeps at most eight variants with LRU replacement; original game
+  shader files stay unchanged. Draw pipeline keys include storage formats.
+- Actual compute dispatch with checked workgroup limits and cached pipelines.
+- Raw/structured and supported typed UAV clears, buffer zero clears, and
+  bounded texture clear chunks. Temporary nonzero texture chunks <=256 KiB;
+  cached zero source <=1 MiB. Counter resets remain separate from data clear.
+- GPU linear mip generation for supported float, renderable 2D SRV ranges,
+  with cached pipelines and mip/layer views/groups released with resources.
+- Signed/unsigned integer texture mappings and raw readback widths needed by
+  these bindings. Read-only attachments/storage reads do not falsely dirty
+  source proxies; actual writes still invalidate them.
+
+DIAGNOSTICS TIED TO REAL STARTUP
+Each failure includes opcode, shader IDs/hashes and payload context. The
+first UAV bindings and compute dispatches report exact views and groups.
+After compute begins, at most three presentation-source 16x16 samples
+report RGB range, pixel variation and a hash, at least 30 presentations
+apart. One 4 KiB readback buffer is reused. Nonblank/changed samples are not
+proof of a GTA scene; actors, world, camera and animations need visual phone
+confirmation. No fixture is counted as a physical surface presentation.
+
+File diagnostics retain bounded missing-path, ID, offset, physical-size,
+short-read and errno context, plus request/byte/error totals. The reader
+still has one 64 KiB buffer and at most eight open files. Reads are not
+turned into fake successes or silently redirected to missing game assets.
+Fixed startup log storage remains below 32 KiB and retains early, recent
+and categorized parser/streaming/graphics/gameplay errors. Scene-sphere
+requests and camera start events get counters and retained context.
+
+0.15 METADATA/SCENE INVESTIGATION
+Repeated NEW_LOAD_SCENE_START_SPHERE requests precede the Prologue intro
+camera and eventually stop in the supplied report. This indicates loading
+progress; it does not prove every repeated request is correct. No scene
+request or completion check was forced to succeed.
+
+Independent upstream scenarios.meta matches the pinned manifest size
+(1,802,223 bytes). Its ScenarioTypeGroups section has 16 top-level Item
+elements, none carrying the type attribute required by the observed native
+CScenarioTypeGroup parser. This supports a source-data/schema mismatch,
+independent of protected PC folders. No guessed class registrations or XML
+patches were applied. The hash and inspection are saved in evidence/0.16/
+metadata-analysis.json. defaulttasks parser classes, internal LOW_LATENCY.awc,
+offline Social Club/network assertions, Bink movies and logging/interior
+warnings remain separate unresolved diagnostics. Internal archive paths
+cannot be declared absent merely because they are not loose manifest files.
+
+TESTED SCOPE AND REMAINING LIMITS
+CI 38588558658 passed two complete GPU/runtime process runs. Each includes
+16 UAV/compute output cases, 1,122 resets across staging reuse, independent
+view counters, counter copy, exact offsets/guards, raw/structured clears,
+original CS_GpuFill512/CS_GpuCopy512 execution, R32Float/RGBA16Float storage
+variants, original draw pixel comparisons, mip chains and two presentation
+source samples. All 29 original compute pipelines compile; compilation
+alone is not their execution or a complete scene. Previous GPU/CPU suites
+and unsigned ARM64 package audit passed. See VERIFICATION-0.16.txt.
+
+Unsupported format/dimension/descriptor cases still stop with details,
+including partial 3D storage slice views and unsupported packed clear
+formats. General overlapping writable alignment-proxy aliasing is not
+claimed. Future trace-specific operations must be implemented and tested
+if reached. No claim that every potential startup error has been predicted.
+
+No engine instructions, original game shader files, resolution, quality,
+backend build, deployed main or PC package changes. Fifteen older IPAs are
+preserved. Stage 3 still requires successive correct Prologue scene frames
+on the phone. Stage 4 connects actual input/audio/lifecycle; stage 5 measures
+sustained playable Prologue. No native gameplay or completion date claimed.
+(stage 3 in progress) (5 stages left)
+
+Independent reference: work/minimal-engine/wgpu_worker.js
+Primary D3D11 initial-count definition:
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-cssetunorderedaccessviews
+Primary counter-copy definition:
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-copystructurecount
+Primary clear definition:
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-clearunorderedaccessviewuint
+Primary shading specification: https://gpuweb.github.io/gpuweb/wgsl/

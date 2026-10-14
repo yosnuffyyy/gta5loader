@@ -29,7 +29,10 @@ IPA GTA-Native-Probe-0.15-unsigned.ipa
 Bytes 102047984
 SHA256 cbfe6fee085bbe68e1c71f88d252c80b4c87bc48727748d9571939652b0df338
 
-Physical iPhone continuation past0.14 depth-as-color failure: PENDING.
+Physical iPhone continuation past0.14 depth-as-color failure: USER-REPORTED.
+0.15 reached Prologue intro camera and100,640 commands,8,208 draws,886
+presentations,then stopped at SET_UAVS counter reset. No correct successive
+3D scene or gameplay verified. See evidence/0.15/iphone-device-test.json.
 No actual successive Prologue scene,gameplay controls,audio output,Bink
 or Social Club repair claimed. Stage3 requires the iPhone scene check.
 (stage 3 in progress) (5 stages left)
