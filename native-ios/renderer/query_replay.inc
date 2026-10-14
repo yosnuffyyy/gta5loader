@@ -17,6 +17,7 @@ memset(cmd,0,sizeof(cmd));cmd[0]=122;cmd[1]=2;cmd[2]=cmd[3]=16;cmd[4]=cmd[5]=cmd
 #define QT(color,depth) do{memset(cmd,0,sizeof(cmd));cmd[0]=(color);cmd[32]=(depth);EMIT(26,37);}while(0)
 #define QDEPTH(id,z) do{memset(cmd,0,sizeof(cmd));cmd[0]=(id);cmd[3]=1;float value=(z);memcpy(cmd+4,&value,4);EMIT(6,6);}while(0)
 #define QSTATE(id) do{cmd[0]=(id);cmd[1]=0;EMIT(28,2);}while(0)
+#define QMASK(mask) do{memset(cmd,0,sizeof(cmd));for(unsigned j=1;j<5;j++)cmd[j]=0x3f800000;cmd[5]=(mask);EMIT(27,6);}while(0)
 #define QZ(z) do{cmd[0]=111;cmd[1]=16+11*16+8;cmd[2]=4;float value=(z);memcpy(cmd+3,&value,4);EMIT(12,4);}while(0)
 /* Count, multiple draws in one pass, empty query, visible/hidden predicate. */
 QB(0);QD();QE(0);expected[0]=256;
@@ -37,8 +38,8 @@ QB(10);QD();QB(11);QD();QE(11);QD();QE(10);expected[10]=768;expected[11]=256;
 QB(12);QD();cmd[0]=11177;cmd[1]=999;EMIT(46,2);cmd[0]=105;EMIT(29,1);memset(cmd,0,sizeof(cmd));cmd[0]=1;EMIT(31,5);QB(12);QD();QE(12);cmd[0]=104;EMIT(29,1);
 /* MSAA counts samples, including a two-sample mask and total rejection. */
 QT(120,119);QDEPTH(119,.5f);QB(13);QD();QE(13);expected[13]=1024;
-memset(cmd,0,sizeof(cmd));for(unsigned i=1;i<5;i++)cmd[i]=0x3f800000;cmd[5]=5;EMIT(27,6);QB(14);QD();QE(14);expected[14]=512;cmd[5]=0;EMIT(27,6);QB(15);QD();QE(15);
-cmd[5]=UINT32_MAX;EMIT(27,6);QT(116,122);QSTATE(121);memset(cmd,0,sizeof(cmd));cmd[0]=122;cmd[3]=3;float half=.5f;memcpy(cmd+4,&half,4);cmd[5]=7;EMIT(6,6);QB(16);QD();QE(16);QSTATE(0);QT(116,0);
+QMASK(5);QB(14);QD();QE(14);expected[14]=512;QMASK(0);QB(15);QD();QE(15);
+QMASK(UINT32_MAX);QT(116,122);QSTATE(121);memset(cmd,0,sizeof(cmd));cmd[0]=122;cmd[3]=3;float half=.5f;memcpy(cmd+4,&half,4);cmd[5]=7;EMIT(6,6);QB(16);QD();QE(16);QSTATE(0);QT(116,0);
 /* Depth-only draws with no fragment shader or color writes. */
 cmd[0]=1;cmd[1]=0;EMIT(18,2);QT(0,117);QDEPTH(117,.5f);QSTATE(107);QB(17);QD();QE(17);expected[17]=256;cmd[0]=1;cmd[1]=102;EMIT(18,2);QSTATE(0);QT(116,0);
 /* Destroy a pending generation, reuse the same ID with a different address. */
@@ -54,4 +55,5 @@ for(unsigned t=Q_BASIC;t<Q_TOTAL;t++){QB(t);QD();QE(t);expected[t]=256;}
 #undef QT
 #undef QDEPTH
 #undef QSTATE
+#undef QMASK
 #undef QZ

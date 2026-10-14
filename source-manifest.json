@@ -403,8 +403,8 @@
     },
     {
       "path": "native-ios/renderer/query_replay.inc",
-      "bytes": 4595,
-      "sha256": "d17ea64447444e6b4be71aa609e11f87f4c34324a3f55eb3ec806d4307464c9a"
+      "bytes": 4633,
+      "sha256": "fa16350c7c9628d39b3786906d91b25ffb4ac66138df46b18729a28abfcc1fea"
     },
     {
       "path": "native-ios/renderer/query_setup.inc",
