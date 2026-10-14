@@ -1,5 +1,5 @@
 {
-  "scope": "Native 0.11 actual filesystem capacity, exact engine statfs/statvfs ABI and worker proxy; stage 3 in progress",
+  "scope": "Native 0.11 actual filesystem capacity, exact engine statfs/statvfs ABI and worker proxy, native entropy device; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
@@ -53,8 +53,8 @@
     },
     {
       "path": "native-ios/generate-probe.mjs",
-      "bytes": 5712,
-      "sha256": "c35d01439dd0066df1b387ea13b08213f9e2226403207d71a39c1fa1748d02ba"
+      "bytes": 5833,
+      "sha256": "0ae0c1195f5274ffb38556134188fd47e85054ea4fe8d81a6476e849327bbe45"
     },
     {
       "path": "native-ios/host-imports.json",
@@ -68,8 +68,8 @@
     },
     {
       "path": "native-ios/native_host.c",
-      "bytes": 15349,
-      "sha256": "cc19b45f5b6b8e82563e5fe02b8928c601c45e489280dd2ba378579857a28aff"
+      "bytes": 16132,
+      "sha256": "e322f74457a46df77beb1668bbf9b6c3cd24e2350bd0c0116d86c94e0a49b289"
     },
     {
       "path": "native-ios/native_host.h",
@@ -78,8 +78,8 @@
     },
     {
       "path": "native-ios/native_runtime.c",
-      "bytes": 14937,
-      "sha256": "6034df06e34950d208f840e3634bae2288d3b42e0169f4128c9c1d8770716a33"
+      "bytes": 16284,
+      "sha256": "e786e33f01e51d4f9524cd856aca1df0e5345ec5d921fa2d1693527d8f390f77"
     },
     {
       "path": "native-ios/native_wait.c",
@@ -128,8 +128,8 @@
     },
     {
       "path": "native-ios/prepare-engine.mjs",
-      "bytes": 4838,
-      "sha256": "df8a5121e7348013fe54820ebc2856db39b5e4524c9373415e42bdc34d713f4b"
+      "bytes": 4911,
+      "sha256": "62709ae6422ecb03fc7ce07e45dda7f1e216e0138f624b5526f4b822aaa5e31f"
     },
     {
       "path": "native-ios/prepare-fixtures.mjs",
@@ -293,8 +293,8 @@
     },
     {
       "path": "native-ios/test_host.c",
-      "bytes": 5679,
-      "sha256": "91252c2475c18bd5fc9224568d9b7beff3e93fb6e8e9d23f28c451db8e1826a3"
+      "bytes": 6528,
+      "sha256": "e85651511da95d4f62a88bd06ddcf6d74b911b33b6e14c34b8aa86f9295902fc"
     },
     {
       "path": "native-ios/test_wait.c",

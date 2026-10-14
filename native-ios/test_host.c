@@ -55,6 +55,20 @@ int main(void){
  h.save_root=open("native-build/fixtures/saves",O_RDONLY|O_DIRECTORY);
  assert(h.game_root>=0&&h.save_root>=0);
  capacity_tests(&h);
+ // Exercise the same 52-byte seed read as the real engine. These checks
+ // establish bridge behavior; they are not a statistical proof of entropy.
+ for(unsigned i=0;i<2;i++){
+  uint32_t rng=open_path(&h,i?"/dev/random":"/dev/urandom",0);assert((int32_t)rng>=3);
+  host_put64(&h,512,4096);host_put64(&h,520,52);
+  assert(host_io(&h,rng,512,1,2048,false,false,0)==0&&host_u64(&h,2048)==52);
+  assert(host_io(&h,rng,512,1,2048,true,false,0)==8);
+  assert(host_fd_close(&h,rng)==0&&host_fd_close(&h,rng)==8);
+ }
+ assert((int32_t)open_path(&h,"/dev/urandom",1)==-69);
+ assert((int32_t)open_path(&h,"/dev/random",64)==-69);
+ assert((int32_t)open_path(&h,"/dev/urandom/../other",0)==-44);
+ assert((int32_t)open_path(&h,"/dev/zero",0)==-44);
+ puts("PASS: read-only native entropy device seed reads, denied writes, exact device paths and close cleanup.");
  host_store(&h,64,"/userdata",10);assert(host_path_stat(&h,64,8192)==0);
  host_store(&h,64,"/userdata/path-test",20);
  assert(host_mkdir(&h,(uint32_t)-100,64,0777)==0);

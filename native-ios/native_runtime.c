@@ -37,6 +37,21 @@ void native_stack_probe(struct w2c_env *h,w2c_gta *engine,uint64_t scratch){
  }
 }
 static void putstr(struct w2c_env *h,uint64_t p,const char *s){host_store(h,p,s,strlen(s)+1);}
+static void entropy_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){
+ // Existing engine RNG functions, including their own health test. No RNG
+ // code is replaced or seeded with test constants. Keep guard bytes around
+ // a generously sized, zeroed temporary state; FreeRng releases its heap.
+ unsigned char state[144]={0},actual[144],output[144];
+ memset(state,0xa5,8);memset(state+136,0xa5,8);host_store(h,p,state,sizeof(state));
+ require(h,w2c_gta_f90334(engine,p+8)==0,"real engine RNG initialization failed");
+ memset(output,0xa5,sizeof(output));host_store(h,p+512,output,sizeof(output));
+ uint32_t generated=w2c_gta_f90335(engine,p+8,p+520,128);
+ uint32_t freed=w2c_gta_f90333(engine,p+8);
+ require(h,generated==0&&freed==0,"real engine RNG generation/cleanup failed");
+ host_load(h,actual,p,sizeof(actual));require(h,!memcmp(actual,state,8)&&!memcmp(actual+136,state+136,8),"engine RNG state guards changed");
+ host_load(h,actual,p+512,sizeof(actual));require(h,!memcmp(actual,output,8)&&!memcmp(actual+136,output+136,8),"engine RNG output guards changed");
+ require(h,memcmp(actual+8,output+8,128)!=0,"engine RNG did not produce output");
+}
 void native_storage_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){
  struct statvfs expected;require(h,fstatvfs(h->save_root,&expected)==0,"native volume query failed");
  unsigned char guard[128],actual[128];memset(guard,0xa5,sizeof(guard));
@@ -180,6 +195,8 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
   uint64_t scratch=w2c_gta_0x5Femscripten_stack_alloc(engine,80*1024);
   saves(h,scratch);abi(h,scratch);native_stack_probe(h,engine,scratch);native_storage_probe(h,engine,scratch);
   message(h,"PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.");
+  entropy_probe(h,engine,scratch);
+  message(h,"PASS: real engine wc_InitRng health test, 128-byte generation and wc_FreeRng using the native OS entropy device; output/state guards intact.");
   message(h,"PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.");
   if(game_folder)assets(h,scratch);else message(h,"SKIP: actual game-file reads; select the extracted web folder to include them.");
   require(h,h->failure==NULL,"native file close reported an error");

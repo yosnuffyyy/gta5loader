@@ -91,6 +91,18 @@ static HostFD *file(struct w2c_env *h,uint32_t fd){return fd>=3&&fd<HOST_FDS&&h-
 static uint32_t unlocked_open_text(struct w2c_env *h,uint32_t dirfd,char *text,uint32_t flags) {
  if((int32_t)dirfd!=-100)return (uint32_t)-58;
  char *p=text;if(*p=='/')p++;
+ // The fixed engine's wc_InitRng reads a 52-byte seed from these exact
+ // virtual devices. Bind both to the OS cryptographic source, read-only;
+ // this does not permit arbitrary native paths under /dev (or elsewhere).
+ if(!strcmp(p,"dev/urandom")||!strcmp(p,"dev/random")){
+  if(flags&(3u|64u|128u|512u|1024u))return (uint32_t)-69;
+  if(flags&~(32768u|524288u))return (uint32_t)-28;
+  unsigned slot=3;while(slot<HOST_FDS&&h->files[slot].fd>=0)slot++;
+  if(slot==HOST_FDS)return (uint32_t)-33;
+  int fd=open("/dev/urandom",O_RDONLY|O_NOFOLLOW|O_CLOEXEC);
+  if(fd<0)return (uint32_t)-wasi_errno(errno);
+  h->files[slot]=(HostFD){fd,false};return slot;
+ }
  int root;bool readonly;
  bool root_only=!strcmp(p,"userdata");
  if(!strncmp(p,"data/",5)){root=h->game_root;readonly=true;}
@@ -181,7 +193,7 @@ static uint32_t unlocked_stat(struct w2c_env *h,uint32_t fd,uint64_t p) {
  struct stat s;if(fstat(f->fd,&s))return (uint32_t)-wasi_errno(errno);
  unsigned char zero[104]={0};host_store(h,p,zero,sizeof(zero));
  host_put32(h,p,(uint32_t)s.st_dev);
- uint32_t mode=(S_ISDIR(s.st_mode)?0040000u:0100000u)|(s.st_mode&0777u);
+ uint32_t mode=(S_ISDIR(s.st_mode)?0040000u:S_ISCHR(s.st_mode)?0020000u:0100000u)|(s.st_mode&0777u);
  host_put32(h,p+4,mode);host_put64(h,p+8,s.st_nlink);
  host_put32(h,p+16,s.st_uid);host_put32(h,p+20,s.st_gid);host_put32(h,p+24,(uint32_t)s.st_rdev);
  host_put64(h,p+32,(uint64_t)s.st_size);host_put32(h,p+40,(uint32_t)s.st_blksize);host_put32(h,p+44,(uint32_t)s.st_blocks);
@@ -242,6 +254,7 @@ uint32_t host_statfs(struct w2c_env *h,uint64_t path,uint64_t size,uint64_t out)
  size_t length=strlen(text);bool directory=length&&text[length-1]=='/';
  while(length>1&&text[length-1]=='/')text[--length]=0;
  const char *relative=text[0]=='/'?text+1:text;
+ if(!strncmp(relative,"dev/",4))return (uint32_t)-44; // entropy devices are not game/save volumes
  bool readonly=!strcmp(relative,"data")||!strncmp(relative,"data/",5);
  struct statvfs stats;uint32_t result=0,slot=0;int fd=-1;bool close_fd=false;
  lock(&file_mutex);
