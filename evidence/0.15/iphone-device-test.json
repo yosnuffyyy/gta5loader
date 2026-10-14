@@ -1,0 +1,9 @@
+{
+  "version": "0.15",
+  "status": "PENDING",
+  "requestedTest": "Trace Prologue startup; verify whether actual 3D actors/world render in successive frames, copy full final report",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false
+}

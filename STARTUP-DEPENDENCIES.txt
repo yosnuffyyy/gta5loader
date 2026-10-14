@@ -51,3 +51,14 @@ Stage 3 IN PROGRESS: native 0.6 command service and archive trace path.
 See GPU-COMMAND-COVERAGE-0.6.json for handler and actual replay coverage.
 General scene draws/compute and physical real-archive continuation remain
 pending. No real native game scene or gameplay is verified.
+
+CURRENT INTEGRATION — 0.15 (earlier text records the original baseline)
+Physical0.14 reached Prologue1 intro/camera:98,193 commands,7,793 draws,
+851 presentations. It stopped at the depth-as-color adapter. Successive
+correct3D frames remain unverified. Native0.15 ports GPU depth/stencil/float
+SRV proxies with lazy mip/layer refresh and write invalidation. CI38576548448
+passed two full rendering/runtime runs,14 depth cases each,existing suites
+and the unsigned ARM64 package audit. Physical scene continuation pending.
+No remaining compute/UAV/query/shader path is assumed implemented merely
+because earlier startup/draws passed. Audio/gameplay/lifecycle remain later.
+(stage 3 in progress) (5 stages left)

@@ -1,0 +1,48 @@
+NATIVE 0.15 — GPU DEPTH/STENCIL/FLOAT SRV PROXIES
+
+Physical0.14 reached Prologue1/CUTSCENEINTRO and initialized its animated
+camera. It executed98,193 commands,7,793 draws and851 presentations before
+the unimplemented depth-as-color adapter stopped DRAW. The prior vertex
+guard was absent. These counts do not verify correct successive3D frames.
+
+D3D depth views can be read as float textures; the original browser WGSL
+uses that ABI. WebGPU requires compatible texture sample types. Native0.15
+ports all three browser adapters: depth toR32Float,stencil toR8Uint,and
+float toDepth32Float for comparison sampling. Each source owns its proxies.
+The renderer lazily allocates views/groups for requested mip/layer ranges,
+refreshing them only when the source version changes. Draws,clears,uploads,
+region/resource copies and resolves invalidate source contents. Read-only
+depth/stencil attachments do not dirty the source.
+
+Conversions are render passes in the same encoder as the consuming game
+draw. No CPU depth pixel copy,readback or new per-draw completion wait.
+Unchanged sources reuse textures,views and groups. Three conversion
+pipelines are cached. Ordinary shaders cache the absence of proxy bindings.
+Nominal proxy texel storage is capped to256MiB across the device;this is a
+ceiling,not a preallocation or measured physical footprint. Source destroy
+releases associated passes and textures. Counters expose actual proxy
+allocations,refreshes,reuse,nominal peak storage and remaining live objects.
+Multisampled proxies remain explicitly unsupported with texture/DXGI/SRV
+details;unsupported operations do not silently return success.
+
+Verified in two process runs by CI38576548448: fourteen shared-ring DRAW cases compare every one of256 pixels per case.
+Original IM shader plus diagnostic stencil/comparison variants exercise
+depth/stencil reads,comparison results,mip/layer selection,source clear,
+actual draw into depth,upload,whole resource copy,cached binding reuse and
+read-only attachment aliasing. Final source destroy checks no live proxies.
+Bounds and mip/layer arithmetic run under ASan/UBSan. Existing BC,SNORM,
+instance,raw-readback,shader,file/thread/runtime checks remain required.
+All existing suites and unsigned ARM64 IPA audit passed.
+Build evidence and package audit: VERIFICATION-0.15.txt.
+
+No engine instructions,original game shader files,resolution,backend build,
+PC port or deployed main changes. Fourteen older IPAs are preserved.
+Stage3 is active until successive correct Prologue scene frames are reported
+on the iPhone. Controls/audio/lifecycle are stage4,then sustained playable
+Prologue is stage5. No playable native release or completion date claimed.
+(stage 3 in progress) (5 stages left)
+
+Independent browser reference: work/minimal-engine/wgpu_worker.js
+functions srvView,depthProxy,floatToDepthProxy,prepareDepthProxies.
+Primary sample-type reference: https://gpuweb.github.io/types/types/GPUTextureSampleType.html
+Primary shading specification: https://gpuweb.github.io/gpuweb/wgsl/

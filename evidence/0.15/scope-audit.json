@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "sourceEntries": 87,
+  "changedPaths": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/renderer/build-renderer.sh",
+    "native-ios/renderer/depth_proxy_layout.h",
+    "native-ios/renderer/depth_proxy_replay.inc",
+    "native-ios/renderer/depth_proxy_verify.inc",
+    "native-ios/renderer/draw_depth_proxy.inc",
+    "native-ios/renderer/draw_shader.inc",
+    "native-ios/renderer/draw_types.inc",
+    "native-ios/renderer/native_draw.inc",
+    "native-ios/renderer/native_gpu.m",
+    "native-ios/renderer/native_scene.c",
+    "native-ios/renderer/test_depth_proxy_layout.c",
+    "source-manifest.json"
+  ],
+  "priorIpas": 14,
+  "unchangedEngineInstructionsAndGeneratedBindings": true,
+  "unchangedGameShaderFiles": true,
+  "unchangedBackendBuild": true,
+  "unchangedResolution": true
+}

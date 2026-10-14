@@ -1494,11 +1494,40 @@
   ],
   "graphicsStartup": "Graphics-enabled main invokes wgpu_start_worker before the CPU checkpoint workers; backend readiness must be real.",
   "unverified": [
+    "Successive correct native Prologue 3D frames on physical iPhone",
+    "All remaining workload-specific GPU commands, shader variants and host dispatch operations",
+    "Audio output, gameplay input, pause/resume and sustained performance"
+  ],
+  "baselineVersion": "0.4",
+  "baselineUnverified": [
     "Archive parsing and scene loading",
     "All workload-specific embedded host dispatch operations",
     "Full worker counts, callbacks and job coverage",
     "Actual Prologue command/shader trace",
     "Native GPU integration and display",
     "Audio playback, gameplay input, pause/resume and sustained performance"
-  ]
+  ],
+  "currentIntegration": {
+    "version": "0.15",
+    "stage3": "IN PROGRESS",
+    "stagesLeft": 5,
+    "physical014": {
+      "commands": 98193,
+      "draws": 7793,
+      "presentations": 851,
+      "script": "Prologue1 CUTSCENEINTRO / animated camera",
+      "blocker": "Depth-as-color proxy",
+      "realSceneVerified": false
+    },
+    "native015": {
+      "ci": 38576548448,
+      "status": "PASS",
+      "source": "ee8dc8637bfacfc09289179bc1de2fdc6ecb152b",
+      "depthProxyCasesPerRun": 14,
+      "processRuns": 2,
+      "existingRegressions": "PASS",
+      "package": "Unsigned ARM64 iPhoneOS17+",
+      "physicalScene": "PENDING"
+    }
+  }
 }

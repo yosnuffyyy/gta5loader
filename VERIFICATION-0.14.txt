@@ -38,7 +38,11 @@ IPA GTA-Native-Probe-0.14-unsigned.ipa
 Bytes 102042043
 SHA256 8df2971492f00a58f180ca66e124d5f5f6cef342f18da2c1b8a329a7623e013f
 
-Physical iPhone continuation past 0.13 vertex-input failure: PENDING.
+Physical iPhone0.14: previous vertex-input guard absent;100 stepped draws/batches.
+Prologue intro and animated camera reached;98193 commands,7793 draws,
+851 presentations,70 pipelines. Depth-as-color proxy guard stopped it.
+Reported process sample1242.2MiB,heap1292.1MiB;Exit1;cleanup67.9MiB.
+Successive correct3D scene and playable movement remain unverified.
 The0.13 phone reached North Yankton/Prologue intro;successive3D frames
 and gameplay remain unverified. No Prologue scene, playable test,
 Bink or Social Club repair claimed.

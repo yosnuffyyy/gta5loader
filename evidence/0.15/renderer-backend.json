@@ -1,0 +1,223 @@
+{
+  "name": "wgpu-native",
+  "version": "v29.0.1.1",
+  "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+  "license": "MIT OR Apache-2.0",
+  "selection": "Metal/WGSL native backend; shader feasibility passed on iPhone. Local source patch queries actual Metal BC capability on iOS; physical BC test pending.",
+  "ios": {
+    "asset": "wgpu-ios-aarch64-release.zip",
+    "bytes": 13593993,
+    "sha256": "e36c9913b9e5095a530fa9121c50b16a4e3dd020e1eebf601f2f47ce24d56941"
+  },
+  "macos": {
+    "asset": "wgpu-macos-aarch64-release.zip",
+    "bytes": 13733288,
+    "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e"
+  },
+  "localPatch": {
+    "wgpuHal": "29.0.3",
+    "change": "Metal BC capability detection",
+    "rust": "1.93.1",
+    "features": [
+      "metal",
+      "wgsl"
+    ],
+    "preserveCompressedTextures": true
+  },
+  "downloaded": [
+    {
+      "target": "macos",
+      "asset": "wgpu-macos-aarch64-release.zip",
+      "bytes": 13733288,
+      "sha256": "a5797a37b1adf720bcd5dcffb291edbbd5b7b14be0a3874c28e6393a655a7a3e",
+      "staticLibraryBytes": 34356312
+    },
+    {
+      "target": "ios",
+      "asset": "wgpu-ios-aarch64-release.zip",
+      "bytes": 13593993,
+      "sha256": "e36c9913b9e5095a530fa9121c50b16a4e3dd020e1eebf601f2f47ce24d56941",
+      "staticLibraryBytes": 34127312
+    }
+  ],
+  "shaderFixtures": {
+    "referenceWorkerSHA256": "aa459280079845062ca88c232874ca3e2a4c8b2832343b54353e229fe394eea8",
+    "records": [
+      {
+        "stage": "vs",
+        "hash": "b8698e91b33c5e70",
+        "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/b8698e91b33c5e70.wgsl",
+        "sourceSHA256": "c5a59fe852281c2240093fc58f7aab3f4b6cf7c3abb7fc11a6c643b8cd7cb940",
+        "packedSHA256": "5cfb68fa4dce1c654bdd1d0af73efd745fa4c0d174e68154965bc54d77915515",
+        "pack": {
+          "members": [
+            {
+              "binding": 5,
+              "name": "cb5_5",
+              "type": "cb84_struct",
+              "size": 1344,
+              "offset": 0
+            }
+          ],
+          "size": 1344,
+          "group": 0
+        }
+      },
+      {
+        "stage": "ps",
+        "hash": "6d214da591105085",
+        "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/6d214da591105085.wgsl",
+        "sourceSHA256": "89ff3946a35bd03e9a9cd8b9069cbab95474ee2213d0f967ba7670ae08dfe00b",
+        "packedSHA256": "5c165ca6158cd7827bd1c86bc526a5299dc360065e14b2272fd95214a7d42a51",
+        "pack": {
+          "members": [
+            {
+              "binding": 2,
+              "name": "cb2_2",
+              "type": "cb18_struct",
+              "size": 288,
+              "offset": 0
+            },
+            {
+              "binding": 5,
+              "name": "cb5_5",
+              "type": "cb86_struct",
+              "size": 1376,
+              "offset": 288
+            }
+          ],
+          "size": 1664,
+          "group": 1
+        }
+      }
+    ]
+  },
+  "startupDrawFixtures": {
+    "source": "Original startup immediate-mode shader pair from 0.7 phone trace",
+    "records": [
+      {
+        "hash": "028921879df627f5",
+        "stage": "vs",
+        "sourceSHA256": "d8c49ebbf71f3e7e1d15064b6afeaf2484af704e37dd368e49d9bf93094193eb",
+        "bytes": 915
+      },
+      {
+        "hash": "943b0ad9542193ff",
+        "stage": "ps",
+        "sourceSHA256": "9fefdff9f376aafa80ae232c3cff0971cbec8a121174aea6d26500c84d2f0200",
+        "bytes": 647
+      }
+    ]
+  },
+  "exportCoverage": {
+    "calls": [
+      "wgpuAdapterGetInfo",
+      "wgpuAdapterGetLimits",
+      "wgpuAdapterHasFeature",
+      "wgpuAdapterInfoFreeMembers",
+      "wgpuAdapterRelease",
+      "wgpuAdapterRequestDevice",
+      "wgpuBindGroupLayoutRelease",
+      "wgpuBindGroupRelease",
+      "wgpuBufferDestroy",
+      "wgpuBufferGetConstMappedRange",
+      "wgpuBufferMapAsync",
+      "wgpuBufferRelease",
+      "wgpuBufferUnmap",
+      "wgpuCommandBufferRelease",
+      "wgpuCommandEncoderBeginRenderPass",
+      "wgpuCommandEncoderCopyBufferToBuffer",
+      "wgpuCommandEncoderCopyTextureToBuffer",
+      "wgpuCommandEncoderCopyTextureToTexture",
+      "wgpuCommandEncoderFinish",
+      "wgpuCommandEncoderRelease",
+      "wgpuCreateInstance",
+      "wgpuDeviceCreateBindGroup",
+      "wgpuDeviceCreateBindGroupLayout",
+      "wgpuDeviceCreateBuffer",
+      "wgpuDeviceCreateCommandEncoder",
+      "wgpuDeviceCreatePipelineLayout",
+      "wgpuDeviceCreateRenderPipeline",
+      "wgpuDeviceCreateSampler",
+      "wgpuDeviceCreateShaderModule",
+      "wgpuDeviceCreateTexture",
+      "wgpuDeviceDestroy",
+      "wgpuDeviceGetLimits",
+      "wgpuDeviceGetQueue",
+      "wgpuDeviceHasFeature",
+      "wgpuDevicePoll",
+      "wgpuDeviceRelease",
+      "wgpuInstanceCreateSurface",
+      "wgpuInstanceProcessEvents",
+      "wgpuInstanceRelease",
+      "wgpuInstanceRequestAdapter",
+      "wgpuPipelineLayoutRelease",
+      "wgpuQueueOnSubmittedWorkDone",
+      "wgpuQueueRelease",
+      "wgpuQueueSubmit",
+      "wgpuQueueWriteBuffer",
+      "wgpuQueueWriteTexture",
+      "wgpuRenderPassEncoderDraw",
+      "wgpuRenderPassEncoderDrawIndexed",
+      "wgpuRenderPassEncoderDrawIndexedIndirect",
+      "wgpuRenderPassEncoderDrawIndirect",
+      "wgpuRenderPassEncoderEnd",
+      "wgpuRenderPassEncoderRelease",
+      "wgpuRenderPassEncoderSetBindGroup",
+      "wgpuRenderPassEncoderSetBlendConstant",
+      "wgpuRenderPassEncoderSetIndexBuffer",
+      "wgpuRenderPassEncoderSetPipeline",
+      "wgpuRenderPassEncoderSetScissorRect",
+      "wgpuRenderPassEncoderSetStencilReference",
+      "wgpuRenderPassEncoderSetVertexBuffer",
+      "wgpuRenderPassEncoderSetViewport",
+      "wgpuRenderPipelineGetBindGroupLayout",
+      "wgpuRenderPipelineRelease",
+      "wgpuSamplerRelease",
+      "wgpuShaderModuleRelease",
+      "wgpuSurfaceConfigure",
+      "wgpuSurfaceGetCurrentTexture",
+      "wgpuSurfacePresent",
+      "wgpuSurfaceRelease",
+      "wgpuSurfaceUnconfigure",
+      "wgpuTextureCreateView",
+      "wgpuTextureDestroy",
+      "wgpuTextureRelease",
+      "wgpuTextureViewRelease"
+    ],
+    "unimplementedSourceSHA256": "a02e4f1e559eef18c6433006968733a94a7c6d4b114f8df83379cff07893eac6",
+    "result": "No fixture call targets an unimplemented backend export; not a full behavioral coverage claim"
+  },
+  "sourceBuild": {
+    "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+    "rust": "1.93.1",
+    "features": [
+      "metal",
+      "wgsl"
+    ],
+    "locked": true,
+    "offlineBuild": true,
+    "patch": {
+      "name": "Metal BC capability detection",
+      "wgpuHalVersion": "29.0.3",
+      "originalCrateSHA256": "31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f",
+      "originalAdapterSHA256": "6da21d590125e601015862dd2a66e4dae2fdd5e35d80624dd2c6cca52099d9bf",
+      "patchedAdapterSHA256": "dd57c51d4c50610f60e8eb0895d4f04ddccd1772756b5989f93dfccb047ffdd1",
+      "before": "            format_bc: os_type == super::OsType::Macos,",
+      "after": "            // Local native-iPhone patch: ask Metal rather than excluding iOS.\n            // Unsupported devices remain unsupported; no feature is fabricated.\n            format_bc: os_type == super::OsType::Macos\n                || (available!(ios = 16.4, tvos = 16.4, visionos = 1.0)\n                    && device_class_responds_to(device, sel!(supportsBCTextureCompression))\n                    && device.supportsBCTextureCompression()),",
+      "scope": "Only the BC capability condition; normal validation and compressed storage preserved"
+    },
+    "libraries": [
+      {
+        "target": "macos",
+        "bytes": 29671048,
+        "sha256": "640c233950bccffd05d3f29f13caf2119edf44f41fcdec8e63c9a566bf662eb3"
+      },
+      {
+        "target": "ios",
+        "bytes": 29459800,
+        "sha256": "ccb76e3c50e3c0ba13a62b2ed4e2393a486e8408a840948202be93a011891e29"
+      }
+    ]
+  }
+}

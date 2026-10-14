@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.14 constant/divided instance streams; stage 3 remains active.
+Updated 2026-10-13. Native 0.15 depth/stencil/float SRV proxies; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -66,7 +66,14 @@ It then hit the combined vertex slot/location/rate guard. No successive
 correct3D scene is yet verified.0.14 supports rate0/N instance data without
 vertex expansion,and records exact invalid descriptor fields. CI38496623732
 passed two full rendering/runtime runs and sanitizer checks;the unsigned
-ARM64 IPA audit passed. Physical0.14 scene continuation remains pending.
+ARM64 IPA audit passed. Physical0.14 passed the old instance-input guard and reached Prologue intro:
+98,193 commands,7,793 draws,851 presentations,70 pipelines. It stopped at
+the depth-as-color SRV guard. Reported process sample1,242.2MiB;heap1,292.1MiB.
+0.15 implements the browser's depth/stencil/float proxies on the GPU,with
+lazy requested-mip/layer refresh and cached resources. Fourteen pixel cases
+check writes,unchanged reuse and cleanup. CI38576548448 passed both full renderer/runtime process runs,including all
+14 proxy cases and existing suites. ARM64 unsigned0.15 package audit passed.
+Physical0.15 scene continuation remains pending.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

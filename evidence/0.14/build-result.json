@@ -218,7 +218,7 @@
       }
     ]
   },
-  "iphone014": "PENDING",
+  "iphone014": "USER-REPORTED: Prologue cutscene intro and animated camera reached; 98193 commands,7793 draws,851 presentations. Instance guard absent;depth-as-color guard trapped. Exit1;reported process sample1242.2MiB,heap1292.1MiB,cleanup67.9MiB. Successive correct3D scene not verified.",
   "stage3": "IN PROGRESS",
   "stagesLeft": 5,
   "realSceneVerified": false,

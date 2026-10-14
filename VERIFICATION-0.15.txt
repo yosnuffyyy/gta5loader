@@ -1,0 +1,35 @@
+NATIVE 0.15 VERIFICATION
+Source ee8dc8637bfacfc09289179bc1de2fdc6ecb152b
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38576548448
+Job 115895076939: PASS
+
+PASS: two complete native GPU/runtime process runs. Each shared-ring
+replay executed586 commands,36 engine draws,13 pipelines and75 readbacks.
+Fourteen depth-proxy cases per run compare all256 pixels each. Covers
+depth-to-float,stencil-to-uint,float-to-depth comparison,clear/draw/upload/
+copy invalidation,mip/layer ranges,unchanged cached reuse and read-only
+depth attachment. Five proxy allocations,11 refreshes,two reuses per run.
+Nominal fixture proxy storage peak7KiB;live bytes/passes0/0 after destroy.
+This is fixture coverage,not a physical iPhone gameplay memory result.
+PASS: ASan/UBSan proxy storage budget,mip/layer bounds and wide arithmetic.
+PASS: existing instance-rate,raw readback,SNORM,BC,original shader/ring
+regressions,including separate shader fixture with zero validation errors.
+PASS: four real engine constructor/TLS/save/I/O/asset/runtime checkpoints
+and32 engine worker instances;mailbox,cancellation,entropy/filesystem ABI,
+SIMD/bulk/wait/log sanitizer tests. Two graphics-enabled main checkpoints
+stop deliberately BEFORE archive bytes;these do not load a game scene.
+PASS: Mac Metal and unsigned ARM64 iPhoneOS17+ package audit.
+Cached compiler objects: macos: 131; ios: 131.
+87 source entries verified against immutable Git tree.
+Artifact ZIP lengths/digests and IPA checksum verified. Fourteen older
+IPAs unchanged. Engine instructions,original shaders,backend build,
+resolution,PC packages and deployed main unchanged.
+
+IPA GTA-Native-Probe-0.15-unsigned.ipa
+Bytes 102047984
+SHA256 cbfe6fee085bbe68e1c71f88d252c80b4c87bc48727748d9571939652b0df338
+
+Physical iPhone continuation past0.14 depth-as-color failure: PENDING.
+No actual successive Prologue scene,gameplay controls,audio output,Bink
+or Social Club repair claimed. Stage3 requires the iPhone scene check.
+(stage 3 in progress) (5 stages left)
