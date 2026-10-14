@@ -233,8 +233,8 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 16609,
-      "sha256": "d275f10217f652172bad7d7358cbf51a11947236c5846ec580903f7cca4294b1"
+      "bytes": 16324,
+      "sha256": "622d4f118d144ae2a8ba3ec00605319d18e51e2e13e0cdd1bd02987dba9a4f87"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
@@ -278,8 +278,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 20016,
-      "sha256": "d1a07547a6576547e370b88eddfcba95f5347bd0a0477424761013e4a59f2050"
+      "bytes": 20060,
+      "sha256": "ab2b1351aeda52521f2c883181814a41c6fbe78a689a86f8b02467de59d173be"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/shader_audit.inc",
-      "bytes": 9256,
-      "sha256": "838ac04ff4bbce53e89030e7a642f744dd2f01636fcc62e8f90d5dfc63919cfc"
+      "bytes": 10846,
+      "sha256": "7e91013ef9168dd5581ec7f25134cc8986f4b244563e628bd4f7b00c6112f5be"
     },
     {
       "path": "native-ios/renderer/shader_fixture.h",

@@ -1,6 +1,18 @@
 /* CI only. Validate every translated shader through the production loader,
    uniform packing and layouts, then compile native Metal pipelines. One
    shader/pipeline is live at a time. No diagnostic pixels claim a game scene. */
+static bool audit_null_ms(NativeGpu *g){
+ const WGPUTextureSampleType types[]={WGPUTextureSampleType_UnfilterableFloat,WGPUTextureSampleType_Uint,WGPUTextureSampleType_Sint};
+ for(unsigned i=0;i<3;i++){
+  DrawBinding b={.kind=4,.sample=types[i],.ms=true,.dim=WGPUTextureViewDimension_2D};WGPUBindGroupLayout layout=NULL;WGPUBindGroup group=NULL;bool ok=false;
+  WGPUTextureView v=draw_srv(g,&b,0);if(!v||atomic_load(&g->failed))goto cleanup;
+  WGPUBindGroupLayoutEntry entry=WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;entry.visibility=WGPUShaderStage_Fragment;entry.texture.sampleType=types[i];entry.texture.viewDimension=WGPUTextureViewDimension_2D;entry.texture.multisampled=true;
+  WGPUBindGroupLayoutDescriptor ld=WGPU_BIND_GROUP_LAYOUT_DESCRIPTOR_INIT;ld.entryCount=1;ld.entries=&entry;layout=wgpuDeviceCreateBindGroupLayout(g->device,&ld);if(!layout||atomic_load(&g->failed))goto cleanup;
+  WGPUBindGroupEntry binding=WGPU_BIND_GROUP_ENTRY_INIT;binding.textureView=v;WGPUBindGroupDescriptor bd=WGPU_BIND_GROUP_DESCRIPTOR_INIT;bd.layout=layout;bd.entryCount=1;bd.entries=&binding;group=wgpuDeviceCreateBindGroup(g->device,&bd);ok=group&&!atomic_load(&g->failed);
+ cleanup:if(group)wgpuBindGroupRelease(group);if(layout)wgpuBindGroupLayoutRelease(layout);if(b.view)wgpuTextureViewRelease(b.view);if(b.dummy){wgpuTextureDestroy(b.dummy);wgpuTextureRelease(b.dummy);}if(!ok)return false;
+ }
+ puts("PASS: production null multisample textures and typed float/uint/sint bind groups validated (3 cases). Pixel output is checked separately by rendering regressions.");return true;
+}
 static bool audit_pipeline(NativeGpu *g,DrawProgram *p){@autoreleasepool{
  NSString *source=nil,*args=nil,*output=nil;NSArray *entries=nil,*inputs=nil,*results=nil;
  WGPUBindGroupLayout layouts[2]={p->layout,NULL};WGPUBindGroupLayout empty=NULL;
@@ -50,7 +62,7 @@ int native_gpu_shader_audit(const char *directory,unsigned shard,unsigned parts)
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h)return 2;host_init(h);wasm_rt_allocate_memory_shared(&h->memory,64,65536,false,65536);
  h->game_root=open(directory,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);int result=1;
  if(!g||h->game_root<0)goto cleanup;
- if(!hardware(g))goto cleanup;
+ if(!hardware(g)||!audit_null_ms(g))goto cleanup;
  raw=draw_read(h->game_root,"shaders/index.json",0,0,true);index=draw_json(raw);if(![index isKindOfClass:NSDictionary.class])goto cleanup;
  unsigned selected=0,modules=0,pipelines=0,errors=0,untranslated=0,clip=0,stages[3]={0};
  for(NSString *hash in [[index allKeys] sortedArrayUsingSelector:@selector(compare:)]){@autoreleasepool{
