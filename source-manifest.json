@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.13 raw color/compressed readbacks with validated subresources/strides and reusable 1 MiB staging; stage 3 in progress",
+  "scope": "Native 0.14 D3D constant/divided instance streams and rebased indirect draws without vertex expansion; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
       "bytes": 24880,
-      "sha256": "2170f48b78ef7782b36675f6a96a789af10da30179e05ab6ec464de94467d51d"
+      "sha256": "c07ff0749243c782f72048a11dd3ef294aaa4886ddbd65a9febf167dd7749163"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "dc8d40d842075bc4c2397c311546fb64be918c2bb45ad2284641cbea3b85b984"
+      "sha256": "82700436aaa254bffddc146d19402458e16525d7c2155570723da886a863341e"
     },
     {
       "path": "native-ios/native_host.c",
@@ -158,8 +158,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 1891,
-      "sha256": "b051c718bc67e4ce4d030d9b720b57a581b52a5c9ed46cfd77498ea6fba3c418"
+      "bytes": 2124,
+      "sha256": "0eb8c7f170a7c779652ecc2aca82f5c23935049088e308c422d77f6d74e29364"
     },
     {
       "path": "native-ios/renderer/draw-fixtures.json",
@@ -172,14 +172,19 @@
       "sha256": "7d52604451f2dec6eb714d91a861c24906c384641b51199d2cadeb5e30619e1f"
     },
     {
+      "path": "native-ios/renderer/draw_instance.inc",
+      "bytes": 898,
+      "sha256": "26f9a9a4219e227ecdf5b6f39b831bb61e1f62dabceead8cfe899e13057f7ea2"
+    },
+    {
       "path": "native-ios/renderer/draw_loader_test.inc",
       "bytes": 2953,
       "sha256": "26ad5e92b671bc83c626cbfb344841bb49569dd5c01b5b0704553eb6a346664e"
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 11463,
-      "sha256": "c0797ac66b237f72b6d6952310d5dd10ce5694d13595de52ffaa4bebce51d671"
+      "bytes": 11889,
+      "sha256": "0c9e8ccaa4c10122c46965a294cd77493617c9dd01c5e1fd7fa9f9fc24f3d3c4"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -188,13 +193,13 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 14013,
-      "sha256": "f7356754fbc02b2674a37a56615e196f500a74aa4048c4b50f68c85058064b80"
+      "bytes": 14400,
+      "sha256": "e4fb9a3913ebd852b4cdf08ded29f19e825142772c5c724674c6bda03fa00528"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 1686,
-      "sha256": "373e65948815cd2c71cdad195621d403cc5b7f84f60e113d2fbac1b7ccfeb698"
+      "bytes": 1761,
+      "sha256": "2f757e52ca3ca0d38c02b10170394c0c159a875bef27c0ae6f0b33ecba7309de"
     },
     {
       "path": "native-ios/renderer/gpu_ring.c",
@@ -207,9 +212,19 @@
       "sha256": "14882801f22760c629c9b871ee2b4689796a5afc780fb75c4ba6b9cd6b9eba7b"
     },
     {
+      "path": "native-ios/renderer/instance_replay.inc",
+      "bytes": 3092,
+      "sha256": "2eaf97d8d47ffede1444244899d7bb2f043197e792f0d34fdaacef9d0069404a"
+    },
+    {
+      "path": "native-ios/renderer/instance_verify.inc",
+      "bytes": 1244,
+      "sha256": "0cac96cbe346326ba092f0ce7041735ce30d38318390c03f9d0b09a4dc6c1535"
+    },
+    {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 16553,
-      "sha256": "691c6c0130ffd066889cc790d47de4fea6dde39ba232f3680149e0f50ab16b7f"
+      "bytes": 18172,
+      "sha256": "459b75d050690ba21beff474974c054542c11672eb935871cd69a286dff06f76"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -218,8 +233,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 50278,
-      "sha256": "fbd88854c11d9cd0b200571fa8256b321ce4ee28bb4bf68e00a1554b5002557c"
+      "bytes": 50824,
+      "sha256": "4eab48101120ddd332680f2c67cea252fac6e276853e3da7a98d3fd46b9a68ec"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -305,6 +320,16 @@
       "path": "native-ios/renderer/test_readback_layout.c",
       "bytes": 2214,
       "sha256": "a88c97c7828edf06e90ee0020d61238ca60eda59d764ca6690eda72b5bc90a49"
+    },
+    {
+      "path": "native-ios/renderer/test_vertex_step.c",
+      "bytes": 1310,
+      "sha256": "3776ef46829274e38443b6acfec26b9d0447a339b5da38fc89511cfc2bdec496"
+    },
+    {
+      "path": "native-ios/renderer/vertex_step.h",
+      "bytes": 738,
+      "sha256": "c30422f383e2aff50d742e4f3c8bed12780d3dde99a643c8968b5254fcdeb48b"
     },
     {
       "path": "native-ios/renderer/vs.wgsl",

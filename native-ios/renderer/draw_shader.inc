@@ -28,7 +28,7 @@ static id draw_json(NSData *data){return data?[NSJSONSerialization JSONObjectWit
 static bool draw_uint(id n,uint64_t *out){if(![n isKindOfClass:NSNumber.class]||CFGetTypeID((__bridge CFTypeRef)n)==CFBooleanGetTypeID())return false;double d=[n doubleValue];if(!isfinite(d)||d<0||d>9007199254740991.0||floor(d)!=d)return false;*out=(uint64_t)d;return true;}
 static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  *constants=nil;
- if(g->draw.fixture){if(!strcmp(hash,"028921879df627f5"))return @(draw_fixture_vs);if(!strcmp(hash,"943b0ad9542193ff"))return @(draw_fixture_ps);}
+ if(g->draw.fixture){if(!strcmp(hash,"028921879df627f5"))return @(draw_fixture_vs);if(!strcmp(hash,"943b0ad9542193ff"))return @(draw_fixture_ps);if(!strcmp(hash,"ffffffff00000014")){NSString *s=[@(draw_fixture_vs) stringByReplacingOccurrencesOfString:@"@location(3u) v3 : vec2<f32>)" withString:@"@location(3u) v3 : vec2<f32>, @builtin(instance_index) iid : u32)"];return [s stringByReplacingOccurrencesOfString:@"main_inner(v0, v2, v3);" withString:@"main_inner(v0, vec4<f32>(v2.rg, v3.x, f32(iid+1u)/8.0), vec2<f32>(0.5,0.5));"];}}
  if(!g->draw.index){
   const char *dirs[]={"b/8b0b5899ed/shaders","shaders"};
   for(unsigned i=0;i<2&&!g->draw.index;i++){char path[128];snprintf(path,sizeof(path),"%s/index.json",dirs[i]);id index=draw_json(draw_read(g->host->game_root,path,0,0,true));

@@ -6,6 +6,8 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-gpu-ring-sanitized | tee native-build/evidence/native-gpu-ring-sanitized-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_readback_layout.c -o native-build/test-readback-layout
 native-build/test-readback-layout | tee native-build/evidence/native-readback-layout-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_vertex_step.c -o native-build/test-vertex-step
+native-build/test-vertex-step | tee native-build/evidence/native-vertex-step-test.txt
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do

@@ -25,10 +25,10 @@ typedef struct {
 } DrawKey;
 typedef struct {
  DrawKey key; WGPURenderPipeline pipeline; uint64_t age;
- unsigned slots; uint32_t last[16],stride[16]; bool instance[16];
+ unsigned slots; uint32_t last[16],stride[16],rate[16]; bool instance[16],manual_instances;
 } DrawPipeline;
 typedef struct {
- DrawPipeline pipelines[DRAW_PIPELINES]; uint64_t age,hits,creates,draws,batches;
+ DrawPipeline pipelines[DRAW_PIPELINES]; uint64_t age,hits,creates,draws,batches,instance_draws,instance_batches,indirect_decodes;
  WGPUCommandEncoder encoder; WGPURenderPassEncoder pass;
  uint32_t pass_targets[37]; unsigned width,height;
  WGPUBuffer uniforms[DRAW_UBO_SLOTS]; uint8_t *mirror; unsigned slot,offset;
