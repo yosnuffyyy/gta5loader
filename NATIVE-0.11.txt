@@ -1,0 +1,51 @@
+NATIVE 0.11 — FILESYSTEM CAPACITY AND OS ENTROPY
+
+0.10 phone result: actual legal notice rendered after the blue boot screen.
+8,119 GPU commands, 1,296 uploads, five presentations, 48 draws, three cached
+pipelines. Startup then stopped at unimplemented env.__syscall_statfs64.
+This is real startup rendering, not a Prologue scene or playable build.
+
+STATFS / STATVFS
+The unchanged engine's statvfs (90925) requests a 120-byte syscall result,
+then converts it to a 112-byte libc struct. Native Apple structs differ.
+The host queries fstatvfs against rooted file descriptors and serializes all
+fields/padding explicitly. Total/free/available blocks remain 64-bit; the
+allocation fragment size is kept separately from optimal I/O block size.
+No fictional free-space value or capacity cache is used.
+Virtual root/cwd and userdata report the app save volume. Selected data paths
+report the granted game volume and retain read-only flags. Missing files,
+symlinks, traversal, unknown paths, bad sizes and invalid buffers fail without
+writing the output. Temporary descriptors close before returning.
+Worker proxy 28 uses the original typed argument format and signed errno.
+No additional thread, heap cache or engine instruction patch is required.
+
+ENTROPY
+The engine's _InitRng reads 52 bytes from /dev/urandom, then /dev/random as a
+fallback. The old root resolver rejected both, explaining InitRng -199.
+Only those exact virtual names now open the OS /dev/urandom read-only; all
+other OS paths and device writes remain rejected. The existing bounded
+reader serves the seed. No deterministic/random-test values seed the game.
+The engine's original wc_InitRng health test, GenerateBlock and FreeRng are
+called in the runtime regression. Names/signatures are pinned to this engine.
+This does not add multiplayer, Social Club, Bink video decoding or gameplay.
+Those diagnostics are retained; their absence in future phone runs is not
+claimed before the physical test.
+
+VERIFICATION
+Local original-Wasm statvfs test: >32-bit block counts, separate block/fragment
+sizes, all output fields, exact syscall size and guard bytes: PASS.
+CI additionally exercises actual native volume values, four engine runs and
+32 worker instances, 64 owner mailbox proxies per run, RNG and existing GPU
+regressions. Final CI/package evidence is in VERIFICATION-0.11.txt.
+Address/undefined-behavior sanitizers cover the standalone native file host.
+The earlier traversal fixture's off-by-one literal read was corrected.
+
+References checked against the exact bundled game.js and engine bytecode.
+Apple fstatvfs: https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/fstatvfs.3.html
+Apple entropy: https://help.apple.com/pdf/security/en_US/apple-platform-security-guide.pdf
+
+Next: run Trace Prologue startup with the existing web folder. If it stops,
+copy the full report after cleanup, including First engine diagnostics.
+Stage 3 requires successive correct game-scene frames. Then connect controls,
+audio and lifecycle in stage 4. Five stages remain, including stage 3.
+PC packages, deployed main and prior IPAs remain protected.

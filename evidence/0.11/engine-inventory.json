@@ -1,0 +1,62 @@
+{
+  "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+  "modification": "Add eleven exports only; engine instructions unchanged",
+  "probes": [
+    {
+      "name": "memcmp",
+      "sourceName": "memcmp",
+      "index": 90814
+    },
+    {
+      "name": "strcmp",
+      "sourceName": "strcmp",
+      "index": 90930
+    },
+    {
+      "name": "strlen",
+      "sourceName": "strlen",
+      "index": 90939
+    },
+    {
+      "name": "sinf",
+      "sourceName": "sinf",
+      "index": 90918
+    },
+    {
+      "name": "cosf",
+      "sourceName": "cosf",
+      "index": 90732
+    },
+    {
+      "name": "fopen",
+      "sourceName": "fopen",
+      "index": 90775
+    },
+    {
+      "name": "fclose",
+      "sourceName": "fclose",
+      "index": 90762
+    },
+    {
+      "name": "fread",
+      "sourceName": "fread",
+      "index": 90782
+    },
+    {
+      "name": "fwrite",
+      "sourceName": "fwrite",
+      "index": 90790
+    },
+    {
+      "name": "fseeko",
+      "sourceName": "__fseeko",
+      "index": 90784
+    },
+    {
+      "name": "ftello",
+      "sourceName": "__ftello",
+      "index": 90788
+    }
+  ]
+}

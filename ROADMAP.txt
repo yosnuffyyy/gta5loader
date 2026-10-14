@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-13. Native 0.10 diagnostic stack/startup log repair; stage 3 remains active.
+Updated 2026-10-13. Native 0.11 storage/entropy startup continuation; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -41,7 +41,13 @@ at the unimplemented diagnostic stack snapshot import. Exit/cleanup returned.
 0.10 provides the Emscripten standalone empty-trace ABI and preserves recent
 startup logs plus first diagnostics in fixed storage. CI 38484190708 passed,
 including actual engine CaptureStackTrace on the main thread and 32 worker
-instances. Unsigned 0.10 IPA audit passed; physical continuation is pending.
+instances. Physical 0.10 passed the blue screen and displayed the legal notice:
+8,119 GPU commands, 48 draws, five presentations; stopped at statfs64.
+Native 0.11 implements the exact engine filesystem-capacity ABI using actual
+OS volume information. It also connects the engine RNG seed device to native
+OS entropy. Host sanitizers and real engine statvfs/RNG regressions guard both
+changes. CI 38488504673 and the unsigned ARM64 0.11 package audit passed.
+Physical-device continuation beyond the legal notice is still pending.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

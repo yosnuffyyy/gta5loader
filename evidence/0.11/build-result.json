@@ -1,0 +1,170 @@
+{
+  "version": "0.11",
+  "sourceCommit": "41d11b24065a6c2487b0461a07a4dafb90d3b020",
+  "sourceTree": "e009cd7383c0144964c35c240b04b0fe0044bae2",
+  "run": 38488504673,
+  "job": 115608174017,
+  "runURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38488504673",
+  "artifacts": [
+    {
+      "id": 11861002024,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 89720266,
+      "digest": "sha256:9b46f7978ab97ec226c72498adb3af6e5c8eb60ad60810ad5fc7329517f084a6"
+    },
+    {
+      "id": 11860717214,
+      "name": "native-compiler-evidence",
+      "bytes": 38824,
+      "digest": "sha256:610a36cdd0cb89906aeb5c3b24bf4c38ccdedc31dedacc02075cc0783406889b"
+    }
+  ],
+  "ci": "PASS",
+  "sourceFilesVerified": 71,
+  "realEngineStorageChecks": {
+    "mainRuns": 4,
+    "workerRuns": 32,
+    "syscallBytes": 120,
+    "libcBytes": 112,
+    "proxyCallsPerRun": 64,
+    "guardsAndErrno": true
+  },
+  "realEngineRNGChecks": {
+    "runs": 4,
+    "initHealthTest": true,
+    "generateBytes": 128,
+    "free": true,
+    "outputGuards": true
+  },
+  "nativeHostSanitizers": "PASS",
+  "existingCPUAndGPUSuites": "PASS",
+  "cachedObjects": [
+    {
+      "target": "macos",
+      "count": 131
+    },
+    {
+      "target": "ios",
+      "count": 131
+    }
+  ],
+  "priorTenIPAs": "Unchanged",
+  "localAudit": {
+    "result": "PASS",
+    "architecture": "ARM64",
+    "platform": "iPhone device",
+    "minimumOS": "17.0",
+    "unsigned": true,
+    "hasWebKit": false,
+    "hasWritableExecutableSegment": false,
+    "ipaBytes": 102015372,
+    "ipaSHA256": "28b4f8455bb9c99d765e517c14314a2d849bd1535c42a2e506053259d2f51935",
+    "version": "0.11.0",
+    "build": "11",
+    "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+    "engine": {
+      "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+      "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+      "modification": "Add eleven exports only; engine instructions unchanged",
+      "probes": [
+        {
+          "name": "memcmp",
+          "sourceName": "memcmp",
+          "index": 90814
+        },
+        {
+          "name": "strcmp",
+          "sourceName": "strcmp",
+          "index": 90930
+        },
+        {
+          "name": "strlen",
+          "sourceName": "strlen",
+          "index": 90939
+        },
+        {
+          "name": "sinf",
+          "sourceName": "sinf",
+          "index": 90918
+        },
+        {
+          "name": "cosf",
+          "sourceName": "cosf",
+          "index": 90732
+        },
+        {
+          "name": "fopen",
+          "sourceName": "fopen",
+          "index": 90775
+        },
+        {
+          "name": "fclose",
+          "sourceName": "fclose",
+          "index": 90762
+        },
+        {
+          "name": "fread",
+          "sourceName": "fread",
+          "index": 90782
+        },
+        {
+          "name": "fwrite",
+          "sourceName": "fwrite",
+          "index": 90790
+        },
+        {
+          "name": "fseeko",
+          "sourceName": "__fseeko",
+          "index": 90784
+        },
+        {
+          "name": "ftello",
+          "sourceName": "__ftello",
+          "index": 90788
+        }
+      ]
+    },
+    "dylibs": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/System/Library/Frameworks/GameController.framework/GameController",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+    ],
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "initialProtection": 0
+      },
+      {
+        "name": "__TEXT",
+        "initialProtection": 5
+      },
+      {
+        "name": "__DATA_CONST",
+        "initialProtection": 3
+      },
+      {
+        "name": "__DATA",
+        "initialProtection": 3
+      },
+      {
+        "name": "__LINKEDIT",
+        "initialProtection": 1
+      }
+    ]
+  },
+  "iphone011": "PENDING",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false,
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}

@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "engineFunction": 90925,
+  "engineName": "statvfs",
+  "syscallBytes": 120,
+  "libcBytes": 112,
+  "blockCountsAbove32Bits": true,
+  "differentBlockAndFragmentSizes": true,
+  "allOutputFieldsAndGuards": true
+}

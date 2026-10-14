@@ -1,0 +1,31 @@
+NATIVE 0.11 VERIFICATION
+Source 41d11b24065a6c2487b0461a07a4dafb90d3b020
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38488504673
+Job 115608174017: PASS
+
+PASS: original Wasm statvfs test: 120-byte syscall to 112-byte libc struct,
+>32-bit block counts, distinct block/fragment sizes, all fields and guards.
+PASS: four native real-engine runs plus 32 workers validate statvfs against
+the actual OS save volume, root paths, guards and libc errno translation.
+64 synchronous worker mailbox proxies per run include statfs success/errors.
+PASS: native host ASan/UBSan: capacity ABI and OS values, repeated reads and
+descriptor cleanup, invalid pointer/size rejection, path/symlink isolation;
+read-only entropy device seed reads, denied writes and other device paths.
+PASS: four real-engine wc_InitRng health tests, 128-byte RNG outputs and
+wc_FreeRng cleanup with intact output/state guards. No RNG engine code patched.
+PASS: existing constructor/TLS/save/I/O/asset, mailbox/cancellation/log,
+SIMD/bulk/wait and GPU regression suites. Two GPU ring/DRAW replays each run
+158 commands, 11 draws, four pipelines. Separate shader fixture: zero errors.
+Two graphics-enabled main checkpoints stop deliberately before archive bytes.
+PASS: complete Mac/iPhone compile and unsigned ARM64 iOS17+ package audit.
+Cached compiler objects: macos: 131; ios: 131.
+71 source entries match Git tree. Artifact ZIP and IPA checksums verified.
+Ten earlier IPAs unchanged. PC folders/main untouched.
+
+IPA GTA-Native-Probe-0.11-unsigned.ipa
+Bytes 102015372
+SHA256 28b4f8455bb9c99d765e517c14314a2d849bd1535c42a2e506053259d2f51935
+
+Physical iPhone continuation past 0.10 statfs64: PENDING.
+No Prologue scene, playable test, Bink or Social Club repair claimed.
+(stage 3 in progress) (5 stages left)

@@ -1,0 +1,20 @@
+Pinned engine e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e.
+Function90925 statvfs calls import70 __syscall_statfs64(path,120,temp), converts
+result via90960 __syscall_ret, leaves output unchanged on error. On success
+zero112bytes then copies:
+libc+0 <- statfs+8 (bsize); +8 <- +72 or +8 if frsizezero
++16 <- +16 blocks; +24 <- +24 bfree; +32 <- +32 bavail
++40 <- +40 files; +48/+56 <- +48 ffree/favail
++64 <- signed low32 at+56 fsid; +72 <- +80 flags
++80 <- +64 namemax; low32+88 <- low32+0 ftype; remaining zero.
+Bundled SYSCALLS.writeStatFs offsets match. Native writer packs120bytes and
+uses native f_frsize, not blindly assuming it equals f_bsize.
+Statfs virtualroot and cwd map to saves; /data maps to grantedweb/data.
+Actual call sites23796 FileStorePC::GetFreeSpaceAvailable(bool) and45231
+CSavegameInitialChecks::InitialChecks read f_bavail*f_frsize.
+Original-Wasm local fixture independently verified everyconvertedfield,
+separate blocksize/frsize, >32bitcounts and prefix/suffix guards.
+Entropy _InitRng90332 calls open("/dev/urandom",0), fallback"/dev/random",
+read52bytes, close. Originalbytecode strings adjacent at fileoffset52785903.
+wc_InitRng90334:(i64)->i32; wc_RNG_GenerateBlock90335:(i64,i64,i32)->i32;
+wc_FreeRng90333:(i64)->void (pinned exact engine, not assumedlibraryABI).

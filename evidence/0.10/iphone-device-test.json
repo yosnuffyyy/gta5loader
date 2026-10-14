@@ -1,7 +1,29 @@
 {
   "version": "0.10",
-  "status": "PENDING",
-  "requestedTest": "Trace Prologue startup; copy final report, including First engine diagnostics and GPU summary",
+  "status": "USER-REPORTED STARTUP PROGRESS; NOT GAMEPLAY",
+  "device": "iPhone 16 Pro Max / Apple A18 Pro GPU",
+  "os": "iOS 27.0.1",
+  "folder": "web",
+  "assetFiles": 5814,
+  "rendered": "Passed blue boot screen and displayed legal notice",
+  "gpu": {
+    "commands": 8119,
+    "uploads": 1296,
+    "readbacks": 0,
+    "surfaceFrames": 5,
+    "draws": 48,
+    "pipelines": 3,
+    "pipelineHits": 45,
+    "lastOpcode": "UPLOAD_TEXTURE"
+  },
+  "stop": "trap 5: env.__syscall_statfs64",
+  "exit": 1,
+  "afterCleanupMiB": 71.8,
+  "firstDiagnostics": [
+    "Bink decoder unavailable in original WebAssembly engine",
+    "InitRng -199 / netCrypto initialization failed",
+    "Social Club initialization assertions"
+  ],
   "stage3": "IN PROGRESS",
   "stagesLeft": 5,
   "realSceneVerified": false,

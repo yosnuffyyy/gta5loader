@@ -25,7 +25,9 @@ IPA GTA-Native-Probe-0.10-unsigned.ipa
 Bytes 102016397
 SHA256 8135acee45f9c21833e6e8e180e42c1465959efaae98a747fff1a7c6038773df
 
-Physical iPhone continuation beyond 0.9 stack import: PENDING.
+Physical iPhone 0.10: passed the blue boot screen and displayed legal notice.
+8,119 commands; 1,296 uploads; five surface frames; 48 draws; three pipelines.
+Stopped at env.__syscall_statfs64; Exit 1; cleanup 71.8 MiB.
 Original diagnostic cause was hidden by the old lifetime log cutoff.
 No assertion/fatal handler bypass and no real-game scene claim.
 (stage 3 in progress) (5 stages left)
