@@ -171,6 +171,7 @@ static bool submit(NativeGpu *g,WGPUCommandEncoder e){if(!e)return check(g,false
 #include "bc_fixture.inc"
 static WGPUTextureView view(Object *o,uint32_t mip,uint32_t slice){WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=WGPUTextureViewDimension_2D;d.baseMipLevel=mip;d.mipLevelCount=1;d.baseArrayLayer=slice;d.arrayLayerCount=1;return wgpuTextureCreateView(o->texture,&d);}
 static bool readback_format(WGPUTextureFormat,uint32_t*,uint32_t*,uint32_t*);
+static bool draw_depth(WGPUTextureFormat);
 static void track_resource(NativeGpu *g,Object *o,uint64_t bytes){o->tracked_bytes=bytes;if(o->kind==11)g->buffer_bytes+=bytes;else g->texture_bytes+=bytes;uint64_t total=g->buffer_bytes+g->texture_bytes;if(total>g->resource_peak)g->resource_peak=total;atomic_store(&g->live_resource_bytes,total);}
 static bool create_buffer(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_word(p,0),11);if(!o)return false;o->size=gpu_word(p,1);o->bind=gpu_word(p,2);o->misc=gpu_word(p,3);o->stride=gpu_word(p,4);if(!check(g,o->size&&o->size<=1024*1024*1024,"GPU buffer size unsupported"))return false;
  if(o->bind&4){o->shadow=calloc(1,o->size);if(!check(g,o->shadow!=NULL,"Constant-buffer shadow allocation"))return false;}
