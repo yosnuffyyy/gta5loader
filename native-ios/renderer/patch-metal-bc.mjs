@@ -25,10 +25,19 @@ if(text.split(borderBefore).length!==2)throw Error('Sampler-border capability pa
 const clipBefore='            | F::EXTERNAL_TEXTURE;';
 const clipAfter='            | F::EXTERNAL_TEXTURE\n            | F::CLIP_DISTANCES;';
 if(text.split(clipBefore).length!==2)throw Error('Clip-distance capability patch is not unique');text=text.replace(clipBefore,clipAfter);fs.writeFileSync(file,text);
-// Cargo's vendored source integrity table must describe this explicit patch.
+// This private native backend needs D3D UINT64 sample counts. WebGPU only
+ // requires zero/nonzero, so retaining actual counts preserves its contract.
+ // Native callers gate query use on Apple3+/Mac2 counting capability.
+ const commandFile=source+'/vendor/wgpu-hal-29.0.3/src/metal/command.rs';
+ const commandOriginal=fs.readFileSync(commandFile);if(hash(commandOriginal)!=='49b3dd48ea241ac66738854b9e76a77ba2863fdc9fe1aaa936e1bc16e5d79e52')throw Error('Unexpected pinned Metal command source');
+ const countingBefore='                        MTLVisibilityResultMode::Boolean,';
+ const countingAfter='                        MTLVisibilityResultMode::Counting,';
+ let commandText=commandOriginal.toString('utf8');if(commandText.split(countingBefore).length!==2)throw Error('Counting query patch is not unique');commandText=commandText.replace(countingBefore,countingAfter);fs.writeFileSync(commandFile,commandText);
+ // Cargo's vendored source integrity table must describe this explicit patch.
 const checksumFile=source+'/vendor/wgpu-hal-29.0.3/.cargo-checksum.json';const sums=JSON.parse(fs.readFileSync(checksumFile));
 if(sums.package!=='31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f'||sums.files['src/metal/adapter.rs']!==hash(original))throw Error('Unexpected vendor integrity table');
-sums.files['src/metal/adapter.rs']=hash(Buffer.from(text));fs.writeFileSync(checksumFile,JSON.stringify(sums)+'\n');
+if(sums.files['src/metal/command.rs']!==hash(commandOriginal))throw Error('Unexpected Metal command integrity table');sums.files['src/metal/command.rs']=hash(Buffer.from(commandText));
+ sums.files['src/metal/adapter.rs']=hash(Buffer.from(text));fs.writeFileSync(checksumFile,JSON.stringify(sums)+'\n');
 const nagaFile=source+'/vendor/naga-29.0.3/src/back/msl/writer.rs';
 const nagaOriginal=fs.readFileSync(nagaFile);if(hash(nagaOriginal)!=='e0477d761c4fb20445bc54457a278320e7a65dc51bf25209d24aa951639e8704')throw Error('Unexpected pinned Naga MSL writer');
 const nagaBefore=`                        write!(self.out, "{}{} {}", back::INDENT, ty_name, name)?;
@@ -48,6 +57,7 @@ const nagaAfter=`                        write!(self.out, "{}{} {}", back::INDEN
 let nagaText=nagaOriginal.toString('utf8');if(nagaText.split(nagaBefore).length!==2)throw Error('Naga clip-distance patch is not unique');nagaText=nagaText.replace(nagaBefore,nagaAfter);fs.writeFileSync(nagaFile,nagaText);
 const nagaChecksumFile=source+'/vendor/naga-29.0.3/.cargo-checksum.json',nagaSums=JSON.parse(fs.readFileSync(nagaChecksumFile));
 if(nagaSums.package!=='0dd91265cc2454558f659b3b4b9640f0ddb8cc6521277f166b8a8c181c898079'||nagaSums.files['src/back/msl/writer.rs']!==hash(nagaOriginal))throw Error('Unexpected Naga vendor integrity table');nagaSums.files['src/back/msl/writer.rs']=hash(Buffer.from(nagaText));fs.writeFileSync(nagaChecksumFile,JSON.stringify(nagaSums)+'\n');
-const nagaPatch={version:'29.0.3',crateSHA256:nagaSums.package,originalWriterSHA256:hash(nagaOriginal),patchedWriterSHA256:nagaSums.files['src/back/msl/writer.rs'],before:nagaBefore,after:nagaAfter};
-fs.writeFileSync(evidence,JSON.stringify({name:'Metal BC, sampler-border and clip-distance capabilities plus Naga clip-array declarator',wgpuHalVersion:'29.0.3',originalCrateSHA256:sums.package,originalAdapterSHA256:hash(original),patchedAdapterSHA256:sums.files['src/metal/adapter.rs'],before,after,borderBefore,borderAfter,clipBefore,clipAfter,nagaPatch,scope:'Only checked feature advertisement and clip_distance attribute placement; native primitive clipping and normal validation preserved'},null,2)+'\n');
+const countingPatch={originalCommandSHA256:hash(commandOriginal),patchedCommandSHA256:sums.files['src/metal/command.rs'],before:countingBefore,after:countingAfter,capabilityGate:'Native callers require Apple3 or Mac2 counting support; real GPU counts retained; no visibility substitution'};
+ const nagaPatch={version:'29.0.3',crateSHA256:nagaSums.package,originalWriterSHA256:hash(nagaOriginal),patchedWriterSHA256:nagaSums.files['src/back/msl/writer.rs'],before:nagaBefore,after:nagaAfter};
+fs.writeFileSync(evidence,JSON.stringify({name:'Metal BC, sampler-border and clip-distance capabilities plus Naga clip-array declarator',wgpuHalVersion:'29.0.3',originalCrateSHA256:sums.package,originalAdapterSHA256:hash(original),patchedAdapterSHA256:sums.files['src/metal/adapter.rs'],before,after,borderBefore,borderAfter,clipBefore,clipAfter,nagaPatch,countingPatch,scope:'Checked Metal features, clip_distance placement and exact native counting queries; hardware gates and normal validation preserved'},null,2)+'\n');
 console.log('PASS: pinned Metal capabilities patched; native clipping remains enabled and validated.');
