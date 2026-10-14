@@ -1,0 +1,34 @@
+NATIVE 0.12 VERIFICATION
+Source d0face1a8e20b0416d06301bdd63da600a4674fe
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38490428285
+Job 115614062642: PASS
+
+PASS: native Metal SNORM capability: two runs of nine cases each.
+R8/RG8/RGBA8 render, blend, upload, copy, raw signed readback and
+GPU sampling; all 16 pixels per case verified including negative values.
+No runtime format expansion, texture conversions or quality increases.
+PASS: four native real-engine runs plus 32 workers validate statvfs against
+the actual OS save volume, root paths, guards and libc errno translation.
+64 synchronous worker mailbox proxies per run include statfs success/errors.
+PASS: native host ASan/UBSan: capacity ABI and OS values, repeated reads and
+descriptor cleanup, invalid pointer/size rejection, path/symlink isolation;
+read-only entropy device seed reads, denied writes and other device paths.
+PASS: four real-engine wc_InitRng health tests, 128-byte RNG outputs and
+wc_FreeRng cleanup with intact output/state guards. No RNG engine code patched.
+PASS: existing constructor/TLS/save/I/O/asset, mailbox/cancellation/log,
+SIMD/bulk/wait and GPU regression suites. Two GPU ring/DRAW replays each run
+158 commands, 11 draws, four pipelines. Separate shader fixture: zero errors.
+Two graphics-enabled main checkpoints stop deliberately before archive bytes.
+PASS: complete Mac/iPhone compile and unsigned ARM64 iOS17+ package audit.
+Cached compiler objects: macos: 131; ios: 131.
+72 source entries match Git tree. Artifact ZIP and IPA checksums verified.
+Eleven earlier IPAs unchanged. PC folders/main untouched.
+
+IPA GTA-Native-Probe-0.12-unsigned.ipa
+Bytes 102021636
+SHA256 783300c861e79ced3a67c9e53660fe44b1659c8c30c600fe2fea783681381dfe
+
+Physical iPhone continuation past 0.11 SNORM target failure: PENDING.
+The 0.11 phone remained at legal notice. No Prologue scene, playable test,
+Bink or Social Club repair claimed.
+(stage 3 in progress) (5 stages left)

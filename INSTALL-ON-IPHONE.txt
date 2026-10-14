@@ -1,19 +1,19 @@
-NATIVE INTEGRATION 0.11 — WINDOWS INSTALLATION
+NATIVE INTEGRATION 0.12 — WINDOWS INSTALLATION
 
-Install GTA-Native-Probe-0.11-unsigned.ipa over 0.10 with the same Sideloadly
+Install GTA-Native-Probe-0.12-unsigned.ipa over 0.11 with the same Sideloadly
 setup, Apple account and bundle identifier. No Windows prerequisite changes
-or game-file reinstall are needed. The working 0.1 through 0.10 IPAs remain
+or game-file reinstall are needed. The working 0.1 through 0.11 IPAs remain
 preserved for rollback.
 
 Select the extracted web folder (including data/manifest.json), then tap
 Trace Prologue startup. Keep the render view visible initially. This build
-implements the filesystem-capacity query reached by 0.10 and connects the
-engine RNG to the OS random source. Graphics remain at conservative settings.
+enables the native signed render-target capability missing in 0.11.
+Graphics remain at the same conservative settings.
 Copy its final report, or the last Live startup lines and Stop result if it
 stalls. Required unsupported operations still report explicit errors.
 Reselect the folder after each app launch. The separate older test buttons
 remain available; their Mac regressions already passed for this build.
-See NATIVE-0.11.txt and VERIFICATION-0.11.txt for tested scope and remaining work.
+See NATIVE-0.12.txt and VERIFICATION-0.12.txt for tested scope and remaining work.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
 It is separate from both the working PC game and the Safari installation.
@@ -25,7 +25,7 @@ It is separate from both the working PC game and the Safari installation.
    versions. Do not uninstall existing Apple software without checking those
    instructions and your sync/backup needs.
 2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.11-unsigned.ipa.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.12-unsigned.ipa.
 4. Use the normal Apple ID signing/install mode with your free Apple account.
    Enter the password and any two-factor code only in the local signing tool.
    No account credentials, certificates or private keys belong in GitHub.

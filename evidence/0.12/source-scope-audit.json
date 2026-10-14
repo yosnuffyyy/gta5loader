@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "changedFiles": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/renderer/native_gpu.m",
+    "native-ios/renderer/snorm_fixture.inc",
+    "source-manifest.json"
+  ],
+  "unchangedEngineInstructionsAndGeneratedBindings": true,
+  "unchangedBackendSourceAndBuild": true,
+  "unchangedGraphicsResolution": true,
+  "sourceEntries": 72,
+  "manifestFiles": 71,
+  "priorIpaCount": 11
+}

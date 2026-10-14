@@ -26,6 +26,9 @@ IPA GTA-Native-Probe-0.11-unsigned.ipa
 Bytes 102015372
 SHA256 28b4f8455bb9c99d765e517c14314a2d849bd1535c42a2e506053259d2f51935
 
-Physical iPhone continuation past 0.10 statfs64: PENDING.
+Physical iPhone 0.11: statfs64 trap no longer occurs. Still at legal notice.
+11,357 commands, 1,344 uploads, eight surface frames, 66 draws, three pipelines.
+Stopped at Rgba8Snorm RENDER_ATTACHMENT validation; Exit 1; cleanup63.8 MiB.
+The supplied first diagnostics no longer contain InitRng -199.
 No Prologue scene, playable test, Bink or Social Club repair claimed.
 (stage 3 in progress) (5 stages left)

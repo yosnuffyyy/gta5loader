@@ -1,0 +1,45 @@
+NATIVE 0.12 — SIGNED RENDER TARGETS
+
+0.11 remained at the legal notice on iPhone. Eight surface presentations
+are startup images, not evidence of a game scene. The specific blocker was
+Rgba8Snorm with RENDER_ATTACHMENT at GPU command 11,357.
+
+The browser reference requests texture-formats-tier1. Pinned wgpu-native
+29.0.1.1 does not map that web feature in src/conv.rs. Its existing
+TextureAdapterSpecificFormatFeatures exposes the Metal adapter's validated
+format usages, including signed normalized 8-bit render/blend attachments.
+0.12 requests this feature only when the adapter reports it and records
+whether the device enabled it. Unsupported hardware still fails explicitly.
+
+R8Snorm, RG8Snorm and RGBA8Snorm retain signed 8-bit storage. No unsigned
+substitution, float expansion, runtime texture conversion, extra worker or
+per-frame capability check is introduced. Resolution and quality settings
+are unchanged. Original engine instructions and backend libraries are unchanged.
+
+A diagnostic-only fixture exercises the production resource handlers:
+three formats, each with a signed clear, additive draw, and byte upload;
+all cases copy the texture, sample it on the GPU, and read back both raw
+signed bytes and sampled output. All 16 pixels per case are compared.
+Includes -128/-127 endpoints, negative fractions, zero, positive fractions,
+saturation and absent-channel defaults. Copy/upload bytes are exact; render
+results allow one SNORM storage step and final UNORM quantization.
+Resources are small and released before the existing shared-ring fixture.
+These tests do not run during Trace Prologue startup.
+
+Separate counters identify nine SNORM cases versus shared-ring command/draw
+counts. The three fixture uploads add to the diagnostic upload total.
+Existing BC, original game shader, renderer, host/thread/file regressions
+remain required. See VERIFICATION-0.12.txt for final build evidence.
+
+Next physical test: select the same web folder and Trace Prologue startup.
+Stage 3 needs correct successive Prologue scene frames before controls/audio
+stage 4. Required unsupported operations continue to report errors.
+No Bink, Social Club, full scene, audio or gameplay completion is claimed.
+PC packages and deployed main remain untouched; earlier IPAs preserved.
+(stage 3 in progress) (5 stages left)
+
+Pinned references:
+https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/src/conv.rs
+https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/ffi/wgpu.h
+Local wgpu-hal29.0.3 metal/adapter.rs format capabilities; independent
+work/minimal-engine/wgpu_worker.js browser feature request and format map.
