@@ -47,19 +47,12 @@ static bool query_begin_pass(NativeGpu *g){
  wgpuRenderPassEncoderBeginOcclusionQuery(g->draw.pass,p->used);p->used++;g->query_pass=true;g->query_segments++;return !atomic_load(&g->failed);
 }
 static void query_end_pass(NativeGpu *g){
- if(!g->query_pass)return;
+ if(!g->query_pass)return;QueryPage *p=g->query_pages+g->query_current-1;unsigned slot=p->used-1;
  wgpuRenderPassEncoderEndOcclusionQuery(g->draw.pass);g->query_pass=false;
- /* End the render pass first; all used slots resolve together at submission. */
+ /* End the render pass first; resolve/copy are outside pass commands. */
  wgpuRenderPassEncoderEnd(g->draw.pass);wgpuRenderPassEncoderRelease(g->draw.pass);g->draw.pass=NULL;
-}
-static bool query_resolve_encoder(NativeGpu *g){
- if(!g->query_current)return true;QueryPage *p=g->query_pages+g->query_current-1;if(!p->used)return true;
- if(!check(g,!g->draw.pass&&!g->query_pass&&g->draw.encoder&&!p->busy&&p->used<=QUERY_SEGMENTS,"Occlusion page resolve ordering invalid"))return false;
- /* Slots are contiguous, used once, and all belong to this draw encoder.
-    Offset zero satisfies the 256-byte resolve alignment without per-slot padding. */
- wgpuCommandEncoderResolveQuerySet(g->draw.encoder,p->set,0,p->used,p->resolve,0);
- wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,p->resolve,0,p->map,0,p->used*8);
- g->query_resolves++;g->query_copies++;g->query_resolved_slots+=p->used;return !atomic_load(&g->failed);
+ wgpuCommandEncoderResolveQuerySet(g->draw.encoder,p->set,slot,1,p->resolve,(uint64_t)slot*256);
+ wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,p->resolve,(uint64_t)slot*256,p->map,(uint64_t)slot*8,8);
 }
 static bool query_submitted(NativeGpu *g){
  if(!g->query_current)return true;QueryPage *p=g->query_pages+g->query_current-1;g->query_current=0;if(!p->used)return true;

@@ -9,7 +9,7 @@ static bool draw_uniforms(NativeGpu *g){DrawState *s=&g->draw;if(s->mirror)retur
  for(unsigned i=0;i<DRAW_UBO_SLOTS;i++){WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=DRAW_UBO_BYTES;d.usage=WGPUBufferUsage_Uniform|WGPUBufferUsage_CopyDst;s->uniforms[i]=wgpuDeviceCreateBuffer(g->device,&d);if(!check(g,s->uniforms[i]!=NULL,"Uniform ring allocation"))return false;}return !atomic_load(&g->failed);
 }
 static void draw_end_pass(NativeGpu *g){query_end_pass(g);if(g->draw.pass){wgpuRenderPassEncoderEnd(g->draw.pass);wgpuRenderPassEncoderRelease(g->draw.pass);g->draw.pass=NULL;}}
-static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);if(!query_resolve_encoder(g))return false;
+static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
  if(s->offset)wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);
  WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e)||!query_submitted(g))return false;g->counter_slot=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
  /* Three fixed uniform slots; complete submitted work before reusing slot 0.
