@@ -33,11 +33,16 @@ IPA GTA-Native-Probe-0.17-unsigned.ipa
 Bytes 102178840
 SHA256 06f973476770372362d93d572cb1cb0c034a6af35fabaeddf05c28b462e14315
 
-Physical iPhone 0.16/0.17 continuation past SET_UAVS: PENDING; user cannot
-sideload currently. No request to test immediately.
+Physical update 2026-10-14: supplied0.17 A18 report passed SET_UAVS and
+executed a real depth-downsample dispatch. It stopped at clip_distances
+module creation (100791commands,8229draws,885presentations); no scene or
+input verification. Actual border feature remained0:0.18 corrects Cargo
+reuse of the pre-patch backend. See evidence/0.17/iphone-device-test.json.
 PASS: 18 normalized16 format cases and18 production border-sampler cases
 per run; all16 pixels checked each. Native border feature detection now
-recognizes Apple7+; exact six normalized formats preserve16-bit storage.
+source recognizes Apple7+; the iOS binary patch was not rebuilt by the
+restored Cargo cache.0.18 explicitly rebuilds it. Six normalized formats
+preserve16-bit storage.
 PASS: unsupported custom/nonfinite border color sanitizer tests. New
 capability logs include actual feature negotiation/limits. iOS memory
 headroom API compiles; actual readings need the physical app.

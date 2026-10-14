@@ -1,0 +1,75 @@
+NATIVE IPHONE COMPATIBILITY 0.18 — VERIFIED SCOPE AND REMAINING WORK
+
+The actual 0.17 A18 Pro trace executed a real depth-downsample compute
+dispatch (23a7a3c1c0d38f46, 40x23x1), 8,229 draws and 885 presentations.
+It initialized the Prologue camera but stopped while creating the original
+7db515e410659eca vertex shader paired with 394c572f727d25e8.
+The immediate failure was enable clip_distances: the native device did not
+enable that extension. No actual actors/world or responsive input was yet
+confirmed. Presentations and camera logs are not proof of a rendered scene.
+
+0.18 fixes:
+- Pinned Metal HAL omitted CLIP_DISTANCES despite the MSL writer supporting
+  the builtin. Advertise/request the native feature and log its negotiation.
+- Naga emitted float d [4] [[clip_distance]], which Metal rejected. Emit the
+  clip attribute before the array extent; preserve native clipping semantics.
+- Restored Cargo dependency objects ignored the prior patched vendor source.
+  Rebuild the two patched crates explicitly; record source/library digests.
+  This also delivers the prior iOS border capability patch to the binary.
+- Multisampled uint/sint textures retain integer binding types; only float
+  textures become unfilterable float. Empty multisample resources include
+  required render-attachment usage. Exact source inputs are retained.
+- The entire existing translated shader inventory is compiled in CI, including
+  all 500 clip shaders and 131 unsigned multisample texture declarations.
+  Interface-specific audit targets avoid false scalar/vector incompatibilities.
+
+These are compiled/bundled dependencies, not additional phone packages.
+Public Metal/UIKit/GameController APIs are linked; the CPU engine is compiled
+to ARM64, with no JIT or browser runtime. Apple hardware still has OS memory
+and feature limits. Device negotiation and actual rendering are decisive.
+The full shader inventory and three compiler processes run ONLY in CI.
+Normal app startup still reads shader pack ranges on demand. No quality or
+resolution increase was made. Native hardware clipping adds no CPU vertex
+expansion or additional fragment-discard pass.
+
+0.17 reported highest process sample 1,252.9 MiB, heap 1,292.1 MiB and last
+available app headroom 2,123.1 MiB. This does not establish a permanent budget
+or peak memory, but the supplied stop is an explicit shader failure, not a
+demonstrated immediate out-of-memory event.
+14,309 reads delivered 406 MiB with zero I/O, size or unexpected-short-read
+errors. This applies to those reads; it does not validate every asset or prove
+that every optional mount/lookup exists.
+
+Unresolved and explicit:
+- Correct consecutive iPhone scene frames, camera/characters/textures and
+  animation: stage 3 physical gate remains pending.
+- Real stage-pair interfaces, bound formats, render states and workload
+  transitions are not exhaustively tested by standalone pipeline compilation.
+- 111 upstream shaders are marked unavailable (hull/domain/geometry stages).
+  Conservative settings retain the existing path. No high-feature promise.
+- Multisample depth proxies, partial 3D UAV slices, some query types and other
+  guarded renderer operations remain unported; they still stop with detail.
+- ScenarioTypeGroups upstream XML omits the required derivable Item type.
+  Class registration and defaulttasks hash 0x36b97786 require actual engine
+  validation before a safe data/engine repair; no fictitious class is inserted.
+- LOW_LATENCY.awc update mount, equipped weapon bank and missing-interior
+  diagnostics remain. Zero delivered-read errors do not make these disappear.
+- 271 repeated scene-sphere requests occurred before the intro camera start;
+  progress shows they were not an infinite blocker in the supplied interval.
+  Diagnose later stalls with I/O/GPU/script timing; do not fake load success.
+- Bink movies and offline network/auth/logging diagnostics remain as previously
+  documented. No replacement movie/network stack is claimed.
+- Native audio output, responsive game controls and app lifecycle: stage 4.
+- Sustained playable Prologue: stage 5; Sandbox: 6; measured quality: 7.
+
+No implementation can predict every runtime bug in advance. Detailed bounded
+diagnostics and broad regressions reduce iterations; actual iPhone visual and
+input checks remain required. No unported operation is silently accepted.
+
+Primary implementation references:
+https://docs.rs/wgpu/29.0.0/wgpu/struct.Features.html#associatedconstant.CLIP_DISTANCES
+https://docs.rs/naga/29.0.3/src/naga/back/msl/writer.rs.html
+https://developer.apple.com/metal/capabilities/
+
+See VERIFICATION-0.18.txt and evidence/0.18/ for exact checked scope.
+(stage 3 in progress) (5 stages left)

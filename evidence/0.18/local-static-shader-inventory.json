@@ -1,0 +1,823 @@
+{
+  "translated": 4808,
+  "untranslated": 111,
+  "stages": {
+    "vs": 1112,
+    "ps": 3667,
+    "cs": 29
+  },
+  "extensions": {
+    "clip_distances": 500
+  },
+  "builtins": {
+    "position": 2708,
+    "workgroup_id": 21,
+    "local_invocation_id": 23,
+    "clip_distances": 500,
+    "sample_index": 333,
+    "frag_depth": 27,
+    "instance_index": 93,
+    "front_facing": 17,
+    "global_invocation_id": 8,
+    "local_invocation_index": 7,
+    "sample_mask": 18,
+    "vertex_index": 6
+  },
+  "types": {
+    "sampler": 12591,
+    "texture_2d<f32>": 12713,
+    "texture_storage_2d<r32float, write>": 8,
+    "texture_storage_2d<rgba32float, write>": 11,
+    "texture_2d<u32>": 120,
+    "sampler_comparison": 1833,
+    "texture_depth_cube": 232,
+    "texture_multisampled_2d<f32>": 1107,
+    "texture_multisampled_2d<u32>": 131,
+    "texture_depth_2d": 1840,
+    "texture_cube<f32>": 26,
+    "texture_3d<f32>": 96,
+    "texture_2d_array<f32>": 10,
+    "texture_cube_array<f32>": 4,
+    "texture_storage_2d<rg32float, write>": 2
+  },
+  "untranslatedRecords": [
+    {
+      "hash": "92767eb7cc0fd640",
+      "stage": "ds",
+      "effect": "albedo_alpha",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "bfdd799662d602fe",
+      "stage": "ds",
+      "effect": "albedo_alpha",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "c07fa24ffc23c25f",
+      "stage": "hs",
+      "effect": "albedo_alpha",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "3b1d2bf4cff8b34a",
+      "stage": "ds",
+      "effect": "cable",
+      "program": "DS_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "58bc26c6f871cc13",
+      "stage": "hs",
+      "effect": "cable",
+      "program": "HS_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "9c7725515363a4bb",
+      "stage": "gs",
+      "effect": "cascadeshadows",
+      "program": "GS_ShadowInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "edf7f9ee96a9dccd",
+      "stage": "ds",
+      "effect": "cloth_default",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "443b9a32562124a7",
+      "stage": "ds",
+      "effect": "cloth_default",
+      "program": "DS_CascadeShadows_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "52451283faf8b60a",
+      "stage": "ds",
+      "effect": "cloth_default",
+      "program": "DS_CascadeShadows_PNTri_instanced",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "a395539db5dbd7ea",
+      "stage": "gs",
+      "effect": "cloth_default",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "1d5b5f3d6f28c0db",
+      "stage": "gs",
+      "effect": "cloth_default",
+      "program": "GS_ShadowInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "40f4d4fd0e17d598",
+      "stage": "hs",
+      "effect": "cloth_default",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "6654fea8d94581bf",
+      "stage": "hs",
+      "effect": "cloth_default",
+      "program": "HS_CascadeShadows_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "d98a8912b585dac5",
+      "stage": "hs",
+      "effect": "cloth_default",
+      "program": "HS_CascadeShadows_PNTri_instanced",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "c5890a818c42a931",
+      "stage": "ds",
+      "effect": "cloth_normal_spec",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "6cdb853a19e2045c",
+      "stage": "ds",
+      "effect": "cloth_normal_spec",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4f51ae91283a318c",
+      "stage": "gs",
+      "effect": "cloth_normal_spec",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "c51f17bbcad036be",
+      "stage": "ds",
+      "effect": "cloth_normal_spec_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "796cfe4d00b42051",
+      "stage": "gs",
+      "effect": "cloth_normal_spec_tnt",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "60570e1ae4738371",
+      "stage": "gs",
+      "effect": "cloth_spec_alpha",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "26aee7ef54791621",
+      "stage": "ds",
+      "effect": "cpv_only",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "b3416aa6c193b73f",
+      "stage": "gs",
+      "effect": "cpv_only",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "1352d29dc5511ff3",
+      "stage": "ds",
+      "effect": "cubemap_reflect",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "064dfe2b76798b32",
+      "stage": "ds",
+      "effect": "decal_amb_only",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "0e05582a6dc9cba6",
+      "stage": "ds",
+      "effect": "decal_diff_only_um",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ad20cd5975974720",
+      "stage": "ds",
+      "effect": "decal_diff_only_um",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4f762da1401fae05",
+      "stage": "hs",
+      "effect": "decal_diff_only_um",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "3ba529d9625953b8",
+      "stage": "ds",
+      "effect": "decal_dirt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "96ff383980164c39",
+      "stage": "ds",
+      "effect": "decal_emissive_only",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "2125abc04ae2e360",
+      "stage": "ds",
+      "effect": "decal_emissive_only",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4e93f88757b69a15",
+      "stage": "ds",
+      "effect": "decal_normal_spec_um",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "102206f296f8e765",
+      "stage": "ds",
+      "effect": "decal_normal_spec_um",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "0d36c1e0ebf1dd5e",
+      "stage": "gs",
+      "effect": "decal_normal_spec_um",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "32369ce982d0c687",
+      "stage": "ds",
+      "effect": "decal_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "dffbe4ceba421b3b",
+      "stage": "gs",
+      "effect": "decal_tnt",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "17745cbc9e661d53",
+      "stage": "ds",
+      "effect": "default",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "8c5d63b1e4af5859",
+      "stage": "ds",
+      "effect": "emissive",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "84f0fa957bde9fe8",
+      "stage": "ds",
+      "effect": "emissive",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "021318d986aa56f4",
+      "stage": "ds",
+      "effect": "emissive_additive_alpha",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7037fe474e61bb5a",
+      "stage": "ds",
+      "effect": "emissive_additive_uv_alpha",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "aa31f8aecb84fd54",
+      "stage": "ds",
+      "effect": "emissive_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ad9e1e376df63ca8",
+      "stage": "ds",
+      "effect": "emissivenight_geomnightonly",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "83ee88b713ff5d42",
+      "stage": "ds",
+      "effect": "emissivenight_geomnightonly",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "6f02b1763df1839b",
+      "stage": "ds",
+      "effect": "glass",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "59c1de26581e2fd6",
+      "stage": "ds",
+      "effect": "glass_emissive",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "1037e4b700fc551d",
+      "stage": "ds",
+      "effect": "glass_emissive",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ac0467d2395e3f6e",
+      "stage": "ds",
+      "effect": "glass_emissivenight",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "bd34430cf3b96c28",
+      "stage": "ds",
+      "effect": "glass_env",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "d31db05574b979e3",
+      "stage": "gs",
+      "effect": "mirror_crack",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "446d6020777c71a6",
+      "stage": "gs",
+      "effect": "mirror_decal",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "016369cfe2d39135",
+      "stage": "ds",
+      "effect": "normal_decal_pxm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "cba1e3dfbce3baa0",
+      "stage": "ds",
+      "effect": "normal_decal_pxm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ce38a1f65acd1589",
+      "stage": "gs",
+      "effect": "normal_decal_pxm",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "62bacc0686a7b5e5",
+      "stage": "hs",
+      "effect": "normal_decal_pxm",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "78c454a29c6bfc2f",
+      "stage": "ds",
+      "effect": "normal_decal_pxm_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "00d9f6f23753a87b",
+      "stage": "gs",
+      "effect": "normal_decal_pxm_tnt",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "796db6f405d82e56",
+      "stage": "ds",
+      "effect": "normal_detail_dpm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "8e17123466324df8",
+      "stage": "ds",
+      "effect": "normal_detail_dpm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "f1e39e8d20dec53f",
+      "stage": "hs",
+      "effect": "normal_detail_dpm",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "88e839fdd7c0391a",
+      "stage": "ds",
+      "effect": "normal_detail_dpm_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "38fb92cf60335af9",
+      "stage": "ds",
+      "effect": "normal_detail_dpm_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "74acb20b76e82c24",
+      "stage": "gs",
+      "effect": "normal_detail_dpm_tnt",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "567d0b934b700601",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "eda6fda568c774d8",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "019b9b8bf289fe38",
+      "stage": "hs",
+      "effect": "normal_diffspec_detail_dpm",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "92e71b8c757632b0",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "5a346a64303edb88",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "f77cbc36d41545a9",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm_wind",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "f583620004efff27",
+      "stage": "ds",
+      "effect": "normal_diffspec_detail_dpm_wind",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "0a99c40f407350ad",
+      "stage": "hs",
+      "effect": "normal_diffspec_detail_dpm_wind",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7b2ca3afdfb393a3",
+      "stage": "ds",
+      "effect": "normal_spec_batch",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "e7a78d14e0bc6fb8",
+      "stage": "ds",
+      "effect": "normal_spec_batch",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "f4619fe3faaec5e5",
+      "stage": "hs",
+      "effect": "normal_spec_batch",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4e1a33abbf20904d",
+      "stage": "hs",
+      "effect": "normal_spec_batch",
+      "program": "HS_CascadeShadows_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "eca80a5e2ebb4322",
+      "stage": "ds",
+      "effect": "normal_spec_decal_pxm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7fad6b7abfca0354",
+      "stage": "ds",
+      "effect": "normal_spec_decal_pxm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "94da4f7c78733c08",
+      "stage": "hs",
+      "effect": "normal_spec_decal_pxm",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4f0d51b764851f2e",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "1c3ffb089f3996cb",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "26ffeb1746ef2639",
+      "stage": "hs",
+      "effect": "normal_spec_detail_dpm",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "75b8b8300e8589d3",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_texdecal_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "26367eba87ddc2c9",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_texdecal_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7f6160b889338daf",
+      "stage": "gs",
+      "effect": "normal_spec_detail_dpm_texdecal_tnt",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "b19d01a5aa01701c",
+      "stage": "hs",
+      "effect": "normal_spec_detail_dpm_texdecal_tnt",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "d0f400fb5ec7cc6e",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "d3811f749184ebf8",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "082c01e5804983ab",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_vertdecal_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ed56cb190bae4f2b",
+      "stage": "ds",
+      "effect": "normal_spec_detail_dpm_vertdecal_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "3530d6f87af95e85",
+      "stage": "ds",
+      "effect": "normal_spec_dpm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "2be21edc2fb6042f",
+      "stage": "ds",
+      "effect": "normal_spec_dpm",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "649cd1647ddaa514",
+      "stage": "ds",
+      "effect": "normal_spec_emissive",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4af33b4f706c33f1",
+      "stage": "ds",
+      "effect": "normal_spec_pxm",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7f67933da888861d",
+      "stage": "ds",
+      "effect": "normal_spec_twiddle_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7a36915d99ac0890",
+      "stage": "hs",
+      "effect": "normal_spec_twiddle_tnt",
+      "program": "HS_CascadeShadows_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "a591123415689a35",
+      "stage": "hs",
+      "effect": "normal_spec_twiddle_tnt",
+      "program": "HS_CascadeShadows_PNTri_instanced",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "b48fb193629052db",
+      "stage": "ds",
+      "effect": "normal_um_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "afaccec12d14b477",
+      "stage": "ds",
+      "effect": "normal_um_tnt",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "276092c7f007d10e",
+      "stage": "hs",
+      "effect": "normal_um_tnt",
+      "program": "HS_northVertexInputBump_PNTri",
+      "error": "hs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "5dce44236191bfb7",
+      "stage": "ds",
+      "effect": "normal_wind",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "9462ea2991804480",
+      "stage": "ds",
+      "effect": "normal_wind",
+      "program": "DS_DebugOverlay_BANK_ONLY_MEGASHADER",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "d9234b2a9f02975b",
+      "stage": "ds",
+      "effect": "parallax",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "20bf1219501dfd20",
+      "stage": "gs",
+      "effect": "parallax",
+      "program": "GS_LWShadowGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "ba6633b9b41be563",
+      "stage": "gs",
+      "effect": "ped_cloth",
+      "program": "GS_WDSkinnedGSInstPassThrough",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "af7cb6933e1887d0",
+      "stage": "gs",
+      "effect": "postfx",
+      "program": "GS_BokehSprites",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4cad755db6bb47e7",
+      "stage": "gs",
+      "effect": "postfxMS",
+      "program": "GS_BokehSprites",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "4f71b06f26f978e8",
+      "stage": "gs",
+      "effect": "radar",
+      "program": "GS_TexturedUnlit",
+      "error": "gs programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "7213afc8ce87761f",
+      "stage": "ds",
+      "effect": "spec_twiddle_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "e915110269421429",
+      "stage": "ds",
+      "effect": "weapon_emissive_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "61eef2d64456b960",
+      "stage": "ds",
+      "effect": "weapon_normal_spec_detail_tnt",
+      "program": "DS_TransformD_PNTri",
+      "error": "ds programs have no WebGPU equivalent"
+    },
+    {
+      "hash": "0930ebb7e92e9acc",
+      "stage": "cs",
+      "effect": "tiled_lightingMS",
+      "program": "DepthDownsampleCS_A",
+      "error": "Failed to convert IR to Program:\n\nerror: 'workgroupBarrier' must only be called from uniform control flow\nnote: control flow depends on possibly non-uniform value\nnote: reading from module-scope private variable 'r1' may result in a non-uniform value\n\ncb20_struct = struct @align(16) {\n  tint_symbol:"
+    },
+    {
+      "hash": "14244e342d38c1bc",
+      "stage": "cs",
+      "effect": "tiled_lightingMS",
+      "program": "DepthDownsampleCS_B",
+      "error": "Failed to convert IR to Program:\n\nerror: 'workgroupBarrier' must only be called from uniform control flow\nnote: control flow depends on possibly non-uniform value\nnote: reading from module-scope private variable 'r1' may result in a non-uniform value\n\ncb20_struct = struct @align(16) {\n  tint_symbol:"
+    }
+  ],
+  "compiledAuditPending": true
+}

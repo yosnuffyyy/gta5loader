@@ -1,9 +1,79 @@
 {
   "version": "0.17",
-  "status": "DEFERRED; user cannot currently sideload",
-  "requestedTest": "Deferred: user cannot sideload now. Later check capabilities, run GPU queue tests and Trace Prologue; verify actors/world/camera/animation, then full report. No gameplay claim.",
-  "stage3": "IN PROGRESS",
-  "stagesLeft": 5,
-  "realSceneVerified": false,
-  "playable": false
+  "status": "USER_REPORTED_PHYSICAL_TRACE",
+  "device": "Apple A18 Pro GPU / iPhone",
+  "os": "iOS 27.0.1",
+  "selectedFolder": "web",
+  "files": 5814,
+  "actualSceneVerified": false,
+  "responsiveControlsVerified": false,
+  "stage": 3,
+  "verifiedProgress": {
+    "actualComputeShader": "23a7a3c1c0d38f46",
+    "dispatchGroups": [
+      40,
+      23,
+      1
+    ],
+    "bindings": 5,
+    "engineIntroCamera": true,
+    "commands": 100791,
+    "draws": 8229,
+    "presentations": 885,
+    "pipelines": 79,
+    "pipelineHits": 8150,
+    "reads": 14309,
+    "assetMiB": 406,
+    "ioErrors": 0,
+    "sizeMismatches": 0,
+    "unexpectedShortReads": 0,
+    "cleanupMiB": 95.8
+  },
+  "memory": {
+    "highestReportedProcessSampleMiB": 1252.9,
+    "heapMiB": 1292.1,
+    "lastAvailableHeadroomMiB": 2123.1,
+    "immediateOOMProven": false
+  },
+  "blocker": {
+    "opcode": "DRAW",
+    "number": 32,
+    "VS": "7db515e410659eca",
+    "PS": "394c572f727d25e8",
+    "message": "the `clip_distances` extension is not supported in the current environment",
+    "payload": [
+      1,
+      2064,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  "negotiated": {
+    "BC": true,
+    "BC3D": true,
+    "norm16": true,
+    "nativeFormatCaps": true,
+    "border": false,
+    "float32Filter": true,
+    "depth32Stencil": true,
+    "indirectFirstInstance": true,
+    "unclippedDepth": true,
+    "BGRAStorage": true,
+    "RG11Render": true
+  },
+  "remainingDiagnostics": {
+    "errorAssertMessages": 1127,
+    "sceneSphereRequests": 271,
+    "animatedCameraStarts": 1,
+    "scenarioTypeGroups": "metadata omits required derivable Item type",
+    "defaultTasks": "unregistered parStructure hash 0x36b97786",
+    "audio": "update:/x64/audio/sfx/RESIDENT\\LOW_LATENCY.awc unavailable",
+    "movie": "Bink unavailable in supplied engine",
+    "network": "offline authentication/connection diagnostics",
+    "logs": "Gameplay.log write retry",
+    "interiors": "missing interior diagnostics"
+  },
+  "interpretation": "UAV/compute startup progressed. No I/O error in delivered reads. Fatal stop is missing native clip feature. Presentations and camera logs alone do not establish rendered GTA V actors/world, working input or gameplay."
 }

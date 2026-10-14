@@ -1,0 +1,56 @@
+NATIVE 0.18 VERIFICATION — STAGE 3 REMAINS IN PROGRESS
+Source: 4096ea53c868bfc4d45b751362a6e336b58101f6
+Tree: a09b4f9da60b0e98b259e990597cf5b3ad1a9ad5
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38605073708
+Job: 115996211320 — PASS
+
+PASS: all 4,808 existing translated shaders through the production local
+loader, uniform packing and binding layouts, then native Metal compilation.
+1,112 vertex, 3,667 fragment, 29 compute pipelines; 500 clip-distance shaders;
+zero audit failures. Three isolated compiler processes, one program/pipeline
+live per process. Shader input bytes are pinned by SHA256. The audit's other
+stage and attachments are synthetic and matched to each shader interface;
+this does not exhaust real game stage pairs, resource states or scene pixels.
+111 existing untranslated hull/domain/geometry records remain explicitly
+unavailable. No translation was fabricated or marked successful.
+
+PASS: two complete GPU/runtime regression processes. 12 native clip-distance
+pixel cases per process, all 256 pixels checked each: positive/negative and
+intersecting clip planes, perspective-varying w, single-sample and 4x MSAA.
+Native primitive clipping is retained; no fragment-discard substitute.
+PASS: production null multisample float/uint/sint resource/view/bind-group
+validation, three cases in each of the three audit processes. This checks
+bindings, not multisample pixel arithmetic. Integer sample types are retained.
+PASS: retained normalized16, exact border, BC, SNORM, raw readback, instance
+rates, depth proxies, ordered UAV counters, compute outputs, mips, original
+shader/ring pixels, file/save ABI, threading, waits, mailbox, SIMD and bulk
+memory checks. Four CPU engine checkpoints and 32 worker instances.
+GPU replays: 940 commands, 38 draws, 13 render pipelines, 92 readbacks each.
+Two graphics main checkpoints deliberately stop BEFORE archive bytes.
+No complete engine game scene was run in CI.
+
+Both pinned patched crates (wgpu-hal and Naga) were explicitly cleaned and
+recompiled before linking Mac/iPhone libraries. This prevents a restored
+immutable-registry dependency cache from silently omitting a source patch.
+HAL adapter SHA256 b54cdaaf560d1d8034637e3136a254f7312bb701e3f8564cfbdbcde5085af27a
+Naga writer SHA256 21c5f620868ff0f2b900d11863b30ea05970fea6f4b430179ef0646926c058fa
+Original files and crate checksums, plus exact edits, are in evidence.
+
+PASS: unsigned ARM64 iPhoneOS17+ IPA, unchanged bundle ID, no WebKit,
+JavaScriptCore, signing profile, code signature or writable executable
+segment. 110 source entries match the immutable Git tree. ZIP byte sizes,
+archive digests and final IPA digest checked independently. 131 verified
+engine/compiler objects reused per target. Engine instructions and eleven
+probe exports unchanged; original shader files and 640x360 profile unchanged.
+Seventeen previous IPAs preserved. Protected PC folders were not accessed;
+main remains de7664a8e6448096716c5a341250d32d4f594fd1.
+The 72 MB full shader audit reference is CI-only and absent from the IPA.
+
+IPA: GTA-Native-Probe-0.18-unsigned.ipa
+Bytes: 102179210
+SHA256: 8b5145801a9a8f0bea70df7998aee43df5a3c1771cdd50177fca78caa0cf9a82
+
+Physical 0.18 iPhone scene continuation: PENDING. No sustained gameplay,
+player controls, audio output or repair of metadata/movie/network warnings
+is claimed. See IPHONE-COMPATIBILITY-0.18.txt and ROADMAP.txt.
+(stage 3 in progress) (5 stages left)

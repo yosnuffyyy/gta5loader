@@ -1,27 +1,22 @@
-NATIVE INTEGRATION 0.17 — WINDOWS INSTALLATION
+NATIVE INTEGRATION 0.18 — WINDOWS INSTALLATION
 
-Install GTA-Native-Probe-0.17-unsigned.ipa over your existing native app with the same Sideloadly
-setup, Apple account and bundle identifier. No Windows prerequisite changes
-or game-file reinstall are needed. The working 0.1 through 0.16 IPAs remain
-preserved for rollback.
+Install GTA-Native-Probe-0.18-unsigned.ipa over the existing native app using
+your usual local signing tool, the same Apple account and bundle identifier.
+Keep your extracted web folder and existing installation. No game-file or
+Windows prerequisite reinstall is needed. All 17 older IPAs are preserved.
 
-Select the extracted web folder (including data/manifest.json), then tap
-Trace Prologue startup. Keep the render view visible initially. This build
-preserves the 0.16 UAV/compute changes and corrects normalized16 texture
-formats, exact border sampling and the backend's iOS border capability.
-Startup logs negotiated features/limits and actual app memory headroom.
-Graphics remain at the same conservative settings.
-Report whether actual characters/world, camera movement and animation
-appear after North Yankton. Let it run about two minutes if possible,
-then tap Stop and copy the entire final report. Gameplay controls and
-audio output still await stage 4; scene verification is stage 3's gate.
-The user cannot sideload now; these steps are saved for later. No immediate
-phone test is required.
-Copy its final report, or the last Live startup lines and Stop result if it
-stalls. Required unsupported operations still report explicit errors.
-Reselect the folder after each app launch. The separate older test buttons
-remain available; their Mac regressions already passed for this build.
-See IPHONE-COMPATIBILITY-0.17.txt and VERIFICATION-0.17.txt for tested scope and remaining work.
+When you can test, select your existing web folder and tap Trace Prologue
+startup. Keep the game view visible. Check whether actual characters/world,
+camera movement, textures and animation appear after North Yankton and
+continue for roughly two minutes. Tap Stop and copy the full final report,
+including negotiated clip/border features and presented-pixel samples.
+The scene gate is stage 3. Audio output and game controls remain stage 4.
+
+Optional diagnostic button: Run GPU queue + startup tests now includes native
+clip-distance pixel checks. CI already passed those regressions. Its fixture
+pixels and first-archive checkpoint are separate from a real game scene.
+Required unported operations still stop with detailed diagnostics.
+See VERIFICATION-0.18.txt and IPHONE-COMPATIBILITY-0.18.txt.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
 It is separate from both the working PC game and the Safari installation.

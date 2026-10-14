@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native 0.17 dependency/feature audit; stage 3 remains active.
+Updated 2026-10-14. Native 0.18 clip/shader audit; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -97,7 +97,17 @@ quality remain unchanged. Sixteen older IPAs are preserved. The detailed
 audit distinguishes hardware support from unported behaviors and records
 remaining Bink/metadata/host/input/audio/graphics limitations. See
 IPHONE-COMPATIBILITY-0.17.txt and VERIFICATION-0.17.txt. Actual A18 scene
-validation is pending until sideloading is possible again.
+validation was resumed: physical 0.17 executed the depth-downsample compute
+dispatch but hit clip_distances at command100791. The report negotiated
+border0; CI evidence confirmed the old patched crate cache was reused.
+0.18 fixes native clip feature negotiation, pinned Naga clip-array attribute
+placement, patched-dependency cache invalidation, integer multisample bindings
+and legal null multisample resources. CI38605073708 passed all4808 translated
+shader modules/native pipelines, including500 clips, plus24 clip pixel cases
+and all retained regressions. The111 untranslated records remain explicit.
+The unsigned ARM64 IPA audit passed;17 older IPAs are preserved. No quality
+increase, metadata rewrite, PC/main change or stage advancement was made.
+Actual iPhone scene continuation is the next gate. See VERIFICATION-0.18.txt.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

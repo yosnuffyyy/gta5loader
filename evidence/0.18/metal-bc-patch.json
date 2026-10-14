@@ -1,0 +1,22 @@
+{
+  "name": "Metal BC, sampler-border and clip-distance capabilities plus Naga clip-array declarator",
+  "wgpuHalVersion": "29.0.3",
+  "originalCrateSHA256": "31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f",
+  "originalAdapterSHA256": "6da21d590125e601015862dd2a66e4dae2fdd5e35d80624dd2c6cca52099d9bf",
+  "patchedAdapterSHA256": "b54cdaaf560d1d8034637e3136a254f7312bb701e3f8564cfbdbcde5085af27a",
+  "before": "            format_bc: os_type == super::OsType::Macos,",
+  "after": "            // Local native-iPhone patch: ask Metal rather than excluding iOS.\n            // Unsupported devices remain unsupported; no feature is fabricated.\n            format_bc: os_type == super::OsType::Macos\n                || (available!(ios = 16.4, tvos = 16.4, visionos = 1.0)\n                    && device_class_responds_to(device, sel!(supportsBCTextureCompression))\n                    && device.supportsBCTextureCompression()),",
+  "borderBefore": "            sampler_clamp_to_border: Self::supports_any(device, SAMPLER_CLAMP_TO_BORDER_SUPPORT),",
+  "borderAfter": "            // Apple7+ supports sampler border colors (Apple Metal feature table).\n            // The old macOS-only feature-set list hides actual iOS support.\n            sampler_clamp_to_border: Self::supports_any(device, SAMPLER_CLAMP_TO_BORDER_SUPPORT)\n                || (family_check && device.supportsFamily(MTLGPUFamily::Apple7)),",
+  "clipBefore": "            | F::EXTERNAL_TEXTURE;",
+  "clipAfter": "            | F::EXTERNAL_TEXTURE\n            | F::CLIP_DISTANCES;",
+  "nagaPatch": {
+    "version": "29.0.3",
+    "crateSHA256": "0dd91265cc2454558f659b3b4b9640f0ddb8cc6521277f166b8a8c181c898079",
+    "originalWriterSHA256": "e0477d761c4fb20445bc54457a278320e7a65dc51bf25209d24aa951639e8704",
+    "patchedWriterSHA256": "21c5f620868ff0f2b900d11863b30ea05970fea6f4b430179ef0646926c058fa",
+    "before": "                        write!(self.out, \"{}{} {}\", back::INDENT, ty_name, name)?;\n                        if let Some(array_len) = array_len {\n                            write!(self.out, \" [{array_len}]\")?;\n                        }\n                        resolved.try_fmt(&mut self.out)?;",
+    "after": "                        write!(self.out, \"{}{} {}\", back::INDENT, ty_name, name)?;\n                        // Metal attaches clip_distance to the array declarator,\n                        // before its extent. After [N], clang applies it to a type.\n                        let clip = matches!(*binding, crate::Binding::BuiltIn(crate::BuiltIn::ClipDistance));\n                        if clip { resolved.try_fmt(&mut self.out)?; }\n                        if let Some(array_len) = array_len {\n                            write!(self.out, \" [{array_len}]\")?;\n                        }\n                        if !clip { resolved.try_fmt(&mut self.out)?; }"
+  },
+  "scope": "Only checked feature advertisement and clip_distance attribute placement; native primitive clipping and normal validation preserved"
+}

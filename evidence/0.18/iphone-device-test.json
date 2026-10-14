@@ -1,0 +1,9 @@
+{
+  "version": "0.18",
+  "status": "PENDING",
+  "stage": 3,
+  "stagesLeft": 5,
+  "sceneVerified": false,
+  "controlsVerified": false,
+  "requestedTest": "When available: existing web folder, Trace Prologue startup, keep view visible; verify actual actors/world/textures/camera/animation for two minutes, then Stop/full report. Stage4 input/audio remain pending."
+}
