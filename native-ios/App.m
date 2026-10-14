@@ -9,7 +9,7 @@
 #include "renderer/native_renderer.h"
 #include "renderer/native_launch.h"
 #include <math.h>
-#include "presentation_metrics.inc"
+#include "renderer/presentation_metrics.inc"
 
 @interface NativeSurfaceView : UIView
 @end
@@ -132,7 +132,7 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)startupStatus {
     if(!self.sceneRunning)return;char status[640]={0};native_scene_status(status,sizeof(status));
-    [self append:[NSString stringWithFormat:@"%s; %@",status,Footprint()]];NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(metrics){self.performanceLabel.text=[metrics summary];[self append:self.performanceLabel.text];}
+    [self append:[NSString stringWithFormat:@"%s; %@",status,Footprint()]];NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(metrics){self.performanceLabel.text=[metrics overlay];[self append:[metrics summary]];}
 }
 - (void)stopScene {if(self.sceneRunning){native_scene_request_stop();self.stopButton.enabled=NO;[self startupStatus];[self append:@"Stopping native startup and joining workers…"];}}
 - (void)runIntegration {
@@ -158,7 +158,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid startup report";NSString *memory=Footprint();
-        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];if(layer.displayMetrics){self.performanceLabel.text=[layer.displayMetrics summary];[self append:self.performanceLabel.text];}self.timingSwitch.enabled=YES;[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];});
+        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];if(layer.displayMetrics){self.performanceLabel.text=[layer.displayMetrics overlay];[self append:[layer.displayMetrics summary]];}self.timingSwitch.enabled=YES;[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];});
     }}];thread.stackSize=4*1024*1024;thread.name=@"Native scene startup";thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
 }
 - (void)runRenderer {

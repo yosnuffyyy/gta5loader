@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+node native-ios/renderer/test_reference_fetch.mjs | tee native-build/evidence/native-reference-fetch-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_timing_window.c -o native-build/test-timing-window
 native-build/test-timing-window | tee native-build/evidence/native-timing-window-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_display_timeline.c -o native-build/test-display-timeline

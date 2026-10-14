@@ -83,7 +83,7 @@ static void sample_memory(NativeGpu *g){uint64_t now=now_ns();if(now-g->last_sam
  if(g->host->progress&&now-g->last_report>=5000000000ull){char line[190];snprintf(line,sizeof(line),"Native memory headroom: %.1f MiB available to this app right now; changes with OS pressure, not a guaranteed budget",(double)os_proc_available_memory()/1048576.0);g->host->progress(g->host->progress_context,line);}
 #endif
  if(footprint>g->highest_footprint)g->highest_footprint=footprint;
- if(g->host->progress&&now-g->last_report>=5000000000ull){g->last_report=now;char line[320];snprintf(line,sizeof(line),"Native startup: process %.1f MiB (highest 1-second sample %.1f MiB); heap committed %.1f MiB; GPU commands %llu, surface frames %llu, last %s",footprint,g->highest_footprint,(double)atomic_load(&g->host->memory.size)/1048576.0,(unsigned long long)g->ring.executed,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));g->host->progress(g->host->progress_context,line);}
+ if(g->host->progress&&now-g->last_report>=5000000000ull){g->last_report=now;char line[320];snprintf(line,sizeof(line),"Native startup: process %.1f MiB (highest 1-second sample %.1f MiB); heap committed %.1f MiB; GPU commands %llu, surface frames %llu, last %s",footprint,g->highest_footprint,(double)atomic_load(&g->host->memory.size)/1048576.0,(unsigned long long)g->ring.executed,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));g->host->progress(g->host->progress_context,line);if(g->metrics.last_present)metrics_report(g);}
 }
 static _Atomic uint32_t *heap_word(NativeGpu *g,uint64_t address){return (_Atomic uint32_t*)(g->host->memory.data+address);}
 static void wake(void *context,uint64_t address){NativeGpu *g=context;native_notify(&g->host->memory,address,UINT32_MAX);}

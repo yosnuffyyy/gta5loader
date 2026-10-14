@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';import {readReference} from './reference_fetch.mjs';
+let calls=0,waits=[];const delay=async n=>waits.push(n),ok=()=>new Response(new Uint8Array([1,2,3]));
+assert.deepEqual([...await readReference('https://fixture.invalid',{fetchImpl:async()=>{if(++calls<3)throw TypeError('terminated');return ok();},delay})],[1,2,3]);assert.equal(calls,3);assert.deepEqual(waits,[500,1000]);
+calls=0;await assert.rejects(readReference('https://fixture.invalid',{fetchImpl:async()=>{calls++;throw TypeError('terminated');},delay}),/terminated/);assert.equal(calls,3);
+calls=0;await assert.rejects(readReference('https://fixture.invalid',{fetchImpl:async()=>{calls++;return new Response('',{status:404});},delay}),/HTTP 404/);assert.equal(calls,1);
+calls=0;await readReference('https://fixture.invalid',{fetchImpl:async()=>++calls===1?new Response('',{status:503}):ok(),delay});assert.equal(calls,2);
+calls=0;await readReference('https://fixture.invalid',{fetchImpl:async()=>++calls===1?{ok:true,arrayBuffer:async()=>{throw new DOMException('timeout','TimeoutError');}}:ok(),delay});assert.equal(calls,2);
+calls=0;await assert.rejects(readReference('https://fixture.invalid',{fetchImpl:async()=>{calls++;throw Error('integrity failure');},delay}),/integrity/);assert.equal(calls,1);
+await assert.rejects(readReference('https://fixture.invalid',{attempts:4}),/bound/);
+console.log('PASS: bounded CI reference transport retries, streamed-body failure/timeout, HTTP 503 recovery, permanent HTTP and integrity failures retained; no network/game success simulated.');
