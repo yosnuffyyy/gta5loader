@@ -1,4 +1,4 @@
-/* CI-only real VS/PS hashes from the 0.17 Prologue failure. Vertex attributes
+/* CI-only real VS/PS hashes from the 0.18 Prologue failure. Vertex attributes
    and color attachments are synthetic interface fixtures, not captured scene
    geometry or render-target formats. Production shader layouts/cache are used. */
 typedef struct {_Atomic bool done;WGPUPopErrorScopeStatus status;WGPUErrorType type;char message[1000];} PairScope;

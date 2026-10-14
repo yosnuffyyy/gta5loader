@@ -1,5 +1,5 @@
 {
-  "scope": "Native 0.19: correct byte-range uploads, retained multisample resolve, batched whole texture copies, recorded Prologue shader pair and bounded failure/resource diagnostics; stage 3 remains in progress",
+  "scope": "Native 0.19 candidate: preserve and remap sparse inter-stage varyings to negotiated limits, exact Prologue pair regression, byte-range uploads, retained multisample resolve, batched texture copies and bounded diagnostics. Final Metal verification pending; stage 3 remains in progress",
   "files": [
     {
       "path": "native-ios/App.m",
@@ -168,8 +168,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 3913,
-      "sha256": "eeabfc743a74ab60263f84ad746962b6fa37b94fed6a522ac4a01eb86759acbb"
+      "bytes": 3966,
+      "sha256": "f82285ceda1f0fd5603342e19c26d823304356faa738d0ffe55fbdf2a08ad1c1"
     },
     {
       "path": "native-ios/renderer/clip_fixture.inc",
@@ -278,13 +278,13 @@
     },
     {
       "path": "native-ios/renderer/inter_stage_replay.inc",
-      "bytes": 1657,
-      "sha256": "0e150033d1f5b19d88de635c9c0d115242758b86d972a77722ed58c34d6d9073"
+      "bytes": 1793,
+      "sha256": "72bc42b5b4b896f9b45b943e7b722553670cef1dcdae31aa5bfe33452887c0c0"
     },
     {
       "path": "native-ios/renderer/inter_stage_verify.inc",
-      "bytes": 650,
-      "sha256": "69ada5da8b965d758c7efa53ecddcbad8fac5e4c0a2ccdb6e2a0b797aa7eba49"
+      "bytes": 656,
+      "sha256": "4c1ce98470858f488c7c6212c22528424f99d4e624866abea828c3c923cadc54"
     },
     {
       "path": "native-ios/renderer/mip_replay.inc",
@@ -409,7 +409,7 @@
     {
       "path": "native-ios/renderer/recorded_pair_audit.inc",
       "bytes": 6287,
-      "sha256": "d37b9b72862d7b49dd51a5b01f04047ef96c4ed4de69e36a5db16aa20d32d340"
+      "sha256": "6da074c86c66aac959a45aa51cb53ecc978a570478ec75804cd2e34a62fbae10"
     },
     {
       "path": "native-ios/renderer/renderer_cli.m",
@@ -423,13 +423,13 @@
     },
     {
       "path": "native-ios/renderer/resource_replay.inc",
-      "bytes": 3602,
-      "sha256": "41c590166842f5d167ddf50121acdbe5b808dd1eeff46b79afc346a44b1cf109"
+      "bytes": 3872,
+      "sha256": "481baecf461c87a8bfc42c30e812957fd5ed339c7176d861371ea5157a53fb56"
     },
     {
       "path": "native-ios/renderer/resource_verify.inc",
-      "bytes": 1865,
-      "sha256": "5da43d9c48ab34fd321ddfefd46db52a78420275ff7ac69d295b2f2b167e9129"
+      "bytes": 1901,
+      "sha256": "3a61a1b2cc46caede22a4106b9d08cfba8e97e1de7e0c146f1bf01670f79a9c1"
     },
     {
       "path": "native-ios/renderer/sampler_border.h",
@@ -470,6 +470,11 @@
       "path": "native-ios/renderer/storage_formats.inc",
       "bytes": 2380,
       "sha256": "fab514115410a81eed3e5ecbe3d91a53f5c4fde667d648513a2a6d5c73cd2ea3"
+    },
+    {
+      "path": "native-ios/renderer/test-inter-stage-source.mjs",
+      "bytes": 5844,
+      "sha256": "8f9b943b3f146596ca07f84a431bea55ec378035a816fc21c3136ec035b81ec7"
     },
     {
       "path": "native-ios/renderer/test_buffer_upload.c",
