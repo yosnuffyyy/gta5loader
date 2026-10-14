@@ -14,6 +14,14 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-uav-layout | tee native-build/evidence/native-uav-layout-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_sampler_border.c -o native-build/test-sampler-border
 native-build/test-sampler-border | tee native-build/evidence/native-sampler-border-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_buffer_upload.c -o native-build/test-buffer-upload
+native-build/test-buffer-upload | tee native-build/evidence/native-buffer-upload-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_shader_diagnostic.c -o native-build/test-shader-diagnostic
+native-build/test-shader-diagnostic | tee native-build/evidence/native-shader-diagnostic-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_resource_bytes.c -o native-build/test-resource-bytes
+native-build/test-resource-bytes | tee native-build/evidence/native-resource-bytes-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_inter_stage_layout.c -o native-build/test-inter-stage-layout
+native-build/test-inter-stage-layout | tee native-build/evidence/native-inter-stage-layout-test.txt
 node native-ios/renderer/prepare-shader-audit.mjs
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh

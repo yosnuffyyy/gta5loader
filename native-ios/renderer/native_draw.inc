@@ -2,6 +2,7 @@
 #include "draw_fixture_sources.inc"
 #include "draw_shader.inc"
 #include "draw_loader_test.inc"
+#include "inter_stage.inc"
 #include "draw_pipeline.inc"
 static bool draw_uniforms(NativeGpu *g){DrawState *s=&g->draw;if(s->mirror)return true;s->mirror=calloc(1,DRAW_UBO_BYTES);if(!check(g,s->mirror!=NULL,"Uniform mirror allocation"))return false;
  WGPULimits limits=WGPU_LIMITS_INIT;if(!check(g,wgpuDeviceGetLimits(g->device,&limits)==WGPUStatus_Success,"Uniform alignment query failed"))return false;s->alignment=limits.minUniformBufferOffsetAlignment;if(s->alignment<256)s->alignment=256;if(!check(g,s->alignment<=65536&&(s->alignment&(s->alignment-1))==0,"Unsupported uniform alignment"))return false;

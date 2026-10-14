@@ -62,7 +62,7 @@ const key=hash(JSON.stringify(item));
    });
   })));
   if(audits.some(x=>x.status!=='fulfilled'))throw Error('Native shader audit failed; inspect preserved shard evidence');
-  const audit=audits.map(x=>x.value).join('\n');const totals={modules:0,pipelines:0,vs:0,ps:0,cs:0,clip:0,failures:0,untranslated:0};
+  const audit=audits.map(x=>x.value).join('\n');if(!audit.includes('PASS: recorded Prologue VS 7db515e410659eca + PS 394c572f727d25e8'))throw Error('Recorded Prologue shader-pair audit missing');const totals={modules:0,pipelines:0,vs:0,ps:0,cs:0,clip:0,failures:0,untranslated:0};
   const matches=[...audit.matchAll(/PASS: original shader audit shard (\d)\/3; modules (\d+); native Metal pipelines (\d+); VS\/PS\/CS (\d+)\/(\d+)\/(\d+); clip shaders (\d+); failures (\d+); untranslated records (\d+)/g)];
   if(matches.length!==3||new Set(matches.map(x=>x[1])).size!==3)throw Error('Incomplete shader audit shard reports');
   for(const m of matches)for(const [i,key] of ['modules','pipelines','vs','ps','cs','clip','failures','untranslated'].entries())totals[key]+=Number(m[i+2]);
