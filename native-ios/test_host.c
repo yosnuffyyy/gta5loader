@@ -75,7 +75,7 @@ int main(void){
  assert(host_path_stat(&h,64,8192)==0);
  assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-20);
  assert(unlinkat(h.save_root,"path-test",AT_REMOVEDIR)==0);
- host_store(&h,64,"/userdata/../escape",20);assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-63);
+ host_store(&h,64,"/userdata/../escape",sizeof("/userdata/../escape"));assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-63);
  host_store(&h,64,"/data/escape",13);assert(host_mkdir(&h,(uint32_t)-100,64,0777)==(uint32_t)-69);
  assert((int32_t)open_path(&h,"/data/new-file",64|1)==-69);
  assert((int32_t)open_path(&h,"/userdata/../web/evil",64|1)==-63);

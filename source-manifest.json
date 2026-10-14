@@ -293,8 +293,8 @@
     },
     {
       "path": "native-ios/test_host.c",
-      "bytes": 6528,
-      "sha256": "e85651511da95d4f62a88bd06ddcf6d74b911b33b6e14c34b8aa86f9295902fc"
+      "bytes": 6555,
+      "sha256": "19aac8429e3aadf973c8228913d0ab4cbb1e30d0dd3fd13273b258fda47c7c76"
     },
     {
       "path": "native-ios/test_wait.c",
