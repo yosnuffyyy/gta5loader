@@ -1,0 +1,115 @@
+{
+  "scope": "Source/protocol investigation. Physical 0.20 scene verification remains pending; final CI results are recorded separately.",
+  "physicalFailure": {
+    "version": "0.19",
+    "operation": "BEGIN_QUERY",
+    "opcode": 45,
+    "queryId": 11165,
+    "vertexId": 4958,
+    "vertexHash": "a5f68d15a12d1480",
+    "fragmentId": 4951,
+    "fragmentHash": "e8f51fe53bda3544",
+    "commands": 101707,
+    "draws": 8323,
+    "exactCreateTypeProvided": false
+  },
+  "protocol": {
+    "create": [
+      "id:u32",
+      "D3D query type:u32",
+      "result address low:u32",
+      "result address high:u32"
+    ],
+    "begin": [
+      "id:u32"
+    ],
+    "end": [
+      "id:u32",
+      "completion sequence:u32"
+    ],
+    "replyBytes": 16,
+    "reply": {
+      "completionOffset": 0,
+      "reservedOffset": 4,
+      "uint64ValueOffset": 8
+    },
+    "publication": "Low/high value words relaxed, completion sequence release, then native notify; original engine address/sequence protocol preserved."
+  },
+  "requiredTypes": {
+    "1": "D3D11_QUERY_OCCLUSION: actual UINT64 samples passing tests",
+    "5": "D3D11_QUERY_OCCLUSION_PREDICATE: canonical BOOL from actual zero/nonzero count"
+  },
+  "backend": {
+    "version": "wgpu-native 29.0.1.1",
+    "commit": "6aed50955d934ac36049ba8d002034841633ae02",
+    "hal": "29.0.3",
+    "originalCommandSHA256": "49b3dd48ea241ac66738854b9e76a77ba2863fdc9fe1aaa936e1bc16e5d79e52",
+    "patchedCommandSHA256": "ceb797d1d35df1262b61582351cfc5870fcdc20e2daf2424afb38a3660ba9b81",
+    "change": "MTLVisibilityResultMode::Boolean -> Counting at one pinned begin_query site",
+    "capability": "Require actual Metal device Apple3 or Mac2 support before creating a count/predicate query. A18 is Apple9 in Apple's feature table; hardware checked at runtime.",
+    "wgpuFeature": "Occlusion is core query support, not an optional timestamp feature. No adapter limits are raised."
+  },
+  "boundedResources": {
+    "pages": 4,
+    "segmentsPerPage": 64,
+    "logicalScopes": 32,
+    "resolveBytesPerPage": 16384,
+    "mapBytesPerPage": 512,
+    "logicalQuerySetBytesPerPage": 512,
+    "maximumGpuPayloadBytes": 69632,
+    "notes": "Payload excludes driver alignment/overhead. Pages allocated lazily and reused only after map/unmap completion. No whole-frame/archive caching."
+  },
+  "ordering": [
+    "Begin/End split physical passes without per-query queue waits.",
+    "Each physical segment resolves and copies outside its render pass, before a later pass can affect the visibility buffer; mapping follows the matching encoder submission.",
+    "Map only after that draw encoder is submitted, never after an unrelated submit.",
+    "Scopes sum segments across pass/submit boundaries; overlapping scopes share correct actual intervals.",
+    "Token changes cancel old reuse generations. Completion jobs retain IDs/tokens, never Object pointers or result addresses.",
+    "Destroy retires tokens before a destruction-triggered flush can publish callbacks.",
+    "Stop cancels maps; callback contexts remain alive through instance release; unfinished scopes never publish a fabricated completion.",
+    "Existing event completion and CPU timestamp/disjoint shim are retained, explicitly not real GPU timing."
+  ],
+  "performance": {
+    "perOcclusionEndWait": false,
+    "mappingBatch": "One map per submitted nonempty page, up to64segments; per-pass resolves/copies retained after rejecting an incorrect batching experiment.",
+    "backpressure": "Only if all four pages are busy; cancelable bounded timeout, explicitly counted.",
+    "idlePolling": "Two-millisecond poll only while query maps are pending; original100ms sleep otherwise.",
+    "phoneFpsMeasured": false
+  },
+  "remainingQueries": {
+    "event0": "Existing real queue-completion path retained.",
+    "timestamp2_disjoint3": "Existing CPU-monotonic estimate retained; no GPU timestamp claim.",
+    "pipeline_statistics4_and_stream_output": "Explicit unsupported errors; no evidence they are the current Prologue requirement."
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_query",
+    "https://developer.apple.com/documentation/metal/mtlvisibilityresultmode/counting",
+    "https://developer.apple.com/metal/capabilities/",
+    "https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm"
+  ],
+  "cleanupFinding": {
+    "source": "https://raw.githubusercontent.com/gfx-rs/wgpu-native/6aed50955d934ac36049ba8d002034841633ae02/src/lib.rs",
+    "reproduction": "Second candidate compiled, then query cleanup aborted: Cannot remove a vacant resource. QuerySetDestroy and final QuerySetRelease both call query_set_drop in this pinned version.",
+    "fix": "Release the exclusively owned public query-set reference once; submitted command buffers retain internal references. Do not call QuerySetDestroy before final Release.",
+    "shutdownLimit": "Query cleanup cancels maps and polls without an added completion wait. Existing pinned native WGPUDeviceImpl drop itself calls PollType::wait_indefinitely; full device teardown is not promised nonblocking."
+  },
+  "sceneVerified": false,
+  "stage": 3,
+  "stagesLeft": 5,
+  "definedCountWrap": "D3D11 functional spec20.4.6 requires UINT64 modulo wrap. Unsigned addition is defined; predicate uses any nonzero segment rather than accumulated sum, preserving visibility across wrap.",
+  "sampleMaskFinding": {
+    "reproduction": "Fourth CI candidate produced1024 MSAA samples where a partial fixed mask required512.",
+    "source": "Pinned HAL29.0.3 src/metal/device.rs1596-1609 ignores multisample.mask (TODO).",
+    "fix": "Explicitly reject masks disabling relevant samples; masks with all relevant bits set remain supported. Two negative MSAA fixtures guard the boundary. No fake counts or skipped required rendering.",
+    "partialMaskImplemented": false
+  },
+  "rejectedOptimization": {
+    "source": "a672d79f7526ef47855a9a1c601d4432fb371bd0",
+    "run": 38644676787,
+    "result": "FAIL: case0 returned0 where256samples were required. No IPA delivered.",
+    "rollback": "201610f296345c2eb0578028e22258aee0668a26",
+    "verifiedBaselineTree": "5d820a4fcccdc147857bab2e736851acb8ecbdbc",
+    "decision": "Restore the byte-identical verified baseline per-pass snapshot path. Do not claim the proposed6KiB layout or13resolve/copy batching as successful.",
+    "rootCauseLimit": "Late cross-pass resolution lost earlier values on this backend. The deeper Metal behavior was not independently established; wgpu-core source resets only used slots. No speculative backend reset/accumulation patch."
+  }
+}

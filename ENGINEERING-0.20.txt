@@ -1,0 +1,214 @@
+NATIVE 0.20 ENGINEERING REPORT
+Updated 2026-10-14. This is an independently validated native prototype;
+correct physical Prologue scene frames and gameplay remain pending.
+
+1. COMPLETED CHANGES AND AFFECTED SOURCE FILES
+native-ios/renderer/native_queries.inc implements real query creation, Begin,
+End, per-pass resolution, compact copies, asynchronous maps and reply delivery.
+Each physical pass snapshots actual samples before a later pass; results map
+only after the matching draw encoder is submitted. Overlapping logical scopes
+receive their own intervals. Monotonic tokens prevent reuse and object-ID ABA
+from publishing old results. Destruction retires reply ownership BEFORE a
+destruction-triggered flush can process callbacks. Unended scopes never publish
+fake completion. Map contexts live through instance release during cancellation.
+
+query_state.h and query_types.inc hold the logical state and fixed four-page
+pool. Each page contains 64 query slots, a 16 KiB aligned resolve buffer and a
+512-byte compact map buffer; maximum logical GPU payload is 68 KiB, excluding
+driver overhead. Up to 32 overlapping scopes are supported. UINT64 accumulation
+uses defined unsigned wrap as D3D specifies. Predicates preserve any nonzero
+segment even if the accumulated count wraps to zero. Ordering and bounds errors
+remain fatal; unsupported operations do not return fabricated success.
+
+native_draw.inc and native_gpu.m attach query sets, end passes in order, submit
+and poll maps, preserve fences and existing uniform-slot synchronization, and
+reacquire the page after a uniform-overflow flush before constructing bindings.
+There is no completion wait added to each occlusion End. Four-page pressure
+is bounded/cancelable and reported. Idle polling is 2 ms only with pending maps,
+otherwise the previous 100 ms. Reports retain fatal operation/shader/payload,
+bindings and eight recent command breadcrumbs, plus bounded query statistics.
+
+patch-metal-bc.mjs changes one content-pinned HAL begin_query site from Boolean
+to Counting. Actual Apple3/Mac2 hardware support is required at runtime; no
+adapter limit or unavailable feature is fabricated. Existing adapter/Naga
+patches remain unchanged. Cargo checksums/evidence and dependency cache keys
+describe the changed source. QuerySet cleanup releases its exclusively owned
+public reference once: in pinned native 29.0.1.1, Destroy and final Release both
+call the core drop, which independently reproduced a vacant-resource panic.
+In-flight command buffers retain their internal resource references.
+
+draw_pipeline.inc now rejects partial/zero fixed sample masks that disable
+relevant samples. The pinned Metal HAL silently ignores multisample.mask; a
+real four-sample test returned 1024 where the mask required 512. Masks with all
+relevant bits set remain supported. This is an explicit unsupported boundary,
+not a mask implementation. No ignored mask or invented count is accepted.
+
+New tests: test_query_state.c, query_setup.inc, query_replay.inc,
+query_fixture.inc and query_stop_fixture.inc. build-renderer.sh runs the state
+test with ASan/UBSan. App.m / generate-probe.mjs increase the bounded GPU report
+to 8192 bytes and label 0.20; Info.plist uses 0.20.0/build 20 and the same bundle.
+source-manifest.json lists 133 files. Seventeen entries changed versus 0.19,
+including the manifest; eight source files are new. Engine, host, worker,
+archive reader, original shader files and 0.19 shader/upload fixes are preserved.
+
+2. PROTOCOL AND SOURCE EVIDENCE
+The approved wgpu_worker.js reference defines CREATE_QUERY44(id,type,replyLow,
+replyHigh), BEGIN_QUERY45(id) and END_QUERY46(id,completionSequence). Replies
+use 16 bytes: done at +0, reserved +4 untouched, UINT64 low/high at +8/+12.
+Value words precede a release completion store and native notification. Type1
+returns real samples; type5 returns canonical BOOL. The browser's visible
+65536 substitution is not used. Occlusion is core WebGPU query functionality;
+no optional timestamp feature or arbitrary hardware-limit increase is needed.
+
+The supplied physical BEGIN ID11165 proves the previous unsupported path, but
+its CREATE type and following geometry/render state were not supplied. Both
+type1 and type5 are tested. The bound hashes identify clouds_anim
+VSCloudsVertScatterPiercing_Infinite and clouds_altitude PSClouds_Cheap.
+Independent source reflection checks 11 VS outputs and seven PS inputs with
+matching types/interpolation. The retained 0.19 linker moves location15 to10;
+all outputs fit15. This is source-only evidence, not that actual scene pair's
+full pipeline/draw verification. The audit helper initially matched main_inner
+and then checked raw sparse labels; corrected entry reflection/remapping passed.
+
+3. VERIFIED TESTS, BUILD AND FAILED CANDIDATES
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38645819844
+Source: 201610f296345c2eb0578028e22258aee0668a26
+Tree: 5d820a4fcccdc147857bab2e736851acb8ecbdbc
+Job: 116132278587 — PASS
+
+PASS: two real Metal query runs, 180 cases each, through the production ring.
+Exact 0/1/64/256/320/512/768/1024 results, multiple draws, depth and stencil
+rejection, scissor, full-mask MSAA, overlapping scopes, pass/submission splits,
+empty scopes, pending reuse, destroyed IDs, and the guarded engine reply ABI.
+The original IM shaders use deterministic fixture geometry, not a recorded
+Prologue scene. Eight explicit order/type/address/sample-mask boundary cases
+and unfinished-scope cancellation passed per run.
+Run 1: 183 physical segments, 13 asynchronous maps, 3/4 pages,
+179 results, 2 empty scopes, 3 discarded stale segments;
+query payload live/peak 0/51 KiB; zero pool-pressure waits.
+Run 2: 183 physical segments, 13 asynchronous maps, 3/4 pages,
+179 results, 2 empty scopes, 3 discarded stale segments;
+query payload live/peak 0/51 KiB; zero pool-pressure waits.
+
+PASS: query-state ASan/UBSan checks, including 10,000 reuse/ABA cases, pending
+completion, zero completion sequence, count wrap, and predicates across wrap.
+PASS: all retained 0.19 regression gates. 4,808 translated shader modules and
+native Metal pipelines, including 500 clip shaders, with zero audit failures.
+The earlier Prologue varying pair retains its negative/positive pipeline
+checks under a real 15-variable limit. Two full base GPU replays checked
+1,133 commands, 41 draws and 139 readbacks each, including formats, clip,
+depth proxies, instance rates, UAV/compute, mip, pixel and resource cases.
+Four engine checkpoints / 32 workers, file/save/entropy/TLS, mailbox/atomic,
+SIMD and bulk-memory checks passed. CI startup stops before real archives;
+no full game scene was executed. The 111 untranslated records remain explicit.
+
+PASS: independently audited unsigned ARM64 iPhoneOS 17+ IPA, version 0.20.0,
+build 20, unchanged bundle ID. No profile/signature/WebKit/JavaScriptCore or
+writable executable segment. All 134 source entries match the immutable tree;
+manifest, artifact ZIP and IPA digests checked. Nineteen prior IPAs preserved.
+IPA: GTA-Native-Probe-0.20-unsigned.ipa
+Bytes: 102213617
+SHA256: 55657252d76d9c9107bf63686accf075106032e6b284e92dca6760b05449ac3e
+
+Candidate d2d6d70 / CI38638381064: Objective-C id type shadowed by a descriptor
+identifier; renamed instance_descriptor. Candidate58207f5 / CI38639401008:
+query cleanup Destroy/Release double-drop; fixed exclusive-reference ownership.
+Candidate8e012499 / CI38640656330: test MSAA mask commands inherited a query
+ID as blend-state ID; reconstructed complete blend payloads. No validation
+was suppressed. Candidatefbc51744 / CI38641392358: partial-mask count mismatch
+exposed the pinned HAL omission; explicit rejection and two negative fixtures
+now guard it. The D3D wrap semantics were independently checked and corrected.
+
+The verified correctness baseline46b97a0 / CI38642967094 passed all gates and
+produced an audited IPA, preserved in work/native-occlusion-020/. A later
+batch experimenta672d79 / CI38644676787 moved resolves to submission and reduced
+the proposed payload to6KiB. It failed: first query0 instead of256 samples.
+That version produced no delivered IPA. Its source and full log are preserved.
+Late cross-pass resolution lost prior values on this backend; a deeper Metal
+root cause was not established. Reviewed wgpu-core resets only used slots;
+no speculative reset/accumulation backend patch was made. Rollback201610f
+restored the EXACT passing source tree5d820a4fcccdc147857bab2e736851acb8ecbdbc.
+The final verification reports above refer to the restored source and build.
+
+4. PERFORMANCE AND MEMORY RESULTS
+No successful before/after phone FPS, driver-time or wall-clock improvement
+was measured. The old native occlusion path stopped before executing it.
+The delivered query path resolved 183/183 physical segments through
+13/13 asynchronous maps in the two runs, with no pool-pressure waits.
+Mappings are batched by submitted page; accurate per-pass resolves/copies
+remain. Observed payload peaks 51/51KiB; cleanup0; hard payload bound68KiB.
+The rejected6KiB/13resolve-copy experiment is NOT a successful optimization.
+No whole-archive cache, unbounded GPU cache or extra dependency was added.
+Reader remains one64KiB buffer and at most eight open files. Existing 0.19
+copy batching and byte-upload fixes retain their previously verified outputs.
+
+5. REMAINING RISKS AND DEFERRED WORK
+Actual iPhone query geometry, scene pixels, sustained synchronization, memory,
+FPS and device-loss behavior remain unverified. Partial/zero fixed masks need
+a correct coverage implementation if a required game trace uses them. Shader
+discard / alpha-to-coverage interactions in actual occlusion workloads are not
+established by these fixtures. Scopes above32 are an explicit boundary.
+Pipeline-statistics4 and stream-output queries remain unsupported; Event0
+completion is retained. Timestamp2/disjoint3 are legacy CPU estimates, not
+real GPU timing. Query cancellation adds no shutdown completion wait, but
+the pinned device destructor itself polls indefinitely on teardown; wedged
+driver shutdown is not guaranteed by these tests.
+
+111 unavailable records remain:71DS/18HS/20GS and two tiled_lightingMS compute
+translations rejected for nonuniform barriers. No conservative Prologue trace
+proves these records required next. Wireframe, dual-source blending, some
+cross-format/multisample copies, depth readback and screenshots remain explicit
+boundaries. Do not remove validators or invent missing shader translations.
+
+The previous metadata/asset investigation remains applicable:16 scenario group
+Items lack type attributes; the correct registered concrete class is unknown.
+defaulttasks.ymt.pso hash0x36b97786 lacks a validated matching registry.
+Missing interiors, LOW_LATENCY.awc / weapon banks and optional log-spool
+initialization remain real diagnostics. No content/schema or asset success
+was fabricated. Repeated sphere requests previously progressed to the intro
+camera; no forced streaming completion. Cloth warnings lack matching upload
+traces; the verified 0.19 byte fix does not establish every warning's cause.
+
+6. PROTECTION AND ROLLBACK
+Stage 3 remains in progress; five stages remain including Stage 3.
+Successive correct iPhone characters/world, textures, camera and animation
+frames remain unverified. Controls and audio output remain Stage 4.
+Partial/zero fixed sample masks, statistics/stream-output queries and 111
+untranslated shader records remain explicitly unsupported. Timestamp/disjoint
+queries retain the existing CPU estimate, not real GPU timing. Metadata,
+defaulttasks, interiors, audio banks and optional logging diagnostics remain
+unresolved. No phone FPS or wall-clock improvement is claimed.
+Query cleanup adds no completion wait; the pinned device destructor has an
+existing indefinite GPU wait, so wedged-driver shutdown is not guaranteed.
+Protected PC folders and the old offline package were not accessed. main
+remains de7664a8e6448096716c5a341250d32d4f594fd1. Native publication only.
+
+All nineteen prior IPA digests are unchanged, including0.19:
+d1ebf5c0fc91a3dc5f6375aec5a3f8d1f3926a6f333d82191bfc421512a847fb.
+Original engine/probe digests, eleven added exports, shader source and640x360
+quality profile remain unchanged. Before-source snapshot is
+work/native-occlusion-020/before/ with before.json; baseline/rejected experiment
+evidence remains separate. No credentials, signing identities or assets changed.
+
+7. NEXT IPHONE CRITERIA AND RECOMMENDED ENGINEERING TASK
+When testing is possible, install0.20 using the existing local signing setup,
+select the existing web folder and Trace Prologue startup. Look beyond North
+Yankton for actual textured characters/world, continuing camera movement and
+animation. Stop and retain the final report. Query diagnostics include hardware
+counting capability, first eight actual count/predicate results, begins/ends,
+segments/maps, published/empty/stale counts, allocation peaks and pool waits.
+Fatal shader/opcode/payload/binding breadcrumbs, script/camera/asset progress,
+memory samples, workers and synchronization state remain available.
+Presentation, non-black samples, shader compilation and draw counts alone do
+not prove a correct scene. Responsive controls/audio remain Stage4.
+Highest next objective: correlate actual Prologue continuation after query
+support with exact draw/binding/asset evidence and independently reproduce any
+new blocker. Do not advance the roadmap before the physical scene gate passes.
+
+Primary references:
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_query
+https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
+https://developer.apple.com/documentation/metal/mtlvisibilityresultmode/counting
+https://developer.apple.com/metal/capabilities/
+https://raw.githubusercontent.com/gfx-rs/wgpu-native/6aed50955d934ac36049ba8d002034841633ae02/src/lib.rs
+(stage 3 in progress) (5 stages left)

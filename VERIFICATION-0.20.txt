@@ -1,0 +1,70 @@
+NATIVE 0.20 VERIFICATION — STAGE 3 IN PROGRESS
+Updated 2026-10-14.
+
+Physical 0.19 reached Prologue1 / animated camera and stopped at BEGIN_QUERY
+opcode 45, ID 11165, after 101,707 commands / 8,323 draws. Native 0.20 adds
+actual Metal UINT64 sample counts and BOOL predicates, asynchronous result
+pages, generation-safe reuse/destruction and defined count wrap. Required
+operations are never replaced with fabricated visibility results.
+
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38645819844
+Source: 201610f296345c2eb0578028e22258aee0668a26
+Tree: 5d820a4fcccdc147857bab2e736851acb8ecbdbc
+Job: 116132278587 — PASS
+
+PASS: two real Metal query runs, 180 cases each, through the production ring.
+Exact 0/1/64/256/320/512/768/1024 results, multiple draws, depth and stencil
+rejection, scissor, full-mask MSAA, overlapping scopes, pass/submission splits,
+empty scopes, pending reuse, destroyed IDs, and the guarded engine reply ABI.
+The original IM shaders use deterministic fixture geometry, not a recorded
+Prologue scene. Eight explicit order/type/address/sample-mask boundary cases
+and unfinished-scope cancellation passed per run.
+Run 1: 183 physical segments, 13 asynchronous maps, 3/4 pages,
+179 results, 2 empty scopes, 3 discarded stale segments;
+query payload live/peak 0/51 KiB; zero pool-pressure waits.
+Run 2: 183 physical segments, 13 asynchronous maps, 3/4 pages,
+179 results, 2 empty scopes, 3 discarded stale segments;
+query payload live/peak 0/51 KiB; zero pool-pressure waits.
+
+PASS: query-state ASan/UBSan checks, including 10,000 reuse/ABA cases, pending
+completion, zero completion sequence, count wrap, and predicates across wrap.
+PASS: all retained 0.19 regression gates. 4,808 translated shader modules and
+native Metal pipelines, including 500 clip shaders, with zero audit failures.
+The earlier Prologue varying pair retains its negative/positive pipeline
+checks under a real 15-variable limit. Two full base GPU replays checked
+1,133 commands, 41 draws and 139 readbacks each, including formats, clip,
+depth proxies, instance rates, UAV/compute, mip, pixel and resource cases.
+Four engine checkpoints / 32 workers, file/save/entropy/TLS, mailbox/atomic,
+SIMD and bulk-memory checks passed. CI startup stops before real archives;
+no full game scene was executed. The 111 untranslated records remain explicit.
+
+PASS: independently audited unsigned ARM64 iPhoneOS 17+ IPA, version 0.20.0,
+build 20, unchanged bundle ID. No profile/signature/WebKit/JavaScriptCore or
+writable executable segment. All 134 source entries match the immutable tree;
+manifest, artifact ZIP and IPA digests checked. Nineteen prior IPAs preserved.
+IPA: GTA-Native-Probe-0.20-unsigned.ipa
+Bytes: 102213617
+SHA256: 55657252d76d9c9107bf63686accf075106032e6b284e92dca6760b05449ac3e
+
+Earlier failed candidates were repaired before delivery: Objective-C type
+shadowing, pinned query-set cleanup double-drop, and a sample-mask fixture
+state error. A real ignored-mask backend gap now has an explicit error boundary.
+A later cross-pass batching experiment returned incorrect counts and was
+rejected; the passing baseline source tree was restored exactly. Complete
+failed logs and the verified baseline IPA remain in the independent work area.
+See ENGINEERING-0.20.txt and evidence/0.20/ for scope and limitations.
+
+Stage 3 remains in progress; five stages remain including Stage 3.
+Successive correct iPhone characters/world, textures, camera and animation
+frames remain unverified. Controls and audio output remain Stage 4.
+Partial/zero fixed sample masks, statistics/stream-output queries and 111
+untranslated shader records remain explicitly unsupported. Timestamp/disjoint
+queries retain the existing CPU estimate, not real GPU timing. Metadata,
+defaulttasks, interiors, audio banks and optional logging diagnostics remain
+unresolved. No phone FPS or wall-clock improvement is claimed.
+Query cleanup adds no completion wait; the pinned device destructor has an
+existing indefinite GPU wait, so wedged-driver shutdown is not guaranteed.
+Protected PC folders and the old offline package were not accessed. main
+remains de7664a8e6448096716c5a341250d32d4f594fd1. Native publication only.
+
+(stage 3 in progress) (5 stages left)

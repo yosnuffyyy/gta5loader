@@ -1,0 +1,36 @@
+{
+  "result": "PASS",
+  "environment": "macOS CI / Apple Paravirtual device / real Metal queries",
+  "runs": [
+    {
+      "segments": 183,
+      "maps": 13,
+      "pages": 3,
+      "liveKiB": 0,
+      "peakKiB": 51,
+      "results": 179,
+      "empty": 2,
+      "stale": 3
+    },
+    {
+      "segments": 183,
+      "maps": 13,
+      "pages": 3,
+      "liveKiB": 0,
+      "peakKiB": 51,
+      "results": 179,
+      "empty": 2,
+      "stale": 3
+    }
+  ],
+  "maximumGpuPayloadBytes": 69632,
+  "perOcclusionEndCompletionWait": false,
+  "phoneFpsMeasured": false,
+  "successfulBeforeAfterOptimization": false,
+  "rejectedBatch": {
+    "source": "a672d79f7526ef47855a9a1c601d4432fb371bd0",
+    "run": 38644676787,
+    "result": "FAIL: first count 0 instead of 256. Restored per-pass snapshots; no IPA delivered from this candidate."
+  },
+  "physicalSceneVerified": false
+}

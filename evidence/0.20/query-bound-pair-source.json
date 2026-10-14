@@ -1,0 +1,234 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "reason": "Bound shader pair from physical BEGIN_QUERY report; following draw state/geometry not captured.",
+  "vs": {
+    "hash": "a5f68d15a12d1480",
+    "record": {
+      "stage": "vs",
+      "effect": "clouds_anim",
+      "program": "VSCloudsVertScatterPiercing_Infinite",
+      "ok": true,
+      "p": [
+        1,
+        2641848,
+        9773,
+        0
+      ]
+    },
+    "outputs": [
+      {
+        "location": 0,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 1,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 2,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 3,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 4,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 5,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 6,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 7,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 8,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 9,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 15,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      }
+    ],
+    "sourceSHA256": "62eeee390a242f3ca7b1f65fa8e31b1b46a8efff234ddcf3eb5e8d7611f4d68e"
+  },
+  "ps": {
+    "hash": "e8f51fe53bda3544",
+    "record": {
+      "stage": "ps",
+      "effect": "clouds_altitude",
+      "program": "PSClouds_Cheap",
+      "ok": true,
+      "p": [
+        1,
+        2596483,
+        4112,
+        0
+      ]
+    },
+    "inputs": [
+      {
+        "location": 1,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 2,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 3,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 4,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 7,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 8,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      },
+      {
+        "location": 9,
+        "type": "vec4<f32>",
+        "interpolation": "perspective,center"
+      }
+    ],
+    "sourceSHA256": "39f35b2411d41e7067001f4732ce7fc7ea119a23abd214e38c42902542530f8c"
+  },
+  "rawLocationsFitPhoneLimit15": false,
+  "existing019LinkerPlan": [
+    [
+      15,
+      10
+    ]
+  ],
+  "linkedOutputs": [
+    {
+      "location": 0,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 1,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 2,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 3,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 4,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 5,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 6,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 7,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 8,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 9,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 10,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    }
+  ],
+  "linkedInputs": [
+    {
+      "location": 1,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 2,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 3,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 4,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 7,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 8,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    },
+    {
+      "location": 9,
+      "type": "vec4<f32>",
+      "interpolation": "perspective,center"
+    }
+  ],
+  "linkedLocationsFitPhoneLimit15": true,
+  "consumedTypesAndInterpolationMatch": true,
+  "actualPairPipelineOrPixelsVerified": false
+}

@@ -1,0 +1,17 @@
+{
+  "source": "Original startup immediate-mode shader pair from 0.7 phone trace",
+  "records": [
+    {
+      "hash": "028921879df627f5",
+      "stage": "vs",
+      "sourceSHA256": "d8c49ebbf71f3e7e1d15064b6afeaf2484af704e37dd368e49d9bf93094193eb",
+      "bytes": 915
+    },
+    {
+      "hash": "943b0ad9542193ff",
+      "stage": "ps",
+      "sourceSHA256": "9fefdff9f376aafa80ae232c3cff0971cbec8a121174aea6d26500c84d2f0200",
+      "bytes": 647
+    }
+  ]
+}

@@ -1,9 +1,9 @@
-NATIVE INTEGRATION 0.19 — WINDOWS INSTALLATION
+NATIVE INTEGRATION 0.20 — WINDOWS INSTALLATION
 
-Install GTA-Native-Probe-0.19-unsigned.ipa over the existing native app using
+Install GTA-Native-Probe-0.20-unsigned.ipa over the existing native app using
 your usual local signing tool, the same Apple account and bundle identifier.
 Keep your extracted web folder and existing installation. No game-file or
-Windows prerequisite reinstall is needed. All 18 older IPAs are preserved.
+Windows prerequisite reinstall is needed. All 19 older IPAs are preserved.
 
 When you can test, select your existing web folder and tap Trace Prologue
 startup. Keep the game view visible. Check whether actual characters/world,
@@ -13,12 +13,13 @@ including negotiated varying/clip/border limits, presented-pixel samples,
 logical GPU allocation trends and any fatal operation/binding breadcrumbs.
 The scene gate is stage 3. Audio output and game controls remain stage 4.
 
-Optional diagnostic button: Run GPU queue + startup tests includes varying
+Optional diagnostic button: Run GPU queue + startup tests includes 180 actual
+query cases, cancellation and eight error boundaries, plus varying
 location/flat/clip pixel checks and byte-update/copy/resolve checks. CI passed
 two full runs and the exact Prologue shader pair under 15 varying slots. Its fixture
 pixels and first-archive checkpoint are separate from a real game scene.
 Required unported operations still stop with detailed diagnostics.
-See VERIFICATION-0.19.txt and ENGINEERING-0.19.txt. No physical 0.19 scene or
+See VERIFICATION-0.20.txt and ENGINEERING-0.20.txt. No physical 0.20 scene or
 responsive controls are claimed by the CI/IPA audit.
 
 This is a native engine diagnostic app. It does not launch GTA gameplay yet.
@@ -31,7 +32,7 @@ It is separate from both the working PC game and the Safari installation.
    versions. Do not uninstall existing Apple software without checking those
    instructions and your sync/backup needs.
 2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.19-unsigned.ipa.
+3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.20-unsigned.ipa.
 4. Use the normal Apple ID signing/install mode with your free Apple account.
    Enter the password and any two-factor code only in the local signing tool.
    No account credentials, certificates or private keys belong in GitHub.

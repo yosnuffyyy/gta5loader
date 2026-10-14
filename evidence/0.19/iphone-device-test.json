@@ -1,0 +1,36 @@
+{
+  "version": "0.19",
+  "status": "FAILED_BEGIN_OCCLUSION_STAGE3",
+  "device": "iPhone 16 Pro Max",
+  "os": "iOS 27.0.1",
+  "evidence": "User supplied physical result; CREATE_QUERY descriptor, End sequence and full following geometry were not supplied.",
+  "previousVaryingFailureAbsent": true,
+  "progress": [
+    "Prologue1 cutscene",
+    "Animated camera"
+  ],
+  "commands": 101707,
+  "draws": 8323,
+  "fatal": {
+    "trap": 5,
+    "opcode": 45,
+    "operation": "BEGIN_QUERY",
+    "payload": [
+      11165
+    ],
+    "message": "Occlusion begin not yet implemented",
+    "vertex": {
+      "id": 4958,
+      "hash": "a5f68d15a12d1480"
+    },
+    "fragment": {
+      "id": 4951,
+      "hash": "e8f51fe53bda3544"
+    }
+  },
+  "queryType": "1 or 5: existing fatal guard rejects both. Exact CREATE_QUERY type unknown; both covered.",
+  "sceneVerified": false,
+  "controlsVerified": false,
+  "stage": 3,
+  "stagesLeft": 5
+}

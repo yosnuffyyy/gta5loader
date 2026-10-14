@@ -1,0 +1,1 @@
+PASS: readback layout: mip/array/3D boxes, compressed edge blocks, A8 packing, row/slice strides, capacity/overflow rejection and 1 MiB staging bound.

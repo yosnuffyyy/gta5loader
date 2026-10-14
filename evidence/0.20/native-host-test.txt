@@ -1,0 +1,3 @@
+PASS: native filesystem capacity ABI, live OS values, guarded output, size/pointer errors, rooted paths, symlink refusal and descriptor cleanup.
+PASS: read-only native entropy device seed reads, denied writes, exact device paths and close cleanup.
+PASS: native host errors, rooted paths, symlink refusal, vectored I/O, file positions, stat, clocks and environment.

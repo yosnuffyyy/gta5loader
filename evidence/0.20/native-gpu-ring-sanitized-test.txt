@@ -1,0 +1,1 @@
+PASS: GPU ring publication, 100,000 concurrent commands, wrap, bounds, unknown opcode and truncated-payload rejection.

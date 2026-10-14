@@ -51,3 +51,11 @@ Physical0.19 successive world/character frames, camera/animation: PENDING.
 Controls/audio remain stage4. No gameplay or metadata/asset warning repair
 claimed. Full evidence in evidence/0.19/ and ENGINEERING-0.19.txt.
 (stage 3 in progress) (5 stages left)
+
+PHYSICAL IPHONE ADDENDUM — user report,2026-10-14
+0.19 advanced beyond the previous varying stop and reached Prologue1/camera.
+It stopped after101707commands/8323draws at BEGIN_QUERY45,ID11165;
+VS4958a5f68d15a12d1480 / PS4951e8f51fe53bda3544. CREATE type/following
+draw state were not supplied. No correct consecutive scene/gameplay is
+confirmed. Original0.19 IPA/CI evidence preserved. See0.20 query fix and
+evidence/0.19/iphone-device-test.json. Stage3 remains active;five stages left.
