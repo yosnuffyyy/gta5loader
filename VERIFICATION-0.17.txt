@@ -1,0 +1,47 @@
+NATIVE 0.17 VERIFICATION
+Source 4aee9c2f2f9ef88ea04500d218d48bab4e2657b6
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38595860127
+Job 115962286900: PASS
+
+PASS: two complete native GPU/runtime process runs. Each shared-ring replay
+executed 940 commands, 38 draws, 13 render pipelines and 92 readbacks.
+Sixteen UAV/compute output cases per run exercise ordered counter reset,
+UINT_MAX preserve, independent counters on two views of one buffer, counter
+copy, >1024 resets with staging reuse, raw/structured clears, original
+CS_GpuFill512 and CS_GpuCopy512 outputs and guards at nonzero view starts,
+alignment proxies, R32Float/RGBA16Float storage variants, original draw
+pixels, mip chains/cache reuse, and two presentation-source pixel samples.
+29 original compute pipelines compile; eight compute dispatches per run
+execute. 1,122 counter resets, 10 counter copies, six clears, three mip
+operations per run. Compilation and sampled pixel variation do not verify
+a complete GTA scene. GPU view proxies finish with zero live bytes.
+PASS: ASan/UBSan UAV bounds/flag/widened arithmetic and retained-log tests.
+PASS: all previous depth proxy, instance rate, raw readback, SNORM, BC,
+original shader/ring, I/O/file/thread/save/runtime/wait/mailbox/SIMD suites.
+Separate original shader fixture: zero validation/runtime errors. Four
+engine runtime checkpoints and 32 worker instances. Two graphics main
+checkpoints stop deliberately BEFORE archive bytes; no CI game scene.
+PASS: unsigned ARM64 iPhoneOS17+ IPA audit, no WebKit or writable executable
+segment. Cached compiler objects: macos: 131; ios: 131.
+106 source entries verified against immutable Git tree. ZIP lengths/digests
+and IPA checksum verified. Sixteen previous IPAs unchanged. Engine
+instructions, original shader files, resolution and main unchanged.
+Backend changes only the pinned Apple7+ sampler-border capability condition;
+prior verified BC support remains intact. Protected PC directories were not accessed.
+
+IPA GTA-Native-Probe-0.17-unsigned.ipa
+Bytes 102178840
+SHA256 06f973476770372362d93d572cb1cb0c034a6af35fabaeddf05c28b462e14315
+
+Physical iPhone 0.16/0.17 continuation past SET_UAVS: PENDING; user cannot
+sideload currently. No request to test immediately.
+PASS: 18 normalized16 format cases and18 production border-sampler cases
+per run; all16 pixels checked each. Native border feature detection now
+recognizes Apple7+; exact six normalized formats preserve16-bit storage.
+PASS: unsupported custom/nonfinite border color sanitizer tests. New
+capability logs include actual feature negotiation/limits. iOS memory
+headroom API compiles; actual readings need the physical app.
+Known scenario metadata type mismatch investigated, not blindly rewritten.
+No actual successive Prologue scene, controls, audio output, Bink or Social
+Club repair claimed. Detailed limitations are in IPHONE-COMPATIBILITY-0.17.txt.
+(stage 3 in progress) (5 stages left)

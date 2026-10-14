@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-14",
+  "target": {
+    "device": "iPhone16ProMax",
+    "gpu": "Apple A18 Pro / Apple9",
+    "osReported": "27.0.1",
+    "minimumOS": "17.0",
+    "actual017DeviceQuery": "PENDING; user cannot currently sideload"
+  },
+  "architecture": {
+    "engine": "91,026 functions compiled ahead of time for ARM64",
+    "runtime": "WABT wasm2c and SIMDe statically linked",
+    "browserOrJITRequired": false,
+    "pcWindowsDLLsRequired": false,
+    "logicalHeapCeilingGiB": 4,
+    "logicalHeapIsPhysicalAllowance": false
+  },
+  "systemLibraries": [
+    "/System/Library/Frameworks/UIKit.framework/UIKit",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/System/Library/Frameworks/Metal.framework/Metal",
+    "/System/Library/Frameworks/GameController.framework/GameController",
+    "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+    "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+    "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+    "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/usr/lib/libSystem.B.dylib",
+    "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+  ],
+  "backend": {
+    "pin": "6aed50955d934ac36049ba8d002034841633ae02",
+    "version": "29.0.1.1",
+    "rust": "1.93.1",
+    "features": [
+      "metal",
+      "wgsl"
+    ],
+    "patch": "Exact pinned Metal BC detection plus Apple7+ sampler-border availability",
+    "externalPhoneInstallRequired": false
+  },
+  "features": [
+    {
+      "name": "Metal/BC1-BC7",
+      "hardware": "Apple9 available",
+      "native": "Runtime capability patch, compressed storage preserved",
+      "evidence": "Prior user-reported A18 BC fixtures; 0.15 real command trace"
+    },
+    {
+      "name": "Normalized16",
+      "hardware": "Native 16-bit normalized feature supported by Metal",
+      "native": "0.17 correct UNORM/SNORM mappings, exact bytes, no CPU conversion",
+      "evidence": "18 output cases passed in two CI process runs; phone pending"
+    },
+    {
+      "name": "Sampler border",
+      "hardware": "Apple7+ supported",
+      "native": "0.17 correct border capability check and exact three standard colors",
+      "evidence": "18 production-sampler pixel cases passed in two CI process runs; phone pending"
+    },
+    {
+      "name": "Sampler LOD bias / MIRROR_ONCE",
+      "hardware": "Native LOD bias not in Apple9 feature set; mirror-once lacks native WebGPU mode",
+      "native": "Original adapter approximations remain; required exact behavior needs separate shader adapter",
+      "evidence": "No new exact support claimed"
+    },
+    {
+      "name": "Compute/UAV/counters",
+      "hardware": "Metal compute and storage available",
+      "native": "0.16 exact view ranges, ordering, reset/preserve/copy/clear/mips",
+      "evidence": "Two output regressions; all29 original pipelines compile; full device continuation pending"
+    },
+    {
+      "name": "Input/Bluetooth",
+      "hardware": "GameController available for supported profiles",
+      "native": "Detection UI present; actual gameplay input is stage4",
+      "evidence": "No gameplay controls verified"
+    },
+    {
+      "name": "Audio",
+      "hardware": "Native Apple audio framework available",
+      "native": "Engine state published; native output queue consumption is stage4",
+      "evidence": "No native audio output verified"
+    },
+    {
+      "name": "Bink",
+      "hardware": "Vendor offers an iOS SDK",
+      "native": "No Bink backend supplied in the existing engine; desktop DLL/player does not repair it",
+      "evidence": "Existing engine reports unavailable movies and continues to Prologue camera"
+    },
+    {
+      "name": "Network/SocialClub",
+      "hardware": "OS networking available",
+      "native": "Offline prototype; socket/auth services pending, not fabricated",
+      "evidence": "Recoverable assertions observed; no GTA Online support claimed"
+    },
+    {
+      "name": "Files/saves",
+      "hardware": "POSIX and selected-folder access available",
+      "native": "Bounded rooted reader and app-private save I/O",
+      "evidence": "User phone file/thread checkpoints and actual archives; some host operations pending"
+    },
+    {
+      "name": "Memory",
+      "hardware": "iOS dynamic per-app pressure limits",
+      "native": "0.17 adds actual available-app-memory diagnostics, preserves conservative settings",
+      "evidence": "0.15 highest reported sample1261MiB; not measured peak; no larger entitlement/budget assumed"
+    }
+  ],
+  "hostCoverage": {
+    "imports": 85,
+    "mapped": 47,
+    "unmapped": [
+      "__syscall_accept4",
+      "__syscall_connect",
+      "__syscall_ftruncate64",
+      "__syscall_getcwd",
+      "__syscall_getdents64",
+      "__syscall_getsockname",
+      "__syscall_getsockopt",
+      "__syscall_newfstatat",
+      "__syscall_poll",
+      "__syscall_recvfrom",
+      "__syscall_renameat",
+      "__syscall_rmdir",
+      "__syscall_sendto",
+      "__syscall_setsockopt",
+      "__syscall_shutdown",
+      "__syscall_socket",
+      "__syscall_unlinkat",
+      "_abort_js",
+      "_emscripten_system",
+      "_emscripten_throw_longjmp",
+      "_mktime_js",
+      "emscripten_asm_const_int_sync_on_main_thread",
+      "emscripten_exit_with_live_runtime",
+      "exit",
+      "invoke_ij",
+      "invoke_iji",
+      "invoke_ijji",
+      "invoke_ijjiii",
+      "invoke_jjiiijij",
+      "invoke_jjij",
+      "invoke_vj",
+      "invoke_vjii",
+      "invoke_vjij",
+      "invoke_vjj",
+      "invoke_vjjii",
+      "wasm_userdata_delete_js",
+      "wasm_userdata_put_js",
+      "proc_exit"
+    ],
+    "caveat": "Mapped name is not full behavioral coverage. Some unmapped entries are intended fatal paths."
+  },
+  "shaderIndex": {
+    "path": "work/shader-index.json",
+    "records": 4919,
+    "translated": 4808,
+    "caveat": "Translation flag does not establish native pipeline or scene correctness"
+  },
+  "assets": {
+    "scenarioTypeAttributes": "Source-data/schema mismatch found upstream; not repaired with guessed types",
+    "internalLowLatencyBank": "Unresolved; loose manifest absence is not evidence of archive absence",
+    "defaulttasksMetadata": "Unresolved"
+  },
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "playable": false,
+  "physicalSceneVerified": false,
+  "ci017": "PASS",
+  "pcPort": "Untouched",
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "ci": {
+    "source": "4aee9c2f2f9ef88ea04500d218d48bab4e2657b6",
+    "run": 38595860127,
+    "job": 115962286900,
+    "result": "PASS",
+    "runURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38595860127"
+  }
+}

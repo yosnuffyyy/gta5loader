@@ -1,0 +1,9 @@
+{
+  "version": "0.17",
+  "status": "DEFERRED; user cannot currently sideload",
+  "requestedTest": "Deferred: user cannot sideload now. Later check capabilities, run GPU queue tests and Trace Prologue; verify actors/world/camera/animation, then full report. No gameplay claim.",
+  "stage3": "IN PROGRESS",
+  "stagesLeft": 5,
+  "realSceneVerified": false,
+  "playable": false
+}

@@ -1,5 +1,5 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native 0.16 UAV/compute continuation; stage 3 remains active.
+Updated 2026-10-14. Native 0.17 dependency/feature audit; stage 3 remains active.
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.
@@ -85,6 +85,19 @@ compute pipeline compilations. Unsigned ARM64 IPA audit passed. Physical
 0.16 continuation past SET_UAVS is pending. The next gate remains successive
 correct North Yankton scene frames; then actual input/audio and sustained
 play. No stage is completed just because a package compiles or draws count.
+The user cannot currently sideload, so no new physical scene test is
+requested now. Native0.17 audits the phone's hardware/frameworks against
+the actual port: exact16-bit normalized formats replace incorrect float/
+depth mappings; native border sampling and Apple7+ backend capability
+detection replace edge-clamp substitution. Runtime reports negotiated
+features/limits and actual iOS memory headroom. CI38595860127 passed both
+full regressions,with18 normalized-format and18 border cases per run;
+unsigned ARM64 IPA audit passed. Engine instructions and conservative
+quality remain unchanged. Sixteen older IPAs are preserved. The detailed
+audit distinguishes hardware support from unported behaviors and records
+remaining Bink/metadata/host/input/audio/graphics limitations. See
+IPHONE-COMPATIBILITY-0.17.txt and VERIFICATION-0.17.txt. Actual A18 scene
+validation is pending until sideloading is possible again.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 

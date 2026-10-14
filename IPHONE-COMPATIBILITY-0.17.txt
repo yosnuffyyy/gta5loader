@@ -1,0 +1,182 @@
+IPHONE 16 PRO MAX — NATIVE DEPENDENCY / FEATURE AUDIT
+2026-10-14; reported iOS 27.0.1 / Apple A18 Pro; native 0.17 candidate.
+Evidence distinguishes OS/hardware availability, implemented translation,
+Mac regression output, and physical phone behavior. These are different gates.
+
+INSTALLATION REQUIREMENTS
+No separate DirectX, Windows DLL, Vulkan driver, Java, browser, WebGPU browser
+setting or WebAssembly extension needs installing on the phone. The ARM64
+engine, WABT runtime, SIMDe code, WGSL translator and wgpu-native static
+library are linked into the IPA. UIKit/Foundation/Metal/GameController/
+UniformTypeIdentifiers/QuartzCore/CoreGraphics/IOSurface and system C/C++/
+Objective-C libraries come with iOS. Minimum deployment target: iOS 17.
+The app must still be signed with the existing local setup and installed.
+The selected extracted web folder supplies the game data and shader packs.
+We cannot install or query your physical phone while you cannot sideload.
+
+CPU AND ENGINE ABI
+ARM64 ahead-of-time build: available and demonstrated by native 0.1-0.15
+device reports. This runs compiled engine functions, not a Windows x64 EXE.
+Shared memory, 64-bit offsets, SIMD, pthread/TLS and synchronization: native
+implementations, tested in CPU/runtime checkpoints and reported on phone.
+No JIT, executable-memory entitlement, WebKit or JavaScriptCore dependency.
+Memory64 browser support is irrelevant to this native app. Engine addresses
+still follow the fixed build's memory model; a 4 GiB logical heap ceiling
+is not a 4 GiB physical memory allowance.
+
+GRAPHICS
+A18 is Apple9 in Apple's current feature table. Metal rendering, compute,
+indirect drawing, texture/stencil views, comparison sampling and BC formats
+are available on this family. Use actual adapter queries as the final
+availability gate; family membership alone does not validate our renderer.
+
+Direct3D11-style commands -> native wgpu 29.0.1.1 -> Metal:
+implemented within this app. Windows DirectX cannot be installed into an
+iPhone app as a fix. Required command/descriptor behaviors are still being
+ported; unsupported cases identify their opcode and shader/payload context.
+
+BC1-BC7 compressed textures:
+native compressed storage and sampling passed user-reported A18 fixtures.
+The pinned backend's old macOS-only check was already repaired to query
+actual Metal BC support. No full texture decompression cache is introduced.
+
+Signed8 render targets:
+native adapter-specific format capabilities are requested. This fixes the
+observed Rgba8Snorm validation boundary without expanding every target.
+Nine signed-pixel fixture cases cover negative storage, blending and reads.
+
+Normalized16 formats — BUG FOUND AND FIXED IN 0.17:
+DXGI RGBA16_UNORM and RG16_UNORM were treated as FLOAT; R16_UNORM was treated
+as depth. Upload bits therefore had the wrong meaning. The native backend
+provides exact R/RG/RGBA16 UNORM/SNORM via its 16-bit normalized feature.
+0.17 requests that feature and preserves original bit widths, with no CPU
+conversion or wider textures. Raw readback widths are fixed too. Eighteen
+pixel cases cover all six formats, clear/additive draw/upload/copy, negative
+signed values, endpoints, exact raw bits and sampled output. Actual iPhone
+0.17 validation is pending. Normalized16 storage shader variants are not
+claimed here; unsupported WGSL storage variants still stop explicitly.
+
+Sampler borders — TWO BUGS FOUND AND FIXED IN 0.17:
+The renderer mapped BORDER to edge clamp; the backend checked only a macOS
+feature-set list. Apple7+ provides border colors. A pinned backend capability
+patch recognizes that actual family support. The renderer uses native border
+sampling for exact transparent black, opaque black and opaque white. No new
+pixel copies or shader wrappers. Eighteen cases compare 16 pixels each using
+production sampler descriptors: three colors, nearest/linear filtering,
+negative/interior/positive coordinates. Arbitrary colors remain explicit
+unsupported cases; they are not replaced by another color. MIRROR_ONCE and
+sampler LOD bias retain the original adapter's approximations and need a
+separate implementation if a required scene path depends on their semantics.
+
+Depth/stencil reads, float proxies, instances, readbacks:
+previous native adapters preserve ordering with bounded GPU proxies/staging.
+Fourteen depth-proxy, ten instance and 36 raw-readback cases run in CI.
+Correct Prologue scene pixels are not established by those fixtures alone.
+GPU event queries/fences synchronize actual queue completion. Occlusion
+queries remain an explicit unsupported operation if required by startup;
+timestamp values currently use the adapter's CPU-clock model rather than
+native GPU profiling. SCREENSHOT opcode9, wireframe, dual-source blending,
+single-sample alpha-to-coverage and several unusual view/descriptor cases
+also remain explicit port gaps. Metal feature availability does not turn
+these missing translations into implemented services.
+
+UAV counters/storage/compute:
+0.16 added reset/preserve/copy, exact view ranges, storage format variants,
+dispatch, clears and mip generation. Sixteen output cases exercise actual
+original fill/copy shaders and ordering. All 29 original compute pipelines
+compile on Mac; other compute shaders' execution on A18 is still unverified.
+This is the next observed Prologue dependency after 0.15 SET_UAVS, not a
+known hardware absence that can be repaired with an installer.
+
+Float32 filtering, depth32+stencil, BC sliced3D, BGRA storage, RG11 render,
+indirect first instance and unclipped depth:
+requested only if the actual native adapter exposes them. 0.17 startup
+records their negotiated status and real texture/buffer/binding/compute
+limits. Required unsupported operations retain validation errors. Do not
+infer these optional features are enabled merely because Metal supports
+similar operations. Ray tracing, mesh shaders, Metal4-only APIs and ASTC
+transcoding are not requirements of this conservative Prologue build.
+
+FILES, SAVES AND MISSING DATA
+POSIX rooted reads and app-private saves are available. One 64 KiB asset
+reader buffer and at most eight file handles bound the queued reader.
+Phone reports confirm selected-file samples and queued startup archive reads.
+Original file sizes and EOF are checked; errors retain path/offset/errno.
+iCloud-backed data may need downloading into Files before startup. The app
+does not use Safari's private storage or copy the complete game into RAM.
+Local shader index/pack ranges are read on demand, not fetched at runtime.
+
+The pinned upstream scenarios.meta itself omits the type attributes the
+observed CScenarioTypeGroup parser requires. defaulttasks parser metadata,
+internal LOW_LATENCY.awc references and some DLC interiors remain unresolved.
+These are data/schema/build issues, not installable iOS system components.
+No fake registrations, guessed blank assets or forced scene-completion
+responses were introduced. Repeated sphere requests ended before the camera
+started in 0.15, so they show progress; their entire behavior is not verified.
+
+HOST API COVERAGE AND EXCEPTIONS
+The engine imports 85 host functions. 47 have explicit mapped handlers in
+0.16; a mapped name does not prove every argument or behavior is supported.
+Some remaining imports represent fatal abort/exit paths; others are pending
+file operations, sockets, user-data hooks and exception/longjmp wrappers.
+The current Prologue trace has not exercised every remaining import.
+Do not suppress a longjmp/exception or syscall failure to pretend success.
+STARTUP-DEPENDENCIES.json is a historical 0.4 map; current build evidence
+host-coverage.json is the accurate import-name map. Networking/Social Club
+are not implemented; this remains an offline single-player prototype.
+
+AUDIO, INPUT AND APP LIFECYCLE
+Apple's audio output and GameController frameworks are available on iOS.
+The engine publishes its input/audio state, but actual native audio queue
+consumption and responsive gameplay input are stage4 work. The controller
+UI detects a supported paired controller; that is not gameplay verification.
+Supported Bluetooth PlayStation/Xbox models can use native events without
+an external driver or continuous controller discovery. Xbox360/PS2 adapters
+and arbitrary off-brand USB controllers are not universally supported by
+iOS; no generic downloadable driver can be assumed. Verify the actual
+GameController profile before enabling prompts. Touch, input clearing on
+disconnect/background, audio interruption and pause/resume still need the
+actual scene/runtime implementation and physical tests.
+
+Bink movies:
+this engine explicitly lacks its Bink backend. Bink has an iOS SDK, but a
+Windows DLL or RAD desktop player does not repair this build. No iOS Bink
+SDK is supplied or integrated here. Optional pre-rendered movie failures
+have not prevented reaching the animated Prologue camera. In-engine cutscene
+animation and game audio are separate from movie decoding. If movie playback
+becomes required, investigate a real compatible decoder/engine interface;
+do not claim the missing service has been installed.
+
+MEMORY AND PERFORMANCE
+Native apps still face iOS memory pressure and termination. 0.15's highest
+reported process sample was 1,261 MiB, not its measured peak. Available
+memory is dynamic and not equal to the phone's total RAM. 0.17 samples
+os_proc_available_memory every five seconds with the existing footprint
+report. It neither grants extra memory nor changes loading success based
+on an unreliable guessed allowance. Caches remain bounded; no resolution,
+pedestrian/traffic density or engine heap profile increase was made.
+
+CURRENT GATE
+0.17 CI/package results belong in VERIFICATION-0.17.txt after completion.
+Physical 0.16 and 0.17 Prologue scene tests are pending while sideloading is
+unavailable. Do not request a phone test now or declare gameplay success.
+Continue stage3 when a trace is available; then input/audio and sustained
+Prologue. Keep protected PC folders and deployed main unchanged.
+(stage 3 in progress) (5 stages left)
+
+PRIMARY REFERENCES CHECKED 2026-10-14
+Apple Metal family/format/feature table (May21,2026):
+https://developer.apple.com/metal/capabilities/
+Apple memory-pressure guidance:
+https://developer.apple.com/documentation/metal/reducing-the-memory-footprint-of-metal-apps
+https://developer.apple.com/documentation/os/os_proc_available_memory
+Apple GameController / audio:
+https://developer.apple.com/documentation/gamecontroller
+https://developer.apple.com/documentation/avfaudio/avaudiosourcenode
+Pinned native C feature/descriptor definitions:
+https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/ffi/wgpu.h
+Pinned Metal capability source:
+https://github.com/gfx-rs/wgpu/blob/v29.0.3/wgpu-hal/src/metal/adapter.rs
+Bink vendor platform/SDK information:
+https://www.radgametools.com/bnkmain.htm
+https://www.radgametools.com/binkfaq.htm

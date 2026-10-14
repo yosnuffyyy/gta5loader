@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "sourceEntries": 106,
+  "changedPaths": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/renderer/border_fixture.inc",
+    "native-ios/renderer/build-renderer.sh",
+    "native-ios/renderer/native_draw.inc",
+    "native-ios/renderer/native_gpu.m",
+    "native-ios/renderer/native_readback.inc",
+    "native-ios/renderer/norm16_fixture.inc",
+    "native-ios/renderer/patch-metal-bc.mjs",
+    "native-ios/renderer/sampler_border.h",
+    "native-ios/renderer/test_sampler_border.c",
+    ".github/workflows/native-ios.yml",
+    "source-manifest.json"
+  ],
+  "priorIPAs": 16,
+  "unchangedEngineInstructionsAndGeneratedBindings": true,
+  "unchangedOriginalGameShaderFiles": true,
+  "unchangedResolutionAndQuality": true,
+  "backendChange": "Pinned Metal border capability detection only, prior BC patch preserved; Cargo verified incremental cache restored",
+  "mainUnchanged": "de7664a8e6448096716c5a341250d32d4f594fd1"
+}
