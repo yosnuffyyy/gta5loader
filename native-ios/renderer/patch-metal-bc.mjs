@@ -29,5 +29,25 @@ if(text.split(clipBefore).length!==2)throw Error('Clip-distance capability patch
 const checksumFile=source+'/vendor/wgpu-hal-29.0.3/.cargo-checksum.json';const sums=JSON.parse(fs.readFileSync(checksumFile));
 if(sums.package!=='31f8e1a9e7a8512f276f7c62e018c7fa8d60954303fed2e5750114332049193f'||sums.files['src/metal/adapter.rs']!==hash(original))throw Error('Unexpected vendor integrity table');
 sums.files['src/metal/adapter.rs']=hash(Buffer.from(text));fs.writeFileSync(checksumFile,JSON.stringify(sums)+'\n');
-fs.writeFileSync(evidence,JSON.stringify({name:'Metal BC, sampler-border and clip-distance capabilities',wgpuHalVersion:'29.0.3',originalCrateSHA256:sums.package,originalAdapterSHA256:hash(original),patchedAdapterSHA256:sums.files['src/metal/adapter.rs'],before,after,borderBefore,borderAfter,clipBefore,clipAfter,scope:'BC/border capability conditions and Metal clip-distance advertisement; WGSL clipping semantics retained and pixel-tested; normal validation preserved'},null,2)+'\n');
+const nagaFile=source+'/vendor/naga-29.0.3/src/back/msl/writer.rs';
+const nagaOriginal=fs.readFileSync(nagaFile);if(hash(nagaOriginal)!=='e0477d761c4fb20445bc54457a278320e7a65dc51bf25209d24aa951639e8704')throw Error('Unexpected pinned Naga MSL writer');
+const nagaBefore=`                        write!(self.out, "{}{} {}", back::INDENT, ty_name, name)?;
+                        if let Some(array_len) = array_len {
+                            write!(self.out, " [{array_len}]")?;
+                        }
+                        resolved.try_fmt(&mut self.out)?;`;
+const nagaAfter=`                        write!(self.out, "{}{} {}", back::INDENT, ty_name, name)?;
+                        // Metal attaches clip_distance to the array declarator,
+                        // before its extent. After [N], clang applies it to a type.
+                        let clip = matches!(*binding, crate::Binding::BuiltIn(crate::BuiltIn::ClipDistance));
+                        if clip { resolved.try_fmt(&mut self.out)?; }
+                        if let Some(array_len) = array_len {
+                            write!(self.out, " [{array_len}]")?;
+                        }
+                        if !clip { resolved.try_fmt(&mut self.out)?; }`;
+let nagaText=nagaOriginal.toString('utf8');if(nagaText.split(nagaBefore).length!==2)throw Error('Naga clip-distance patch is not unique');nagaText=nagaText.replace(nagaBefore,nagaAfter);fs.writeFileSync(nagaFile,nagaText);
+const nagaChecksumFile=source+'/vendor/naga-29.0.3/.cargo-checksum.json',nagaSums=JSON.parse(fs.readFileSync(nagaChecksumFile));
+if(nagaSums.package!=='0dd91265cc2454558f659b3b4b9640f0ddb8cc6521277f166b8a8c181c898079'||nagaSums.files['src/back/msl/writer.rs']!==hash(nagaOriginal))throw Error('Unexpected Naga vendor integrity table');nagaSums.files['src/back/msl/writer.rs']=hash(Buffer.from(nagaText));fs.writeFileSync(nagaChecksumFile,JSON.stringify(nagaSums)+'\n');
+const nagaPatch={version:'29.0.3',crateSHA256:nagaSums.package,originalWriterSHA256:hash(nagaOriginal),patchedWriterSHA256:nagaSums.files['src/back/msl/writer.rs'],before:nagaBefore,after:nagaAfter};
+fs.writeFileSync(evidence,JSON.stringify({name:'Metal BC, sampler-border and clip-distance capabilities plus Naga clip-array declarator',wgpuHalVersion:'29.0.3',originalCrateSHA256:sums.package,originalAdapterSHA256:hash(original),patchedAdapterSHA256:sums.files['src/metal/adapter.rs'],before,after,borderBefore,borderAfter,clipBefore,clipAfter,nagaPatch,scope:'Only checked feature advertisement and clip_distance attribute placement; native primitive clipping and normal validation preserved'},null,2)+'\n');
 console.log('PASS: pinned Metal capabilities patched; native clipping remains enabled and validated.');

@@ -2,7 +2,7 @@
    uniform packing and layouts, then compile native Metal pipelines. One
    shader/pipeline is live at a time. No diagnostic pixels claim a game scene. */
 static bool audit_pipeline(NativeGpu *g,DrawProgram *p){@autoreleasepool{
- NSString *source=nil,*args=nil;NSArray *entries=nil,*inputs=nil;
+ NSString *source=nil,*args=nil,*output=nil;NSArray *entries=nil,*inputs=nil,*results=nil;
  WGPUBindGroupLayout layouts[2]={p->layout,NULL};WGPUBindGroupLayout empty=NULL;
  WGPUPipelineLayoutDescriptor ld=WGPU_PIPELINE_LAYOUT_DESCRIPTOR_INIT;
  if(p->stage==1){WGPUBindGroupLayoutDescriptor e=WGPU_BIND_GROUP_LAYOUT_DESCRIPTOR_INIT;empty=wgpuDeviceCreateBindGroupLayout(g->device,&e);layouts[0]=empty;layouts[1]=p->layout;ld.bindGroupLayoutCount=2;}else ld.bindGroupLayoutCount=1;
@@ -33,7 +33,12 @@ static bool audit_pipeline(NativeGpu *g,DrawProgram *p){@autoreleasepool{
  }
  WGPUDepthStencilState depth=WGPU_DEPTH_STENCIL_STATE_INIT;depth.format=WGPUTextureFormat_Depth32Float;depth.depthWriteEnabled=WGPUOptionalBool_True;depth.depthCompare=WGPUCompareFunction_Always;d.depthStencil=&depth;
  WGPUColorTargetState targets[8];WGPUFragmentState fragment=WGPU_FRAGMENT_STATE_INIT;
- if(p->stage==1){unsigned colors=0;for(unsigned i=0;i<8;i++){targets[i]=(WGPUColorTargetState)WGPU_COLOR_TARGET_STATE_INIT;if(p->outputs&(1u<<i)){targets[i].format=WGPUTextureFormat_RGBA8Unorm;colors=i+1;}}
+ if(p->stage==1){
+  results=draw_matches(@"@fragment\\s*fn\\s+main\\s*\\((?:[^()]|\\([^)]*\\))*\\)\\s*->\\s*([^{]+)\\{",source);
+  if(!check(g,results.count==1,"Shader audit could not reflect fragment result"))goto cleanup;output=[draw_capture(source,results[0],1) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+  if(![output containsString:@"@location"]){NSArray *st=draw_matches([NSString stringWithFormat:@"struct\\s+%@\\s*\\{([^}]*)\\}",output],source);if(st.count)output=draw_capture(source,st[0],1);}
+  unsigned colors=0;for(unsigned i=0;i<8;i++){targets[i]=(WGPUColorTargetState)WGPU_COLOR_TARGET_STATE_INIT;if(p->outputs&(1u<<i)){targets[i].format=WGPUTextureFormat_RGBA8Unorm;colors=i+1;}}
+  for(NSTextCheckingResult *m in draw_matches(@"@location\\((\\d+)u?\\)\\s*(?:\\w+\\s*:\\s*)?(vec[234]<\\s*(?:u32|i32|f32)\\s*>|u32|i32|f32)",output)){unsigned i=draw_capture(output,m,1).intValue;NSString *type=draw_capture(output,m,2);if(i<8){if([type containsString:@"u32"])targets[i].format=WGPUTextureFormat_RGBA8Uint;else if([type containsString:@"i32"])targets[i].format=WGPUTextureFormat_RGBA8Sint;}}
   fragment.module=p->module;fragment.entryPoint=(WGPUStringView){"main",WGPU_STRLEN};fragment.targetCount=colors;fragment.targets=targets;d.fragment=&fragment;
  }
  d.label=(WGPUStringView){p->hash,WGPU_STRLEN};render=wgpuDeviceCreateRenderPipeline(g->device,&d);ok=render&&!atomic_load(&g->failed);

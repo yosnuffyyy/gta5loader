@@ -158,8 +158,8 @@
     },
     {
       "path": "native-ios/renderer/build-patched-backend.sh",
-      "bytes": 2589,
-      "sha256": "7a6417d60a6f140f773ba527981e7203b6e611983b5e404f64c2531bba6025bf"
+      "bytes": 2655,
+      "sha256": "0528f67f7ecfb3a662161b97696bff95307caac6b778bc1f7d59b5d9c9d9ee40"
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
@@ -233,8 +233,8 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 16284,
-      "sha256": "b9120544c26b475b0551ecdf0048661c77e52df29304329d0d45b9e5c62886e5"
+      "bytes": 16609,
+      "sha256": "d275f10217f652172bad7d7358cbf51a11947236c5846ec580903f7cca4294b1"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
@@ -333,8 +333,8 @@
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
-      "bytes": 3397,
-      "sha256": "e0985f3309a3b2fed837b5fa9565c3dd6ab9f16c6edbdbeb9b7404d33328942b"
+      "bytes": 5552,
+      "sha256": "b689ce884bb3c7ac7b5998737619ec5b346e1ea5cfc07bb560ffef5d3e0ce48c"
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
@@ -343,8 +343,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-shader-audit.mjs",
-      "bytes": 1812,
-      "sha256": "0c63eb6fa53f558919a1d1e620a706291c83b2a830209e5018b3edb42ae33e8d"
+      "bytes": 1868,
+      "sha256": "9ab331019b7a5a8b48bf11f94f88be98f3d9c65d76edb66e9f0f0403d63fd41b"
     },
     {
       "path": "native-ios/renderer/present_pixels.inc",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/shader_audit.inc",
-      "bytes": 7883,
-      "sha256": "0f05564d91f9c07a964b768009fc8f4f7158502e8629fbf30bf640a0320cfdd8"
+      "bytes": 8843,
+      "sha256": "af7f817c02e0f450b32dd5745e31f632909b82c04c5fc44790b118dfdb12d8fd"
     },
     {
       "path": "native-ios/renderer/shader_fixture.h",

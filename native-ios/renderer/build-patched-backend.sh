@@ -28,6 +28,7 @@ for target in aarch64-apple-darwin aarch64-apple-ios; do
   # checksum table does not reliably invalidate their old compiled objects.
   # Explicitly rebuild this one patched crate and its dependent artifacts.
   cargo +1.93.1 clean --package wgpu-hal --target "$target" --release
+  cargo +1.93.1 clean --package naga --target "$target" --release
   cargo +1.93.1 build --locked --offline --release --jobs 2 --target "$target" --no-default-features --features metal,wgsl
  )
  if [ "$sdk" = iphoneos ]; then dest=ios; else dest=macos; fi
