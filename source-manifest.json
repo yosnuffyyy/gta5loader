@@ -183,8 +183,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 11889,
-      "sha256": "0c9e8ccaa4c10122c46965a294cd77493617c9dd01c5e1fd7fa9f9fc24f3d3c4"
+      "bytes": 12110,
+      "sha256": "9280032540814a073298145134ad9f8db20d351eb4d2f41d677df7248faa00ae"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -198,8 +198,8 @@
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 1761,
-      "sha256": "2f757e52ca3ca0d38c02b10170394c0c159a875bef27c0ae6f0b33ecba7309de"
+      "bytes": 1782,
+      "sha256": "0c9071262423203c44822bdb5fb665309f9c8bfbf38f0d7f4d154b831f9d962f"
     },
     {
       "path": "native-ios/renderer/gpu_ring.c",
@@ -213,8 +213,8 @@
     },
     {
       "path": "native-ios/renderer/instance_replay.inc",
-      "bytes": 3092,
-      "sha256": "2eaf97d8d47ffede1444244899d7bb2f043197e792f0d34fdaacef9d0069404a"
+      "bytes": 3404,
+      "sha256": "994b7cc05bda8f46d9b8e971cef9edd64e7ad668c707f607641dd491ad32e677"
     },
     {
       "path": "native-ios/renderer/instance_verify.inc",
@@ -223,8 +223,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 18177,
-      "sha256": "55e00cc39ab5c50c23f829a7b73c0671e09ee39b941645b8badc9ca29f7f2a0d"
+      "bytes": 18217,
+      "sha256": "4dde64da1959349925de13f2815bf59782de75c389253690077a7a1ac595de70"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",

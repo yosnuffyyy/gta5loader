@@ -74,7 +74,7 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
   uint64_t available=bytes-offset;if(!check(g,available>=pipeline->last[i],"Vertex buffer does not contain an attribute"))return false;uint64_t elements=pipeline->stride[i]?(available-pipeline->last[i])/pipeline->stride[i]+1:UINT64_MAX;
   if(kind<4&&manual){uint32_t limit=pipeline->stride[i]?vertex_step_capacity(elements,pipeline->rate[i]):UINT32_MAX;if(instances>limit)instances=limit;}
   else if(kind<4){uint64_t first=pipeline->instance[i]?instance_first:vertex_first;if(pipeline->instance[i]||!indexed){if(!check(g,first<=elements,"Draw starts outside vertex/instance buffer"))return false;uint64_t max=elements-first;if(pipeline->instance[i]){if(instances>max)instances=(unsigned)max;}else if(count>max)count=(unsigned)max;}}
-  wgpuRenderPassEncoderSetVertexBuffer(pass,i,buffer,offset,bytes-offset);
+  wgpuRenderPassEncoderSetVertexBuffer(pass,pipeline->gpu_slot[i],buffer,offset,bytes-offset);
   if(manual&&pipeline->rate[i]>1&&pipeline->stride[i]){manual_mask|=1u<<i;manual_buffers[i]=buffer;manual_offsets[i]=offset;manual_sizes[i]=bytes;}
  }
  if(indexed){Object *o=object(g,g->ib[0]);unsigned size=g->ib[1]==57?2:4;if(!check(g,o&&o->buffer&&(g->ib[1]==57||g->ib[1]==42)&&g->ib[2]<=o->size&&g->ib[2]%size==0,"Invalid index buffer/format/offset"))return false;unsigned max=(o->size-g->ib[2])/size;if(kind<4){if(!check(g,start<=max,"Draw starts past index buffer"))return false;if(count>max-start)count=max-start;}wgpuRenderPassEncoderSetIndexBuffer(pass,o->buffer,size==2?WGPUIndexFormat_Uint16:WGPUIndexFormat_Uint32,g->ib[2],o->size-g->ib[2]);}
@@ -87,7 +87,7 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
   if(pipeline->manual_instances)g->draw.instance_draws++;
   for(uint32_t done=0;done<instances;){uint32_t batch=instances-done;
    if(manual_mask){for(unsigned i=0;i<pipeline->slots;i++)if(manual_mask&(1u<<i)){uint32_t run=vertex_step_run(pipeline->rate[i],done,instances-done);if(run<batch)batch=run;}
-   for(unsigned i=0;i<pipeline->slots;i++)if(manual_mask&(1u<<i)){uint64_t offset=manual_offsets[i]+vertex_step_index(0,done,pipeline->rate[i])*pipeline->stride[i];if(!check(g,offset<=manual_sizes[i]&&pipeline->last[i]<=manual_sizes[i]-offset,"Stepped instance record outside vertex buffer"))return false;wgpuRenderPassEncoderSetVertexBuffer(pass,i,manual_buffers[i],offset,manual_sizes[i]-offset);}}
+   for(unsigned i=0;i<pipeline->slots;i++)if(manual_mask&(1u<<i)){uint64_t offset=manual_offsets[i]+vertex_step_index(0,done,pipeline->rate[i])*pipeline->stride[i];if(!check(g,offset<=manual_sizes[i]&&pipeline->last[i]<=manual_sizes[i]-offset,"Stepped instance record outside vertex buffer"))return false;wgpuRenderPassEncoderSetVertexBuffer(pass,pipeline->gpu_slot[i],manual_buffers[i],offset,manual_sizes[i]-offset);}}
    if(indexed)wgpuRenderPassEncoderDrawIndexed(pass,count,batch,start,vp->vertex_id?0:base,instance_first+done);else wgpuRenderPassEncoderDraw(pass,count,batch,vertex_first,instance_first+done);
    if(pipeline->manual_instances)g->draw.instance_batches++;done+=batch;
   }

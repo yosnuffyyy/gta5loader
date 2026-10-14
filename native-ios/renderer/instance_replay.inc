@@ -13,6 +13,10 @@ cmd[0]=302;cmd[1]=32;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);memset(cmd,0,sizeof(cmd
 cmd[0]=303;cmd[1]=64;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);memset(cmd,0,sizeof(cmd));cmd[0]=303;cmd[2]=64;for(unsigned i=0;i<8;i++){float uv[]={i%2?1.f:0.f,.5f};memcpy((uint8_t*)(cmd+3)+i*8,uv,sizeof(uv));}EMIT(12,19);
 cmd[0]=304;cmd[1]=36;cmd[2]=0;cmd[3]=0x10;cmd[4]=0;EMIT(11,5);uint32_t instance_args[]={304,0,36,1,5,0,1,1,3,0,0,2};memcpy(cmd,instance_args,sizeof(instance_args));EMIT(12,12);
 memset(cmd,0,sizeof(cmd));cmd[0]=112;cmd[2]=256;float instance_constants[64]={0};instance_constants[60]=instance_constants[63]=1;memcpy(cmd+3,instance_constants,sizeof(instance_constants));EMIT(12,67);
+uint32_t instance_cbv[]={0,1,1,111,1,12};memcpy(cmd,instance_cbv,sizeof(instance_cbv));EMIT(23,6);
+uint32_t instance_cbp[]={1,2,1,112,0,16};memcpy(cmd,instance_cbp,sizeof(instance_cbp));EMIT(23,6);
+cmd[0]=1;cmd[1]=2;cmd[2]=1;cmd[3]=115;EMIT(24,4);cmd[3]=108;EMIT(25,4);
+cmd[0]=110;cmd[1]=57;cmd[2]=0;EMIT(22,3);
 /* UV uses the original VB's (0.5,0.5) at byte16 unless testing two divisors. */
 static const struct {unsigned layout,first,count,kind,stride,offset;} instance_cases[]={
  {306,2,3,2,4,0},{306,1,4,3,4,0},{306,3,3,2,0,0},{307,1,5,2,4,0},{308,2,4,3,4,0},
