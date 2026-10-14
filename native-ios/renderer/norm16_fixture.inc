@@ -29,6 +29,8 @@ static bool norm16_sample_test(NativeGpu *g){
  static const struct {uint32_t dxgi,channels;bool sign;WGPUTextureFormat format;} formats[]={
   {56,1,false,WGPUTextureFormat_R16Unorm},{58,1,true,WGPUTextureFormat_R16Snorm},{35,2,false,WGPUTextureFormat_RG16Unorm},{37,2,true,WGPUTextureFormat_RG16Snorm},{11,4,false,WGPUTextureFormat_RGBA16Unorm},{13,4,true,WGPUTextureFormat_RGBA16Snorm}
  };
+ // UNORM fragment outputs clamp negatives before blending. Blue -1 adds
+ // zero to the clear value .75; SNORM preserves -1 and yields -.25.
  static const float initial[4]={-.5f,.25f,.75f,.5f},blended[4]={-1.f,.75f,-.25f,1.f};
  static const uint16_t values[8]={0x8000,0x8001,0xc000,0xffff,0,1,0x4000,0x7fff};
  for(unsigned f=0;f<6;f++){
@@ -69,7 +71,7 @@ static bool norm16_sample_test(NativeGpu *g){
    wgpuBufferMapAsync(read,WGPUMapMode_Read,0,2048,cb);if(!wait_callback(g))goto next;
    const uint8_t *data=wgpuBufferGetConstMappedRange(read,0,2048);if(!check(g,data!=NULL,"Normalized16 fixture mapped pixels unavailable"))goto next;
    for(unsigned i=0;i<16;i++)for(unsigned k=0;k<4;k++){
-    bool stored=k<formats[f].channels;float expected=stored?(test==2?norm16_value(values[(i*formats[f].channels+k)%8],formats[f].sign):test==1?(formats[f].sign?blended[k]:(k==0||k==2?0:k==1?.75f:1.f)):initial[k]):k==3?1.f:0.f;
+    bool stored=k<formats[f].channels;float expected=stored?(test==2?norm16_value(values[(i*formats[f].channels+k)%8],formats[f].sign):test==1?(formats[f].sign?blended[k]:(k==0?0:k==1||k==2?.75f:1.f)):initial[k]):k==3?1.f:0.f;
     if(stored&&!formats[f].sign&&test!=2)expected=fmaxf(0,expected);
     int sampled=data[(i/4)*256+(i%4)*4+k],wanted=(int)lroundf((expected*.5f+.5f)*255.f);
     bool valid=abs(sampled-wanted)<=2;

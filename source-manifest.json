@@ -323,8 +323,8 @@
     },
     {
       "path": "native-ios/renderer/norm16_fixture.inc",
-      "bytes": 9224,
-      "sha256": "7b26a835533118e367ddddab797def0ae07e789ea7d726404b19e61bc3cc9f28"
+      "bytes": 9366,
+      "sha256": "70346272927b1c32fef8f876044e9f6e1cda84df083f935bf6edd7745a11bad5"
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
