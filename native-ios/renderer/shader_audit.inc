@@ -38,30 +38,32 @@ static bool audit_pipeline(NativeGpu *g,DrawProgram *p){@autoreleasepool{
   if(!check(g,results.count==1,"Shader audit could not reflect fragment result"))goto cleanup;output=[draw_capture(source,results[0],1) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
   if(![output containsString:@"@location"]){NSArray *st=draw_matches([NSString stringWithFormat:@"struct\\s+%@\\s*\\{([^}]*)\\}",output],source);if(st.count)output=draw_capture(source,st[0],1);}
   unsigned colors=0;for(unsigned i=0;i<8;i++){targets[i]=(WGPUColorTargetState)WGPU_COLOR_TARGET_STATE_INIT;if(p->outputs&(1u<<i)){targets[i].format=WGPUTextureFormat_RGBA8Unorm;colors=i+1;}}
-  for(NSTextCheckingResult *m in draw_matches(@"@location\\((\\d+)u?\\)\\s*(?:\\w+\\s*:\\s*)?(vec[234]<\\s*(?:u32|i32|f32)\\s*>|u32|i32|f32)",output)){unsigned i=draw_capture(output,m,1).intValue;NSString *type=draw_capture(output,m,2);if(i<8){if([type containsString:@"u32"])targets[i].format=WGPUTextureFormat_RGBA8Uint;else if([type containsString:@"i32"])targets[i].format=WGPUTextureFormat_RGBA8Sint;}}
+  for(NSTextCheckingResult *m in draw_matches(@"@location\\((\\d+)u?\\)\\s*(?:\\w+\\s*:\\s*)?(vec[234]<\\s*(?:u32|i32|f32)\\s*>|u32|i32|f32)",output)){unsigned i=draw_capture(output,m,1).intValue;NSString *type=draw_capture(output,m,2);if(i<8){bool scalar=![type hasPrefix:@"vec"],two=[type hasPrefix:@"vec2"];if([type containsString:@"u32"])targets[i].format=scalar?WGPUTextureFormat_R8Uint:two?WGPUTextureFormat_RG8Uint:WGPUTextureFormat_RGBA8Uint;else if([type containsString:@"i32"])targets[i].format=scalar?WGPUTextureFormat_R8Sint:two?WGPUTextureFormat_RG8Sint:WGPUTextureFormat_RGBA8Sint;else targets[i].format=scalar?WGPUTextureFormat_R8Unorm:two?WGPUTextureFormat_RG8Unorm:WGPUTextureFormat_RGBA8Unorm;}}
   fragment.module=p->module;fragment.entryPoint=(WGPUStringView){"main",WGPU_STRLEN};fragment.targetCount=colors;fragment.targets=targets;d.fragment=&fragment;
  }
  d.label=(WGPUStringView){p->hash,WGPU_STRLEN};render=wgpuDeviceCreateRenderPipeline(g->device,&d);ok=render&&!atomic_load(&g->failed);
  cleanup:if(render)wgpuRenderPipelineRelease(render);if(compute)wgpuComputePipelineRelease(compute);if(stub)wgpuShaderModuleRelease(stub);if(layout)wgpuPipelineLayoutRelease(layout);if(empty)wgpuBindGroupLayoutRelease(empty);return ok;
 }}
-int native_gpu_shader_audit(const char *directory){@autoreleasepool{
+int native_gpu_shader_audit(const char *directory,unsigned shard,unsigned parts){@autoreleasepool{
+ if(parts!=3||shard>=parts)return 2;
  NSData *raw=nil;NSDictionary *index=nil;
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h)return 2;host_init(h);wasm_rt_allocate_memory_shared(&h->memory,64,65536,false,65536);
  h->game_root=open(directory,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);int result=1;
  if(!g||h->game_root<0)goto cleanup;
  if(!hardware(g))goto cleanup;
  raw=draw_read(h->game_root,"shaders/index.json",0,0,true);index=draw_json(raw);if(![index isKindOfClass:NSDictionary.class])goto cleanup;
- unsigned modules=0,pipelines=0,errors=0,untranslated=0,clip=0,stages[3]={0};
+ unsigned selected=0,modules=0,pipelines=0,errors=0,untranslated=0,clip=0,stages[3]={0};
  for(NSString *hash in [[index allKeys] sortedArrayUsingSelector:@selector(compare:)]){@autoreleasepool{
-  if(hash.length!=16)continue;NSDictionary *rec=index[hash];if(![rec isKindOfClass:NSDictionary.class])continue;if(![rec[@"ok"] boolValue]){untranslated++;continue;}
+  if(hash.length!=16)continue;uint64_t bits=strtoull(hash.UTF8String,NULL,16);if(bits%parts!=shard)continue;NSDictionary *rec=index[hash];if(![rec isKindOfClass:NSDictionary.class])continue;if(![rec[@"ok"] boolValue]){untranslated++;continue;}selected++;
   NSString *stage=rec[@"stage"];unsigned st=[stage isEqualToString:@"vs"]?0:[stage isEqualToString:@"ps"]?1:[stage isEqualToString:@"cs"]?2:3;
   if(st==3){printf("FAIL: audit shader %s unknown stage\n",hash.UTF8String);errors++;continue;}
-  Object o={0};uint64_t bits=strtoull(hash.UTF8String,NULL,16);uint32_t meta[]={1,st,(uint32_t)bits,(uint32_t)(bits>>32),0};o.kind=14;o.meta=meta;
+  Object o={0};uint32_t meta[]={1,st,(uint32_t)bits,(uint32_t)(bits>>32),0};o.kind=14;o.meta=meta;
   DrawProgram *p=draw_program(g,&o);if(p&&!atomic_load(&g->failed)){modules++;stages[st]++;if(strstr(p->source,"enable clip_distances"))clip++;if(audit_pipeline(g,p))pipelines++;}
   if(atomic_load(&g->failed)){errors++;printf("FAIL: shader %s %s: %s\n",hash.UTF8String,stage.UTF8String,g->error);atomic_store(&g->failed,false);g->error[0]=0;}
   draw_program_free(o.program);wgpuDevicePoll(g->device,false,NULL);
   if((modules+errors)%200==0){printf("AUDIT progress: modules %u pipelines %u failures %u\n",modules,pipelines,errors);fflush(stdout);}
  }}
- printf("%s: complete original shader audit; modules %u; native Metal pipelines %u; VS/PS/CS %u/%u/%u; clip shaders %u; failures %u; untranslated records %u (explicitly unavailable, not claimed fixed). No game scene or input is verified by compilation.\n",errors?"FAIL":"PASS",modules,pipelines,stages[0],stages[1],stages[2],clip,errors,untranslated);result=errors||modules!=4808||pipelines!=4808||clip!=500||untranslated!=111?1:0;
+ result=errors||modules!=selected||pipelines!=selected?1:0;
+ printf("%s: original shader audit shard %u/3; modules %u; native Metal pipelines %u; VS/PS/CS %u/%u/%u; clip shaders %u; failures %u; untranslated records %u (explicitly unavailable, not claimed fixed). No game scene or input is verified by compilation.\n",result?"FAIL":"PASS",shard,modules,pipelines,stages[0],stages[1],stages[2],clip,errors,untranslated);
  cleanup:if(g){if(native_gpu_error(g))puts(native_gpu_error(g));release_hardware(g);native_gpu_end(g);}if(h->game_root>=0)close(h->game_root);wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);free(h);wasm_rt_free_thread();return result;
 }}

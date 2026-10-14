@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {spawn,execFileSync} from 'node:child_process';
+import {spawn,execFile,execFileSync} from 'node:child_process';
 const root='native-build';
 const generated=fs.readdirSync(root+'/generated').filter(n=>/^gta.*\.c$/.test(n)).sort().map(n=>root+'/generated/'+n);
 if(generated.length!==128)throw Error('Expected all 128 engine source partitions');
@@ -53,8 +53,21 @@ const key=hash(JSON.stringify(item));
    result+='PROCESS '+pass+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
-  const audit=execFileSync(folder+'/native-probe',['--shader-audit',root+'/shader-audit'],{encoding:'utf8',timeout:1200000,maxBuffer:16*1024*1024});
-  fs.writeFileSync(root+'/evidence/native-shader-audit-test.txt',audit);console.log(audit);
+  // Independent compiler processes, bounded to the runner's three cores.
+  // Preserve every stdout/stderr even on failure or a compiler timeout.
+  const audits=await Promise.allSettled([0,1,2].map(shard=>new Promise((resolve,reject)=>{
+   execFile(folder+'/native-probe',['--shader-audit-'+shard,root+'/shader-audit'],{encoding:'utf8',timeout:1200000,maxBuffer:16*1024*1024},(error,stdout,stderr)=>{
+    fs.writeFileSync(root+'/evidence/native-shader-audit-'+shard+'.txt',stdout||'');fs.writeFileSync(root+'/evidence/native-shader-audit-'+shard+'-stderr.txt',stderr||'');
+    if(error){console.error('Shader audit shard '+shard+' failed; complete diagnostics saved.\n'+String(stdout).slice(-8192)+String(stderr).slice(-2048));reject(error);}else resolve(stdout);
+   });
+  })));
+  if(audits.some(x=>x.status!=='fulfilled'))throw Error('Native shader audit failed; inspect preserved shard evidence');
+  const audit=audits.map(x=>x.value).join('\n');const totals={modules:0,pipelines:0,vs:0,ps:0,cs:0,clip:0,failures:0,untranslated:0};
+  const matches=[...audit.matchAll(/PASS: original shader audit shard (\d)\/3; modules (\d+); native Metal pipelines (\d+); VS\/PS\/CS (\d+)\/(\d+)\/(\d+); clip shaders (\d+); failures (\d+); untranslated records (\d+)/g)];
+  if(matches.length!==3||new Set(matches.map(x=>x[1])).size!==3)throw Error('Incomplete shader audit shard reports');
+  for(const m of matches)for(const [i,key] of ['modules','pipelines','vs','ps','cs','clip','failures','untranslated'].entries())totals[key]+=Number(m[i+2]);
+  if(totals.modules!==4808||totals.pipelines!==4808||totals.vs!==1112||totals.ps!==3667||totals.cs!==29||totals.clip!==500||totals.failures!==0||totals.untranslated!==111)throw Error('Shader audit coverage mismatch '+JSON.stringify(totals));
+  fs.writeFileSync(root+'/evidence/native-shader-audit-test.txt',audit);fs.writeFileSync(root+'/evidence/native-shader-audit-summary.json',JSON.stringify({result:'PASS',...totals,shards:3,maximumConcurrentProgramsPerProcess:1,gameSceneVerified:false},null,2)+'\n');console.log('PASS: complete native Metal shader audit '+JSON.stringify(totals));
  }else{
   fs.writeFileSync(folder+'/objects.txt',objects.join('\n')+'\n');
  }

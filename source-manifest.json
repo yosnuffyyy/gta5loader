@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 5670,
-      "sha256": "2281cd092d1d159190517bc3527eef3016884a78feef212a7f121360f75c787e"
+      "bytes": 7560,
+      "sha256": "1c6dd01814ca61d405d619c3867b5412f1fe08046cf26ab40494e18a35499c20"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -53,8 +53,8 @@
     },
     {
       "path": "native-ios/generate-probe.mjs",
-      "bytes": 5934,
-      "sha256": "1863d1967beb655770168c8ef68fbe38795338f25c267b09cbfd034cdd1ed5f2"
+      "bytes": 6038,
+      "sha256": "e4b2bc0738cd4b7c038a49ac42bfb819dbd5bd92f1fbec0349d5645fe6afb695"
     },
     {
       "path": "native-ios/host-imports.json",
@@ -293,8 +293,8 @@
     },
     {
       "path": "native-ios/renderer/native_launch.h",
-      "bytes": 509,
-      "sha256": "1b0ae7abddb9bbb1a1c3a92d663868277340da7226b85199048181c10640ffd0"
+      "bytes": 527,
+      "sha256": "d155b0274e54fd199cb3e4ed93ddb1cf6fabd7e39821ec063a600730e38b62ab"
     },
     {
       "path": "native-ios/renderer/native_mips.inc",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/shader_audit.inc",
-      "bytes": 8843,
-      "sha256": "af7f817c02e0f450b32dd5745e31f632909b82c04c5fc44790b118dfdb12d8fd"
+      "bytes": 9256,
+      "sha256": "838ac04ff4bbce53e89030e7a642f744dd2f01636fcc62e8f90d5dfc63919cfc"
     },
     {
       "path": "native-ios/renderer/shader_fixture.h",
