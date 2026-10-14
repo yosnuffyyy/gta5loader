@@ -10,13 +10,16 @@ static bool draw_uniforms(NativeGpu *g){DrawState *s=&g->draw;if(s->mirror)retur
 static void draw_end_pass(NativeGpu *g){if(g->draw.pass){wgpuRenderPassEncoderEnd(g->draw.pass);wgpuRenderPassEncoderRelease(g->draw.pass);g->draw.pass=NULL;}}
 static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
  if(s->offset)wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);
- WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e))return false;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
+ WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e))return false;g->counter_slot=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
  /* Three fixed uniform slots; complete submitted work before reusing slot 0.
     No resource destruction or per-draw queue wait is needed. */
  if(s->slot==0&&!completed(g))return false;return !atomic_load(&g->failed);
 }
 #include "draw_instance.inc"
 #include "draw_depth_proxy.inc"
+#include "native_uav.inc"
+#include "uav_clear.inc"
+#include "native_mips.inc"
 static WGPUAddressMode draw_address(uint32_t n){return n==1?WGPUAddressMode_Repeat:n==2||n==5?WGPUAddressMode_MirrorRepeat:WGPUAddressMode_ClampToEdge;}
 static WGPUSampler draw_sampler(NativeGpu *g,uint32_t id,bool compare){Object *o=object(g,id);
  if(o){if(!check(g,o->kind==16&&o->meta[1]==3&&o->words==15,"Invalid sampler descriptor"))return NULL;const uint32_t *w=o->meta+2;
@@ -45,11 +48,13 @@ static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){Dr
   for(unsigned i=0;i<p->member_count;i++){unsigned slot=p->members[i].slot;uint64_t from=(uint64_t)g->cb[p->stage][slot][1]*16;Object *o=object(g,g->cb[p->stage][slot][0]);if(o){if(!check(g,o->kind==11&&o->shadow,"Constant binding requires a shadow buffer"))return NULL;unsigned bytes=from<o->size?o->size-(unsigned)from:0;if(bytes>p->members[i].size)bytes=p->members[i].size;/* Match browser first-constant ABI; num is not applied by the reference. */if(bytes)memcpy(s->mirror+at+p->members[i].offset,o->shadow+from,bytes);}}
   *offset=at;s->offset=(at+p->pack_size+s->alignment-1)&~(s->alignment-1);
  }
- uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind==2||b->kind==3)ids[i]=g->smp[p->stage][b->slot];else if(b->kind==4)ids[i]=g->srv[p->stage][b->slot];}
+ uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind==2||b->kind==3)ids[i]=g->smp[p->stage][b->slot];else if(b->kind==4)ids[i]=g->srv[p->stage][b->slot];else if(b->kind>=5)ids[i]=storage_binding_id(g,p,b);}
  unsigned slot=s->slot;if(p->groups[slot]&&p->group_epochs[slot]==s->resource_epoch&&!memcmp(ids,p->group_ids[slot],sizeof(ids)))return p->groups[slot];
  WGPUBindGroupEntry entries[DRAW_BINDINGS];for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;entries[i]=(WGPUBindGroupEntry)WGPU_BIND_GROUP_ENTRY_INIT;entries[i].binding=b->binding;
   if(b->kind==1){entries[i].buffer=b->binding==15?p->constants:s->uniforms[slot];entries[i].size=b->binding==15?WGPU_WHOLE_SIZE:p->pack_size;if(!check(g,entries[i].buffer!=NULL,"Shader special constant table missing"))return NULL;}
   else if(b->kind==2||b->kind==3){entries[i].sampler=draw_sampler(g,ids[i],b->kind==3);if(!entries[i].sampler)return NULL;}
+  else if(b->kind==5||b->kind==6){uint64_t at,bytes;entries[i].buffer=storage_buffer(g,b,ids[i],&at,&bytes);entries[i].offset=at;entries[i].size=bytes;if(!entries[i].buffer)return NULL;}
+  else if(b->kind==7){entries[i].textureView=storage_texture(g,b,ids[i]);if(!entries[i].textureView)return NULL;}
   else {entries[i].textureView=draw_srv(g,b,ids[i]);if(!entries[i].textureView)return NULL;}
  }
  WGPUBindGroupDescriptor d=WGPU_BIND_GROUP_DESCRIPTOR_INIT;d.layout=p->layout;d.entryCount=p->count;d.entries=entries;WGPUBindGroup group=wgpuDeviceCreateBindGroup(g->device,&d);if(!group||atomic_load(&g->failed))return NULL;if(p->groups[slot])wgpuBindGroupRelease(p->groups[slot]);p->groups[slot]=group;memcpy(p->group_ids[slot],ids,sizeof(ids));p->group_epochs[slot]=s->resource_epoch;return group;
@@ -61,12 +66,13 @@ static bool draw_pass(NativeGpu *g){DrawState *s=&g->draw;if(s->pass&&!memcmp(g-
  if(!check(g,s->width&&s->height,"Draw has no render target"))goto done;if(!s->encoder)s->encoder=encoder(g);WGPURenderPassDescriptor d=WGPU_RENDER_PASS_DESCRIPTOR_INIT;d.colorAttachmentCount=count;d.colorAttachments=colors;if(ds)d.depthStencilAttachment=&depth;s->pass=wgpuCommandEncoderBeginRenderPass(s->encoder,&d);ok=s->pass&&!atomic_load(&g->failed);if(ok)memcpy(s->pass_targets,g->targets,sizeof(g->targets));
  done:for(unsigned i=0;i<9;i++)if(views[i])wgpuTextureViewRelease(views[i]);return ok;
 }
+#include "native_compute.inc"
 static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
  unsigned kind=gpu_word(payload,0),count=gpu_word(payload,1),instances=gpu_word(payload,2),start=gpu_word(payload,3),first_instance=gpu_word(payload,5);int32_t base=(int32_t)gpu_word(payload,4);if(!check(g,kind<=5,"Unknown draw kind"))return false;if(kind<4&&(!count||!instances))return true;
- Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;
+ Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;vp=storage_program(g,vp);if(pp)pp=storage_program(g,pp);if(!vp||(ps&&!pp))return false;
  DrawPipeline *pipeline=draw_pipeline(g,vs,ps,vp,pp);if(!pipeline)return false;
  if(kind>=4&&(pipeline->manual_instances||vp->vertex_id||vp->instance_id)){uint32_t args[5]={0};if(!draw_indirect_decode(g,payload,kind,args))return false;count=args[0];instances=args[1];start=args[2];base=kind==4?(int32_t)args[3]:0;first_instance=args[kind==4?4:3];kind=kind==4?3:2;if(!count||!instances)return true;}
- if(!draw_prepare_proxies(g,vp)||(pp&&!draw_prepare_proxies(g,pp)))return false;
+ if(!draw_prepare_proxies(g,vp)||(pp&&!draw_prepare_proxies(g,pp))||!storage_prepare(g,vp)||(pp&&!storage_prepare(g,pp)))return false;
  if(!draw_uniforms(g))return false;unsigned needed=((vp->pack_size+g->draw.alignment-1)&~(g->draw.alignment-1))+(pp?((pp->pack_size+g->draw.alignment-1)&~(g->draw.alignment-1)):0);if(g->draw.offset>DRAW_UBO_BYTES-needed&&!draw_flush(g))return false;
  unsigned offsets[2];WGPUBindGroup groups[2]={draw_group(g,vp,&offsets[0]),NULL};if(pp)groups[1]=draw_group(g,pp,&offsets[1]);if(!groups[0]||(pp&&!groups[1]))return false;if(!draw_pass(g))return false;WGPURenderPassEncoder pass=g->draw.pass;wgpuRenderPassEncoderSetPipeline(pass,pipeline->pipeline);wgpuRenderPassEncoderSetBindGroup(pass,0,groups[0],vp->pack_size?1:0,offsets);if(pp)wgpuRenderPassEncoderSetBindGroup(pass,1,groups[1],pp->pack_size?1:0,offsets+1);
  bool indexed=kind==4||(kind<4&&(kind&1));unsigned vertex_first=indexed||vp->vertex_id?0:start,instance_first=vp->instance_id?0:first_instance;
@@ -96,6 +102,6 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
    if(pipeline->manual_instances)g->draw.instance_batches++;done+=batch;
   }
  }
- draw_dirty_targets(g);g->draw.draws++;return !atomic_load(&g->failed);
+ if(!storage_written(g,vp)||(pp&&!storage_written(g,pp)))return false;draw_dirty_targets(g,pipeline,pp);g->draw.draws++;return !atomic_load(&g->failed);
 }}
-static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline)wgpuRenderPipelineRelease(s->pipelines[i].pipeline);for(unsigned i=0;i<3;i++){if(s->proxy_pipelines[i])wgpuRenderPipelineRelease(s->proxy_pipelines[i]);if(s->proxy_layouts[i])wgpuBindGroupLayoutRelease(s->proxy_layouts[i]);}for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}
+static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline)wgpuRenderPipelineRelease(s->pipelines[i].pipeline);for(unsigned i=0;i<3;i++){if(s->proxy_pipelines[i])wgpuRenderPipelineRelease(s->proxy_pipelines[i]);if(s->proxy_layouts[i])wgpuBindGroupLayoutRelease(s->proxy_layouts[i]);}for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}for(unsigned i=0;i<16;i++)if(s->mip_pipelines[i].pipeline)wgpuRenderPipelineRelease(s->mip_pipelines[i].pipeline);if(s->mip_sampler)wgpuSamplerRelease(s->mip_sampler);if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}

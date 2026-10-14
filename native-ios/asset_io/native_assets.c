@@ -30,7 +30,9 @@ struct NativeAssets {
  uint64_t stamp;
  unsigned char scratch[65536];
  uint32_t sample_ids[3];
+ uint64_t bytes_read,io_errors,size_mismatches,short_reads;unsigned diagnostic_count;char diagnostics[8][384];
 };
+static void asset_diagnostic(NativeAssets *a,const char *operation,uint32_t id,uint64_t offset,uint32_t length,int error){if(a->diagnostic_count>=8)return;char *out=a->diagnostics[a->diagnostic_count++];snprintf(out,384,"Asset %s: id %u path %.220s, offset %llu, requested %u, errno %d",operation,id,id<a->index.count?a->index.files[id].path:"<invalid>",(unsigned long long)offset,length,error);}
 static void check(NativeAssets *a,bool ok,const char *why){if(!ok)host_unavailable(a->host,why);}
 static _Atomic uint32_t *word(NativeAssets *a,uint64_t p){return (_Atomic uint32_t*)(a->host->memory.data+p);}
 static int cached_file(NativeAssets *a,uint32_t id){
@@ -43,19 +45,20 @@ static int cached_file(NativeAssets *a,uint32_t id){
  a->cache[slot].fd=fd;a->cache[slot].id=id;a->cache[slot].stamp=++a->stamp;return fd;
 }
 static int32_t serve(NativeAssets *a,uint32_t id,uint64_t offset,uint64_t dst,uint32_t length){
- if(id>=a->index.count||length>INT32_MAX||offset>INT64_MAX||!host_range(a->host,dst,length))return -1;
- int fd=cached_file(a,id);if(fd<0)return -1;
- struct stat st;if(fstat(fd,&st)||st.st_size<0)return -1;
+ if(id>=a->index.count||length>INT32_MAX||offset>INT64_MAX||!host_range(a->host,dst,length)){a->io_errors++;asset_diagnostic(a,"invalid request",id,offset,length,EINVAL);return -1;}
+ int fd=cached_file(a,id);if(fd<0){a->io_errors++;asset_diagnostic(a,"open failure",id,offset,length,errno);return -1;}
+ struct stat st;if(fstat(fd,&st)||st.st_size<0){a->io_errors++;asset_diagnostic(a,"stat failure",id,offset,length,errno);return -1;}
+ if((uint64_t)st.st_size!=a->index.files[id].size){a->size_mismatches++;asset_diagnostic(a,"manifest/physical size mismatch",id,(uint64_t)st.st_size,(uint32_t)(a->index.files[id].size>UINT32_MAX?UINT32_MAX:a->index.files[id].size),0);}
  uint64_t size=(uint64_t)st.st_size;if(size>a->index.files[id].size)size=a->index.files[id].size;
  if(offset>=size)return 0;
  if(length>size-offset)length=(uint32_t)(size-offset);
  uint32_t done=0;while(done<length&&!atomic_load(&a->stopping)){
   size_t n=length-done;if(n>sizeof(a->scratch))n=sizeof(a->scratch);
   ssize_t got;do{got=pread(fd,a->scratch,n,(off_t)(offset+done));}while(got<0&&errno==EINTR);
-  if(got<0)return done?(int32_t)done:-1;if(!got)break;
+  if(got<0){a->io_errors++;asset_diagnostic(a,"read failure",id,offset+done,(uint32_t)n,errno);a->bytes_read+=done;return done?(int32_t)done:-1;}if(!got){a->short_reads++;asset_diagnostic(a,"unexpected physical EOF",id,offset+done,(uint32_t)n,0);break;}
   host_store(a->host,dst+done,a->scratch,(size_t)got);done+=(uint32_t)got;
  }
- return (int32_t)done;
+ a->bytes_read+=done;return (int32_t)done;
 }
 static void *read_loop(void *context){
  NativeAssets *a=context;wasm_rt_init_thread();
@@ -114,6 +117,7 @@ void native_assets_start(NativeAssets *a,uint64_t table){
 void native_assets_arm(NativeAssets *a,void(*callback)(void*),void *context){a->on_boundary=callback;a->context=context;atomic_store(&a->armed,true);}
 const char *native_assets_boundary(NativeAssets *a){return a?atomic_load(&a->boundary):NULL;}
 const char *native_assets_failure(NativeAssets *a){return a?atomic_load(&a->failure):NULL;}
+void native_assets_summary(NativeAssets *a,char *out,size_t size){if(!a){snprintf(out,size,"Asset reader not started");return;}snprintf(out,size,"Asset reads: %u requests, %llu MiB delivered; I/O errors %llu; size mismatches %llu; unexpected short reads %llu. Expected EOF/range clipping is not an error.",atomic_load(&a->requests),(unsigned long long)(a->bytes_read/1048576),(unsigned long long)a->io_errors,(unsigned long long)a->size_mismatches,(unsigned long long)a->short_reads);for(unsigned i=0;i<a->diagnostic_count;i++)if(a->host->progress)a->host->progress(a->host->progress_context,a->diagnostics[i]);}
 static void sample(NativeAssets *a,w2c_gta *e,uint64_t scratch,unsigned sample){
  static const char *paths[]={"common/data/levels/gta5/paths.xml","x64/anim/cutscene/cuts_prologue.rpf","x64/levels/gta5/_prologue/plg_01.rpf"};
  char path[256];snprintf(path,sizeof(path),"/game/%s",paths[sample]);host_store(a->host,scratch,path,strlen(path)+1);

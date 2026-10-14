@@ -64,4 +64,7 @@ static bool draw_prepare_proxies(NativeGpu *g,DrawProgram *p){
  }
  memcpy(p->proxy_ids,ids,sizeof(ids));p->proxy_epoch=g->draw.resource_epoch;p->proxy_any=any;p->proxy_scan_valid=true;return !atomic_load(&g->failed);
 }
-static void draw_dirty_targets(NativeGpu *g){for(unsigned i=0;i<8;i++)proxy_dirty(object(g,g->targets[i*4]));if((g->targets[36]&3)!=3)proxy_dirty(object(g,g->targets[32]));}
+static void draw_dirty_targets(NativeGpu *g,DrawPipeline *pipeline,DrawProgram *ps){
+ for(unsigned i=0;i<8;i++)if(ps&&(ps->outputs&(1u<<i))){unsigned q=2+(pipeline->key.blend[1]?i:0)*8;if(pipeline->key.blend[q+7]&15)proxy_dirty(object(g,g->targets[i*4]));}
+ Object *ds=object(g,g->targets[32]);bool depth=pipeline->key.depth[0]&&pipeline->key.depth[1]==1&&!(g->targets[36]&1),stencil=ds&&draw_stencil(ds->td.format)&&pipeline->key.depth[3]&&((pipeline->key.depth[4]>>8)&255)&&!(g->targets[36]&2);if(depth||stencil)proxy_dirty(ds);
+}

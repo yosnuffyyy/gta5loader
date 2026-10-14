@@ -3,16 +3,18 @@ enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=128,
        DRAW_UBO_BYTES=512*1024, DRAW_UBO_SLOTS=3 };
 typedef struct DrawProgram DrawProgram;
 typedef struct DepthProxy DepthProxy;
+typedef struct MipChain MipChain;
 typedef struct {
  uint32_t binding,kind,slot; WGPUTextureViewDimension dim;
  WGPUTextureSampleType sample; bool ms;
  WGPUTextureView view; uint32_t view_id; uint64_t view_epoch;
  WGPUTexture dummy;
+ WGPUBuffer dummy_buffer;WGPUTextureFormat format;WGPUStorageTextureAccess access;
 } DrawBinding;
 struct DrawProgram {
  WGPUShaderModule module; WGPUBindGroupLayout layout;
  WGPUBuffer constants; DrawBinding bindings[DRAW_BINDINGS];
- unsigned count,member_count,pack_size,stage,outputs;
+ unsigned count,member_count,pack_size,stage,group,outputs;
  struct {uint32_t slot,offset,size;} members[DRAW_MEMBERS];
  WGPUBindGroup groups[DRAW_UBO_SLOTS];
  uint32_t group_ids[DRAW_UBO_SLOTS][DRAW_BINDINGS];
@@ -21,9 +23,12 @@ struct DrawProgram {
  uint32_t proxy_ids[DRAW_BINDINGS]; uint64_t proxy_epoch;
  bool proxy_scan_valid,proxy_any;
  char *source; uint32_t flat_inputs;
+ WGPUComputePipeline compute;bool variant;
+ DrawProgram *variants[8];uint64_t variant_ages[8],variant_age;
+ WGPUTextureFormat storage_formats[8];
 };
 typedef struct {
- uint32_t shader[4],layout[226],strides[16],topology,index_format;
+ uint32_t storage_formats[2][8];uint32_t shader[4],layout[226],strides[16],topology,index_format;
  uint32_t blend[66],depth[13],raster[10],formats[9],samples,ro,mask;
 } DrawKey;
 typedef struct {
@@ -41,4 +46,8 @@ typedef struct {
  WGPURenderPipeline proxy_pipelines[3]; WGPUBindGroupLayout proxy_layouts[3];
  uint64_t proxy_bytes,proxy_peak,proxy_refreshes,proxy_reuses;
  unsigned proxy_allocations,proxy_passes,proxy_cases;
+ uint64_t dispatches,counter_resets,counter_ignored,counter_copies,uav_clears,storage_proxy_bytes,storage_proxy_peak;
+ unsigned storage_proxy_copies,uav_cases,compute_shaders;
+ struct {WGPUTextureFormat format;WGPURenderPipeline pipeline;} mip_pipelines[16];
+ WGPUSampler mip_sampler;uint64_t mip_generations;unsigned mip_passes;
 } DrawState;

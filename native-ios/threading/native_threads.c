@@ -398,6 +398,7 @@ bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
  for(unsigned i=0;i<MAX_WORKERS;i++){NativeWorker *w=&r->workers[i];if(w->occupied&&!w->joined){checked(pthread_join(w->thread,NULL));w->joined=true;}if(w->failure&&!h->failure)h->failure=w->failure;}
  const char *gpu_failure=native_gpu_error(r->gpu),*io_failure=native_assets_failure(r->assets);if(gpu_failure&&!h->failure)h->failure=gpu_failure;if(io_failure&&!h->failure)h->failure=io_failure;native_gpu_summary(r->gpu,summary,capacity);
  native_log_flush(&r->log,h->progress,h->progress_context);native_log_diagnostics(&r->log,h->progress,h->progress_context);
+ if(h->progress){char assets[384];native_assets_summary(r->assets,assets,sizeof(assets));h->progress(h->progress_context,assets);}
  if(r->gpu_checkpoint){const char *path=native_assets_boundary(r->assets);bool reached=atomic_load(&r->archive_boundary)&&native_gpu_ready(r->gpu)&&r->input&&r->audio&&path&&!strcmp(path,"x64/audio/audio.rpf")&&!h->failure;return reached;}
  if(!h->failure&&!atomic_load(&scene_stop))h->failure=now_ns()>r->deadline?"native scene startup timed out (180 seconds)":"native scene engine stopped without a verified scene";
  return !h->failure&&atomic_load(&scene_stop);

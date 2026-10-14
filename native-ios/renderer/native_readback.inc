@@ -3,12 +3,12 @@
 static bool readback_format(WGPUTextureFormat f,uint32_t *bw,uint32_t *bh,uint32_t *bytes){
  *bw=*bh=1;
  switch(f){
- case WGPUTextureFormat_R8Unorm:case WGPUTextureFormat_R8Snorm:*bytes=1;break;
- case WGPUTextureFormat_RG8Unorm:case WGPUTextureFormat_RG8Snorm:case WGPUTextureFormat_R16Float:*bytes=2;break;
- case WGPUTextureFormat_RGBA8Unorm:case WGPUTextureFormat_RGBA8UnormSrgb:case WGPUTextureFormat_RGBA8Snorm:case WGPUTextureFormat_BGRA8Unorm:case WGPUTextureFormat_BGRA8UnormSrgb:
+ case WGPUTextureFormat_R8Uint:case WGPUTextureFormat_R8Sint:case WGPUTextureFormat_R8Unorm:case WGPUTextureFormat_R8Snorm:*bytes=1;break;
+ case WGPUTextureFormat_RG8Uint:case WGPUTextureFormat_RG8Sint:case WGPUTextureFormat_R16Uint:case WGPUTextureFormat_R16Sint:case WGPUTextureFormat_RG8Unorm:case WGPUTextureFormat_RG8Snorm:case WGPUTextureFormat_R16Float:*bytes=2;break;
+ case WGPUTextureFormat_RGBA8Uint:case WGPUTextureFormat_RGBA8Sint:case WGPUTextureFormat_RG16Uint:case WGPUTextureFormat_RG16Sint:case WGPUTextureFormat_R32Uint:case WGPUTextureFormat_R32Sint:case WGPUTextureFormat_RGBA8Unorm:case WGPUTextureFormat_RGBA8UnormSrgb:case WGPUTextureFormat_RGBA8Snorm:case WGPUTextureFormat_BGRA8Unorm:case WGPUTextureFormat_BGRA8UnormSrgb:
  case WGPUTextureFormat_RG16Float:case WGPUTextureFormat_R32Float:case WGPUTextureFormat_RGB10A2Unorm:case WGPUTextureFormat_RG11B10Ufloat:case WGPUTextureFormat_RGB9E5Ufloat:*bytes=4;break;
- case WGPUTextureFormat_RGBA16Float:case WGPUTextureFormat_RG32Float:*bytes=8;break;
- case WGPUTextureFormat_RGBA32Float:*bytes=16;break;
+ case WGPUTextureFormat_RGBA16Uint:case WGPUTextureFormat_RGBA16Sint:case WGPUTextureFormat_RG32Uint:case WGPUTextureFormat_RG32Sint:case WGPUTextureFormat_RGBA16Float:case WGPUTextureFormat_RG32Float:*bytes=8;break;
+ case WGPUTextureFormat_RGBA32Uint:case WGPUTextureFormat_RGBA32Sint:case WGPUTextureFormat_RGBA32Float:*bytes=16;break;
  case WGPUTextureFormat_BC1RGBAUnorm:case WGPUTextureFormat_BC1RGBAUnormSrgb:case WGPUTextureFormat_BC4RUnorm:*bw=*bh=4;*bytes=8;break;
  case WGPUTextureFormat_BC2RGBAUnorm:case WGPUTextureFormat_BC2RGBAUnormSrgb:case WGPUTextureFormat_BC3RGBAUnorm:case WGPUTextureFormat_BC3RGBAUnormSrgb:
  case WGPUTextureFormat_BC5RGUnorm:case WGPUTextureFormat_BC6HRGBUfloat:case WGPUTextureFormat_BC7RGBAUnorm:case WGPUTextureFormat_BC7RGBAUnormSrgb:*bw=*bh=4;*bytes=16;break;

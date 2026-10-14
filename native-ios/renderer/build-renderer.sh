@@ -10,6 +10,8 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-vertex-step | tee native-build/evidence/native-vertex-step-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_depth_proxy_layout.c -o native-build/test-depth-proxy-layout
 native-build/test-depth-proxy-layout | tee native-build/evidence/native-depth-proxy-layout-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_uav_layout.c -o native-build/test-uav-layout
+native-build/test-uav-layout | tee native-build/evidence/native-uav-layout-test.txt
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do

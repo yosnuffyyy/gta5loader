@@ -7,6 +7,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 fs.mkdirSync(out,{recursive:true});
 const evidence={...pin,downloaded:[],shaderFixtures:JSON.parse(fs.readFileSync(dir+'/shader-fixtures.json'))};
 evidence.startupDrawFixtures=JSON.parse(fs.readFileSync(dir+'/draw-fixtures.json'));
+evidence.computeFixtures=JSON.parse(fs.readFileSync(dir+'/compute-fixtures.json'));const computeSources=fs.readFileSync(dir+'/compute_fixture_sources.inc','utf8').split('\n').filter(l=>l.startsWith('{')).map(l=>JSON.parse('['+l.slice(1,l.lastIndexOf('}'))+']'));for(const r of [...evidence.computeFixtures.originalShaders,...evidence.computeFixtures.diagnosticShaders]){const source=computeSources.find(x=>x[0]===r.hash)?.[1];if(!source||Buffer.byteLength(source)!==r.bytes||hash(Buffer.from(source))!==r.sha256)throw Error('Compute fixture digest mismatch '+r.hash);}fs.copyFileSync(dir+'/compute-fixtures.json','native-build/evidence/compute-fixtures.json');
 const startupHeader=fs.readFileSync(dir+'/draw_fixture_sources.inc','utf8');
 for(const r of evidence.startupDrawFixtures.records){const m=startupHeader.match(new RegExp('draw_fixture_'+r.stage+'\\[\\]=(.*);'));if(!m)throw Error('Missing original startup shader '+r.stage);const b=Buffer.from(JSON.parse(m[1]));if(b.length!==r.bytes||hash(b)!==r.sourceSHA256)throw Error('Startup shader digest mismatch '+r.stage);}
 fs.copyFileSync(dir+'/draw-fixtures.json','native-build/evidence/draw-fixtures.json');
