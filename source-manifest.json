@@ -53,8 +53,8 @@
     },
     {
       "path": "native-ios/generate-probe.mjs",
-      "bytes": 5833,
-      "sha256": "0ae0c1195f5274ffb38556134188fd47e85054ea4fe8d81a6476e849327bbe45"
+      "bytes": 5834,
+      "sha256": "ecd97a9514254853eca8260f70e2699870f8b26e6f88f917c18858f189f30782"
     },
     {
       "path": "native-ios/host-imports.json",
@@ -78,8 +78,8 @@
     },
     {
       "path": "native-ios/native_runtime.c",
-      "bytes": 16284,
-      "sha256": "e786e33f01e51d4f9524cd856aca1df0e5345ec5d921fa2d1693527d8f390f77"
+      "bytes": 16251,
+      "sha256": "e36ef7ff2e3871d359cd8b4f73f60eea1ac8b166b7aa81ccb9030ec89a4cc2a0"
     },
     {
       "path": "native-ios/native_wait.c",

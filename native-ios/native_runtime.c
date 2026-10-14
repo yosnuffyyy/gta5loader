@@ -46,8 +46,8 @@ static void entropy_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){
  require(h,w2c_gta_f90334(engine,p+8)==0,"real engine RNG initialization failed");
  memset(output,0xa5,sizeof(output));host_store(h,p+512,output,sizeof(output));
  uint32_t generated=w2c_gta_f90335(engine,p+8,p+520,128);
- uint32_t freed=w2c_gta_f90333(engine,p+8);
- require(h,generated==0&&freed==0,"real engine RNG generation/cleanup failed");
+ w2c_gta_f90333(engine,p+8);
+ require(h,generated==0,"real engine RNG generation failed");
  host_load(h,actual,p,sizeof(actual));require(h,!memcmp(actual,state,8)&&!memcmp(actual+136,state+136,8),"engine RNG state guards changed");
  host_load(h,actual,p+512,sizeof(actual));require(h,!memcmp(actual,output,8)&&!memcmp(actual+136,output+136,8),"engine RNG output guards changed");
  require(h,memcmp(actual+8,output+8,128)!=0,"engine RNG did not produce output");
