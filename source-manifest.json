@@ -318,8 +318,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 70434,
-      "sha256": "10de938bbd9fbd114f02de0c4926fa071147c7613fbaba66f2f6b32e3406844a"
+      "bytes": 70634,
+      "sha256": "90c05e251034ca177cb58a6de4198d5e627bedf18632148c97b0e1c1fec10f48"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -388,8 +388,8 @@
     },
     {
       "path": "native-ios/renderer/ped_pair_audit.inc",
-      "bytes": 2598,
-      "sha256": "40f913e5ec599144ddd567fcb1e3199627f483fac6cfd197464601799177abef"
+      "bytes": 3154,
+      "sha256": "66da28fb68c9b57cabfe6d5a7a4878746ccc74e971aa1d4cc44984a1b3d7713b"
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-shader-audit.mjs",
-      "bytes": 1789,
-      "sha256": "39646ffe18b503a205be6545b10c288a0e49bb876381f5d1d5e43c9012958337"
+      "bytes": 1854,
+      "sha256": "0960c82b9d08739fc12e54c9a956dcc40a67bd0c1676fe4fdb0948dd2bd32ed9"
     },
     {
       "path": "native-ios/renderer/presentation_metrics.inc",
@@ -418,8 +418,8 @@
     },
     {
       "path": "native-ios/renderer/proxy_range_fixture.inc",
-      "bytes": 4249,
-      "sha256": "ad04e310ed97771d5dada7a3ee94f96f9b2dcfb94dd10ad4ad9f6f28d8f3f140"
+      "bytes": 4826,
+      "sha256": "4f910143dc88d0bbcd5c85ce56cecbacc9e80a4e4428b373671c01f98fa843cd"
     },
     {
       "path": "native-ios/renderer/ps.wgsl",
@@ -478,8 +478,8 @@
     },
     {
       "path": "native-ios/renderer/reference_fetch.mjs",
-      "bytes": 955,
-      "sha256": "6ab45356418c7c4931bfdb28ce7c41ae476a8d16dc7fb787b19f497750553818"
+      "bytes": 2548,
+      "sha256": "d9ebe57acdf8280f7729008a35b25d376a90e9191cbdd351333072b568341bac"
     },
     {
       "path": "native-ios/renderer/renderer_cli.m",
@@ -583,8 +583,8 @@
     },
     {
       "path": "native-ios/renderer/test_reference_fetch.mjs",
-      "bytes": 1585,
-      "sha256": "c41c12851334c518509240f4d83b8fbf500d9edbac95e7b2105d85b9316eed9f"
+      "bytes": 3445,
+      "sha256": "6696ef1f7f4fbac020414dc98fb4d5c7ec952653a7b81ddf94a0fb7902e2fb1c"
     },
     {
       "path": "native-ios/renderer/test_resource_bytes.c",
