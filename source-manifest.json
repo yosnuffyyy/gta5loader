@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 5168,
-      "sha256": "d8560ba88bfa2edb31295ff44519d90d9f3668b3c592fca671d9c5eb071c2982"
+      "bytes": 5429,
+      "sha256": "fdba841d078cf8f6613dd12cea0a3c41a94b4193b94e22b440317759f9261e53"
     },
     {
       "path": "native-ios/file-probes.json",
