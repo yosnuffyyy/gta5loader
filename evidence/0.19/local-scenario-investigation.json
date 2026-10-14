@@ -1,0 +1,26 @@
+{
+  "source": "work\\native-uav\\metadata\\scenarios.meta",
+  "sha256": "3a9dab765802b3259601a964fb04d812aa783fd5a19c24af97d0b5e174d02b50",
+  "scenario_type_groups": 16,
+  "missing_type": 16,
+  "names": [
+    "PROP_HUMAN_SEAT_BENCH_ALL",
+    "PROP_HUMAN_SEAT_BENCH_ANY",
+    "PROP_HUMAN_SEAT_BENCH_AND_BEER",
+    "PROP_HUMAN_SEAT_BENCH_AND_BEER_AND_FOOD",
+    "PROP_HUMAN_SEAT_BENCH_AND_COFFEE",
+    "PROP_HUMAN_SEAT_BENCH_AND_COFFEE_AND_FOOD",
+    "PROP_HUMAN_SEAT_BENCH_AND_FOOD",
+    "PROP_HUMAN_SEAT_CHAIR_ALL",
+    "PROP_HUMAN_SEAT_CHAIR_ANY",
+    "PROP_HUMAN_SEAT_CHAIR_AND_COFFEE_AND_FOOD",
+    "PROP_HUMAN_SEAT_CHAIR_AND_BEER",
+    "PROP_HUMAN_SEAT_CHAIR_AND_BEER_AND_FOOD",
+    "PROP_HUMAN_SEAT_CHAIR_AND_COFFEE",
+    "PROP_HUMAN_SEAT_CHAIR_AND_FOOD",
+    "PROP_HUMAN_SEAT_DECKCHAIR_ANY",
+    "PROP_HUMAN_SEAT_TRAIN"
+  ],
+  "registration_validated": false,
+  "data_modified": false
+}

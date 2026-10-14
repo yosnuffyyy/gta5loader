@@ -1,0 +1,28 @@
+{
+  "scope": "Independent source/evidence review; no full game startup or phone scene has been run in this task.",
+  "graphics_root_cause": {
+    "verified_source": "Pinned Metal HAL advertises 60 varying components / 4 = 15 variables on this iOS path; pinned wgpu-core checks vertex output locations against 0..14.",
+    "actual_pair": "7db515e410659eca + 394c572f727d25e8",
+    "vertex_outputs": [0, 1, 2, 3, 4, 5, 6, 15],
+    "fragment_inputs": [0, 1, 2, 3, 4, 5, 6],
+    "extra_output": "Location 15 mirrors the four clip-distance values. The builtin clip-distance array is separate and remains intact.",
+    "fix": "Move location 15 to free location 7 for this pair. Common linker remaps matching fragment inputs when consumed, retaining all values/types/qualifiers/builtins.",
+    "other_vertex_shaders": 500,
+    "sparse_shader_output_count_range": [3, 13]
+  },
+  "runtime_issues": [
+    {"issue":"Scenario metadata class/type errors","evidence":"Independent scenarios.meta has 16 ScenarioTypeGroups Items without type; supplied engine logs expect derivable CScenarioTypeGroup and report empty class hash 0.","classification":"Input schema/type mismatch established; correct registered concrete types not established.","decision":"No metadata rewrite or fictitious class. Potential scenario/spawning impact; no evidence this caused the current Prologue GPU stop."},
+    {"issue":"defaulttasks.ymt.pso hash 0x36b97786","evidence":"Engine reports missing parStructure; complete selected asset/mount/registration state is unavailable in approved local input.","classification":"Possible build/schema registration mismatch; not independently proven root cause.","decision":"Retain diagnostic; defer data/engine edits until matching registration can be validated."},
+    {"issue":"Repeated scene-sphere requests","evidence":"0.17 counted 271 requests and subsequently started the intro camera; 0.18 also reached Prologue1 camera before a graphics validation failure.","classification":"Not an infinite loading blocker in the supplied interval; does not prove efficient loading.","decision":"Do not force load success. Correlate I/O/script/GPU timing if a later persistent stall occurs."},
+    {"issue":"GPU buffer update warnings","evidence":"Engine grcBuffer Unlock_Internal warnings precede supplied GPU failure; no matching upload command trace proves the warned update succeeded or failed. Source separately reveals destructive padded partial uploads.","classification":"Exact warning root cause unresolved; partial upload correctness bug independently reproduced by new fixture.","decision":"Fix upload byte semantics; retain warning and bounded GPU operation/binding breadcrumbs. Do not claim every cloth update warning fixed."},
+    {"issue":"Missing interior references","evidence":"Building-controller logs reference unavailable interior IDs while Prologue initialization continues.","classification":"May affect later areas; no supplied evidence identifies this as the current render stop.","decision":"Do not fabricate interiors or modify protected assets. Defer beyond current fatal render path."},
+    {"issue":"Missing LOW_LATENCY.awc / equipped weapon bank","evidence":"Archive read statistics show 0 I/O errors for delivered requests but engine update-mount lookup fails for the bank.","classification":"Logical mount/bank availability is distinct from failed delivered reads; may affect sound/progression.","decision":"Retain audio diagnostics; do not substitute fabricated content or report successful loading. Audio output remains stage 4."},
+    {"issue":"Logging-thread initialization","evidence":"Browser/native startup skips optional logging threads; spool mutex is unavailable and root Gameplay.log writes are rejected by the app-private write policy.","classification":"Optional network logging not initialized; no supplied evidence that the missing log is the scene blocker.","decision":"Keep bounded native diagnostics and app-private write rules; defer the optional logging service."},
+    {"issue":"Workers, mailbox and streaming cancellation","evidence":"0.18 retained native thread/wait/mailbox/asset tests. Supplied physical trace has 26 workers, no owner-mailbox backlog, and successful delivered reads before an explicit pipeline failure.","classification":"No independently reproduced new coordination defect; full-scene/Cloud file-provider shutdown behavior remains unverified.","decision":"Preserve existing code and tests. Reader remains one 64 KiB buffer and eight open handles."},
+    {"issue":"Unavailable shader records","evidence":"Exact index: 71 DS, 18 HS, 20 GS and 2 tiled_lightingMS CS records rejected for non-uniform workgroup barriers.","classification":"109 unavailable tessellation/geometry shaders plus two failed multisample compute translations; their use is not shown in captured Prologue operations.","decision":"Do not disable barrier validation or invent translations. Keep explicit unavailable failures and conservative single-sample settings."},
+    {"issue":"Timing/measurement limits","evidence":"Existing query timestamps use CPU monotonic time; physical scene/GPU timing and FPS benchmarks are unavailable. Logical allocation estimates exclude driver residency, native intermediates and alignment.","classification":"Metrics are diagnostics, not actual GPU timestamp or phone performance proof.","decision":"Report copied-byte/submission reductions only; make no FPS or total GPU-memory claims."}
+  ],
+  "scene_verified": false,
+  "stage": 3,
+  "stages_left": 5
+}

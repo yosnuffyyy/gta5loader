@@ -1,9 +1,36 @@
 {
   "version": "0.18",
-  "status": "PENDING",
+  "status": "FAILED_PIPELINE_STAGE3",
+  "device": "iPhone 16 Pro Max",
+  "os": "iOS 27.0.1",
+  "evidence": "User-reported physical-device result during autonomous 0.19 work; full 0.18 report/counters were not provided.",
+  "clipDistancesFailureAbsent": true,
+  "progress": [
+    "Prologue1 cutscene",
+    "Animated camera"
+  ],
+  "fatal": {
+    "operation": "wgpuDeviceCreateRenderPipeline",
+    "opcode": 32,
+    "vertex": {
+      "id": 1641,
+      "hash": "7db515e410659eca"
+    },
+    "fragment": {
+      "id": 1918,
+      "hash": "394c572f727d25e8"
+    },
+    "message": "vertex shader output location Location[15] (Float32x4, Perspective, Center) exceeds the max_inter_stage_shader_variables limit (14, 0-based).",
+    "trap": 5
+  },
   "stage": 3,
   "stagesLeft": 5,
   "sceneVerified": false,
   "controlsVerified": false,
-  "requestedTest": "When available: existing web folder, Trace Prologue startup, keep view visible; verify actual actors/world/textures/camera/animation for two minutes, then Stop/full report. Stage4 input/audio remain pending."
+  "unknown": [
+    "Frame counts",
+    "Exact vertex-buffer formats and render targets",
+    "Actual consecutive world/character scene confirmation",
+    "New memory/FPS samples"
+  ]
 }

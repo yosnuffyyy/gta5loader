@@ -1,5 +1,20 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native 0.18 clip/shader audit; stage 3 remains active.
+Updated 2026-10-14. Native 0.19 candidate; stage 3 remains active.
+
+LATEST EVIDENCE
+Physical0.18 reached Prologue1/camera then failed at sparse vertex location15.
+0.19 remaps high varying labels to free low labels, preserving all outputs,
+interpolation and builtin clip distances. Exact Prologue shader-pair negative
+and positive pipeline tests passed under a real requested15-variable limit.
+All4,808 existing shaders/native pipelines and two full GPU/runtime runs passed.
+Unsigned ARM64 IPA audit passed;0.19 delivered separately;0.18 preserved.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38631079115
+Metadata/asset warnings and111 unavailable shader records remain explicit.
+No actual consecutive physical iPhone game scene or player controls verified.
+Stages1/2 complete; stage3 active; five stages left including stage3.
+See ENGINEERING-0.19.txt and VERIFICATION-0.19.txt for exact evidence/next work.
+
+HISTORICAL CHECKPOINTS
 
 OBJECTIVE AND CURRENT POSITION
 Run the existing engine and local assets entirely on the iPhone 16 Pro Max.

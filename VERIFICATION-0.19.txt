@@ -1,0 +1,53 @@
+NATIVE 0.19 VERIFICATION — STAGE 3 REMAINS IN PROGRESS
+Source:21d969b4ce3dc77ee3cfe76c5bb890aa72353471
+Tree:2ee66a594f3b447718d9d23626568cef7c667159
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38631079115
+Job:116082564702 — PASS
+
+PASS: exact Prologue VS7db515e410659eca + PS394c572f727d25e8. The original
+pair reproduces Location[15] rejection under a real requested15-variable
+device limit. Production linking remaps15->7, retaining all values/types,
+interpolation and builtin clip outputs. Corrected pipeline and cache reuse
+validate on native Metal. Vertex/attachment data are compatible synthetic
+fixtures, not captured scene geometry/full physical render state.
+PASS:4,808 existing shader modules and native Metal pipelines under15 varying
+locations;1,112 VS/3,667 PS/29 CS,500 clip modules; zero failures.111 unavailable
+records remain explicitly unavailable:71 DS/18 HS/20 GS/2 CS.
+
+PASS: two full GPU/runtime regression runs,1,133 commands/41 draws/16 render
+pipelines/139 readbacks each. Three varying output cases/run, all256pixels
+checked: consumed high location, flat interpolation, unused high location
+and retained native clip distances.44 resource cases/run: GPU-written upload
+neighbors/staging reuse, all array/3D mips, source destruction, repeated MSAA
+resolve and BC edge mips. Zero live logical engine resource bytes at cleanup.
+PASS: all retained format, binding, depth-proxy, instance, UAV/compute, mip,
+readback, clip, mailbox/atomic, TLS/worker, file/save/entropy and engine checks.
+Four CPU checkpoints/32 workers; two graphics main checkpoints deliberately
+stop BEFORE archive bytes. No actual complete game scene was run in CI.
+
+PASS: new CPU ASan/UBSan tests:47,905 upload ranges,20,000 varying masks,
+fatal diagnostic bounds and resource arithmetic/overflow guards.
+PASS_SOURCE_ONLY:4,808 pinned records/4,779 graphics interfaces;500 sparse
+vertex interfaces fit15, every original byte recovered except location labels.
+Earlier CI failures (declaration, reserved name, fixture output overlap) were
+corrected and the final full run passed. See ENGINEERING-0.19.txt.
+
+Optimization verified by matching fixture bytes:15 reference mip/layer copy
+submissions ->2 batched submissions. No phone FPS/wall-clock gain measured.
+Partial-byte upload GPU scratch payload bounded40bytes; driver overhead
+excluded. Reader unchanged:one64KiB buffer, at most eight open files.
+
+PASS: separately delivered unsigned ARM64 iPhoneOS17+ IPA, unchanged bundle
+ID, no signature/profile/WebKit/JavaScriptCore/writable executable segment.
+126 source entries match immutable Git tree; source/ZIP/IPA digests checked.
+18 prior IPA digests preserved, including0.18. main unchanged:
+de7664a8e6448096716c5a341250d32d4f594fd1. Protected PC folders not accessed.
+Original engine instructions/shaders/backend/640x360 profile preserved.
+IPA:GTA-Native-Probe-0.19-unsigned.ipa
+Bytes:102186051
+SHA256:d1ebf5c0fc91a3dc5f6375aec5a3f8d1f3926a6f333d82191bfc421512a847fb
+
+Physical0.19 successive world/character frames, camera/animation: PENDING.
+Controls/audio remain stage4. No gameplay or metadata/asset warning repair
+claimed. Full evidence in evidence/0.19/ and ENGINEERING-0.19.txt.
+(stage 3 in progress) (5 stages left)

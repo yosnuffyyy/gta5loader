@@ -1,0 +1,235 @@
+NATIVE 0.19 — AUTONOMOUS STAGE 3 ENGINEERING
+Updated 2026-10-14. CI and unsigned ARM64 IPA audit passed. Physical scene pending.
+(stage 3 in progress) (5 stages left)
+
+CURRENT RESULT
+Fixed the common sparse varying failure. The exact Prologue shader pair now
+validates on native Metal under a real requested15-variable device limit;
+the original unmodified pair reproduces the reported Location[15] failure.
+All4,808 existing shader pipelines passed that same lowered limit. Two complete
+GPU/runtime runs passed, including the new varying and resource pixel cases.
+Unsigned ARM64 IPA audit passed and a separate0.19 artifact was delivered.
+This does not verify an actual iPhone scene or responsive gameplay.
+
+Source:21d969b4ce3dc77ee3cfe76c5bb890aa72353471
+Tree:2ee66a594f3b447718d9d23626568cef7c667159
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38631079115 — PASS (job116082564702)
+Earlier compile/test failures are documented below. Their corrections passed
+the final run. GitHub email verification temporarily blocked publication;
+the user resolved that account restriction and the correction was published
+only to native-ios-prototype. No credentials/signing identities were changed.
+
+1. EXACT SHADER FAILURE AND IMPLEMENTATION
+Physical 0.18: DRAW opcode32, VS1641 7db515e410659eca and PS1918
+394c572f727d25e8. The engine reached Prologue1 and its animated camera.
+The original index identifies these hashes as cloth_normal_spec /
+VS_Transform_DOF and glass_normal_spec_reflect / PS_Textured_Eight_DOF.
+Hash deduplication/index labels do not establish a scene object's material.
+
+VS outputs: locations0,1,2,3,4,5,6,15, each vec4<f32>, plus position and
+builtin clip_distances. PS inputs consume locations0..6, each vec4<f32>.
+Location15 is an extra clip-distance mirror; the builtin clip array is separate.
+Pinned Metal HAL29.0.3 advertises60 varying components on this iOS path,
+yielding15 locations; pinned core validation rejects labels outside0..14.
+Eight actual outputs fit. A sparse label, rather than16 live varyings, caused
+this particular failure. No hardware limit is raised.
+
+renderer/inter_stage_layout.h and inter_stage.inc retain low locations and
+map high labels to free low labels on both stages. This pair maps15->7;
+its fragment inputs remain unchanged. No output value is eliminated or packed.
+Only the vertex result structure and fragment entry input attributes are
+relabeled. Vertex inputs, fragment color outputs, builtin clip distances,
+function bodies, binding slots and interpolation qualifiers remain intact.
+Impossible or mismatched interfaces still fail explicitly.
+
+renderer/draw_pipeline.inc/native_draw.inc use the shared linker and retain
+the128-entry pipeline cache. Linked shader modules are released after pipeline
+creation and reconstructed only on cache misses. No unbounded variant cache.
+shader_audit.inc applies the same linker to every existing translated module
+under an actual requested15-variable device limit in the successful CI audit.
+
+All500 clip vertex shaders carry sparse location15. Their output counts are
+3..13, so all fit15 after collision-free remapping. This is a verified SOURCE
+finding, now backed by native pipeline validation. All real VS/PS combinations
+and dynamic bindings are not exhausted.
+
+Exact-pair regression: recorded_pair_audit.inc reproduces the original
+Location[15] validation inside an expected-error scope, then tests production
+linking/cache reuse. Only this negative CI test captures an expected error;
+production validation remains fatal. Vertex formats/attachments are synthetic
+compatible interface fixtures because the full physical command descriptor
+was not supplied. No original scene geometry or actual scene pixels claimed.
+PASS: both original negative and corrected positive exact-pair checks executed.
+Packed layouts, special constants, clip outputs and production cache reuse
+were validated. Captured scene geometry/render-state verification is pending.
+
+2. OTHER SOURCE FIXES AND REGRESSIONS
+renderer/buffer_upload.h/native_upload.inc: fix destructive zero-padding of
+the last partial DWORD and support unaligned offsets. Full DWORDs use normal
+queue writes. At most two edge DWORDs are copied to fixed8-byte GPU scratch,
+modified using32-byte uniform masks/values, then copied back in queue order.
+GPU-written neighboring bytes are retained without CPU mirrors/readbacks or
+a GPU completion wait. One cached kernel, bind group and two bounded buffers.
+test_buffer_upload.c independently reproduces the previous tail corruption.
+
+renderer/native_gpu.m: ResolveSubresource now stores the multisample source
+after resolve, retaining its contents. Whole texture copies encode all mip /
+layer copies into one command buffer and one submission instead of a
+submission per subresource. BC edge-mip copies use full encoded block extents.
+New array/3D/source-destruction/repeated-MSAA/BC fixtures exercise these paths.
+PASS: corrected byte/pixel outputs in both complete CI runs; all44 cases/run.
+Full physical Prologue workloads remain unverified.
+
+renderer/shader_diagnostic.h: bound fatal hash reads by object kind, word
+count, null metadata and index. Truncated/reused descriptors cannot cause
+out-of-bounds diagnostic reads. NativeGpu retains eight fixed operation
+breadcrumbs and reports fatal shader IDs, first error/opcode/payload and
+selected binding/resource IDs. No massive command-stream recording.
+
+renderer/resource_bytes.h/native_gpu.m: account live/peak logical engine GPU
+payload on creation and destruction. Include array/3D mip chains, compressed
+blocks and MSAA; guard64-bit overflow. Estimates exclude native intermediates,
+driver alignment/overhead/residency; depth24 storage is estimated. This is not
+total Metal memory or a guaranteed phone budget.
+
+New focused tests: test_buffer_upload.c, test_shader_diagnostic.c,
+test_resource_bytes.c, test_inter_stage_layout.c,
+test-inter-stage-source.mjs, resource_replay.inc/resource_verify.inc and
+inter_stage_replay.inc/inter_stage_verify.inc. draw_shader.inc adds fixture
+derivatives of existing IM shaders; original shader inputs remain unchanged.
+draw_types.inc tracks linker use. build-renderer.sh runs the new CPU/source
+tests. compile-native.mjs requires the recorded-pair PASS plus the full audit.
+App.m/Info.plist label the candidate0.19.0/build19. No gameplay success claim.
+source-manifest.json lists every candidate source file and SHA256.
+
+3. EXECUTED VERIFICATION AND FAILURES
+Final CI:38631079115, job116082564702, source21d969b4ce3dc77ee3cfe76c5bb890aa72353471 — PASS.
+https://github.com/yosnuffyyy/gta5loader/actions/runs/38631079115
+Full evidence: evidence/0.19/. Four engine checkpoints,32 worker instances,
+two GPU replays of1,133 commands/41 draws/16 render pipelines/139 readbacks.
+Four CPU/sanitizer tests added; all retained suites maintained.
+Original shader audit:4,808 modules/pipelines,1,112 VS/3,667 PS/29 CS,
+500 clip shaders, three bounded compiler processes, zero failures.
+Exact pair negative and positive pipelines passed under15 varying locations.
+Six varying pixel cases total (3/run x256pixels),88 new resource cases total.
+Retained native clip cases:24 total (12/run x256pixels), single sample/4xMSAA.
+No complete game scene was executed in CI.
+
+PASS on macOS CI with ASan/UBSan:
+-47,905 buffer upload ranges, byte guards, empty/overflow errors and old bug.
+-20,000 randomized varying masks;10,967 fit; collisions/missing outputs and
+ full32-slot boundaries checked, along with exact/consumed/unused location15.
+-Fatal shader diagnostic bounds and logical resource arithmetic guards.
+-Existing shared-ring/readback-layout/instance/UAV/border CPU checks.
+PASS: original renderer fixture, three4,096-pixel uniform variants.
+PASS: existing filesystem/index/entropy, mailbox/wait reentry, engine
+constructors/TLS/file ABI/statvfs/RNG, eight workers,64 owner proxies and
+deliberate first-archive boundary. SIMD and bulk-memory checks passed.
+PASS: both full runs retained normalized16/border, BC/SNORM, raw readback,
+instance rates, depth proxies, UAV counters, original compute results/mips and
+shader/ring pixels, plus all existing runtime and mailbox checks.
+
+EARLIER FAILED RUN38628130334: combined ring regression at instance case0
+pixel0 channel0:102 vs0. Full failed log preserved in the independent work area.
+New resource readbacks used dst+32000, which existing instance tests also
+use. Varying readbacks similarly overlapped depth-proxy output. Local fix:
+resource_dst=dst+65536; varying output=dst+120000; static assertions retain
+all outputs inside the reserved128KiB. PASS: final CI independently compared
+all retained/new outputs after this repair.
+Later fixture FAIL summaries were not independent failures: their verification
+loops stop after the first mismatch. The exact-pair/full pipeline audit and
+iOS packaging were skipped in that failed attempt, then passed in final CI.
+
+Earlier candidate failures: missing forward declaration for draw_depth fixed;
+an intermediate run was superseded after finding the reserved WGSL identifier
+patch, renamed edge_values. Latest CI compiled the GPU code and dispatched
+its edge kernel. The final CI subsequently verified neighboring bytes and
+staging reuse order for both upload opcodes against GPU-copied source data.
+
+PASS locally on Windows: portable source audit validates all18 pinned pack
+digests and4,808 source records. Independent balanced delimiter reflection
+matches production ranges for4,779 graphics interfaces. All500 sparse VS
+interfaces fit15; relabel reversal recovers every original source byte.
+Exact pair's eight VS output types match its seven PS input types;15->7
+retains builtin clip fields. This is source-only verification, not WGSL/Metal
+compilation or GPU pixel verification.
+Command (from prototype repository):
+ node native-ios/renderer/test-inter-stage-source.mjs <pinned shader folder>
+ <renderer source folder> <output JSON path>
+PASS: new upload identifiers checked against pinned Naga reserved words.
+
+4. PERFORMANCE EVIDENCE AND LIMITS
+No new physical-device FPS, GPU timing or wall-clock improvement measured.
+Whole-copy fixture compares15 reference subresource submissions with2 batched
+whole-resource submissions for the same array and3D textures (13 fewer,86.7%).
+PASS: all bytes compared across every mip/layer/depth slice in both CI runs,
+including destruction of the original source. This measures submitted operation
+count for the fixture, not phone frame time. Global replay copy counters were
+58 subresources/34 whole-copy submissions,414 total submissions per run.
+Upload scratch payload is bounded40bytes by source; driver allocation overhead
+is excluded. It adds at most one small dispatch per partial upload; aligned
+updates retain their original queue-write path. No claimed phone speedup.
+Existing query timestamps are CPU monotonic estimates, not GPU timestamps.
+Reader remains exactly one64KiB buffer and at most eight open files.
+
+5. REMAINING RUNTIME RISKS
+The111 unavailable index records are71 DS,18 HS,20 GS AND2 CS, correcting the
+earlier description that all111 were hull/domain/geometry. The two CS records
+are tiled_lightingMS DepthDownsampleCS_A/B, hashes0930ebb7e92e9acc and
+14244e342d38c1bc, rejected for non-uniform workgroup barriers. Do not remove
+barrier validation. No supplied conservative Prologue trace proves use of
+these111 records. They remain explicitly unavailable.
+
+Additional explicit graphics boundaries found in source: wireframe, single-
+sample alpha-to-coverage, dual-source blending, occlusion begin/query types,
+cross-format or multisample texture copies, depth-format readback and screenshot
+operations. The provided failure stream does not prove these are needed next.
+They must remain errors until a correct implementation can be verified.
+
+Scenario metadata:16 local ScenarioTypeGroups Items lack type; engine expects
+derivable CScenarioTypeGroup and reports empty class hash0. Schema mismatch
+is established; matching concrete registered class is not. No fabricated type.
+defaulttasks.ymt.pso0x36b97786 registration remains unresolved without a
+validated matching asset/registry. Missing interiors and LOW_LATENCY.awc /
+weapon waveslots remain real diagnostics; no fake replacements or successful
+loads. Optional log spool threads/mutexes are not initialized, root Gameplay.log
+writes are denied by app-private write policy. No unrelated service rewrite.
+Repeated sphere requests preceded the intro camera in the supplied trace,
+so that interval was not permanently stuck; no forced streaming completion.
+Cloth Unlock warnings are retained; the independent upload bug repair does
+not prove every warning's root cause. Full scene/cloud-provider cancellation
+and resource synchronization still need actual workload evidence.
+
+6. PROJECT PROTECTION / BUILD STATUS
+Protected Desktop folders and the old offline package were not accessed.
+main unchanged:de7664a8e6448096716c5a341250d32d4f594fd1.
+All18 prior IPA digests remain unchanged, including verified0.18:
+102179210bytes, SHA256
+8b5145801a9a8f0bea70df7998aee43df5a3c1771cdd50177fca78caa0cf9a82.
+Engine preparation/host/runtime/threading/asset code, original shaders,
+patched backend, CI workflow and conservative640x360 profile preserved.
+Rollback source snapshot is work/native-stage3-019/before/ plus before.json.
+New IPA:GTA-Native-Probe-0.19-unsigned.ipa;102186051bytes;SHA256
+d1ebf5c0fc91a3dc5f6375aec5a3f8d1f3926a6f333d82191bfc421512a847fb.
+PASS: ARM64 iPhoneOS17+ executable, unchanged bundle ID, no provisioning
+profile/code signature/WebKit/JavaScriptCore/writable-executable segment.
+All126 source entries match the immutable commit. ZIP sizes/digests and final
+IPA digest independently checked. CI-only full shader packs absent from IPA.
+Publishing remains restricted to native-ios-prototype.
+Account email restriction resolved; final corrected build/IPA audit passed.
+Physical iPhone scene, controls and audio remain pending.
+
+7. NEXT WORK AND FUTURE IPHONE CHECK
+Next engineering objective: correlate the next actual Prologue workload with
+shader/binding/asset diagnostics if it fails. Further unsupported operations
+need evidence and focused reproductions.0.18 remains preserved.
+Future iPhone criteria for0.19: continue beyond North
+Yankton and check successive actual character/world frames, textured geometry,
+camera movement and animation. Successful presentation, non-black samples,
+module compilation and draw counts are insufficient proof. On any new stop,
+the first fatal error, exact shader pair/opcode, resource bindings and recent
+command breadcrumbs should identify the next reproducible blocker.
+Controls/audio remain stage4; no responsive gameplay or stage3 completion is
+claimed. Highest next objective: actual Prologue scene continuation with the
+corrected pair, then reproduce and resolve any new dynamic-state failure.
+Compilation, fixtures and sample hashes cannot complete this physical gate.

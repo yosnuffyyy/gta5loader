@@ -54,3 +54,13 @@ Physical 0.18 iPhone scene continuation: PENDING. No sustained gameplay,
 player controls, audio output or repair of metadata/movie/network warnings
 is claimed. See IPHONE-COMPATIBILITY-0.18.txt and ROADMAP.txt.
 (stage 3 in progress) (5 stages left)
+
+ADDENDUM 2026-10-14 — NEW PHYSICAL RESULT
+The user subsequently tested0.18: clip_distances failure absent; Prologue1
+and animated camera reached; stopped at DRAW32 pipeline validation for
+VS1641/7db515e410659eca + PS1918/394c572f727d25e8. Vertex outputLocation[15]
+exceeds negotiated max_inter_stage_shader_variables15 (highest location14).
+Full0.18 counters/render descriptors were not supplied. Actual consecutive
+world/character frames and gameplay controls remain unverified. The original
+CI results above are historical compile/fixture evidence, not phone proof.
+See evidence/0.18/iphone-device-test.json and ENGINEERING-0.19.txt.

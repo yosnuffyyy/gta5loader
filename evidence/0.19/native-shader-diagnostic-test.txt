@@ -1,0 +1,1 @@
+PASS: fatal shader diagnostics reject wrong-kind/truncated/missing descriptors without out-of-bounds reads; valid hashes preserved.
