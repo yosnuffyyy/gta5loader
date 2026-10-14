@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.12 native Metal format capabilities and signed 8-bit render-target regression; stage 3 in progress",
+  "scope": "Native 0.13 raw color/compressed readbacks with validated subresources/strides and reusable 1 MiB staging; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
       "bytes": 24880,
-      "sha256": "4725cf2c76748bc001f81576e9706c63adb3a5a557e471d3c75e96564362ddce"
+      "sha256": "2170f48b78ef7782b36675f6a96a789af10da30179e05ab6ec464de94467d51d"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 5166,
-      "sha256": "e9a3e77110129dd949c3885b37e0c7182b53f6d01669650601408893b756230d"
+      "bytes": 5168,
+      "sha256": "d8560ba88bfa2edb31295ff44519d90d9f3668b3c592fca671d9c5eb071c2982"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "a7dd85acb46a3e7488cc9dc7f6a70566a84be27f24703f09edc998a1c6011376"
+      "sha256": "dc8d40d842075bc4c2397c311546fb64be918c2bb45ad2284641cbea3b85b984"
     },
     {
       "path": "native-ios/native_host.c",
@@ -158,8 +158,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 1642,
-      "sha256": "4e303921362d658547807bf95ee591748ce4e676cdd496ede2164c98ddb81bfa"
+      "bytes": 1891,
+      "sha256": "b051c718bc67e4ce4d030d9b720b57a581b52a5c9ed46cfd77498ea6fba3c418"
     },
     {
       "path": "native-ios/renderer/draw-fixtures.json",
@@ -218,13 +218,18 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 52523,
-      "sha256": "fdeed714dba1672ae95513838b00472d09e01483cc92e9d91b9ad7d4833e0683"
+      "bytes": 50278,
+      "sha256": "fbd88854c11d9cd0b200571fa8256b321ce4ee28bb4bf68e00a1554b5002557c"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
       "bytes": 436,
       "sha256": "9ef14a5bdfc3acef537b405b6a0403f60a19e1ffca312b0ea91b760162cd8cee"
+    },
+    {
+      "path": "native-ios/renderer/native_readback.inc",
+      "bytes": 7000,
+      "sha256": "b1fff01670810bf774c96b5283bb4727c92b894c438a0cb1be4f877af5952bb7"
     },
     {
       "path": "native-ios/renderer/native_renderer.c",
@@ -257,6 +262,21 @@
       "sha256": "5c165ca6158cd7827bd1c86bc526a5299dc360065e14b2272fd95214a7d42a51"
     },
     {
+      "path": "native-ios/renderer/readback_layout.h",
+      "bytes": 3420,
+      "sha256": "1b0c3d52af9f81ead798ff4d32fa7f49b76d382b7adbe2e9076ca84304241204"
+    },
+    {
+      "path": "native-ios/renderer/readback_replay.inc",
+      "bytes": 3918,
+      "sha256": "ce8dcc79db473808fce1ae28d3977b741ae91856f21631dd7794d3838fd3bdf6"
+    },
+    {
+      "path": "native-ios/renderer/readback_verify.inc",
+      "bytes": 2548,
+      "sha256": "b2835355f7d017f15410222457cd6089e437e34082a4cdf3a496d1faa9917e59"
+    },
+    {
       "path": "native-ios/renderer/renderer_cli.m",
       "bytes": 391,
       "sha256": "fdcc2990b970c76b3e67e04d9e72659fa6326c80ada3eacb4ee62759f3bd87af"
@@ -280,6 +300,11 @@
       "path": "native-ios/renderer/test_gpu_ring.c",
       "bytes": 2865,
       "sha256": "3c75f8908cc9a0a4285e19ba017f3df0ca8f1aee1dafeff426844a617fe3bf4c"
+    },
+    {
+      "path": "native-ios/renderer/test_readback_layout.c",
+      "bytes": 2214,
+      "sha256": "a88c97c7828edf06e90ee0020d61238ca60eda59d764ca6690eda72b5bc90a49"
     },
     {
       "path": "native-ios/renderer/vs.wgsl",
