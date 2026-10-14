@@ -11,7 +11,10 @@ static inline bool depth_proxy_size(uint32_t width,uint32_t height,uint32_t mips
 }
 static inline bool depth_proxy_range(uint32_t total,uint32_t layers,uint32_t mip,uint32_t count,uint32_t first,uint32_t n,uint32_t *mips,uint32_t *array){
  if(!mips||!array||!total||!layers||mip>=total||first>=layers)return false;
- uint32_t mc=!count||count==UINT32_MAX?total-mip:count,lc=n?n:layers-first;
+ /* The command ABI uses zero for an omitted count. D3D view helpers also
+    use UINT_MAX for the remaining range. Resolve before checking bounds;
+    never clamp an explicit out-of-range count. Shared by conversion and SRV. */
+ uint32_t mc=!count||count==UINT32_MAX?total-mip:count,lc=!n||n==UINT32_MAX?layers-first:n;
  if(mc>total-mip||lc>layers-first)return false;*mips=mc;*array=lc;return true;
 }
 #endif

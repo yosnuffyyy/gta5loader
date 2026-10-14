@@ -1,5 +1,9 @@
 #!/bin/bash
 set -euo pipefail
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_timing_window.c -o native-build/test-timing-window
+native-build/test-timing-window | tee native-build/evidence/native-timing-window-test.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_display_timeline.c -o native-build/test-display-timeline
+native-build/test-display-timeline | tee native-build/evidence/native-display-timeline-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 native-ios/renderer/test_gpu_ring.c native-ios/renderer/gpu_ring.c -o native-build/test-gpu-ring
 native-build/test-gpu-ring | tee native-build/evidence/native-gpu-ring-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_gpu_ring.c native-ios/renderer/gpu_ring.c -o native-build/test-gpu-ring-sanitized

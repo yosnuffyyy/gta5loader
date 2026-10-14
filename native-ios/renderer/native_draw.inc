@@ -34,9 +34,9 @@ static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
  if(b->view){wgpuTextureViewRelease(b->view);b->view=NULL;}Object *srv=object(g,id),*o=NULL;
  if(srv){if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return NULL;o=object(g,srv->meta[2]);if(!check(g,o&&o->texture,"SRV texture was destroyed or missing"))return NULL;}
  WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=b->dim;
- if(o){uint32_t mip=srv->meta[5],count=srv->meta[6],first=srv->meta[7],layers=o->td.size.depthOrArrayLayers;
-  if(!check(g,mip<o->td.mipLevelCount,"SRV mip outside texture"))return NULL;d.baseMipLevel=mip;d.mipLevelCount=!count||count==UINT32_MAX?o->td.mipLevelCount-mip:count;
-  if(b->dim!=WGPUTextureViewDimension_3D){d.baseArrayLayer=first;d.arrayLayerCount=b->dim==WGPUTextureViewDimension_Cube?6:b->dim==WGPUTextureViewDimension_2D||b->dim==WGPUTextureViewDimension_1D?1:srv->meta[8]?srv->meta[8]:layers-first;if(!check(g,first<layers&&d.arrayLayerCount<=layers-first,"SRV array layers outside texture"))return NULL;}
+ if(o){uint32_t mips=0,layers=0;
+  if(b->dim==WGPUTextureViewDimension_3D){if(!check(g,srv->meta[5]<o->td.mipLevelCount,"SRV mip outside texture"))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=!srv->meta[6]||srv->meta[6]==UINT32_MAX?o->td.mipLevelCount-d.baseMipLevel:srv->meta[6];if(!check(g,d.mipLevelCount<=o->td.mipLevelCount-d.baseMipLevel,"SRV mip count outside texture"))return NULL;}
+  else {if(!draw_srv_range(g,o,srv,b,&mips,&layers))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=mips;d.baseArrayLayer=srv->meta[7];d.arrayLayerCount=layers;}
   int kind=proxy_kind(o,b);WGPUTexture texture=o->texture;
   if(kind>=0){if(!check(g,o->proxies[kind]&&o->proxies[kind]->texture,"Depth proxy was not prepared before binding"))return NULL;texture=o->proxies[kind]->texture;if(kind==2)d.aspect=WGPUTextureAspect_DepthOnly;}
   else if(draw_depth(o->td.format))d.aspect=WGPUTextureAspect_DepthOnly;

@@ -26,10 +26,10 @@ static int launch(const char *game,const char *saves,void *layer,bool checkpoint
   if(progress)progress(context,checkpoint?"Entering actual graphics-enabled main; native GPU backend and first archive boundary…":"Entering actual graphics-enabled main; reading real archives. Scene integration is experimental.");
   native_main_scene(h);
  }
- char summary[1800];bool reached=native_boot_finish(h,summary,sizeof(summary));
+ char summary[4096];bool reached=native_boot_finish(h,summary,sizeof(summary));
  if(checkpoint&&reached){snprintf(report,capacity,"PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.\n%s\nThis is an integration checkpoint, not a game scene.",summary);result=0;}
  else if(!checkpoint&&reached){snprintf(report,capacity,"Native startup stopped by user.\n%s\nA presentation count alone does not verify an actual game scene. Gameplay, audio output and controls are still pending.",summary);result=0;}
- else snprintf(report,capacity,"Native startup stopped (trap %d): %s\n%s\nStage 3 remains in progress; an actual game scene is not verified.",trap,h->failure?h->failure:"startup services unavailable",summary);
+ else snprintf(report,capacity,"Native startup stopped (trap %d): %s\n%s\nStage 3 remains in progress; this run has not been visually verified. Prior build: about three seconds of 3D reported on iPhone; continuous rendering and controls remain pending.",trap,h->failure?h->failure:"startup services unavailable",summary);
  native_threads_end(threads);native_assets_end(assets);host_close(h);
  if(instantiated)wasm2c_gta_free(engine);if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}
  free(engine);free(h);wasm_rt_free_thread();return result;
