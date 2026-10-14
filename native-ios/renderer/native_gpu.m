@@ -39,7 +39,7 @@ struct NativeGpu {
  _Atomic uint64_t live_commands,live_frames,live_draws,live_shader;
  _Atomic uint64_t drawable_timeouts;
  uint64_t last_sample,last_report;double highest_footprint;
- bool bc_enabled,test_bc;unsigned bc_formats_tested;
+ bool bc_enabled,format_caps_enabled,test_bc;unsigned bc_formats_tested,snorm_cases_tested;
  DrawState draw;
  uint32_t shader[3],layout,topology,vb[16][3],ib[3],cb[3][16][3],srv[3][128],smp[3][16],uav[3][8];
  uint32_t targets[37],blend[6],depth[2],raster,viewports[97],scissors[65];
@@ -104,13 +104,19 @@ static bool hardware(NativeGpu *g){
  WGPURequestAdapterOptions ao=WGPU_REQUEST_ADAPTER_OPTIONS_INIT;ao.backendType=WGPUBackendType_Metal;ao.compatibleSurface=g->surface;
  WGPURequestAdapterCallbackInfo ac=WGPU_REQUEST_ADAPTER_CALLBACK_INFO_INIT;ac.mode=WGPUCallbackMode_AllowProcessEvents;ac.callback=got_adapter;ac.userdata1=g;atomic_store(&g->callback_done,false);wgpuInstanceRequestAdapter(g->instance,&ao,ac);if(!wait_callback(g)||!g->adapter)return false;
  WGPUAdapterInfo ai=WGPU_ADAPTER_INFO_INIT;if(!check(g,wgpuAdapterGetInfo(g->adapter,&ai)==WGPUStatus_Success,"Native adapter information"))return false;size_t n=ai.device.length==WGPU_STRLEN?(ai.device.data?strlen(ai.device.data):0):ai.device.length;if(n>190)n=190;snprintf(g->adapter_name,sizeof(g->adapter_name),"%.*s",(int)n,ai.device.data?ai.device.data:"");wgpuAdapterInfoFreeMembers(ai);
- WGPUFeatureName wanted[]={WGPUFeatureName_TextureCompressionBC,WGPUFeatureName_TextureCompressionBCSliced3D,WGPUFeatureName_Depth32FloatStencil8,WGPUFeatureName_Float32Filterable,WGPUFeatureName_IndirectFirstInstance,WGPUFeatureName_RG11B10UfloatRenderable,WGPUFeatureName_BGRA8UnormStorage,WGPUFeatureName_DepthClipControl};WGPUFeatureName features[16];size_t count=0;
+ // The browser requests texture-formats-tier1 for SNORM render targets.
+ // Pinned wgpu-native 29 does not map that web feature; its adapter-specific
+ // format feature exposes Metal's checked render/blend capabilities instead.
+ // Keep signed 8-bit storage: UNORM substitution loses negative values and
+ // float expansion would increase the game's render-target memory.
+ WGPUFeatureName wanted[]={WGPUFeatureName_TextureCompressionBC,WGPUFeatureName_TextureCompressionBCSliced3D,WGPUFeatureName_Depth32FloatStencil8,WGPUFeatureName_Float32Filterable,WGPUFeatureName_IndirectFirstInstance,WGPUFeatureName_RG11B10UfloatRenderable,WGPUFeatureName_BGRA8UnormStorage,WGPUFeatureName_DepthClipControl,(WGPUFeatureName)WGPUNativeFeature_TextureAdapterSpecificFormatFeatures};WGPUFeatureName features[sizeof(wanted)/sizeof(wanted[0])];size_t count=0;
  for(unsigned i=0;i<sizeof(wanted)/sizeof(wanted[0]);i++)if(wgpuAdapterHasFeature(g->adapter,wanted[i]))features[count++]=wanted[i];
  WGPULimits limits=WGPU_LIMITS_INIT;if(!check(g,wgpuAdapterGetLimits(g->adapter,&limits)==WGPUStatus_Success,"Native adapter limits query"))return false;limits.maxImmediateSize=WGPU_LIMIT_U32_UNDEFINED; /* This adapter does not use the optional immediates feature. */
  WGPUDeviceDescriptor dd=WGPU_DEVICE_DESCRIPTOR_INIT;dd.requiredLimits=&limits;dd.requiredFeatures=features;dd.requiredFeatureCount=count;dd.uncapturedErrorCallbackInfo.callback=device_error;dd.uncapturedErrorCallbackInfo.userdata1=g;dd.deviceLostCallbackInfo.mode=WGPUCallbackMode_AllowProcessEvents;dd.deviceLostCallbackInfo.callback=lost;dd.deviceLostCallbackInfo.userdata1=g;
  WGPURequestDeviceCallbackInfo dc=WGPU_REQUEST_DEVICE_CALLBACK_INFO_INIT;dc.mode=WGPUCallbackMode_AllowProcessEvents;dc.callback=got_device;dc.userdata1=g;atomic_store(&g->callback_done,false);wgpuAdapterRequestDevice(g->adapter,&dd,dc);if(!wait_callback(g)||!g->device)return false;
  g->queue=wgpuDeviceGetQueue(g->device);if(!check(g,g->queue!=NULL,"Native GPU queue creation"))return false;
  g->bc_enabled=wgpuDeviceHasFeature(g->device,WGPUFeatureName_TextureCompressionBC);
+ g->format_caps_enabled=wgpuDeviceHasFeature(g->device,(WGPUFeatureName)WGPUNativeFeature_TextureAdapterSpecificFormatFeatures);
  if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);
   // wgpu-hal 29.0.3 configure disables this timeout. Our diagnostic view can
   // scroll offscreen; never let nextDrawable prevent Stop/join indefinitely.
@@ -131,6 +137,7 @@ static bool create_buffer(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_
 static bool create_texture(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_word(p,0),3);if(!o)return false;uint32_t dim=gpu_word(p,1),dxgi=gpu_word(p,7);o->a8=dxgi==65;o->bind=gpu_word(p,8);o->td=(WGPUTextureDescriptor)WGPU_TEXTURE_DESCRIPTOR_INIT;
  o->td.dimension=dim==3?WGPUTextureDimension_3D:dim==1?WGPUTextureDimension_1D:WGPUTextureDimension_2D;o->td.size=(WGPUExtent3D){gpu_word(p,2),dim==1?1:gpu_word(p,3),gpu_word(p,dim==3?4:6)};o->td.mipLevelCount=gpu_word(p,5);o->td.sampleCount=gpu_word(p,9);o->td.format=format(dxgi,o->bind);
  if(!check(g,dim>=1&&dim<=3&&o->td.format!=WGPUTextureFormat_Undefined,"Unsupported texture dimension/DXGI format"))return false;
+ if((dxgi==31||dxgi==51||dxgi==63)&&(o->bind&0x20)&&!check(g,g->format_caps_enabled,"SNORM render target requires native adapter format capabilities"))return false;
  o->td.usage=WGPUTextureUsage_CopySrc|WGPUTextureUsage_CopyDst;if(o->bind&8)o->td.usage|=WGPUTextureUsage_TextureBinding;if(o->bind&(0x20|0x40))o->td.usage|=WGPUTextureUsage_RenderAttachment|WGPUTextureUsage_TextureBinding;if(o->bind&0x80)o->td.usage|=WGPUTextureUsage_StorageBinding;if(!(o->bind&(8|0x20|0x40|0x80)))o->td.usage|=WGPUTextureUsage_TextureBinding;if(o->td.sampleCount>1)o->td.usage&=~(WGPUTextureUsage_CopySrc|WGPUTextureUsage_CopyDst|WGPUTextureUsage_StorageBinding);
  switch(o->td.format){
  #define PAIR(a,b) case WGPUTextureFormat_##a:o->views[0]=WGPUTextureFormat_##b;break;case WGPUTextureFormat_##b:o->views[0]=WGPUTextureFormat_##a;break;
@@ -259,6 +266,7 @@ static bool end_query(NativeGpu *g,const uint8_t *p){Object *q=object(g,gpu_word
 }
 
 static void reset_state(NativeGpu *g){memset(g->shader,0,sizeof(g->shader));g->layout=0;g->topology=4;memset(g->vb,0,sizeof(g->vb));memset(g->ib,0,sizeof(g->ib));memset(g->cb,0,sizeof(g->cb));memset(g->srv,0,sizeof(g->srv));memset(g->smp,0,sizeof(g->smp));memset(g->uav,0,sizeof(g->uav));memset(g->targets,0,sizeof(g->targets));memset(g->blend,0,sizeof(g->blend));for(unsigned i=1;i<5;i++)g->blend[i]=0x3f800000;g->blend[5]=UINT32_MAX;memset(g->depth,0,sizeof(g->depth));g->raster=0;g->viewports[0]=g->scissors[0]=0;}
+#include "snorm_fixture.inc"
 #include "native_draw.inc"
 static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;atomic_store(&g->live_phase,1);atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
  /* Submit pending draws before resource mutations, copies, fences or present.
@@ -295,7 +303,7 @@ static void release_hardware(NativeGpu *g){atomic_store(&g->closing,true);draw_c
 static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  wasm_rt_init_thread();wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(trap)fail(g,"GPU service shared-memory trap");
- else if(hardware(g)&&(!g->test_bc||(bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
+ else if(hardware(g)&&(!g->test_bc||(snorm_sample_test(g)&&bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,g->ring.error);break;}
    if(!draw_flush(g))break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
@@ -315,7 +323,7 @@ void native_gpu_snapshot(NativeGpu *g,char *text,size_t size){
  uint32_t phase=atomic_load(&g->live_phase);
  snprintf(text,size,"GPU %s; commands %llu; frames %llu; draws %llu; drawable timeouts %llu; last %s; shader %016llx",phase<9?phases[phase]:"unknown",(unsigned long long)atomic_load(&g->live_commands),(unsigned long long)atomic_load(&g->live_frames),(unsigned long long)atomic_load(&g->live_draws),(unsigned long long)atomic_load(&g->drawable_timeouts),gpu_opcode_name(atomic_load(&g->last_op)),(unsigned long long)atomic_load(&g->live_shader));
 }
-void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; draws %llu; pipelines %llu (hits %llu); last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,gpu_opcode_name(g->last_op));}
+void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; native format caps %u; SNORM cases %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; draws %llu; pipelines %llu (hits %llu); last opcode %s",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned)g->format_caps_enabled,g->snorm_cases_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,gpu_opcode_name(g->last_op));}
 
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -364,7 +372,7 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
   for(unsigned test=0;test<10&&ok;test++){uint8_t rendered[1024];host_load(h,rendered,dst+4096+test*1024,sizeof(rendered));for(unsigned i=0;i<256&&ok;i++){bool painted=test!=8&&(test!=6||(i%16>=4&&i%16<12&&i/16>=3&&i/16<13));float scale=test==0&&i%16>=8?.5f:(test%3+1)*.25f;int expected[4]={painted?(int)lroundf(200*scale):0,painted?(int)lroundf(100*scale):0,painted?(int)lroundf(50*scale):0,painted?255:0};if(test==7){expected[0]=101;expected[1]=51;expected[2]=57;expected[3]=128;}for(unsigned k=0;k<4;k++)if(abs(rendered[i*4+k]-expected[k])>1){ok=false;snprintf(g->error,sizeof(g->error),"Draw fixture case %u pixel %u channel %u: got %u expected %d",test,i,k,rendered[i*4+k],expected[k]);atomic_store(&g->failed,true);break;}}}
   if(g->draw.draws!=11||g->draw.creates!=4||g->draw.hits<7)ok=false;
  }
- char summary[500];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.\n%s: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.\n%s: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.\n%s\n%s",ok?"PASS":"FAIL",g->bc_formats_tested==11?"PASS":"FAIL",ok?"PASS":"FAIL",summary,native_gpu_error(g)?native_gpu_error(g):"Offscreen fixtures; no game scene is claimed.");native_gpu_end(g);return ok;
+ char summary[500];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.\n%s: signed 8-bit R8/RG8/RGBA8 render targets: 9 cases; clear, additive draw, upload, copy, raw signed readback and sampling; all 16 pixels per case verified.\n%s: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.\n%s: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws, four cached pipelines.\n%s\n%s",ok?"PASS":"FAIL",g->snorm_cases_tested==9?"PASS":"FAIL",g->bc_formats_tested==11?"PASS":"FAIL",ok?"PASS":"FAIL",summary,native_gpu_error(g)?native_gpu_error(g):"Offscreen fixtures; no game scene is claimed.");native_gpu_end(g);return ok;
 }
 int native_gpu_replay_probe(char *report,size_t capacity){
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h){snprintf(report,capacity,"FAIL: replay host allocation");return 1;}host_init(h);

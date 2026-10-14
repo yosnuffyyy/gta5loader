@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.11 actual filesystem capacity, exact engine statfs/statvfs ABI and worker proxy, native entropy device; stage 3 in progress",
+  "scope": "Native 0.12 native Metal format capabilities and signed 8-bit render-target regression; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 24857,
-      "sha256": "461faaa06428095d07ab808a88690f83f2ada71defc6b0b685855f3bc44bec21"
+      "bytes": 24880,
+      "sha256": "4725cf2c76748bc001f81576e9706c63adb3a5a557e471d3c75e96564362ddce"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "4170264a9adf0d3e0908933bd92f8b3abdf19b2d80974afcf9bac7844ee87d53"
+      "sha256": "a7dd85acb46a3e7488cc9dc7f6a70566a84be27f24703f09edc998a1c6011376"
     },
     {
       "path": "native-ios/native_host.c",
@@ -218,8 +218,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 51372,
-      "sha256": "e27f206a8345e27bc1c386ba28da52c52dc3dc1f6ed47f876a16ec6b37eff304"
+      "bytes": 52523,
+      "sha256": "fdeed714dba1672ae95513838b00472d09e01483cc92e9d91b9ad7d4833e0683"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -270,6 +270,11 @@
       "path": "native-ios/renderer/shader_fixture.h",
       "bytes": 2150,
       "sha256": "443a3b6ec276b5e011bc30d7e430699043da4c8072a11c82465b52efb2faa27c"
+    },
+    {
+      "path": "native-ios/renderer/snorm_fixture.inc",
+      "bytes": 8565,
+      "sha256": "e74233e3994f04625c90bf4ce8e176e69f1f6d6bdbdf3960fc7c69e5ef99b702"
     },
     {
       "path": "native-ios/renderer/test_gpu_ring.c",
