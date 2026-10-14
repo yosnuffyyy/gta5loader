@@ -14,6 +14,7 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-uav-layout | tee native-build/evidence/native-uav-layout-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_sampler_border.c -o native-build/test-sampler-border
 native-build/test-sampler-border | tee native-build/evidence/native-sampler-border-test.txt
+node native-ios/renderer/prepare-shader-audit.mjs
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do

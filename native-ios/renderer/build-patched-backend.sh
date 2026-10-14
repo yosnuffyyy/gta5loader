@@ -24,6 +24,10 @@ for target in aarch64-apple-darwin aarch64-apple-ios; do
   cd "$source_dir"
   export SDKROOT="$(xcrun --sdk "$sdk" --show-sdk-path)"
   export IPHONEOS_DEPLOYMENT_TARGET=17.0
+  # Cargo treats restored vendored registry dependencies as immutable. A new
+  # checksum table does not reliably invalidate their old compiled objects.
+  # Explicitly rebuild this one patched crate and its dependent artifacts.
+  cargo +1.93.1 clean --package wgpu-hal --target "$target" --release
   cargo +1.93.1 build --locked --offline --release --jobs 2 --target "$target" --no-default-features --features metal,wgsl
  )
  if [ "$sdk" = iphoneos ]; then dest=ios; else dest=macos; fi

@@ -53,6 +53,8 @@ const key=hash(JSON.stringify(item));
    result+='PROCESS '+pass+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
+  const audit=execFileSync(folder+'/native-probe',['--shader-audit',root+'/shader-audit'],{encoding:'utf8',timeout:1200000,maxBuffer:16*1024*1024});
+  fs.writeFileSync(root+'/evidence/native-shader-audit-test.txt',audit);console.log(audit);
  }else{
   fs.writeFileSync(folder+'/objects.txt',objects.join('\n')+'\n');
  }

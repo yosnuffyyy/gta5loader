@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.17 iPhone dependency/feature audit, exact normalized16 formats and sampler-border capability fix; bounded capability/memory diagnostics; stage3 in progress",
+  "scope": "Native 0.18: Metal primitive clipping and patched backend cache invalidation; complete original shader compilation audit; stage 3 in progress",
   "files": [
     {
       "path": "native-ios/App.m",
       "bytes": 24880,
-      "sha256": "6da9036c0b3108c10788c2cf0bc2e9aae9b4db7b7eecb0907547c8004367c6f9"
+      "sha256": "53dd50aa0e90ad0c053fcc9bd2fece5927a0a3105528f3d63054741fa2bf8c50"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 5429,
-      "sha256": "fdba841d078cf8f6613dd12cea0a3c41a94b4193b94e22b440317759f9261e53"
+      "bytes": 5670,
+      "sha256": "2281cd092d1d159190517bc3527eef3016884a78feef212a7f121360f75c787e"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -53,8 +53,8 @@
     },
     {
       "path": "native-ios/generate-probe.mjs",
-      "bytes": 5834,
-      "sha256": "ecd97a9514254853eca8260f70e2699870f8b26e6f88f917c18858f189f30782"
+      "bytes": 5934,
+      "sha256": "1863d1967beb655770168c8ef68fbe38795338f25c267b09cbfd034cdd1ed5f2"
     },
     {
       "path": "native-ios/host-imports.json",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "b17d8d1c5cef31bec4b944852016ea33ba702556f63983e73bb703c9fc62befc"
+      "sha256": "441e19a80dd2a3c6833bdd7018ba3d848c39288e618227c79dd6de51af83e7bb"
     },
     {
       "path": "native-ios/native_host.c",
@@ -158,13 +158,18 @@
     },
     {
       "path": "native-ios/renderer/build-patched-backend.sh",
-      "bytes": 2291,
-      "sha256": "2ac724dec828ecce4ef92e50405259bf5a820720c9fc190ac2e96fa491c8dfe5"
+      "bytes": 2589,
+      "sha256": "7a6417d60a6f140f773ba527981e7203b6e611983b5e404f64c2531bba6025bf"
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 2859,
-      "sha256": "85c5c9eaff2051c9abc04b206dba8bf2cd99059a78c570eea9c624a32274bb29"
+      "bytes": 2909,
+      "sha256": "1bf6a36d82d6d63fe7a62ad2bfac80bab964db85e0a91aa6868be971c5bba89d"
+    },
+    {
+      "path": "native-ios/renderer/clip_fixture.inc",
+      "bytes": 6248,
+      "sha256": "06ce13c7a043fa3a584ac7c51e12ab0b1afb923d70b9a67038d6f9e1d793bdc8"
     },
     {
       "path": "native-ios/renderer/compute-fixtures.json",
@@ -283,13 +288,13 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 59295,
-      "sha256": "e421029b04bc135fefa2ab5768dd7dab5c8d6a9b28a6e22c5c287e89e059f0a2"
+      "bytes": 59628,
+      "sha256": "76f7ec015fd42b12758a64925d8efa9d3852ca031ff828441a9a0cd8de96bc2f"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
-      "bytes": 436,
-      "sha256": "9ef14a5bdfc3acef537b405b6a0403f60a19e1ffca312b0ea91b760162cd8cee"
+      "bytes": 509,
+      "sha256": "1b0ae7abddb9bbb1a1c3a92d663868277340da7226b85199048181c10640ffd0"
     },
     {
       "path": "native-ios/renderer/native_mips.inc",
@@ -328,13 +333,18 @@
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
-      "bytes": 2823,
-      "sha256": "4f2a6e857d74eb1012f0aa430b27305ff0291f0e65cb52fabb31cf42b0be3f60"
+      "bytes": 3397,
+      "sha256": "e0985f3309a3b2fed837b5fa9565c3dd6ab9f16c6edbdbeb9b7404d33328942b"
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
       "bytes": 4028,
       "sha256": "7d259db8d791020615cb7d8e9168f6f1bee61fe877836538f49c44ad9672ce46"
+    },
+    {
+      "path": "native-ios/renderer/prepare-shader-audit.mjs",
+      "bytes": 1812,
+      "sha256": "0c63eb6fa53f558919a1d1e620a706291c83b2a830209e5018b3edb42ae33e8d"
     },
     {
       "path": "native-ios/renderer/present_pixels.inc",
@@ -377,9 +387,19 @@
       "sha256": "e9cef0145c9633d3cccbb3016b2877170d0fdeabbabbd8db639c228a83f407e0"
     },
     {
+      "path": "native-ios/renderer/shader-audit-pins.json",
+      "bytes": 4886,
+      "sha256": "045e99a8034d1e358c4b8c695f69fb17dfbd9e2eb5b377bc7bdc1eb3f75b5f12"
+    },
+    {
       "path": "native-ios/renderer/shader-fixtures.json",
       "bytes": 1481,
       "sha256": "8f7885d46d6af1b501c63038eeca1c75c995461c821a04fdb3f01689a40fbf1a"
+    },
+    {
+      "path": "native-ios/renderer/shader_audit.inc",
+      "bytes": 7883,
+      "sha256": "0f05564d91f9c07a964b768009fc8f4f7158502e8629fbf30bf640a0320cfdd8"
     },
     {
       "path": "native-ios/renderer/shader_fixture.h",
