@@ -7,7 +7,7 @@ static bool upload_buffer(NativeGpu *g,const uint8_t *p,uint32_t n){
   if(plan.bytes)wgpuQueueWriteBuffer(g->queue,o->buffer,plan.offset,p+12+plan.source,plan.bytes);
   if(plan.count){
    if(!g->upload_pipeline){
-    const char *code="@group(0) @binding(0) var<storage,read_write> words:array<u32>; @group(0) @binding(1) var<uniform> patch:array<vec4u,2>; @compute @workgroup_size(1) fn main(@builtin(workgroup_id) id:vec3u){let i=id.x;words[i]=(words[i]&~patch[i].x)|patch[i].y;}";
+    const char *code="@group(0) @binding(0) var<storage,read_write> words:array<u32>; @group(0) @binding(1) var<uniform> edge_values:array<vec4u,2>; @compute @workgroup_size(1) fn main(@builtin(workgroup_id) id:vec3u){let i=id.x;words[i]=(words[i]&~edge_values[i].x)|edge_values[i].y;}";
     WGPUShaderSourceWGSL src=WGPU_SHADER_SOURCE_WGSL_INIT;src.code=(WGPUStringView){code,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&src.chain;WGPUShaderModule module=wgpuDeviceCreateShaderModule(g->device,&md);if(!module)return false;
     WGPUComputePipelineDescriptor pd=WGPU_COMPUTE_PIPELINE_DESCRIPTOR_INIT;pd.compute.module=module;pd.compute.entryPoint=(WGPUStringView){"main",WGPU_STRLEN};g->upload_pipeline=wgpuDeviceCreateComputePipeline(g->device,&pd);wgpuShaderModuleRelease(module);if(!g->upload_pipeline||atomic_load(&g->failed))return false;
     WGPUBufferDescriptor bd=WGPU_BUFFER_DESCRIPTOR_INIT;bd.size=8;bd.usage=WGPUBufferUsage_Storage|WGPUBufferUsage_CopySrc|WGPUBufferUsage_CopyDst;g->upload_edges=wgpuDeviceCreateBuffer(g->device,&bd);bd.size=32;bd.usage=WGPUBufferUsage_Uniform|WGPUBufferUsage_CopyDst;g->upload_parameters=wgpuDeviceCreateBuffer(g->device,&bd);if(!g->upload_edges||!g->upload_parameters)return false;

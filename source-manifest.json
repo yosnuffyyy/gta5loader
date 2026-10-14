@@ -353,8 +353,8 @@
     },
     {
       "path": "native-ios/renderer/native_upload.inc",
-      "bytes": 3812,
-      "sha256": "8b7072acfec125f2a16afedbd6db01ead6cebc95feb6cf97e5d26bec7a41998c"
+      "bytes": 3830,
+      "sha256": "ca264e22f2ea03a8fce0b150c586de48f7f5ebb83dab7334e5a2be4a879971a0"
     },
     {
       "path": "native-ios/renderer/norm16_fixture.inc",
