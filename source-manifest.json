@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 8009,
-      "sha256": "2ca43a02aa8e15794d67688690a0061f4b9f175c42774c08ae0682035a5aac0f"
+      "bytes": 7707,
+      "sha256": "1dec112dd7a0fbbe2ba786ed6fd786bae0478ba0d30f3b14287df9fcd314b7d0"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -168,8 +168,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 4701,
-      "sha256": "c43f7f8f74fc2ac121df8ff1787dffbe9e162678e65ae5b82e6c2e0d4653c1c1"
+      "bytes": 4806,
+      "sha256": "a3a93239807c1461bcc0c3ed8b7cfa174a0a19ceb0e86da51f6062d7e112eaf1"
     },
     {
       "path": "native-ios/renderer/clip_fixture.inc",
@@ -398,8 +398,8 @@
     },
     {
       "path": "native-ios/renderer/prepare-shader-audit.mjs",
-      "bytes": 2240,
-      "sha256": "e58e8e2efb39d8282e155072d262487f7119d346296847eafb3778c1b146db77"
+      "bytes": 2291,
+      "sha256": "5ff09cf69a414dc0d031a854bdd21ec19b998ae9ae85975c66dc48d287773994"
     },
     {
       "path": "native-ios/renderer/presentation_metrics.inc",
@@ -475,11 +475,6 @@
       "path": "native-ios/renderer/recorded_pair_audit.inc",
       "bytes": 6287,
       "sha256": "6da074c86c66aac959a45aa51cb53ecc978a570478ec75804cd2e34a62fbae10"
-    },
-    {
-      "path": "native-ios/renderer/reference_fetch.mjs",
-      "bytes": 2726,
-      "sha256": "eeb6643028b8f894f9cc620a0868f197c52c44249ea5ee3a2e83df3c9ff3c03d"
     },
     {
       "path": "native-ios/renderer/renderer_cli.m",
@@ -582,9 +577,9 @@
       "sha256": "a88c97c7828edf06e90ee0020d61238ca60eda59d764ca6690eda72b5bc90a49"
     },
     {
-      "path": "native-ios/renderer/test_reference_fetch.mjs",
-      "bytes": 3445,
-      "sha256": "6696ef1f7f4fbac020414dc98fb4d5c7ec952653a7b81ddf94a0fb7902e2fb1c"
+      "path": "native-ios/renderer/test_reference_inputs.mjs",
+      "bytes": 1318,
+      "sha256": "ed20351807ba6269933f9d82805820d54cf59cbff550448a6c0d5fad01cc9bb5"
     },
     {
       "path": "native-ios/renderer/test_resource_bytes.c",
@@ -640,6 +635,101 @@
       "path": "native-ios/renderer/uav_verify.inc",
       "bytes": 3216,
       "sha256": "bd773e6d15a2e7944f9734b38a029e2fb9b06b7784360fd9c740c04cf5075b7f"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/index.json.gz",
+      "bytes": 120143,
+      "sha256": "2c7edaba881d97cfbc844d125cfbd1794c0648e22b719379f3339ba92c5a8332"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack0.9dbe8980.bin.gz",
+      "bytes": 404637,
+      "sha256": "81be464365eb3c5bfada3db70a96317ecd9545ed4f22518442d64576352dac3d"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack1.d3742737.bin.gz",
+      "bytes": 498421,
+      "sha256": "d8e19811238dbcf166ed07378207c7edf14dc183edf579b85ae1d88502691ad6"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack10.6575950e.bin.gz",
+      "bytes": 572134,
+      "sha256": "276dfa6cff429363afadaebe3efc5d57ed4215f125505b13af3bd731bc9aa063"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack11.e0073b7d.bin.gz",
+      "bytes": 411655,
+      "sha256": "880a9de0feafc0218fc25737b34bd80d1c86fbfd999f1b22ce6a38825923cbb2"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack12.1d6edb08.bin.gz",
+      "bytes": 458403,
+      "sha256": "72ce1e405931fa6eda5bf5c166f9f958d48396dddd2125bc9ebc4bf23a9537c3"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack13.cfffe2fb.bin.gz",
+      "bytes": 485797,
+      "sha256": "5acea0bfb50d80189473b120d2d1d903386a876c0fda67ccd9c283b86755cc2b"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack14.40a1313e.bin.gz",
+      "bytes": 599837,
+      "sha256": "cada9bfc3805326938708196c4e7eff95b0dbe46c41a13e3cee8ea6f28e93cc8"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack15.b3b18db2.bin.gz",
+      "bytes": 642150,
+      "sha256": "2b9aa03e385072fbae22b637fdc0433ae239bfe6a8cf4b092ad4847d031a6294"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack16.bbdfb437.bin.gz",
+      "bytes": 559100,
+      "sha256": "c6a366006f2c76f0a5960beef64ce065b4897b5c3ed441b604839717b8caabf5"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack17.6e3bb314.bin.gz",
+      "bytes": 115114,
+      "sha256": "d0ccc6cfda1fd4fb54864276d7b9ecb80ebf7692299f2dcc8c64bec60dba89c5"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack2.a20536fd.bin.gz",
+      "bytes": 530897,
+      "sha256": "16b18475f7bbcd5f758264e6c776dfff4ed47cc163871e7a8b93c1312040601c"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack3.f4cea8c6.bin.gz",
+      "bytes": 545560,
+      "sha256": "419e788d68ee304a24b362e879f2e24aa1c954567f880bee7ed0507a0f2b9539"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack4.d2ee201a.bin.gz",
+      "bytes": 503470,
+      "sha256": "d3e17220cc16d94422706d34ad9d3a570ef56309467bbd0a679f1cc933621078"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack5.95428237.bin.gz",
+      "bytes": 617002,
+      "sha256": "131ec74f9755433d92593b1ce0ad978afbeeb3e7681d75353e433f34331f3a1c"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack6.9c7b675b.bin.gz",
+      "bytes": 608507,
+      "sha256": "cd67450f4c7211b066b9c612a34cf067d5a8455da0c5c892cb953abbca72e744"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack7.ed73a534.bin.gz",
+      "bytes": 606116,
+      "sha256": "b82cb3e8c3583497c19c98df66e7d378414bc4f6654e3fd2f74de7db9a7bcc89"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack8.b3a27300.bin.gz",
+      "bytes": 594213,
+      "sha256": "cdfd98cedc439123509ef03bb451eea0f5f986f12cf8aabdd8cbbfbaa9d7d5a5"
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack9.3396ed27.bin.gz",
+      "bytes": 570927,
+      "sha256": "323691bed7ce71db4ceebb30fee9721dee0ec1bc5be55e446a260abaa06ea113"
     },
     {
       "path": "native-ios/renderer/vertex_step.h",
@@ -718,8 +808,8 @@
     },
     {
       "path": ".github/workflows/native-ios.yml",
-      "bytes": 3259,
-      "sha256": "9a078239346954e694287d891edd6a5705a14ad703ff54be766fbef7a48b8b6f"
+      "bytes": 2551,
+      "sha256": "05c5835e0d4d72305b35886485aad9820047a19f919a2bee1e4ab25bd5e6cc92"
     }
   ]
 }

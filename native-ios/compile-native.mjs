@@ -53,10 +53,6 @@ const key=hash(JSON.stringify(item));
    result+='PROCESS '+pass+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
-  // Preserve embedded GPU/runtime results before the remote reference audit.
-  // The complete pinned shader audit remains a mandatory gate before packaging.
-  await run('node',['native-ios/renderer/prepare-shader-audit.mjs']);
-  await run('node',['native-ios/renderer/test-inter-stage-source.mjs']);
   // Independent compiler processes, bounded to the runner's three cores.
   // Preserve every stdout/stderr even on failure or a compiler timeout.
   const audits=await Promise.allSettled([0,1,2].map(shard=>new Promise((resolve,reject)=>{

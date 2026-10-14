@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-node native-ios/renderer/test_reference_fetch.mjs | tee native-build/evidence/native-reference-fetch-test.txt
+node native-ios/renderer/test_reference_inputs.mjs | tee native-build/evidence/native-reference-inputs-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_timing_window.c -o native-build/test-timing-window
 native-build/test-timing-window | tee native-build/evidence/native-timing-window-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_display_timeline.c -o native-build/test-display-timeline
@@ -29,6 +29,8 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-inter-stage-layout | tee native-build/evidence/native-inter-stage-layout-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_query_state.c -o native-build/test-query-state
  native-build/test-query-state | tee native-build/evidence/native-query-state-test.txt
+node native-ios/renderer/prepare-shader-audit.mjs
+node native-ios/renderer/test-inter-stage-source.mjs
 node native-ios/renderer/prepare-renderer.mjs
 bash native-ios/renderer/build-patched-backend.sh
 for target in macos ios; do
