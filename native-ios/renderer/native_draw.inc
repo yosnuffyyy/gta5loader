@@ -27,6 +27,7 @@ static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!
  return !atomic_load(&g->failed);
 }
 #include "draw_instance.inc"
+#include "native_srv.inc"
 #include "draw_depth_proxy.inc"
 #include "native_uav.inc"
 #include "shadow_guard.inc"
@@ -42,14 +43,13 @@ static WGPUSampler draw_sampler(NativeGpu *g,uint32_t id,bool compare){Object *o
 }
 static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
  if(b->view&&b->view_id==id&&b->view_epoch==g->draw.resource_epoch)return b->view;
- if(b->view){wgpuTextureViewRelease(b->view);b->view=NULL;}Object *srv=object(g,id),*o=NULL;
- if(srv){if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return NULL;o=object(g,srv->meta[2]);if(!check(g,o&&o->texture,"SRV texture was destroyed or missing"))return NULL;}
+ if(b->view){wgpuTextureViewRelease(b->view);b->view=NULL;}Object *srv=object(g,id),*o=NULL;if(!check(g,!id||srv,"Nonzero texture SRV handle is missing"))return NULL;
+ if(srv){if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return NULL;o=srv_source(g,srv);if(!o)return NULL;}
  WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=b->dim;
  if(o){uint32_t mips=0,layers=0;
-  if(b->dim==WGPUTextureViewDimension_3D){if(!check(g,srv->meta[5]<o->td.mipLevelCount,"SRV mip outside texture"))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=!srv->meta[6]||srv->meta[6]==UINT32_MAX?o->td.mipLevelCount-d.baseMipLevel:srv->meta[6];if(!check(g,d.mipLevelCount<=o->td.mipLevelCount-d.baseMipLevel,"SRV mip count outside texture"))return NULL;}
-  else {if(!draw_srv_range(g,o,srv,b,&mips,&layers))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=mips;d.baseArrayLayer=srv->meta[7];d.arrayLayerCount=layers;}
-  int kind=proxy_kind(o,b);WGPUTexture texture=o->texture;
-  if(kind>=0){if(!check(g,o->proxies[kind]&&o->proxies[kind]->texture,"Depth proxy was not prepared before binding"))return NULL;texture=o->proxies[kind]->texture;if(kind==2)d.aspect=WGPUTextureAspect_DepthOnly;}
+  if(!draw_srv_range(g,o,srv,b,&mips,&layers)||!srv_native_format(g,o,srv,b))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=mips;if(b->dim!=WGPUTextureViewDimension_3D){d.baseArrayLayer=srv->meta[7];d.arrayLayerCount=layers;}
+  int kind=proxy_kind(o,srv,b);WGPUTexture texture=o->texture;
+  if(kind>=0){if(!check(g,o->proxies[kind]&&o->proxies[kind]->texture,"Depth proxy was not prepared before binding"))return NULL;texture=o->proxies[kind]->texture;if(kind>=2)d.aspect=WGPUTextureAspect_DepthOnly;}
   else if(draw_depth(o->td.format))d.aspect=WGPUTextureAspect_DepthOnly;
   else if(srv->meta[3])d.format=format(srv->meta[3],0);
   b->view=wgpuTextureCreateView(texture,&d);

@@ -7,16 +7,16 @@ static void texture_history(NativeGpu *g,Object *o){ if(g->host->progress){char 
    mip/layer ranges refresh, and only after a source write. */
 typedef struct {WGPUTextureView dst;WGPUBindGroup group;uint64_t version;} ProxyPass;
 struct DepthProxy {NativeGpu *owner;WGPUTexture texture;ProxyPass *passes;uint32_t count;uint64_t bytes;};
-static void proxy_destroy(Object *o){for(unsigned kind=0;kind<3;kind++){DepthProxy *px=o->proxies[kind];if(!px)continue;
+static void proxy_destroy(Object *o){for(unsigned kind=0;kind<4;kind++){DepthProxy *px=o->proxies[kind];if(!px)continue;
  for(unsigned i=0;i<px->count;i++){if(px->passes[i].group){wgpuBindGroupRelease(px->passes[i].group);px->owner->draw.proxy_passes--;}if(px->passes[i].dst)wgpuTextureViewRelease(px->passes[i].dst);}
  if(px->texture){wgpuTextureDestroy(px->texture);wgpuTextureRelease(px->texture);}px->owner->draw.proxy_bytes-=px->bytes;free(px->passes);free(px);o->proxies[kind]=NULL;
 }}
 static void proxy_dirty(Object *o){if(!o||!o->texture)return;if(++o->version)return;o->version=1;
- for(unsigned k=0;k<3;k++)if(o->proxies[k])for(unsigned i=0;i<o->proxies[k]->count;i++)o->proxies[k]->passes[i].version=0;
+ for(unsigned k=0;k<4;k++)if(o->proxies[k])for(unsigned i=0;i<o->proxies[k]->count;i++)o->proxies[k]->passes[i].version=0;
 }
-static int proxy_kind(Object *o,DrawBinding *b){
+static int proxy_kind(Object *o,Object *srv,DrawBinding *b){
  if(draw_depth(o->td.format)){if(b->sample==WGPUTextureSampleType_Depth)return -1;return b->sample==WGPUTextureSampleType_Uint?1:0;}
- return b->sample==WGPUTextureSampleType_Depth?2:-1;
+ return b->sample==WGPUTextureSampleType_Depth?(srv->meta[3]&&format(srv->meta[3],0)!=o->td.format?3:2):-1;
 }
 static bool proxy_pipeline(NativeGpu *g,unsigned kind){DrawState *s=&g->draw;if(s->proxy_pipelines[kind])return true;
  const char *types[]={"texture_depth_2d","texture_2d<u32>","texture_2d<f32>"};
@@ -34,9 +34,9 @@ static bool proxy_pipeline(NativeGpu *g,unsigned kind){DrawState *s=&g->draw;if(
 }
 static bool draw_srv_range(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,uint32_t *mips,uint32_t *layers){
  uint32_t requested=b->dim==WGPUTextureViewDimension_2D||b->dim==WGPUTextureViewDimension_1D?1:b->dim==WGPUTextureViewDimension_Cube?6:srv->meta[8];
- if(depth_proxy_range(o->td.mipLevelCount,o->td.size.depthOrArrayLayers,srv->meta[5],srv->meta[6],srv->meta[7],requested,mips,layers))return true;
+ SrvRange range;const char *reason=srv_range_contract(o,srv,b,&range);if(!reason){*mips=range.mips;*layers=range.layers;return true;}
  texture_history(g,o);
- char why[700];snprintf(why,sizeof(why),"SRV range outside texture: source %u DXGI %u native %u, dimension %u size %ux%ux%u mips %u samples %u version %llu; SRV %u raw[%u,%u,%u,%u,%u,%u,%u,%u,%u]; shader binding %u slot %u dimension %u sample %u MS %u; requested layers %u. Explicit invalid ranges are not clamped",o->id,o->dxgi,o->td.format,o->td.dimension,o->td.size.width,o->td.size.height,o->td.size.depthOrArrayLayers,o->td.mipLevelCount,o->td.sampleCount,(unsigned long long)o->version,srv->id,srv->meta[0],srv->meta[1],srv->meta[2],srv->meta[3],srv->meta[4],srv->meta[5],srv->meta[6],srv->meta[7],srv->meta[8],b->binding,b->slot,b->dim,b->sample,b->ms,requested);fail(g,why);return false;
+ char why[700];snprintf(why,sizeof(why),"SRV range outside texture: source %u DXGI %u native %u, dimension %u size %ux%ux%u mips %u samples %u version %llu; SRV %u raw[%u,%u,%u,%u,%u,%u,%u,%u,%u]; shader binding %u slot %u dimension %u sample %u MS %u; requested layers %u. Explicit invalid ranges are not clamped; %s",o->id,o->dxgi,o->td.format,o->td.dimension,o->td.size.width,o->td.size.height,o->td.size.depthOrArrayLayers,o->td.mipLevelCount,o->td.sampleCount,(unsigned long long)o->version,srv->id,srv->meta[0],srv->meta[1],srv->meta[2],srv->meta[3],srv->meta[4],srv->meta[5],srv->meta[6],srv->meta[7],srv->meta[8],b->binding,b->slot,b->dim,b->sample,b->ms,requested,reason);fail(g,why);return false;
 }
 static WGPUTexture draw_proxy(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,unsigned kind){
  if(o->td.dimension!=WGPUTextureDimension_2D||o->td.sampleCount!=1||b->ms||b->sample==WGPUTextureSampleType_Sint||(kind==1&&!draw_stencil(o->td.format))){char why[300];snprintf(why,sizeof(why),"Unsupported depth proxy: texture %u DXGI %u, dimension %u, samples %u; SRV %u, shader sample %u dimension %u",o->id,o->dxgi,o->td.dimension,o->td.sampleCount,srv->id,b->sample,b->dim);fail(g,why);return NULL;}
@@ -51,15 +51,15 @@ static WGPUTexture draw_proxy(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,
  }
  for(uint32_t m=mip;m<mip+mips;m++)for(uint32_t layer=first;layer<first+layers;layer++){
   ProxyPass *r=px->passes+(uint64_t)m*o->td.size.depthOrArrayLayers+layer;if(r->version==o->version){g->draw.proxy_reuses++;continue;}
-  if(!proxy_pipeline(g,kind))return NULL;draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return NULL;
-  if(!r->group){WGPUTextureViewDescriptor vd=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;vd.dimension=WGPUTextureViewDimension_2D;vd.baseMipLevel=m;vd.mipLevelCount=1;vd.baseArrayLayer=layer;vd.arrayLayerCount=1;vd.aspect=kind==0?WGPUTextureAspect_DepthOnly:kind==1?WGPUTextureAspect_StencilOnly:WGPUTextureAspect_All;
-   WGPUTextureView src=wgpuTextureCreateView(o->texture,&vd);vd.aspect=WGPUTextureAspect_All;r->dst=wgpuTextureCreateView(px->texture,&vd);if(!src||!r->dst){if(src)wgpuTextureViewRelease(src);return check(g,false,"Depth proxy views unavailable"),NULL;}
-   WGPUBindGroupEntry be=WGPU_BIND_GROUP_ENTRY_INIT;be.binding=0;be.textureView=src;WGPUBindGroupDescriptor bg=WGPU_BIND_GROUP_DESCRIPTOR_INIT;bg.layout=g->draw.proxy_layouts[kind];bg.entryCount=1;bg.entries=&be;r->group=wgpuDeviceCreateBindGroup(g->device,&bg);wgpuTextureViewRelease(src);if(!r->group)return NULL;g->draw.proxy_passes++;
+  unsigned pipeline_kind=kind==3?2:kind;if(!proxy_pipeline(g,pipeline_kind))return NULL;draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return NULL;
+  if(!r->group){WGPUTextureViewDescriptor vd=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;vd.dimension=WGPUTextureViewDimension_2D;vd.baseMipLevel=m;vd.mipLevelCount=1;vd.baseArrayLayer=layer;vd.arrayLayerCount=1;vd.aspect=kind==0?WGPUTextureAspect_DepthOnly:kind==1?WGPUTextureAspect_StencilOnly:WGPUTextureAspect_All;if(kind==3)vd.format=format(srv->meta[3],0);
+   WGPUTextureView src=wgpuTextureCreateView(o->texture,&vd);vd.aspect=WGPUTextureAspect_All;vd.format=WGPUTextureFormat_Undefined;r->dst=wgpuTextureCreateView(px->texture,&vd);if(!src||!r->dst){if(src)wgpuTextureViewRelease(src);return check(g,false,"Depth proxy views unavailable"),NULL;}
+   WGPUBindGroupEntry be=WGPU_BIND_GROUP_ENTRY_INIT;be.binding=0;be.textureView=src;WGPUBindGroupDescriptor bg=WGPU_BIND_GROUP_DESCRIPTOR_INIT;bg.layout=g->draw.proxy_layouts[pipeline_kind];bg.entryCount=1;bg.entries=&be;r->group=wgpuDeviceCreateBindGroup(g->device,&bg);wgpuTextureViewRelease(src);if(!r->group)return NULL;g->draw.proxy_passes++;
   }
   WGPURenderPassDescriptor pd=WGPU_RENDER_PASS_DESCRIPTOR_INIT;WGPURenderPassColorAttachment color=WGPU_RENDER_PASS_COLOR_ATTACHMENT_INIT;WGPURenderPassDepthStencilAttachment depth=WGPU_RENDER_PASS_DEPTH_STENCIL_ATTACHMENT_INIT;
-  if(kind==2){depth.view=r->dst;depth.depthLoadOp=WGPULoadOp_Clear;depth.depthStoreOp=WGPUStoreOp_Store;depth.depthClearValue=1;pd.depthStencilAttachment=&depth;}
+  if(kind>=2){depth.view=r->dst;depth.depthLoadOp=WGPULoadOp_Clear;depth.depthStoreOp=WGPUStoreOp_Store;depth.depthClearValue=1;pd.depthStencilAttachment=&depth;}
   else {color.view=r->dst;color.loadOp=WGPULoadOp_Clear;color.storeOp=WGPUStoreOp_Store;pd.colorAttachmentCount=1;pd.colorAttachments=&color;}
-  WGPURenderPassEncoder pass=wgpuCommandEncoderBeginRenderPass(g->draw.encoder,&pd);if(!pass)return NULL;wgpuRenderPassEncoderSetPipeline(pass,g->draw.proxy_pipelines[kind]);wgpuRenderPassEncoderSetBindGroup(pass,0,r->group,0,NULL);wgpuRenderPassEncoderDraw(pass,3,1,0,0);wgpuRenderPassEncoderEnd(pass);wgpuRenderPassEncoderRelease(pass);
+  WGPURenderPassEncoder pass=wgpuCommandEncoderBeginRenderPass(g->draw.encoder,&pd);if(!pass)return NULL;wgpuRenderPassEncoderSetPipeline(pass,g->draw.proxy_pipelines[pipeline_kind]);wgpuRenderPassEncoderSetBindGroup(pass,0,r->group,0,NULL);wgpuRenderPassEncoderDraw(pass,3,1,0,0);wgpuRenderPassEncoderEnd(pass);wgpuRenderPassEncoderRelease(pass);
   if(atomic_load(&g->failed))return NULL;r->version=o->version;g->draw.proxy_refreshes++;
  }
  return px->texture;
@@ -67,8 +67,8 @@ static WGPUTexture draw_proxy(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,
 static bool draw_prepare_proxies(NativeGpu *g,DrawProgram *p){
  uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++)if(p->bindings[i].kind==4)ids[i]=g->srv[p->stage][p->bindings[i].slot];
  if(p->proxy_scan_valid&&!p->proxy_any&&p->proxy_epoch==g->draw.resource_epoch&&!memcmp(ids,p->proxy_ids,sizeof(ids)))return true;
- bool any=false;for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind!=4)continue;Object *srv=object(g,ids[i]);if(!srv)continue;
-  if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return false;Object *o=object(g,srv->meta[2]);if(!check(g,o&&o->texture,"SRV texture was destroyed or missing"))return false;int kind=proxy_kind(o,b);if(kind<0)continue;any=true;if(!draw_proxy(g,o,srv,b,(unsigned)kind))return false;
+ bool any=false;for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind!=4)continue;Object *srv=object(g,ids[i]);if(!srv){if(!check(g,!ids[i],"Nonzero texture SRV handle is missing"))return false;continue;}
+  if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return false;Object *o=srv_source(g,srv);if(!o)return false;uint32_t mc,lc;if(!draw_srv_range(g,o,srv,b,&mc,&lc)||!srv_native_format(g,o,srv,b))return false;int kind=proxy_kind(o,srv,b);if(kind<0)continue;any=true;if(!draw_proxy(g,o,srv,b,(unsigned)kind))return false;
  }
  memcpy(p->proxy_ids,ids,sizeof(ids));p->proxy_epoch=g->draw.resource_epoch;p->proxy_any=any;p->proxy_scan_valid=true;return !atomic_load(&g->failed);
 }

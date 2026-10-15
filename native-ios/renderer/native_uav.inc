@@ -1,5 +1,5 @@
 #include "uav_layout.h"
-static Object *uav_object(NativeGpu *g,uint32_t id){Object *v=object(g,id);if(!check(g,v&&v->kind==37&&v->words==9&&v->meta[1]<=1,"UAV descriptor missing or invalid"))return NULL;Object *o=object(g,v->meta[2]);if(!check(g,o&&(v->meta[1]==1?o->buffer!=NULL:o->texture!=NULL),"UAV source missing or wrong resource kind"))return NULL;if(v->meta[1]&&!check(g,!(v->meta[8]&~7u)&&((v->meta[8]&6)!=6)&&!((v->meta[8]&1)&&(v->meta[8]&6)),"Invalid combined raw/append/counter UAV flags"))return NULL;return v;}
+static Object *uav_object(NativeGpu *g,uint32_t id){Object *v=object(g,id);if(!check(g,v&&v->kind==37&&v->words==9&&v->meta[1]<=1,"UAV descriptor missing or invalid"))return NULL;Object *o=srv_source(g,v);if(!o)return NULL;if(v->meta[1]&&!check(g,!(v->meta[8]&~7u)&&((v->meta[8]&6)!=6)&&!((v->meta[8]&1)&&(v->meta[8]&6)),"Invalid combined raw/append/counter UAV flags"))return NULL;return v;}
 static WGPUBuffer uav_counter(NativeGpu *g,Object *v){
  if(!check(g,uav_hidden_counter(v->meta[1],v->meta[8]),"Counter shader binding requires an append/counter UAV"))return NULL;
  if(!v->counter){WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=16;d.usage=WGPUBufferUsage_Storage|WGPUBufferUsage_CopySrc|WGPUBufferUsage_CopyDst;v->counter=wgpuDeviceCreateBuffer(g->device,&d);}return v->counter;
@@ -27,8 +27,8 @@ static bool storage_range(NativeGpu *g,Object *v,Object *o,uint64_t *offset,uint
  return check(g,uav_buffer_range(o->size,stride,v->meta[5],v->meta[6],offset,bytes)&&*offset%4==0&&*bytes%4==0,"Storage view range invalid or not DWORD aligned");
 }
 static WGPUBuffer storage_buffer(NativeGpu *g,DrawBinding *b,uint32_t id,uint64_t *offset,uint64_t *bytes){Object *v=object(g,id);*offset=0;*bytes=65536;
- if(!v){if(!b->dummy_buffer){WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=65536;d.usage=WGPUBufferUsage_Storage|WGPUBufferUsage_CopyDst;b->dummy_buffer=wgpuDeviceCreateBuffer(g->device,&d);}return b->dummy_buffer;}
- Object *o=object(g,v->words==9?v->meta[2]:0);if(!check(g,o&&o->buffer,"Storage view has no GPU buffer"))return NULL;
+ if(!v){if(!check(g,!id,"Nonzero buffer SRV/UAV handle is missing"))return NULL;if(!b->dummy_buffer){WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=65536;d.usage=WGPUBufferUsage_Storage|WGPUBufferUsage_CopyDst;b->dummy_buffer=wgpuDeviceCreateBuffer(g->device,&d);}return b->dummy_buffer;}
+ Object *o=srv_source(g,v);if(!o||!check(g,o->buffer!=NULL,"Storage view has no GPU buffer"))return NULL;
  if(b->binding>=176){*bytes=16;return uav_counter(g,v);}
  if(!storage_range(g,v,o,offset,bytes))return NULL;if(!g->storage_alignment||*offset%g->storage_alignment==0)return o->buffer;
  if(!v->storage_proxy){if(!check(g,*bytes<=64*1024*1024&&g->draw.storage_proxy_bytes<=128*1024*1024-*bytes,"Unaligned storage view exceeds its 64 MiB / total 128 MiB proxy bound"))return NULL;WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=*bytes;d.usage=WGPUBufferUsage_Storage|WGPUBufferUsage_CopySrc|WGPUBufferUsage_CopyDst;v->storage_proxy=wgpuDeviceCreateBuffer(g->device,&d);if(!v->storage_proxy)return NULL;v->storage_owner=g;v->storage_proxy_size=*bytes;g->draw.storage_proxy_bytes+=*bytes;if(g->draw.storage_proxy_bytes>g->draw.storage_proxy_peak)g->draw.storage_proxy_peak=g->draw.storage_proxy_bytes;}

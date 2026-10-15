@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_srv_contract.c -o native-build/test-srv-contract
+native-build/test-srv-contract | tee native-build/evidence/native-srv-contract-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_cache_budget.c -o native-build/test-cache-budget
 native-build/test-cache-budget | tee native-build/evidence/native-cache-budget-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_pipeline_key.c -o native-build/test-pipeline-key

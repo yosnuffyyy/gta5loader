@@ -6,7 +6,7 @@ static uint32_t shadow_uniform_bits(NativeGpu *g,DrawProgram *p,ShadowCondition 
 }
 static DrawProgram *shadow_program(NativeGpu *g,DrawProgram *p){
  if(!p||!p->shadow_plan)return p;uint32_t mask=0;
- for(unsigned i=0;i<p->shadow_plan->count;i++){ShadowGuard *guard=p->shadow_plan->guards+i;Object *srv=object(g,g->srv[p->stage][guard->binding-32]);if(!srv||srv->kind!=17||srv->words!=9||srv->meta[1]||srv->meta[4]!=4)continue;Object *o=object(g,srv->meta[2]);if(!o||!o->texture||o->td.dimension!=WGPUTextureDimension_2D||o->td.sampleCount!=1||o->td.size.depthOrArrayLayers!=1)continue;
+ for(unsigned i=0;i<p->shadow_plan->count;i++){ShadowGuard *guard=p->shadow_plan->guards+i;Object *srv=object(g,g->srv[p->stage][guard->binding-32]);if(!srv||srv->kind!=17||srv->words!=9||srv->meta[1]||srv->meta[4]!=4)continue;Object *o=srv_source(g,srv);if(!o)return NULL;if(!o->texture||o->td.dimension!=WGPUTextureDimension_2D||o->td.sampleCount!=1||o->td.size.depthOrArrayLayers!=1)continue;
   /* This is a valid original 2D SRV, not a malformed cube descriptor. Do
      not conceal invalid original ranges or incompatible numeric formats. */
   uint32_t mips,layers;if(!depth_proxy_range(o->td.mipLevelCount,1,srv->meta[5],srv->meta[6],srv->meta[7],1,&mips,&layers))continue;WGPUTextureFormat f=srv->meta[3]?format(srv->meta[3],0):o->td.format;bool compatible=f==o->td.format;for(unsigned k=0;k<o->td.viewFormatCount;k++)compatible=compatible||f==o->views[k];if(!compatible)continue;

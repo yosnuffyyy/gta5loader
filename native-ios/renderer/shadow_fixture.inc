@@ -25,7 +25,7 @@ host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns
   float values[124]={0};values[15*4]=1;values[16*4+1]=1;values[17*4+2]=1;values[17*4+3]=.5f;values[18*4+2]=-1;values[15*4+3]=invalid==1?1:test==2?3:test==3||test==5||test==7||test>=8?1:0;
   if(count_control&&test==1)values[15*4+3]=1;
   if(test==5){cmd[0]=711;EMIT(4,1);cube_srv[5]=1;memcpy(cmd,cube_srv,sizeof(cube_srv));EMIT(17,9);}
-  if(test==6){cmd[0]=708;EMIT(4,1);memcpy(cmd,capture,sizeof(capture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;cmd[12]=0x7e0;EMIT(13,14);}
+  if(test==6){cmd[0]=709;EMIT(4,1);cmd[0]=708;EMIT(4,1);memcpy(cmd,capture,sizeof(capture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;cmd[12]=0x7e0;EMIT(13,14);memcpy(cmd,captured_srv,sizeof(captured_srv));EMIT(17,9);}
   if(test==7){cmd[0]=711;EMIT(4,1);cube_srv[5]=0;memcpy(cmd,cube_srv,sizeof(cube_srv));EMIT(17,9);}
   uint32_t selected=test==1||test==2||test==4||test==6||invalid?709:711;
   if(test>=8){unsigned face=(test-8)%6,m=(test-8)/6;expected[test]=(face+m)&1?255:0;values[18*4]=values[18*4+1]=values[18*4+2]=0;values[18*4+face/2]=face&1?1:-1;uint32_t bc_srv[]={717,0,716,71,9,m,1,0,6};if(test>8){cmd[0]=717;EMIT(4,1);}memcpy(cmd,bc_srv,sizeof(bc_srv));EMIT(17,9);selected=717;}

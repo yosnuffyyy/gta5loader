@@ -5,12 +5,12 @@ for(unsigned i=0;i<5;i++){
 }
 uint32_t depth_srv[]={410,0,400,41,4,0,1,0,1};memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
 depth_srv[0]=411;depth_srv[2]=403;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
-depth_srv[0]=412;depth_srv[2]=400;depth_srv[5]=1;depth_srv[7]=1;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
-depth_srv[0]=413;depth_srv[2]=402;depth_srv[3]=47;depth_srv[5]=depth_srv[7]=0;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
+depth_srv[0]=412;depth_srv[2]=400;depth_srv[4]=5;depth_srv[5]=1;depth_srv[7]=1;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
+depth_srv[4]=4;depth_srv[0]=413;depth_srv[2]=402;depth_srv[3]=47;depth_srv[5]=depth_srv[7]=0;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
 depth_srv[0]=414;depth_srv[2]=401;depth_srv[3]=41;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
 depth_srv[0]=415;depth_srv[2]=404;memcpy(cmd,depth_srv,sizeof(depth_srv));EMIT(17,9);
 cmd[0]=420;cmd[1]=1;cmd[2]=0x151;cmd[3]=0xffffffff;cmd[4]=0;EMIT(14,5);
-cmd[0]=421;cmd[2]=0x152;EMIT(14,5);
+cmd[0]=421;cmd[2]=0x152;EMIT(14,5);cmd[0]=423;cmd[2]=0x159;EMIT(14,5);
 uint32_t compare_sampler[]={422,3,0x80,3,3,3,0,0,4,0,0,0,0,0,0x42000000};memcpy(cmd,compare_sampler,sizeof(compare_sampler));EMIT(16,15);
 uint32_t proxy_cbv[]={0,1,1,111,1,12};memcpy(cmd,proxy_cbv,sizeof(proxy_cbv));EMIT(23,6);
 uint32_t proxy_cbp[]={1,2,1,112,0,16};memcpy(cmd,proxy_cbp,sizeof(proxy_cbp));EMIT(23,6);
@@ -33,7 +33,7 @@ for(unsigned test=0;test<14;test++){
  if(test==10){memset(cmd,0,sizeof(cmd));cmd[0]=401;cmd[6]=cmd[7]=8;cmd[8]=1;cmd[9]=32;cmd[10]=8;cmd[11]=256;for(unsigned i=0;i<64;i++){float z=.125f;memcpy(cmd+12+i,&z,4);}EMIT(13,76);}
  if(test==11){cmd[0]=404;cmd[1]=401;EMIT(35,2);}
  memset(cmd,0,sizeof(cmd));cmd[0]=116;if(test==12){cmd[32]=400;cmd[36]=3;}EMIT(26,37);cmd[0]=cmd[1]=0;EMIT(28,2);
- cmd[0]=1;cmd[1]=test==6||test==7?420:((test>=8&&test<=11)||test==13)?421:102;EMIT(18,2);
+ cmd[0]=1;cmd[1]=test==3?423:test==6||test==7?420:((test>=8&&test<=11)||test==13)?421:102;EMIT(18,2);
  cmd[0]=1;cmd[1]=2;cmd[2]=1;cmd[3]=test==3?412:test==5?411:test==6||test==7?413:test==11?415:test>=8&&test<=10?414:410;EMIT(24,4);
  cmd[3]=((test>=8&&test<=11)||test==13)?422:108;EMIT(25,4);
  memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;cmd[3]=6;EMIT(32,6);
