@@ -13,7 +13,8 @@ static bool array_audit_pixels(NativeGpu *g,uint16_t rgb,bool srgb,unsigned laye
  if(!execute_impl(g,12,(uint8_t*)cb,19)||!execute_impl(g,32,(uint8_t*)draw,6)||!execute_impl(g,42,(uint8_t*)copy,17))return false;
  unsigned expected[3]={((rgb>>11)&31)*255/31,((rgb>>5)&63)*255/63,(rgb&31)*255/31};
  for(unsigned c=0;c<3;c++)if(srgb){float f=expected[c]/255.f;expected[c]=(unsigned)lroundf((f<=.04045f?f/12.92f:powf((f+.055f)/1.055f,2.4f))*255.f);}
- for(unsigned i=0;i<256;i++){const uint8_t *p=g->host->memory.data+3145728+i*4;for(unsigned c=0;c<4;c++)if(abs((int)p[c]-(int)(c==3?255:expected[c]))>2){fprintf(stderr,"Array SRV pixel %u channel %u: %u expected %u\n",i,c,p[c],c==3?255:expected[c]);return false;}}
+ uint8_t pixels[1024];host_load(g->host,pixels,3145728,sizeof(pixels));
+ for(unsigned i=0;i<256;i++){const uint8_t *p=pixels+i*4;for(unsigned c=0;c<4;c++)if(abs((int)p[c]-(int)(c==3?255:expected[c]))>2){fprintf(stderr,"Array SRV pixel %u channel %u: %u expected %u\n",i,c,p[c],c==3?255:expected[c]);return false;}}
  return true;
 }
 static bool audit_array_srv(struct w2c_env *h){@autoreleasepool{
