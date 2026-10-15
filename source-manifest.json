@@ -1,10 +1,10 @@
 {
-  "scope": "Native0.28 candidate: optional exact-capture reference empty-depth-cube compatibility with existing effective Always comparison; strict by default. Original producer runtime tests and dynamic GPU regressions. Producer intent and complete physical CB capture remain unverified. Preserve0.27/earlier IPAs,256-entry cache and SRV5633 correction. Stage3 remains in progress; CI pending.",
+  "scope": "Native0.29 controls candidate: real synchronous engine pad bridge; event-driven GameController; multitouch pad overlay and deterministic source switching; optional public-API fullscreen with persisted settings. User reports0.28~24sec Prologue,15-16displayedFPS and manual normal stop with optional shadow compatibility. Graphics unchanged,640x360,256pipelinecache. Physical input and sustained gameplay verification pending.",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 28586,
-      "sha256": "2bdfd5ac45a852d3ef2aeaa087692dba855744bbca6f558e4263cc362343f18c"
+      "bytes": 38353,
+      "sha256": "919b61725fe517c19526e8a8e0da18d5cc24a9a9040fae6472d1c82acad7e576"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 2373,
-      "sha256": "264b5e3b259f4c44f8577216a0fb613c035276e069a79709eb14855460e99b15"
+      "bytes": 2412,
+      "sha256": "5710309e00e318287b0677e8fcc561b379b5e9254b129605a24af89f6e811249"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 7707,
-      "sha256": "1dec112dd7a0fbbe2ba786ed6fd786bae0478ba0d30f3b14287df9fcd314b7d0"
+      "bytes": 7775,
+      "sha256": "b877206b2f263a6e5b660714087e365500d865c129c1a29003fd2e4a47700a98"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -64,7 +64,42 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "2a128784c03883c2c61a033753d6ce8fbbb317dbb1907181f78b9683f4c7a3ae"
+      "sha256": "e07a8b19ad038e2ed709ad07651cbe910130193aae4a8e3caf5d1233965d431d"
+    },
+    {
+      "path": "native-ios/input/ci-test-input.sh",
+      "bytes": 833,
+      "sha256": "3dfb3b057e8e29f803f434916b11909c552f120097bee3522ec9b2c3d4920ee5"
+    },
+    {
+      "path": "native-ios/input/NativeControls.inc",
+      "bytes": 7203,
+      "sha256": "ce4c88b56c9b376f780b54465395b0ac1324bc64dc529e8d9bd44c452d8c8be4"
+    },
+    {
+      "path": "native-ios/input/native_input.c",
+      "bytes": 6485,
+      "sha256": "778809bbaa5d9a342fe2d9c18fce215dfa149247d87bbee6222aed6a7ffd8c4f"
+    },
+    {
+      "path": "native-ios/input/native_input.h",
+      "bytes": 1297,
+      "sha256": "6d35646012fea7be3690e54021be64b6dfa643828d2ea386ddbd5ead4f49d5b6"
+    },
+    {
+      "path": "native-ios/input/test_engine_input.cjs",
+      "bytes": 5227,
+      "sha256": "821a8e4795b9348eaaa3f09d26b3c2c26aa2a6fcdfc3e0314abf3eb5dda9b973"
+    },
+    {
+      "path": "native-ios/input/test_input.c",
+      "bytes": 5514,
+      "sha256": "d31f2297e9bdb870c14421558707e7dbcd26366a680dac59bd316bd3a1f1cef3"
+    },
+    {
+      "path": "native-ios/input/touch_layout.h",
+      "bytes": 3178,
+      "sha256": "4ddee17ba8a1ed4a6e6784ee88b4c60e6d8fe8bb8702ac24e291bc7cdb9b406e"
     },
     {
       "path": "native-ios/native_host.c",
@@ -948,8 +983,8 @@
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 31093,
-      "sha256": "d521b35298073f47fb88e8b8c53bac59c35e513bb420a581dae549bc3e322e33"
+      "bytes": 31825,
+      "sha256": "6f99ec9a088f3ad7c1f7951296bd8e2f77711bb7702499d3b24bf7c53c3a88d5"
     },
     {
       "path": "native-ios/threading/native_threads.h",

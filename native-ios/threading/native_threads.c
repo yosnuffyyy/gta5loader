@@ -5,6 +5,7 @@
 #include "platform/native_paths.h"
 #include "renderer/native_gpu.h"
 #include "renderer/native_launch.h"
+#include "input/native_input.h"
 #include "gta-impl.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
@@ -340,11 +341,21 @@ void native_timezone(struct w2c_env *h,uint64_t zone,uint64_t dst,uint64_t stdna
  host_put64(h,zone,0);host_put32(h,dst,0);host_store(h,stdname,"UTC",4);host_store(h,dstname,"UTC",4);
 }
 void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool audio){
- if(!audio&&(int64_t)address<0)return; /* Optional browser controller hook; no native pad is injected yet. */
+ if(!audio&&(int64_t)address<0){
+  /* Pinned engine hooks encode -1-pointer after ioPad UpdateDebug, before
+     CPad conversion; CControl's tail hook selects pad prompts. UI never writes
+     shared engine memory or races the native button-history update. */
+  uint64_t pointer=~address;
+  check(h,current&&current->main_mode,"input hook outside engine main");
+  if(!current->boot_mode||!current->display)return;
+  if(pointer==12840656){uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
+  else {check(h,ni_is_control(pointer),"unknown pinned CControl input hook");uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
+  return;
+ }
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");
  if(audio){current->audio=address;current->audio_capacity=capacity;}else current->input=address;
  if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,1);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,640);host_put32(h,address+436,360);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
- // Only initial focus/size/start-mode is published; gameplay input/audio are pending.
+ // Geometry/start-mode stays fixed at 640x360; pad delivery uses synchronous hooks.
 }
 
 void native_set_assets(NativeAssets *a){if(!current)abort();check(current->host,!worker,"asset service owner");current->assets=a;}
