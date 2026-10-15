@@ -1,0 +1,116 @@
+NATIVE 0.27 INVESTIGATION — ACTIVE SRV709 IS NOT FIXED
+
+Baseline: Native0.26 source 5ecf1a636c9c876f7b71e2212683e8cab55a64b8.
+Latest user evidence: about3.7s marked3D, about15FPS over that short window;
+181 pipeline creations,159135 hits,0 evictions,capacity256. This is physical
+evidence supplied by the user, not a measurement made by this investigation.
+
+CONFIRMED IMMEDIATE FAILURE
+Original effect ped_alpha, VS_PedTransform ac2dd56e1111be56 and
+PS_PedTextured_Four 996bb42f448956f2. The original PS declares group1
+binding46/t14 as texture_depth_cube and binding30/s14 as sampler_comparison.
+Both map to original slot14 (texture binding minus32; sampler minus16).
+The native binding map, uniform packing and shader declaration agree.
+Here "original" means the pinned recovered translated WGSL and its index.
+The CREATE_SHADER protocol transmits hash/stage/input signature, not DXBC
+resource declarations. A separate original HLSL/DXBC payload for this PS is
+not present in these approved local inputs, so translation equivalence to
+that unavailable payload is not independently established by this audit.
+The reference loader's /data/manifest.json route on gta.deloskiyt.pl was
+checked with a bounded request; it returned HTML rather than a usable JSON
+resource index. No original .fxc/DXBC was obtained or substituted. See the
+local original-shader-manifest-check.json for this failed input lookup.
+
+The actual t14 call has exactly these three enclosing branch conditions:
+  cb3[2].x bitcast as signed integer >0
+  cb6[15].w !=0.0f
+  cb6[15].w !=3.0f
+No preceding return, discard or other enclosing conditional blocks this call.
+Count raw00000001 and selector raw40000000 (2.0f) permit the sample.
+The inactive analyzer is correctly refusing to prune it. This is not just
+an unrecognized branch syntax. Other constant/vertex values could affect
+the final lighting contribution, but those values are not supplied and do
+not establish that this reachable sample can be removed.
+
+The captured create/upload/view describe a real one-layer 2D resource:
+  CREATE_TEXTURE[708,2,4,4,1,1,1,71,8,1]
+  UPLOAD_TEXTURE[708,0,0,0,0,0,4,4,1,8,1,8] + eight zero bytes
+  SRV[709,0,708,71,4,0,1,0,0]
+One upload explains version2. DXGI71 is BC1 UNORM; view dimension4 is
+TEXTURE2D. Original Wasm functions268/326 retain ArraySize;328 serializes
+cube-array face counts. Native create/view handling retains these words.
+There is no evidence of six original faces lost during native translation.
+The active cube contract is therefore incompatible with this particular
+bound view. D3D11.3 functional specification22.3.12 requires a cube resource
+for a TextureCube declaration; a one-layer2D allocation cannot satisfy it.
+Reference: https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
+No fallback from the browser's empty-cube substitution was adopted.
+The approved reference run.log itself contains four warnings (lines21046,
+42336,63779,85406) that a cube SRV over a one-layer texture was bound as an
+empty cube. These lines do not identify the resource or shader, so they
+establish this mismatch class in the reference, not identity with709.
+The original worker at lines874-878 explicitly returns null for that case
+and asks the caller to bind a dummy. Successful reference presentations
+therefore cannot establish correct shadow data for this unsupported case.
+
+WHY THE ENGINE SELECTS THIS RESOURCE IS STILL UNRESOLVED
+Existing read-only disassembly of44278 CLightGroup::SetForwardLights shows:
+  44528 GetLightShadowIndex selects a cached light record.
+  The record's type is converted to float in the shadow matrix's w lane.
+  Texture-array entries are then sent through9881 grcEffect::SetGlobalVar.
+  The no-shadow branch zeroes those constants and sets default textures.
+44279 delegates to44278. Function9881 stores the supplied pointer into the
+global table; it does not manufacture layers. CreateBaseMaps43801 prepares
+the arrays and a separate default texture. These paths were already traced
+in0.24 and were reviewed again; they are not a newly discovered fix.
+The supplied command stream contains the resulting GPU handles, not the
+producing light/cache entry or its selected engine texture pointer. Static
+inspection does not identify which selection/default/stale global led to708.
+No binary patch, arbitrary substitute cube, type reinterpretation, render
+skip or extra inactivity proof is justified by the available evidence.
+
+Additional read-only quality investigation: the existing native arguments
+inherit -shadowQuality=-1 from the reference browser's low profile. In
+GetShadowRes43800, the settings field at offset40 selects resolution2 for
+value0,256 for value1,512 for value2+. It does not simply return zero or
+eliminate the allocation path. CreateBaseMaps still calls44592 to allocate
+the shadow arrays.44592 sets distinct face-count fields6 and1 before the
+two factory calls. Thus low quality alone does not demonstrate why a BC1
+default2D texture reached this sample. Changing quality would be an unproven
+workaround; it was left unchanged. The settings field identity and runtime
+selection still need correlation with the actual producing light/cache.
+
+NEW INDEPENDENTLY TESTABLE WORK
+Tests alternate required, certified inactive and nonfinite/uncertified
+states using production uploads/bindings/draws. They cover partial selector
+writes, firstConstant offsets, CB ID recreation and2D/cube resource reuse.
+Required valid-cube draws compare actual deterministic GPU pixels; invalid
+active2D must remain a controlled failure after prior inactive cache hits.
+The full original shader pair also alternates18 binding/constant states.
+These are fixture inputs, not a captured full game frame or game assets.
+Test execution results are recorded separately after CI, not assumed here.
+
+New diagnostics retain16 distinct consecutive binding decisions (duplicates
+coalesce), with source/view/CB generations, offsets, raw proof words and
+command/PRESENT positions. On failure only, copy the exact original CB3
+944bytes and CB6 496bytes through the same offset/zero-fill ABI as drawing.
+No raw game-heap pointer chasing, GPU synchronization, texture copies or
+unbounded logs/caches are introduced. The trace never decides rendering.
+Fatal diagnostics are tested through the callback, including both blocks.
+
+SRV5633 STATUS
+The0.26 correction remains unchanged: a single selected2D layer can be
+consumed by the original2D-array shader. Source5632/SRV5633, all five BC3
+mips, original VS4e1d5d361e0ed0bc/PS57bf4a9b8c9330c5 and dynamic layer,
+format and lifetime cases remain in the complete Metal regression suite.
+The cube contract is intentionally separate; that correction cannot fix709.
+
+NEXT ENGINEERING OBJECTIVE
+Correlate the fatal original CB3/CB6 matrices and other shadow SRVs/sampler
+with the engine's active forward-light cache selection and global-variable
+handoff. Also obtain the original shader resource declarations when available
+to independently exclude an upstream translation mismatch. Establish the
+original intended cube identity, or demonstrate the producer state error
+before changing it. Keep the current failure safe
+until that evidence exists.0.27 is a diagnostic candidate, not a claim
+that the Prologue will pass the failing draw. Stage3 remains in progress.

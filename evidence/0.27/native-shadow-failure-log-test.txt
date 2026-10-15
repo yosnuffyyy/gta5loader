@@ -1,0 +1,1 @@
+PASS: bounded fatal shadow report survives progress/cleanup rollover; both constant blocks and sampler retained, 16Ki-character cap, reset without stale evidence.

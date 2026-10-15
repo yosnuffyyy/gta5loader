@@ -1,0 +1,163 @@
+NATIVE 0.27 — DYNAMIC SHADOW INVESTIGATION AND DIAGNOSTICS
+Stage 3 remains in progress. Active SRV 709 is NOT fixed.
+Source: e4338b82e7a6bed4c6e7dbf2f155c2cdcc6e0275
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38781748092 — PASS
+
+CONFIRMED FINDINGS
+The exact original pair is ped_alpha VS_PedTransform ac2dd56e1111be56 /
+PS_PedTextured_Four 996bb42f448956f2. PS binding 46 maps to texture slot 14;
+binding 30 maps to comparison sampler 14. The WGSL declares a depth cube.
+These are the pinned recovered translated shaders. The command protocol
+carries shader hashes/input signatures, not original DXBC resource records;
+this audit does not independently establish equivalence to unavailable DXBC.
+All three enclosing branch conditions permit its sample when CB3 word 8
+is integer 1 and CB6 word 63 is float 2. The current analyzer correctly
+refuses inactive specialization. This is not a missed lexical branch proof.
+The same shader may use its certified inactive variant on other draws;
+that earlier success does not justify keeping the variant when values change.
+
+Captured CREATE_TEXTURE[708,2,4,4,1,1,1,71,8,1], one eight-byte zero BC1
+upload and SRV[709,0,708,71,4,0,1,0,0] specify a one-layer 2D resource.
+The upload accounts for version 2. Original Wasm creation/view serialization
+preserves the array count, and the native backend retains those descriptors.
+No lost cube faces or binding-index error was found. Required cube sampling
+cannot be satisfied by this view without changing the resource contract.
+The approved reference browser log also records this mismatch class and
+its empty-cube substitution. It does not identify source 708. That fallback
+is not evidence of correct shadow data and was not copied into the port.
+
+The engine-side cause of selecting the incompatible texture is unresolved.
+Read-only inspection follows GetLightShadowIndex, SetForwardLights,
+CreateBaseMaps and SetGlobalVar, but the available trace lacks the producing
+light/cache record and its selected engine texture identity. The inherited
+low-shadow-quality configuration is a lead, not a demonstrated cause.
+No quality change, binary patch or invented cube resource was introduced.
+See evidence/0.27/local-root-cause.txt for the exact evidence and limits.
+
+IMPLEMENTED AND VERIFIED
+1. Dynamic GPU regression: production shared-ring commands alternate between
+   certified inactive and required cube sampling. Partial constant writes,
+   nonzero firstConstant offsets, buffer ID reuse, texture/SRV recreation,
+   original BC1 byte retention and changed valid-cube contents are checked.
+   Six fixture runs each verify 32 draws and all 8,192 pixels: 49,152 pixels
+   total. Two end in valid transitions; two deliberately reject active 2D;
+   two reject an ambiguous/nonfinite selector with a 2D view. These expected
+   rejections are assertions, not silently accepted draws.
+2. Full original pair: 18 changing binding selections exercise original and
+   inactive programs across offsets and constant-buffer recreation. The final
+   reported count-1/selector-2 state reproduces the safe mismatch. The report
+   callback verifies the bounded history and both original constant blocks.
+   This is pipeline/binding validation, not a full captured game-frame replay.
+3. A fixed 16-entry diagnostic history retains changing decisions, resource
+   generations, buffer offsets, raw proof values and command positions.
+   Consecutive equal states coalesce. It does not participate in rendering
+   or caching decisions. On fatal failure only, capture the packed CB3
+   (944 bytes) and CB6 (496 bytes), matching the drawing offset/zero-fill ABI.
+4. Fixed a reporting defect: ordinary bounded progress logs could discard
+   fatal binding evidence during subsequent timing/cleanup output. A separate
+   16,384-character capture now preserves that evidence and appends it to
+   the final failure report. A sanitizer test reproduces log rollover,
+   verifies both constant blocks and sampler survive, and checks run reset.
+
+SRV 5633 AND EXISTING RENDERING
+The Native 0.26 one-layer 2D/2D-array correction is unchanged. Its original
+VS 4e1d5d361e0ed0bc / PS 57bf4a9b8c9330c5 regression passes 12 draws and
+3,072 pixels across all five BC3 mips, dynamic layer/format changes and
+resource replacement: one pipeline, 11 hits, zero evictions. The common SRV
+suite passes 30 positive GPU cases / 480 pixels and 10 controlled invalid
+cases per process, twice; 73,216 sanitized ranges and 972 dimension/layer/
+multisample combinations also pass. Cube requirements remain strict.
+
+COMPLETE VALIDATION
+All 4,808 translated shader modules/native pipelines pass, including 500
+clip shaders. Existing shader linking, depth proxies, signed/normalized
+formats, sampling, compute/UAV, raw readback, occlusion, upload, resource
+transition, memory, archive, worker/mailbox and startup gates pass.
+Two complete graphics process runs and four engine runtime runs are checked.
+The original shader source-only audits also pass against all pinned modules.
+ASan/UBSan covers the dedicated helper tests; it does not mean the entire
+Objective-C/Metal renderer ran under sanitizers. GPU tests ran on macOS CI
+Apple Paravirtual Metal, not the physical A18 Pro or a Prologue scene.
+Two earlier 0.27 builds were superseded/cancelled. The first produced useful
+dynamic fixture output. The second passed both new sanitizer tests, then
+unnecessarily rebuilt engine objects because the new UI helper was in the
+engine-wide header dependency group. Its log confirms zero Mac cache hits.
+The helper now lives in the existing host-only dependency group; all three
+engine-wide header hashes match 0.26. Compiler-cache validation is unchanged.
+The final source above completed the full workflow. The attempt record and
+complete build logs are preserved; cancelled runs are not counted as PASS.
+
+PERFORMANCE AND MEMORY
+The 256-entry, pressure-bounded pipeline cache and its semantic keys are
+unchanged. Each new 32-draw transition fixture uses two pipelines, 30 hits
+and zero evictions despite changing constants and resource identities.
+The retained synthetic 192-key working-set comparison still produces:
+  128-entry reference: 576 creations, 448 evictions over 576 draws.
+  256-entry policy:   192 creations,   0 evictions over 576 draws.
+The retained uniform-ordering fixture still reduces completion waits from
+33 to 7 over 96 batches with equal pixels/order. These are confirmations
+of earlier improvements, not new performance gains from this revision.
+
+New renderer history storage is a fixed 4,624 bytes. The fatal app capture
+is capped at 16,384 NSString characters (allocator/object overhead is not
+measured). Constant-block formatting occurs only on failure. No GPU wait,
+texture copy or extra shader variant is added by the diagnostics. Existing
+guard raw values are reused for the history. There is no measured before/
+after phone FPS, frame-time or memory-footprint result for 0.27.
+Latest user evidence remains approximately 3.7 seconds of marked 3D at
+approximately 15 FPS, 181 pipelines / 159,135 hits / zero evictions. That
+short interval is not sustained-gameplay verification. CPU/GPU timing and
+display/marked-scene diagnostics remain available with their stated limits.
+Archive bounds remain one 64 KiB scratch buffer / eight open descriptors;
+readback staging remains at most 1 MiB; rendering remains 640 x 360.
+
+DELIVERY AND LIMITS
+IPA: GTA-Native-Probe-0.27-unsigned.ipa
+Bytes: 102288740
+SHA256: 0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd
+The extracted app is an unsigned ARM64 iOS-device build. Source manifest,
+published tree, pinned inputs/backend patches and artifact hashes were
+audited. All 26 prior IPAs are byte-for-byte preserved. Only the native
+branch was updated; main and protected PC packages remain unchanged.
+
+This is a diagnostic candidate. It is expected to stop safely if the same
+active 2D/cube mismatch recurs. It is not advertised as a crash-fixed build.
+The 111 untranslated hull/domain/geometry records and other uncaptured
+runtime states remain compatibility risks. Metadata/audio/missing-interior
+diagnostics and reflection quality are not corrected by this revision.
+No sustained 3D rendering, player controls, 20/30 FPS or Stage 3 completion
+is claimed. Automated pixels cannot verify the actual game's animation.
+
+NEXT DEVICE OBSERVATION, WHEN CONVENIENT
+Keep the old IPA. Use 0.27 only for the additional diagnostic evidence:
+select the existing web folder, Trace Prologue startup, and mark actual
+visible 3D. Keep 640 x 360. If the mismatch recurs, the final report should
+contain Retained shadow failure context, transitions, both full CB3/CB6
+blocks, source lifetime, other shadow SRVs and sampler details. Save the
+full report; an abbreviated error alone will omit the new evidence.
+If it continues, record characters/textures/camera/animation and marked
+display intervals; presentations alone are not proof of correct gameplay.
+
+HIGHEST-PRIORITY NEXT ENGINEERING TASK
+Correlate the active forward-light/cache entry and global texture handoff
+with the retained matrices, sampler and shadow-view identities. Verify the
+original DXBC resource declarations when available to exclude a translation
+mismatch independently. Establish
+the intended real cube texture or a reproducible producer-state error before
+changing that path. Until then preserve the explicit safe failure.
+
+CHANGED SOURCE FILES
+  native-ios/App.m
+  native-ios/Info.plist
+  native-ios/renderer/build-renderer.sh
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/ped_shadow_audit.inc
+  native-ios/renderer/shadow_failure_log.h
+  native-ios/renderer/shadow_guard.inc
+  native-ios/renderer/shadow_trace.h
+  native-ios/renderer/shadow_trace.inc
+  native-ios/renderer/shadow_transition_fixture.inc
+  native-ios/renderer/test-shadow-source.mjs
+  native-ios/renderer/test_shadow_trace.c
+  native-ios/test_shadow_failure_log.m
+  source-manifest.json

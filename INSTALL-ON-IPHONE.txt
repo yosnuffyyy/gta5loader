@@ -1,7 +1,13 @@
-Native0.26 — unsigned ARM64 IPA, stage3 in progress
+Native 0.27 — unsigned ARM64 diagnostic candidate, Stage 3 in progress
 
-Install GTA-Native-Probe-0.26-unsigned.ipa through your usual signing/sideload method over the existing app. Use your existing extracted web folder. Keep640x360. Choose Trace Prologue startup, mark when3D appears, and observe correct characters/textures/camera/animation beyond the previous~4second failure, ideally60seconds. Stop and copy the full report. No phone performance or gameplay completion is claimed by the automated tests. Previous IPAs are preserved.
+Active SRV 709 is NOT fixed. This build preserves full failure evidence
+and validates changing shader states. Keep the prior IPA. When convenient,
+install with your existing signing/sideload method; select the existing web
+folder and Trace Prologue startup. Mark actual visible 3D; keep 640 x 360.
+Save the full final report, especially Retained shadow failure context,
+CB3/CB6 blocks, source lifetime and sampler. The same invalid active binding
+will still stop safely. No sustained-rendering/FPS improvement is claimed.
 
-SHA256 77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a
-CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38769558479
-See ENGINEERING-0.26.txt for exact verified results and remaining risks.
+SHA256 0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38781748092
+See ENGINEERING-0.27.txt for evidence, limits and next steps.

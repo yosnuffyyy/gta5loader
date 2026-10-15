@@ -1,0 +1,17 @@
+Native 0.27 — Stage 3 remains in progress. Active SRV 709 is NOT fixed.
+Source e4338b82e7a6bed4c6e7dbf2f155c2cdcc6e0275
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38781748092 — PASS
+
+Confirmed reachable cube sample against captured one-layer 2D view.
+Fixed fatal evidence loss during progress-log rollover.
+Six dynamic GPU runs: 32 draws / 8,192 pixels each; required/ambiguous
+invalid 2D states correctly rejected after prior inactive cached draws.
+Full original pair: 18 changing selections; fatal capture verified.
+SRV 5633: retained original-pair 12 draws / 3,072 pixels, all five mips.
+4,808 modules/pipelines and existing graphics/runtime gates pass.
+256-entry pipeline policy preserved; no new iPhone FPS claim.
+
+IPA GTA-Native-Probe-0.27-unsigned.ipa
+Bytes 102288740
+SHA256 0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd
+All 26 previous IPAs preserved. See ENGINEERING-0.27.txt.

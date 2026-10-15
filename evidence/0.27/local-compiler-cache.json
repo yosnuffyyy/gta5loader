@@ -1,0 +1,19 @@
+{
+  "final": [
+    {
+      "target": "macos",
+      "verifiedObjectsReused": 131
+    },
+    {
+      "target": "ios",
+      "verifiedObjectsReused": 131
+    }
+  ],
+  "earlierCancelledRun": {
+    "run": 38778453062,
+    "macosObjectsReused": 0
+  },
+  "engineWideHeadersUnchanged": 3,
+  "rendererOnlyHeaderPlacement": true,
+  "noRenderingPerformanceClaim": true
+}

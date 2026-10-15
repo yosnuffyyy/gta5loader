@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "commit": "e4338b82e7a6bed4c6e7dbf2f155c2cdcc6e0275",
+  "tree": "3cd3583ea6c43df1180dc784b5abfd600da64e23",
+  "entries": 192,
+  "priorIPAsPreserved": 26,
+  "main": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "unchangedSourceVerified": [
+    "native-ios/prepare-engine.mjs",
+    "native-ios/native_host.c",
+    "native-ios/native_runtime.c",
+    "native-ios/threading/native_threads.c",
+    "native-ios/renderer/cache_budget.h",
+    "native-ios/renderer/draw_pipeline.inc",
+    "native-ios/renderer/native_upload.inc",
+    "native-ios/renderer/native_queries.inc",
+    "native-ios/renderer/srv_contract.h",
+    "native-ios/renderer/array_srv_audit.inc",
+    "native-ios/renderer/shadow_guard.h",
+    "native-ios/renderer/shadow_guard_reflect.inc",
+    ".github/workflows/native-ios.yml"
+  ],
+  "active709Fixed": false
+}

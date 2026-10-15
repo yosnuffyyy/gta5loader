@@ -1,7 +1,20 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated2026-10-15. Native0.26; Stage3 remains active; five stages left.
+Updated 2026-10-15. Native 0.27 diagnostic candidate; Stage 3 remains active; five stages left.
 
 LATEST EVIDENCE
+User reports about 3.7 seconds of marked 3D at about 15 FPS, then the
+active source 708 / SRV 709 mismatch. 181 pipelines, 159135 hits, no
+evictions. This is short user-reported evidence, not sustained verification.
+0.27 proves the sample is permitted by the supplied constants and preserves
+the safe failure. It fixes fatal evidence loss, adds dynamic state/resource
+regressions, and retains the 0.26 SRV 5633 correction and bounded cache.
+The active engine texture selection remains unresolved. No gameplay/FPS
+improvement or Stage 3 completion is claimed.
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38781748092
+Audited unsigned ARM64 diagnostic IPA; all 26 prior IPAs preserved.
+See ENGINEERING-0.27.txt and VERIFICATION-0.27.txt. Keep 640 x 360.
+
+PREVIOUS 0.26 CHECKPOINT
 User reports latest build rendered~4seconds of Prologue before SRV5633
 2D/array validation failure. Earlier708/709 inactive specialization worked
 in that run; cache146 creations/24068 hits/0 evictions. Prior longer scenes
