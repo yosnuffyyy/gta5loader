@@ -13,3 +13,25 @@ static bool audit_ped_shadow(NativeGpu *g){@autoreleasepool{
  if(ok)puts("PASS: exact ped_alpha pair and captured 709/708 descriptor: four certified light guards, nine pipeline/cache configurations including original zero-light outer guard, original native clips/15-variable link, bounded variant eviction/recreation. Synthetic uniforms/layout; scene pixels not claimed.");
  cleanup:reset_state(g);for(unsigned id=8300;id<=8305;id++){Object *o=object(g,id);if(o){CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)id);destroy(o);}}for(unsigned id=708;id<=709;id++){Object *o=object(g,id);if(o){CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)id);destroy(o);}}return ok;
 }}
+
+/* Exact 0.23 phone state: active light count=1, selector=2, original black
+   2D BC1 view. A required cube cannot be reconstructed from this descriptor.
+   Preserve a negative regression rather than falsifying a successful draw. */
+static bool audit_active_shadow(struct w2c_env *h){@autoreleasepool{
+ NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;bool ok=false;g->test_inter_stage_limit=15;
+ if(!hardware(g))goto cleanup;reset_state(g);
+ const uint64_t hashes[]={UINT64_C(0xac2dd56e1111be56),UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
+ for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:25;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:5;for(unsigned i=0;!st&&i<5;i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
+ Object *input=create(g,21529,15);if(!input)goto cleanup;input->words=37;input->meta=calloc(input->words,4);if(!input->meta)goto cleanup;input->meta[0]=input->id;input->meta[1]=5;const unsigned formats[]={6,2,16,6,2};unsigned stride=0;for(unsigned i=0;i<5;i++){unsigned bytes=0;draw_vertex_format(formats[i],&bytes);uint32_t *e=input->meta+2+i*7;e[0]=i+1;e[2]=formats[i];e[4]=stride;stride+=bytes;}if(stride!=64)goto cleanup;g->layout=input->id;g->vb[0][0]=14637;g->vb[0][1]=stride;
+ uint32_t creation[]={708,2,4,4,1,1,1,71,8,1},upload[]={708,0,0,0,0,0,4,4,1,8,1,8,0,0},cb3[]={8306,768,4,0,0},cb6[]={8307,496,4,0,0};
+ if(!create_texture(g,(uint8_t*)creation)||!upload_texture(g,(uint8_t*)upload)||!create_buffer(g,(uint8_t*)cb3)||!create_buffer(g,(uint8_t*)cb6))goto cleanup;
+ uint32_t count=1,type=0x40000000;memcpy(object(g,8306)->shadow+32,&count,4);memcpy(object(g,8307)->shadow+252,&type,4);g->cb[1][3][0]=8306;g->cb[1][6][0]=8307;
+ Object *srv=create(g,709,17);if(!srv)goto cleanup;uint32_t captured[]={709,0,708,71,4,0,1,0,0};srv->words=9;srv->meta=malloc(sizeof(captured));if(!srv->meta)goto cleanup;memcpy(srv->meta,captured,sizeof(captured));
+ Object *target=create(g,10464,3);if(!target)goto cleanup;target->td=(WGPUTextureDescriptor)WGPU_TEXTURE_DESCRIPTOR_INIT;target->td.dimension=WGPUTextureDimension_2D;target->td.size=(WGPUExtent3D){1,1,1};target->td.mipLevelCount=target->td.sampleCount=1;target->td.format=WGPUTextureFormat_RGBA8Unorm;target->td.usage=WGPUTextureUsage_RenderAttachment;target->texture=wgpuDeviceCreateTexture(g->device,&target->td);g->targets[0]=target->id;
+ DrawProgram *vp=draw_program(g,shaders[0]),*pp=draw_program(g,shaders[1]);if(!vp||!pp||!pp->shadow_plan||pp->shadow_plan->guards[0].count!=3||!draw_pipeline(g,shaders[0],shaders[1],vp,pp))goto cleanup;
+ for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;
+ g->srv[1][14]=709;g->last_op=32;g->last_words=6;uint32_t payload[]={1,672,1,0,0,0};memcpy(g->last_payload,payload,sizeof(payload));
+ ok=!draw_execute(g,(uint8_t*)payload)&&native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&strstr(native_gpu_error(g),"ac2dd56e1111be56")&&strstr(native_gpu_error(g),"raw40000000")&&strstr(native_gpu_error(g),"raw00000001")&&!g->draw.draws&&!g->draw.proxy_bytes&&object(g,708)->td.size.depthOrArrayLayers==1&&object(g,708)->version==2;
+ if(ok)puts("PASS: exact physical active binding reproduced: VS ac2dd56e1111be56 + PS 996bb42f448956f2 pipeline validates; count 1 / selector 2, captured black BC1 708/709 rejects six-layer sampling. No inactivity proof, draw, layer fabrication or crash-resolution claim.");
+ cleanup:release_hardware(g);native_gpu_end(g);return ok;
+}}

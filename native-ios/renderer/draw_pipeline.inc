@@ -19,6 +19,19 @@ static WGPUVertexFormat draw_vertex_format(uint32_t f,unsigned *bytes){switch(f)
  default:*bytes=0;return WGPUVertexFormat_Force32;
 }}
 static bool draw_state_words(NativeGpu *g,uint32_t id,uint32_t kind,uint32_t *dst,unsigned count){if(!id)return true;Object *o=object(g,id);if(!check(g,o&&o->kind==16&&o->words==count+2&&o->meta[1]==kind,"Invalid draw state object/descriptor size"))return false;memcpy(dst,o->meta+2,count*4);return true;}
+/* Releasing a cache reference preserves references held by encoded/submitted
+   commands. No GPU wait is required for LRU eviction. */
+static void pipeline_evict(NativeGpu *g,DrawPipeline *p,bool pressure){DrawState *s=&g->draw;if(!p->pipeline)return;s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;if(pressure)s->pipeline_pressure_evictions++;wgpuRenderPipelineRelease(p->pipeline);p->pipeline=NULL;s->pipeline_live--;}
+static unsigned pipeline_capacity(NativeGpu *g){DrawState *s=&g->draw;
+ if(!s->pipeline_capacity)s->pipeline_capacity=PIPELINE_NORMAL_CAPACITY;
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_pipeline_capacity)s->pipeline_capacity=g->test_pipeline_capacity==1?(s->draws>=192&&s->draws<384?128:256):g->test_pipeline_capacity;
+#endif
+#if TARGET_OS_IOS
+ uint64_t now=now_ns();if(now-s->pipeline_budget_check>=1000000000ull){s->pipeline_budget_check=now;s->pipeline_capacity=pipeline_budget(s->pipeline_capacity,os_proc_available_memory());}
+#endif
+ while(s->pipeline_live>s->pipeline_capacity){unsigned oldest=DRAW_PIPELINES;for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline&&(oldest==DRAW_PIPELINES||s->pipelines[i].age<s->pipelines[oldest].age))oldest=i;if(oldest==DRAW_PIPELINES)break;pipeline_evict(g,s->pipelines+oldest,true);}
+ return s->pipeline_capacity;}
 static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgram *vp,DrawProgram *pp){
  DrawKey key={0};key.inactive_masks[0]=vp->inactive_mask;key.inactive_masks[1]=pp?pp->inactive_mask:0;memcpy(key.storage_formats[0],vp->storage_formats,sizeof(vp->storage_formats));if(pp)memcpy(key.storage_formats[1],pp->storage_formats,sizeof(pp->storage_formats));key.shader[0]=vs->meta[2];key.shader[1]=vs->meta[3];if(ps){key.shader[2]=ps->meta[2];key.shader[3]=ps->meta[3];}
  Object *layout=object(g,g->layout);if(!check(g,layout&&layout->kind==15,"Draw input layout missing"))return NULL;memcpy(key.layout,layout->meta,layout->words*4);
@@ -45,8 +58,11 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
- DrawState *s=&g->draw;unsigned slot=0;for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *p=s->pipelines+i;if(p->pipeline&&!memcmp(&p->key,&key,sizeof(key))){p->age=++s->age;s->hits++;return p;}if(!p->pipeline){slot=i;break;}if(p->age<s->pipelines[slot].age)slot=i;}
- DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;break;}if(p->pipeline){s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;wgpuRenderPipelineRelease(p->pipeline);}memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
+ DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
+ for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty==DRAW_PIPELINES)empty=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
+ unsigned slot=s->pipeline_live<capacity?empty:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
+ DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;break;}
+ if(p->pipeline)pipeline_evict(g,p,false);memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}
  for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;const uint32_t *sig=NULL;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]){sig=v;break;}}if(!sig)continue;
   unsigned slot=e[3],bytes=0;if(slot>=16||e[5]>1||(!e[5]&&e[6])||sig[2]>=32){char why[360];snprintf(why,sizeof(why),"Invalid vertex layout: VS %s layout %u element %u slot %u location %u class %u rate %u DXGI %u offset %u",vp->hash,g->layout,i,slot,sig[2],e[5],e[6],e[2],e[4]);fail(g,why);return NULL;}
@@ -71,7 +87,7 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
   if(key.formats[i]&&key.blend[q]){blends[i]=(WGPUBlendState)WGPU_BLEND_STATE_INIT;blends[i].color.srcFactor=draw_factor(key.blend[q+1]);blends[i].color.dstFactor=draw_factor(key.blend[q+2]);blends[i].color.operation=draw_blend_op(key.blend[q+3]);blends[i].alpha.srcFactor=draw_factor(key.blend[q+4]);blends[i].alpha.dstFactor=draw_factor(key.blend[q+5]);blends[i].alpha.operation=draw_blend_op(key.blend[q+6]);if(!check(g,blends[i].color.srcFactor&&blends[i].color.dstFactor&&blends[i].alpha.srcFactor&&blends[i].alpha.dstFactor&&blends[i].color.operation&&blends[i].alpha.operation,"Dual-source or invalid blend descriptor not yet supported"))goto done;targets[i].blend=blends+i;}
  }
  WGPUFragmentState fragment=WGPU_FRAGMENT_STATE_INIT;if(pp){fragment.module=linked.fragment?linked.fragment:pp->module;fragment.entryPoint=(WGPUStringView){"main",WGPU_STRLEN};fragment.targetCount=colors;fragment.targets=targets;d.fragment=&fragment;}
- char label[64];snprintf(label,sizeof(label),"%s + %s",vp->hash,pp?pp->hash:"depth");d.label=(WGPUStringView){label,WGPU_STRLEN};atomic_store(&g->live_phase,4);uint64_t pipeline_start=now_ns();p->pipeline=wgpuDeviceCreateRenderPipeline(g->device,&d);timing_add(&g->metrics.windows[METRIC_PIPELINE],now_ns()-pipeline_start);atomic_store(&g->live_phase,1);s->creates++;
+ char label[64];snprintf(label,sizeof(label),"%s + %s",vp->hash,pp?pp->hash:"depth");d.label=(WGPUStringView){label,WGPU_STRLEN};atomic_store(&g->live_phase,4);uint64_t pipeline_start=now_ns();p->pipeline=wgpuDeviceCreateRenderPipeline(g->device,&d);timing_add(&g->metrics.windows[METRIC_PIPELINE],now_ns()-pipeline_start);atomic_store(&g->live_phase,1);s->creates++;if(p->pipeline){s->pipeline_live++;if(s->pipeline_live>s->pipeline_peak)s->pipeline_peak=s->pipeline_live;}
  done:linked_modules_free(&linked);if(pipeline_layout)wgpuPipelineLayoutRelease(pipeline_layout);if(empty)wgpuBindGroupLayoutRelease(empty);
  if(!check(g,p->pipeline&&!atomic_load(&g->failed),"Native draw pipeline validation failed"))return NULL;return p;
 }

@@ -1,6 +1,7 @@
 /* GPU-thread-owned draw state. All caches and uniform storage are bounded. */
 #include "shadow_guard.h"
-enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=128,
+#include "cache_budget.h"
+enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=PIPELINE_NORMAL_CAPACITY,
        DRAW_UBO_BYTES=512*1024, DRAW_UBO_SLOTS=3 };
 typedef struct DrawProgram DrawProgram;
 typedef struct DepthProxy DepthProxy;
@@ -35,6 +36,8 @@ typedef struct {
  unsigned slots; uint32_t last[16],stride[16],rate[16]; bool instance[16],manual_instances;uint8_t gpu_slot[16];
 } DrawPipeline;
 typedef struct {
+ unsigned pipeline_capacity,pipeline_live,pipeline_peak;uint64_t pipeline_budget_check,pipeline_pressure_evictions;
+ unsigned queued_uniform_batches;uint64_t queued_uniform_bytes,uniform_wraps_avoided,uniform_pressure_waits;
  DrawPipeline pipelines[DRAW_PIPELINES]; DrawKey evicted_keys[64];unsigned evicted_count,evicted_next;uint64_t recent_recompiles; uint64_t age,hits,creates,draws,batches,instance_draws,instance_batches,indirect_decodes,inter_stage_links;
  WGPUCommandEncoder encoder; WGPURenderPassEncoder pass;
  uint32_t pass_targets[37]; unsigned width,height;

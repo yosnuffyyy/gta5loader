@@ -10,11 +10,20 @@ static bool draw_uniforms(NativeGpu *g){DrawState *s=&g->draw;if(s->mirror)retur
 }
 static void draw_end_pass(NativeGpu *g){query_end_pass(g);if(g->draw.pass){wgpuRenderPassEncoderEnd(g->draw.pass);wgpuRenderPassEncoderRelease(g->draw.pass);g->draw.pass=NULL;}}
 static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
+ unsigned uniform_bytes=s->offset;
  if(s->offset)wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);
  WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e)||!query_submitted(g))return false;g->counter_slot=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
- /* Three fixed uniform slots; complete submitted work before reusing slot 0.
-    No resource destruction or per-draw queue wait is needed. */
- if(s->slot==0&&!completed(g))return false;return !atomic_load(&g->failed);
+ /* QueueWriteBuffer copies CPU bytes immediately and schedules the transfer
+    before the next submission, after earlier submissions using this slot.
+    Slot reuse needs queue ordering, not a CPU completion wait. Bound queued
+    staging to 16 draw batches or 4 MiB; explicit fences/readbacks still wait. */
+ s->queued_uniform_batches++;s->queued_uniform_bytes+=uniform_bytes;
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_uniform_wrap_wait){if(s->slot==0&&!completed(g))return false;return !atomic_load(&g->failed);}
+#endif
+ if(s->slot==0)s->uniform_wraps_avoided++;
+ if(uniform_pressure(s->queued_uniform_batches,s->queued_uniform_bytes)){s->uniform_pressure_waits++;if(!completed(g))return false;}
+ return !atomic_load(&g->failed);
 }
 #include "draw_instance.inc"
 #include "draw_depth_proxy.inc"
@@ -107,4 +116,4 @@ static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
  }
  if(!storage_written(g,vp)||(pp&&!storage_written(g,pp)))return false;draw_dirty_targets(g,pipeline,pp);g->draw.draws++;return !atomic_load(&g->failed);
 }}
-static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){if(g->query_pass){wgpuRenderPassEncoderEndOcclusionQuery(s->pass);g->query_pass=false;}wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline)wgpuRenderPipelineRelease(s->pipelines[i].pipeline);for(unsigned i=0;i<3;i++){if(s->proxy_pipelines[i])wgpuRenderPipelineRelease(s->proxy_pipelines[i]);if(s->proxy_layouts[i])wgpuBindGroupLayoutRelease(s->proxy_layouts[i]);}for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}for(unsigned i=0;i<16;i++)if(s->mip_pipelines[i].pipeline)wgpuRenderPipelineRelease(s->mip_pipelines[i].pipeline);if(s->mip_sampler)wgpuSamplerRelease(s->mip_sampler);if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}
+static void draw_cleanup(NativeGpu *g){DrawState *s=&g->draw;if(s->pass){if(g->query_pass){wgpuRenderPassEncoderEndOcclusionQuery(s->pass);g->query_pass=false;}wgpuRenderPassEncoderEnd(s->pass);wgpuRenderPassEncoderRelease(s->pass);}if(s->encoder)wgpuCommandEncoderRelease(s->encoder);for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline){wgpuRenderPipelineRelease(s->pipelines[i].pipeline);s->pipelines[i].pipeline=NULL;}s->pipeline_live=0;for(unsigned i=0;i<3;i++){if(s->proxy_pipelines[i])wgpuRenderPipelineRelease(s->proxy_pipelines[i]);if(s->proxy_layouts[i])wgpuBindGroupLayoutRelease(s->proxy_layouts[i]);}for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(s->uniforms[i]){wgpuBufferDestroy(s->uniforms[i]);wgpuBufferRelease(s->uniforms[i]);}for(unsigned i=0;i<2;i++)if(s->dummy_sampler[i])wgpuSamplerRelease(s->dummy_sampler[i]);if(s->zero_vertex){wgpuBufferDestroy(s->zero_vertex);wgpuBufferRelease(s->zero_vertex);}for(unsigned i=0;i<16;i++)if(s->mip_pipelines[i].pipeline)wgpuRenderPipelineRelease(s->mip_pipelines[i].pipeline);if(s->mip_sampler)wgpuSamplerRelease(s->mip_sampler);if(s->index)CFRelease(s->index);free(s->mirror);s->mirror=NULL;s->pass=NULL;s->encoder=NULL;}
