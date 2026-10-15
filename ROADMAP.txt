@@ -1,22 +1,23 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native 0.22 candidate; Stage 3 remains active.
+Updated 2026-10-15. Native 0.23; Stage 3 remains active; five stages left.
 
 LATEST EVIDENCE
-Physical0.21 provided source 708 BC1 4x4x1 and SRV 709 TEXTURE2D at a cube
-shadow binding. Native 0.22 specializes only proven inactive cube samples,
-preserving source bytes/layers and all active shadows. Actual phone uniforms
-are still missing; active/unknown mismatches remain explicit failures.
-Captured-shape/original-shadow-block pixels and invalid cases, exact full
-ped_alpha pipeline/cache cases, 4808 shaders and retained runtime gates passed.
-Semantic layout keys remove redundant pipeline calls in a matching-pixel
-benchmark. New bounded CPU cost records distinguish compilation, upload
-flushes, mapping, queue waits and producer idle. No iPhone FPS gain claimed.
-CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258
-Audited unsigned 0.22 ARM64 IPA; all 21 prior IPAs preserved.
+Physical Native 0.22: user reports 20-30 seconds of real Prologue characters,
+weapons and scenery near 10 FPS, followed by source 708/SRV 709 cube/2D mismatch.
+Full failure uniforms and source history were not supplied. Native 0.23
+reproduces an additional zero-local-lights/stale-cube-selector cause and
+handles only proven unreachable sampling. Active mismatches remain errors.
+Semantic pipeline keys reduce equivalent native pipelines in pixel tests;
+new-object creation stays batched with exact query/pixel ordering verified.
+An optional user-marked actual-display window separates loading.
+All 4808 shader pipelines and retained native regressions passed in CI.
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496
+Audited unsigned 0.23 ARM64 IPA; all 22 previous IPAs preserved.
+No physical crash-resolution or FPS improvement claim for 0.23.
+Next: verify correct continuous Prologue and the actual guard/binding state;
+then optimize the largest correlated measured cost. Keep 640x360.
 Stages 1/2 complete; Stage 3 active; five stages left including Stage 3.
-Next: verify uninterrupted correct Prologue and branch/binding state; then
-optimize the largest correlated measured cost. Baseline remains 640x360.
-See ENGINEERING-0.22.txt and VERIFICATION-0.22.txt.
+See ENGINEERING-0.23.txt and VERIFICATION-0.23.txt.
 
 HISTORICAL CHECKPOINTS
 

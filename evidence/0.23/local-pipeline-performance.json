@@ -1,0 +1,52 @@
+{
+  "gpuFixtures": [
+    {
+      "mode": "semantic key",
+      "creates": 1,
+      "hits": 63,
+      "evictions": 0,
+      "pipelineApiMs": 0.371,
+      "environment": "macos-15 Apple Paravirtual Metal, order/driver-cache dependent; not iPhone FPS"
+    },
+    {
+      "mode": "0.22 raw key",
+      "creates": 32,
+      "hits": 32,
+      "evictions": 0,
+      "pipelineApiMs": 14.498,
+      "environment": "macos-15 Apple Paravirtual Metal, order/driver-cache dependent; not iPhone FPS"
+    },
+    {
+      "mode": "semantic key",
+      "creates": 1,
+      "hits": 63,
+      "evictions": 0,
+      "pipelineApiMs": 0.871,
+      "environment": "macos-15 Apple Paravirtual Metal, order/driver-cache dependent; not iPhone FPS"
+    },
+    {
+      "mode": "0.22 raw key",
+      "creates": 32,
+      "hits": 32,
+      "evictions": 0,
+      "pipelineApiMs": 16.281,
+      "environment": "macos-15 Apple Paravirtual Metal, order/driver-cache dependent; not iPhone FPS"
+    }
+  ],
+  "cpuLRUModel": {
+    "capacity": 128,
+    "equivalentRawDescriptors": 256,
+    "lookups": 512,
+    "beforeCreates": 512,
+    "beforeEvictions": 384,
+    "afterCreates": 1,
+    "afterEvictions": 0
+  },
+  "freshObjectFixture": {
+    "draws": 8,
+    "beforeBatches": 8,
+    "afterBatches": 1,
+    "exactOcclusionSamples": 2048
+  },
+  "physicalMeasurements": false
+}

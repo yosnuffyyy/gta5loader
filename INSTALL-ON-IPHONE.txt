@@ -90,3 +90,9 @@ Use GTA-Native-Probe-0.22-unsigned.ipa from this run; preserve earlier IPAs.
 This candidate fixes only certified inactive cube/2D bindings. Unknown or
 required incompatible bindings remain errors. Keep the same web folder and
 640x360 baseline; see ENGINEERING-0.22.txt for the future test criteria.
+
+Native0.23: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496
+Download artifact ZIP: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496/artifacts/11978696531
+Use GTA-Native-Probe-0.23-unsigned.ipa; preserve prior IPAs. Same web folder
+and640x360. Begin visible-scene measurement after actual3D appears.
+See ENGINEERING-0.23.txt for verification limits and future test criteria.

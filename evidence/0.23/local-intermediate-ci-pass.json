@@ -1,0 +1,7 @@
+{
+  "sourceCommit": "3db959c6a5ca2765d549420b0b416977fdd4e37d",
+  "run": 38742448327,
+  "job": 116447345547,
+  "result": "PASS",
+  "reason": "Superseded only by locked fatal-context publication and a focused assertion that the final error preserves raw light-count facts. Full tests must pass again for final source."
+}

@@ -1,0 +1,6 @@
+{
+  "commit": "7658c36bd1716b3013114feb13db0d4ac5ee77ad",
+  "run": 38740994882,
+  "job": 116442342118,
+  "reason": "New display-window unit test omitted <string.h>; clang rejected implicit memset declaration. Pipeline-key and signed-count sanitizer checks passed; no complete build claimed."
+}

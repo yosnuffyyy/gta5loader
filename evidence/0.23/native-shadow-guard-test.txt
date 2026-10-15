@@ -1,0 +1,2 @@
+PASS: shadow guard 111 IEEE f32 branch cases; zero/signed zero, cube/spot modes, adjacent floats, infinities and NaN. No texture data inferred.
+PASS: 128 signed light-count branch proofs, 0..3 thresholds, both lexical arms, INT32 boundaries; only low-count reachability certified, negative/unknown/high counts rejected; robust to subnormal flushing.

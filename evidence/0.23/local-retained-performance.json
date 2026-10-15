@@ -1,0 +1,87 @@
+{
+  "scope": "Same retained production-ring command replay on separate Mac CI runs; not phone timings or gameplay",
+  "before": [
+    {
+      "commands": 1133,
+      "uploads": 117,
+      "readbacks": 139,
+      "surfaceFrames": 0,
+      "draws": 41,
+      "pipelineCreates": 16,
+      "pipelineHits": 25,
+      "queueSubmissions": 414
+    },
+    {
+      "commands": 812,
+      "uploads": 13,
+      "readbacks": 0,
+      "surfaceFrames": 0,
+      "draws": 185,
+      "pipelineCreates": 7,
+      "pipelineHits": 178,
+      "queueSubmissions": 18
+    },
+    {
+      "commands": 1133,
+      "uploads": 117,
+      "readbacks": 139,
+      "surfaceFrames": 0,
+      "draws": 41,
+      "pipelineCreates": 16,
+      "pipelineHits": 25,
+      "queueSubmissions": 414
+    },
+    {
+      "commands": 812,
+      "uploads": 13,
+      "readbacks": 0,
+      "surfaceFrames": 0,
+      "draws": 185,
+      "pipelineCreates": 7,
+      "pipelineHits": 178,
+      "queueSubmissions": 18
+    }
+  ],
+  "after": [
+    {
+      "commands": 1133,
+      "uploads": 117,
+      "readbacks": 139,
+      "surfaceFrames": 0,
+      "draws": 41,
+      "pipelineCreates": 15,
+      "pipelineHits": 26,
+      "queueSubmissions": 414
+    },
+    {
+      "commands": 812,
+      "uploads": 13,
+      "readbacks": 0,
+      "surfaceFrames": 0,
+      "draws": 185,
+      "pipelineCreates": 6,
+      "pipelineHits": 179,
+      "queueSubmissions": 17
+    },
+    {
+      "commands": 1133,
+      "uploads": 117,
+      "readbacks": 139,
+      "surfaceFrames": 0,
+      "draws": 41,
+      "pipelineCreates": 15,
+      "pipelineHits": 26,
+      "queueSubmissions": 414
+    },
+    {
+      "commands": 812,
+      "uploads": 13,
+      "readbacks": 0,
+      "surfaceFrames": 0,
+      "draws": 185,
+      "pipelineCreates": 6,
+      "pipelineHits": 179,
+      "queueSubmissions": 17
+    }
+  ]
+}

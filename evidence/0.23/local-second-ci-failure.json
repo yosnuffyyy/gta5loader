@@ -1,0 +1,6 @@
+{
+  "commit": "fd0f466f06a90a9e2906a4b2799689276a441b4a",
+  "run": 38741249131,
+  "job": 116443213137,
+  "reason": "Combined replay expected old 16 creates/25 hits; canonical dynamic-scissor state correctly yielded 15/26 with 41 draws and initial ten pixel cases passing. Aggregate gate was updated exactly; all remaining pixel/resource verifiers retained for complete rerun."
+}

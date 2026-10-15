@@ -1,0 +1,21 @@
+Native 0.23 — Stage 3 in progress
+Source 5e27ba596e85df26e33da86d20d4587233722a94
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496 — PASS
+
+Exact 708/709 zero-light/stale-cube case: reproduced with 0.22 proof and
+corrected; 20 cases/5120 pixels per run, twice. Required mismatches still
+fail. Actual phone uniform/creation history is absent, so physical crash
+resolution is not yet verified.
+
+Pipeline GPU benchmark: 64 draws/16384 pixels per mode, twice: creates/hits
+32/32 -> 1/63. Cache cap stays 128. CPU synthetic LRU 512/384 -> 1/0.
+Fresh metadata ordering: eight draws, 256 pixels, exact 2048 samples; batches
+8 ->1. All 4808 shader/native pipelines, 500 clip and retained runtime gates
+passed. ASan/UBSan CPU checks and marked-display boundaries passed.
+
+IPA GTA-Native-Probe-0.23-unsigned.ipa
+Bytes 102268898
+SHA256 997a6e813cbe41cc8263cd75e58cbc2fd3653f5fd5a4327e383e5a37154da0f5
+All 22 earlier IPAs preserved; main/PC/engine assets unchanged.
+No new physical FPS, sustained scene or gameplay result claimed.
+Full findings, limitations, files and next test: ENGINEERING-0.23.txt
