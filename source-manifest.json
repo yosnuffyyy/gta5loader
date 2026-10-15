@@ -98,13 +98,13 @@
     },
     {
       "path": "native-ios/input/test_input.c",
-      "bytes": 5929,
-      "sha256": "ee619c9f48ff4a077b30b4b6f240de9a87551c2a4fc2da37c3f724eb7750d661"
+      "bytes": 6668,
+      "sha256": "5ade683e0491e4c7194ec553d6102822b91cd7106d0fcdeacd0f668bbe8fd170"
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 6464,
-      "sha256": "f334af7e27a885fa8d7bbd54abaa4772a1c3348a98c9c485d98c8690e089a6c2"
+      "bytes": 6645,
+      "sha256": "a6df2b3eec39514263b0e20177d5a11f6f15cf6c2249acf51bd95add34499b7e"
     },
     {
       "path": "native-ios/input/touch_layout.h",

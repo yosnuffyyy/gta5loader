@@ -28,13 +28,15 @@ static unsigned checks;
       NSMutableDictionary *result=[@{@"result":@"FAIL",@"gameplayVerified":@NO,@"scope":@"Production UIKit/controller mapping in iOS simulator; engine launch stubs abort"} mutableCopy];
       @try {
         GCController *snapshot=[GCController controllerWithExtendedGamepad];REQUIRE(snapshot.extendedGamepad!=nil);GCExtendedGamepad *pad=snapshot.extendedGamepad;
-        NSArray<GCControllerButtonInput *> *buttons=@[pad.buttonA,pad.buttonB,pad.buttonX,pad.buttonY,pad.leftShoulder,pad.rightShoulder,pad.buttonMenu,pad.dpad.up,pad.dpad.right,pad.dpad.down,pad.dpad.left];
-        const uint32_t bits[]={NI_CROSS,NI_CIRCLE,NI_SQUARE,NI_TRIANGLE,NI_L1,NI_R1,NI_START,NI_UP,NI_RIGHT,NI_DOWN,NI_LEFT};
+        NSArray<GCControllerButtonInput *> *buttons=@[pad.buttonA,pad.buttonB,pad.buttonX,pad.buttonY,pad.leftShoulder,pad.rightShoulder,pad.buttonMenu];
+        const uint32_t bits[]={NI_CROSS,NI_CIRCLE,NI_SQUARE,NI_TRIANGLE,NI_L1,NI_R1,NI_START};
         for(unsigned i=0;i<buttons.count;i++){[buttons[i] setValue:1];REQUIRE(NativeControllerState(pad).buttons==bits[i]);[buttons[i] setValue:0];REQUIRE(NativeControllerState(pad).buttons==0);}
+        const float dx[]={0,1,0,-1},dy[]={1,0,-1,0};const uint32_t db[]={NI_UP,NI_RIGHT,NI_DOWN,NI_LEFT};
+        for(unsigned i=0;i<4;i++){[pad.dpad setValueForXAxis:dx[i] yAxis:dy[i]];REQUIRE(NativeControllerState(pad).buttons==db[i]);[pad.dpad setValueForXAxis:0 yAxis:0];REQUIRE(NativeControllerState(pad).buttons==0);}
         if(pad.buttonOptions){[pad.buttonOptions setValue:1];REQUIRE(NativeControllerState(pad).buttons==NI_SELECT);[pad.buttonOptions setValue:0];}
         if(pad.leftThumbstickButton){[pad.leftThumbstickButton setValue:1];REQUIRE(NativeControllerState(pad).buttons==NI_L3);[pad.leftThumbstickButton setValue:0];}
         if(pad.rightThumbstickButton){[pad.rightThumbstickButton setValue:1];REQUIRE(NativeControllerState(pad).buttons==NI_R3);[pad.rightThumbstickButton setValue:0];}
-        [pad.leftThumbstick.xAxis setValue:.7f];[pad.leftThumbstick.yAxis setValue:-.6f];[pad.rightThumbstick.xAxis setValue:-.9f];[pad.rightThumbstick.yAxis setValue:.5f];[pad.leftTrigger setValue:.4f];[pad.rightTrigger setValue:.8f];NIState state=NativeControllerState(pad);REQUIRE(fabsf(state.lx-.7f)<.001f&&fabsf(state.ly+.6f)<.001f);REQUIRE(fabsf(state.rx+.9f)<.001f&&fabsf(state.ry-.5f)<.001f);REQUIRE(fabsf(state.lt-.4f)<.001f&&fabsf(state.rt-.8f)<.001f);
+        [pad.leftThumbstick setValueForXAxis:.7f yAxis:-.6f];[pad.rightThumbstick setValueForXAxis:-.9f yAxis:.5f];[pad.leftTrigger setValue:.4f];[pad.rightTrigger setValue:.8f];NIState state=NativeControllerState(pad);REQUIRE(fabsf(state.lx-.7f)<.001f&&fabsf(state.ly+.6f)<.001f);REQUIRE(fabsf(state.rx+.9f)<.001f&&fabsf(state.ry-.5f)<.001f);REQUIRE(fabsf(state.lt-.4f)<.001f&&fabsf(state.rt-.8f)<.001f);
         ni_begin();ni_connect(true);ni_controller((NIState){0});p.sceneRunning=YES;p.gameControls.hidden=NO;p.gameControls.playing=YES;[p.view layoutIfNeeded];REQUIRE(p.gameControls.art.alpha>0);REQUIRE(!p.gameControls.art.userInteractionEnabled);
         ni_controller((NIState){.buttons=NI_CROSS});[p.gameControls updateSource];REQUIRE(p.gameControls.art.alpha==0);REQUIRE(!p.gameControls.art.userInteractionEnabled);CGPoint point=CGPointMake(p.gameControls.bounds.size.width*.2,p.gameControls.bounds.size.height*.5);REQUIRE([p.gameControls hitTest:point withEvent:nil]==p.gameControls);
         ni_touch((NIState){0},true);[p.gameControls updateSource];REQUIRE(p.gameControls.art.alpha>0);REQUIRE(ni_source()==NI_TOUCH);
