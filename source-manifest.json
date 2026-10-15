@@ -1048,8 +1048,8 @@
     },
     {
       "path": "native-ios/threading/test_session_bridge.c",
-      "bytes": 3943,
-      "sha256": "386238c7d7b82c9c0764952a4933682c95d3c78e92f377fa0273363b166f8d26"
+      "bytes": 4048,
+      "sha256": "c10e4b7cba335434680dff7db4273e0f96c63269739e09ad7b256c89c502fd66"
     },
     {
       "path": "native-ios/wait-fixture.wat",
