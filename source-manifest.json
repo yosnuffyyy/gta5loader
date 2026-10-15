@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 38851,
-      "sha256": "75e5473fbbe84aedb38bbad948cfe55b99c284a38186a23e514276820e3716b9"
+      "bytes": 38940,
+      "sha256": "afb2532e32feab283d680e15c3672596df15cbf6f0a40e17e8f22402c2de7967"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -103,13 +103,18 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 6416,
-      "sha256": "1969fa0a5fe6775d1e390623bf58125f87ceaf84f10c6c5bc0ed2643209d207f"
+      "bytes": 6464,
+      "sha256": "f334af7e27a885fa8d7bbd54abaa4772a1c3348a98c9c485d98c8690e089a6c2"
     },
     {
       "path": "native-ios/input/touch_layout.h",
       "bytes": 3178,
       "sha256": "4ddee17ba8a1ed4a6e6784ee88b4c60e6d8fe8bb8702ac24e291bc7cdb9b406e"
+    },
+    {
+      "path": "native-ios/input/ui_presentation_stub.inc",
+      "bytes": 655,
+      "sha256": "3b266154658fa01c75c4b48452b3a4a3b71dd4a527e7d9f9c3a38ce4747ad7c0"
     },
     {
       "path": "native-ios/native_host.c",

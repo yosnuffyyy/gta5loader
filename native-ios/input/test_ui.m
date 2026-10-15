@@ -1,10 +1,12 @@
 /* UI-only simulator test: production App.m and controls, with fail-closed
    engine entry stubs. Never presented as an engine/gameplay test. */
 #define main NativeProductionMain
+#define NATIVE_INPUT_UI_TEST 1
 #include "../App.m"
 #undef main
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 int native_engine_probe(char *r,size_t n){abort();}
 int native_runtime_probe(const char *g,const char *s,native_progress p,void *c,char *r,size_t n){abort();}
 int native_renderer_probe(char *r,size_t n,uint8_t *p,size_t pn){abort();}
@@ -40,7 +42,7 @@ static unsigned checks;
           p.fullscreenSwitch.on=YES;[p fullscreenChanged];[p.view layoutIfNeeded];REQUIRE(p.immersive);REQUIRE(p.gameControls.superview==p.view);REQUIRE(p.prefersStatusBarHidden&&p.prefersHomeIndicatorAutoHidden);REQUIRE(!p.gameHeight.active);REQUIRE(p.mainScroll.hidden);REQUIRE([NSUserDefaults.standardUserDefaults boolForKey:@"inputFullscreen"]);CGRect f=p.surfaceView.frame;REQUIRE(f.size.height>0&&fabs(f.size.width/f.size.height-16./9)<.001);
           p.fullscreenSwitch.on=NO;[p fullscreenChanged];[p.view layoutIfNeeded];REQUIRE(!p.immersive&&p.gameControls.superview==p.mainStack);REQUIRE(p.gameHeight.active&&!p.mainScroll.hidden);REQUIRE(![NSUserDefaults.standardUserDefaults boolForKey:@"inputFullscreen"]);
         }
-        p.deadzoneSlider.value=.2;p.sensitivitySlider.value=1.25;p.opacitySlider.value=.4;p.sizeSlider.value=1.1;[p inputSettingsChanged];REQUIRE(fabsf([NSUserDefaults.standardUserDefaults floatForKey:@"inputDeadzone"]-.2f)<.001);REQUIRE(fabsf(p.gameControls.art.alpha-.4f)<.001);
+        p.deadzoneSlider.value=.2;p.sensitivitySlider.value=1.25;p.opacitySlider.value=.4;p.sizeSlider.value=1.1;[p inputSettingsChanged];REQUIRE(fabsf([NSUserDefaults.standardUserDefaults floatForKey:@"inputDeadzone"]-.2f)<.001);REQUIRE(fabs(p.gameControls.art.alpha-.4)<.001);
         [p inputInterrupted:nil];uint8_t raw[56]={0};ni_consume(raw);uint32_t mask;memcpy(&mask,raw+12,4);REQUIRE(mask==0);[p inputResumed:nil];REQUIRE(ni_source()==NI_TOUCH);
         ni_connect(false);[p.gameControls updateSource];REQUIRE(p.gameControls.art.alpha>0);p.sceneRunning=NO;p.gameControls.playing=NO;ni_end();[p applyFullscreen];REQUIRE(p.gameControls.art.alpha==0);
         ProbeController *reloaded=[[ProbeController alloc]init];[reloaded loadViewIfNeeded];REQUIRE(fabsf(reloaded.sensitivitySlider.value-1.25f)<.001);REQUIRE(fabsf(reloaded.sizeSlider.value-1.1f)<.001);result[@"result"]=@"PASS";

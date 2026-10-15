@@ -10,7 +10,11 @@
 #include "renderer/native_renderer.h"
 #include "renderer/native_launch.h"
 #include <math.h>
+#if defined(NATIVE_INPUT_UI_TEST)
+#include "input/ui_presentation_stub.inc"
+#else
 #include "renderer/presentation_metrics.inc"
+#endif
 
 @interface NativeSurfaceView : UIView
 @end
