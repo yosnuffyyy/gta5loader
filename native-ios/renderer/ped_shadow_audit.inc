@@ -23,12 +23,33 @@ static bool audit_active_shadow(struct w2c_env *h){@autoreleasepool{
  const uint64_t hashes[]={UINT64_C(0xac2dd56e1111be56),UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
  for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:25;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:5;for(unsigned i=0;!st&&i<5;i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
  Object *input=create(g,21529,15);if(!input)goto cleanup;input->words=37;input->meta=calloc(input->words,4);if(!input->meta)goto cleanup;input->meta[0]=input->id;input->meta[1]=5;const unsigned formats[]={6,2,16,6,2};unsigned stride=0;for(unsigned i=0;i<5;i++){unsigned bytes=0;draw_vertex_format(formats[i],&bytes);uint32_t *e=input->meta+2+i*7;e[0]=i+1;e[2]=formats[i];e[4]=stride;stride+=bytes;}if(stride!=64)goto cleanup;g->layout=input->id;g->vb[0][0]=14637;g->vb[0][1]=stride;
- uint32_t creation[]={708,2,4,4,1,1,1,71,8,1},upload[]={708,0,0,0,0,0,4,4,1,8,1,8,0,0},cb3[]={8306,768,4,0,0},cb6[]={8307,496,4,0,0};
+ uint32_t creation[]={708,2,4,4,1,1,1,71,8,1},upload[]={708,0,0,0,0,0,4,4,1,8,1,8,0,0},cb3[]={8306,976,4,0,0},cb6[]={8307,528,4,0,0};
  if(!create_texture(g,(uint8_t*)creation)||!upload_texture(g,(uint8_t*)upload)||!create_buffer(g,(uint8_t*)cb3)||!create_buffer(g,(uint8_t*)cb6))goto cleanup;
  uint32_t count=1,type=0x40000000;memcpy(object(g,8306)->shadow+32,&count,4);memcpy(object(g,8307)->shadow+252,&type,4);g->cb[1][3][0]=8306;g->cb[1][6][0]=8307;
  Object *srv=create(g,709,17);if(!srv)goto cleanup;uint32_t captured[]={709,0,708,71,4,0,1,0,0};srv->words=9;srv->meta=malloc(sizeof(captured));if(!srv->meta)goto cleanup;memcpy(srv->meta,captured,sizeof(captured));srv->source_generation=object(g,708)->generation;
  Object *target=create(g,10464,3);if(!target)goto cleanup;target->td=(WGPUTextureDescriptor)WGPU_TEXTURE_DESCRIPTOR_INIT;target->td.dimension=WGPUTextureDimension_2D;target->td.size=(WGPUExtent3D){1,1,1};target->td.mipLevelCount=target->td.sampleCount=1;target->td.format=WGPUTextureFormat_RGBA8Unorm;target->td.usage=WGPUTextureUsage_RenderAttachment;target->texture=wgpuDeviceCreateTexture(g->device,&target->td);g->targets[0]=target->id;
  DrawProgram *vp=draw_program(g,shaders[0]),*pp=draw_program(g,shaders[1]);if(!vp||!pp||!pp->shadow_plan||pp->shadow_plan->guards[0].count!=3||!draw_pipeline(g,shaders[0],shaders[1],vp,pp))goto cleanup;
+ /* Full original shader, not the reduced pixel fixture: repeatedly change
+    the captured lanes, nonzero CB offsets, and buffer object generations.
+    The original program must be selected again for every required sample. */
+ {uint32_t cube[]={8310,2,4,4,1,1,6,40,0x48,1},view[]={8311,0,8310,40,9,0,1,0,6};
+  if(!execute_impl(g,3,(uint8_t*)cube,10)||!execute_impl(g,17,(uint8_t*)view,9))goto cleanup;
+  DrawProgram *inactive=NULL;uint64_t hits=g->metrics.shadow_hits;
+  for(unsigned cycle=0;cycle<3;cycle++){
+   uint32_t first=cycle==1?2:0;g->cb[1][3][1]=g->cb[1][6][1]=first;
+   if(cycle==2){uint32_t id=8306;if(!execute_impl(g,4,(uint8_t*)&id,1)||!create_buffer(g,(uint8_t*)cb3))goto cleanup;id=8307;if(!execute_impl(g,4,(uint8_t*)&id,1)||!create_buffer(g,(uint8_t*)cb6))goto cleanup;}
+   const uint32_t counts[]={0,1,1,1,1,0},types[]={0x40000000,0,0x40400000,0x40000000,0x7fc00000,0x40000000};
+   for(unsigned i=0;i<6;i++){uint32_t a[]={8306,first*16+32,4,counts[i]},b[]={8307,first*16+252,4,types[i]};
+    if(!execute_impl(g,12,(uint8_t*)a,4)||!execute_impl(g,12,(uint8_t*)b,4))goto cleanup;
+    bool proven=i<3||i==5;g->srv[1][14]=proven?709:8311;DrawProgram *v=shadow_program(g,pp);
+    if(!v||v->inactive_mask!=(proven?1u:0u)||(!proven&&v!=pp)||!draw_pipeline(g,shaders[0],shaders[1],vp,v))goto cleanup;
+    if(proven){if(inactive&&v!=inactive)goto cleanup;inactive=v;}
+   }
+  }
+  if(g->metrics.shadow_creates!=1||g->metrics.shadow_hits-hits!=11||g->metrics.shadow_evictions)goto cleanup;
+  puts("PASS: full original ac2dd56e1111be56/996bb42f448956f2 pair: 18 alternating required/inactive/ambiguous binding selections; one certified variant reused only after fresh uniform proofs; CB offsets and object generation changes preserved; real six-face resource for required samples. Pipeline validation, not scene pixels.");
+ }
+ {uint32_t a[]={8306,32,4,1},b[]={8307,252,4,0x40000000};g->cb[1][3][1]=g->cb[1][6][1]=0;if(!execute_impl(g,12,(uint8_t*)a,4)||!execute_impl(g,12,(uint8_t*)b,4))goto cleanup;}
  for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;
  g->srv[1][14]=709;g->last_op=32;g->last_words=6;uint32_t payload[]={1,672,1,0,0,0};memcpy(g->last_payload,payload,sizeof(payload));
  ok=!draw_execute(g,(uint8_t*)payload)&&native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&strstr(native_gpu_error(g),"ac2dd56e1111be56")&&strstr(native_gpu_error(g),"raw40000000")&&strstr(native_gpu_error(g),"raw00000001")&&!g->draw.draws&&!g->draw.proxy_bytes&&object(g,708)->td.size.depthOrArrayLayers==1&&object(g,708)->version==2;

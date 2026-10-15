@@ -28,6 +28,7 @@
 #include "resource_bytes.h"
 #include "query_types.inc"
 #include "native_metrics.h"
+#include "shadow_trace.h"
 
 typedef struct {
  uint32_t id,kind,size,bind,misc,stride,words,dxgi;bool a8;
@@ -43,6 +44,7 @@ typedef struct {
 } Object;
 struct NativeGpu {
  NativeMetrics metrics;
+ ShadowTrace shadow_trace;
  struct w2c_env *host;GpuRing ring;pthread_t thread;bool started,ring_valid;
  _Atomic bool stop,failed,ready,closing,callback_done,map_active;
  pthread_mutex_t error_lock;char error[1600],srv_guard[320];char adapter_name[192];
@@ -410,6 +412,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
  #include "proxy_range_fixture.inc"
 #include "srv_fixture.inc"
 #include "shadow_fixture.inc"
+#include "shadow_transition_fixture.inc"
 #include "shadow_eviction_fixture.inc"
 #include "perf_fixture.inc"
 #include "stability_fixture.inc"
@@ -497,6 +500,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(valid){valid=shadow_count_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
 #endif
  if(!valid)result=1;}
+ for(unsigned i=0;i<3&&!result;i++){char text[700];bool valid=shadow_transition_fixture(h,i,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
  if(!result){char text[650];bool valid=shadow_eviction_fixture(h,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
  if(!result){char text[600];bool valid=layout_cache_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
 #ifdef NATIVE_PROBE_CLI
