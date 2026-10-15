@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "sourceCommit": "911742c5fbdeca223748fd7299b1bb0c597d0b93",
+  "sourceTree": "6b13c4d6d07579a7e269c28aafcd12425a8a00d0",
+  "entriesVerified": 207,
+  "mismatches": [],
+  "rendererAssetSourceUnchangedFiles": 157,
+  "priorIPAsPreserved": 28
+}

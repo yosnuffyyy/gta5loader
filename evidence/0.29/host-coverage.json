@@ -1,0 +1,427 @@
+[
+  {
+    "module": "env",
+    "name": "__pthread_create_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_accept4",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_connect",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_fcntl64",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_fstat64",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_ftruncate64",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_getcwd",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_getdents64",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_getsockname",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_getsockopt",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_ioctl",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_lstat64",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_mkdirat",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_newfstatat",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_openat",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_poll",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_recvfrom",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_renameat",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_rmdir",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_sendto",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_setsockopt",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_shutdown",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_socket",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_stat64",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_statfs64",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "__syscall_unlinkat",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "_abort_js",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_init_main_thread_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_notify_mailbox_postmessage",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_receive_on_main_thread_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_system",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_thread_cleanup",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_thread_mailbox_await",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_thread_set_strongref",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_emscripten_throw_longjmp",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "_gmtime_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_localtime_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "_mktime_js",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "_tzset_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_asm_const_int",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_asm_const_int_sync_on_main_thread",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_check_blocking_allowed",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_date_now",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_exit_with_live_runtime",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_get_heap_max",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_get_now",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_num_logical_cores",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_resize_heap",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_stack_snapshot",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "emscripten_stack_unwind_buffer",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "exit",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_ij",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_iji",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_ijji",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_ijjiii",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_jjiiijij",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_jjij",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_vj",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_vjii",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_vjij",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_vjj",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "invoke_vjjii",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "wasm_audio_publish_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_hang_line_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_has_page_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_httpfs_io_start_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_httpfs_manifest_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_input_publish_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_module_int_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_now_ms",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_print_line_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_userdata_delete_js",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "wasm_userdata_page_js",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "env",
+    "name": "wasm_userdata_put_js",
+    "status": "explicit unsupported trap"
+  },
+  {
+    "module": "env",
+    "name": "wgpu_start_worker",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "clock_time_get",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "environ_get",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "environ_sizes_get",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_close",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_pread",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_pwrite",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_read",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_seek",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "fd_write",
+    "status": "checkpoint implementation"
+  },
+  {
+    "module": "wasi_snapshot_preview1",
+    "name": "proc_exit",
+    "status": "explicit unsupported trap"
+  }
+]

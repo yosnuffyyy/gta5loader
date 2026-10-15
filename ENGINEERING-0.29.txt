@@ -1,0 +1,177 @@
+Native 0.29 — PASS: APPLE CI / UNSIGNED ARM64 PACKAGE AUDIT
+Source:911742c5fbdeca223748fd7299b1bb0c597d0b93
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38811113198
+IPA:GTA-Native-Probe-0.29-unsigned.ipa
+Bytes:102311532
+SHA256:4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d
+
+SCOPE
+Implement player input, touch/controller switching and optional fullscreen
+on the preserved 0.28 renderer. User reports the latest physical run reached
+a movement prompt, ~24 seconds of marked real rendering at ~15-16 displayed
+FPS and normal manual Stop with reference-shadow compatibility enabled.
+That is user-supplied evidence, not a new measurement from this engineering run.
+No Stage 3 or Stage 4 completion is claimed.
+
+ENGINE BRIDGE
+The pinned original engine already calls wasm_input_publish_js(-1-pointer)
+after its ioPad debug/update passes and before CPad consumers, and at the
+CControl update tail. Native 0.28 returned without injecting input there.
+Native 0.29 handles the verified pad pointer 12840656 and three verified
+control objects 24488864,24660320,24831776. Other CControl instances retain
+original engine state, matching the reference whitelist behavior.
+UI/controller threads never write engine RAM. The engine thread snapshots
+a fixed native buffer at its existing synchronous hook, writes current
+button/axis/trigger/connection fields, and leaves original button history
+to the engine. It selects pad-source prompts for this virtual/physical pad.
+No engine instructions, game action definitions or mission scripts change.
+
+INPUT IMPLEMENTATION
+GameController extended-profile events run on the main queue. Discovery is
+restricted to initial setup and connection notifications. The profile's
+handler reads sticks, independent triggers, four face buttons, shoulders,
+stick clicks, D-pad, Menu and optional secondary Menu into one fixed state.
+Buttons use the original ioPad enums; contextual actions come from the
+engine's loaded game controls. See INPUT-CONTROLS-0.29.txt for the exact map.
+
+The touch overlay has two analog sticks and matching pad buttons, including
+Pause/View and D-pad. Ten fixed touch slots support simultaneous move/look/
+aim/fire. Button ownership is combined without duplicate release; stick
+ownership is exclusive until release/cancel. Rendering labels and colors
+are allocated once, not rebuilt on every controller event.
+
+A centralized mutex-protected source machine implements touch/controller
+handoff. Meaningful fresh controller activity hides art immediately at alpha
+0; art never intercepts touches. The game container receives the wake touch
+and applies that same initial gesture. Reconnect/resume/start baseline
+snapshots quarantine held input. Drift is filtered with configurable stick
+deadzone and takeover hysteresis. Held inputs reconcile through neutral
+state; unrelated physical disconnects preserve an active touch hold.
+Disconnect is processed before refreshing controller discovery, including
+rapid reconnect when the framework reuses the same controller object.
+
+A 64-snapshot queue retains digital press/release edges across engine ticks;
+analog updates coalesce without erasing those edges. Overflow is bounded,
+counted and safely reconciles through release, rather than claiming lossless
+delivery. There are no input polling loops, graphics waits or allocations in
+the C hot path. App interruption clears input; entering background requests
+the existing native shutdown rather than running the GPU in background.
+
+FULLSCREEN / SETTINGS
+Persisted public UIKit fullscreen preference, landscape request, status bar
+hiding, home-indicator auto-hide request and bottom-edge gesture deferral.
+Same game surface and Metal layer; fixed640x360, aspect-fit16:9, no crop or
+stretch. The embedded viewport is also height-bounded for landscape use.
+Safe-area controls recompute and release touches on resize. Settings remains
+accessible for exit/fullscreen, scene marker, Stop and Resume. Four persisted
+sliders configure noise deadzone, camera sensitivity, stick size and opacity.
+The engine's own pad conversion/deadzone is retained.
+
+FILES
+native-ios/input/native_input.h/.c: pad ABI, source machine, bounded edge queue,
+normalization, lifecycle release, synchronization and bounded diagnostics.
+native-ios/input/touch_layout.h: shared normalized touch geometry/multitouch.
+native-ios/input/NativeControls.inc: UIKit overlay and GameController mapping.
+native-ios/threading/native_threads.c: actual engine input hook delivery.
+native-ios/App.m: controller lifecycle, touch host, settings/fullscreen and
+input diagnostics; original scene rendering and shadow option remain.
+native-ios/Info.plist: version0.29.0/build29 only.
+native-ios/compile-native.mjs: compile/link bridge with header-aware caching.
+native-ios/input/test_input.c, test_engine_input.cjs, ci-test-input.sh:
+ASan/UBSan/TSan state tests and production bytes through original Wasm code.
+native-ios/input/test_ui.m, ci-test-ui.sh, ui_presentation_stub.inc:
+production UI/controller snapshot regressions in a compatible simulator.
+native-ios/ci-convert.sh: focused input tests before existing full suites.
+source-manifest.json: exact source sizes/hashes and scope.
+
+VERIFIED RESULTS
+Final CI38811113198 PASS, macos-15 ARM64 / Apple Paravirtual Metal.
+78 production UIKit/controller snapshot assertions PASS in iPhone16ProMax
+simulator with installed iOS26.2 runtime. Covers the actual profile mapper,
+overlay alpha/hit testing, source handoff, disconnect delivery, repeated
+fullscreen reparenting/aspect fit, interruption, settings and UI reload.
+71 checks using production C bridge bytes through unchanged original engine
+ioPad::Update, ioPad::UpdateDebug and CPadState::Update, with0 external calls.
+Replayed the same C-produced952-byte fixture locally on Windows/Node24:
+71 checks PASS. Tests are pad-interface checks, not complete mission play.
+ASan/UBSan and TSan input state tests PASS, including press/hold/release,
+queued tap, drift/hysteresis, baseline quarantine, duplicate events, active
+vs inactive source disconnect, held-axis blocking, focus, NaN, multitouch,
+shared-button ownership, drag cancellation, small viewport bounds, bounded
+queue exhaustion and100000 concurrent producer/consumer iterations.
+100000 event/consume pairs:23.466ms /0.235us per pair with ASan/UBSan;
+228.870ms /2.289us with TSan. One benchmark sample per instrumentation mode;
+no quantiles or unsanitized/device latency inference. These exclude UIKit,
+Bluetooth, hook memory copying and gameplay scheduling.
+All4808 original shader modules/native Metal pipelines PASS, including500
+clip shaders;111 unsupported untranslated records remain explicit.
+Two native runtime processes PASS: worker/mailbox, waits/cancellation,
+SIMD/bulk/memory, host I/O, bounded assets, startup and save persistence.
+Graphics suites PASS: formats/BC, uploads/readback, depth proxies, clip/link,
+UAV/compute, lifetime, exact occlusion results and invalid protocol cases.
+SRV709 compatibility retains10 optional32-draw/8192-pixel cases across both
+processes (320 draws/81920 checked pixels); real shadows and strict invalid
+bindings retained. SRV5633 regression remains checked through all5BC3 mips.
+256-entry working-set fixture per process:192 creates,384 hits,0 evictions
+across576 draws. Same policy as0.28; no new renderer optimization claimed.
+131 verified engine/compiler objects reused for each target.
+207 source/workflow/manifest blobs match local source. IPA integrity, ARM64,
+iPhone platform, minOS17, version/build, framework/engine pins, unsigned state,
+absence of W+X/WebKit/JSC and absence of UI-test code PASS.
+All28 earlier IPAs retain their exact sizes/SHA256. New IPA adds24157 bytes
+vs0.28; runtime retained memory and device FPS impact are not measured.
+Full local evidence:evidence/0.29. Focused permanent GitHub evidence is also
+published; complete logs/artifacts remain linked from the CI run.
+
+SIMULATOR LIMITATION
+The simulator SDK omits drawable presentation callbacks. Its UI-only harness
+uses an inert layer type; display-metric methods and engine launch stubs
+abort if invoked. It does not run a renderer or invent frame/FPS success.
+The device App.m always uses unchanged production presentation metrics.
+The native Metal renderer and shaders run separately in existing Mac checks.
+
+KNOWN TEST-SETUP REPAIRS
+Initial UI compilation exposed that simulator-only Metal API limitation.
+Simulator selection was corrected to a compatible installed runtime/phone.
+Apple direction-pad snapshots must be driven through the parent axis API;
+the fixture was corrected rather than weakening a mapping assertion.
+Obsolete engineering runs were superseded; none produced a delivered0.29 IPA.
+
+PRESERVATION
+157 renderer/asset service source files match0.28 byte-for-byte.
+The cache remains256 entries; shadow/SRV709 optional compatibility, SRV5633,
+clip linking, queries, compute and readbacks are not modified.
+The bounded archive reader remains1x64KiB and <=8 open descriptors.
+All28 previous IPA artifacts have verified unchanged sizes and SHA256s.
+Protected folders, old offline package, original game assets and main branch
+are untouched. Main remains de7664a8e6448096716c5a341250d32d4f594fd1.
+
+PERFORMANCE / LIMITATIONS
+No device input latency or FPS improvement is claimed. The C microbenchmark
+is not end-to-end latency. Runtime reports event-to-hook state age and queue
+pressure/overflow; those counters do not prove that the character moved.
+No true GPU timing or new renderer optimization is introduced.
+Physical DualSense mapping in gameplay, touch gestures, menu/context actions,
+fullscreen safe areas/home indicator, OS27 behavior and sustained animation
+still require the iPhone. Haptics/adaptive triggers/motion/touchpad gestures,
+keyboard input and native audio output are outside this controls change.
+The game's runtime contextual mappings remain authoritative.
+
+NEXT DEVICE TEST
+Preserve0.28 and install the independently audited0.29 candidate when ready.
+Keep640x360 and the previously successful optional shadow mode. At the
+movement prompt verify walking direction/magnitude, camera, aim/fire,
+sprint/jump, interaction/reload/weapon controls and Options pause/resume.
+Use on-screen pad prompts (A/B/X/Y correspond to Cross/Circle/Square/Triangle).
+Switch while holding inputs; confirm no stuck movement/fire or duplicate
+menu presses. Exercise reconnect, temporary interruption and background/Stop.
+Toggle fullscreen, use Settings to exit and check persisted preferences on
+relaunch. Mark only visible3D and save the final report, including input
+source/events/engine updates/queue/overflows and latency mean/max.
+
+API REFERENCES
+Apple GameController extended profile and change callbacks:
+https://developer.apple.com/documentation/gamecontroller/gcextendedgamepad
+https://developer.apple.com/documentation/gamecontroller/gcextendedgamepad/valuechangedhandler
+Apple public system gesture/home-indicator preferences:
+https://developer.apple.com/documentation/uikit/uiviewcontroller/preferredscreenedgesdeferringsystemgestures

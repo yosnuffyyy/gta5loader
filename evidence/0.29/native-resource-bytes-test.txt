@@ -1,0 +1,1 @@
+PASS: logical GPU resource accounting: array and 3D mip chains, MSAA, compressed edge blocks, invalid dimensions and 64-bit overflow guards.

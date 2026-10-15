@@ -1,0 +1,86 @@
+NATIVE 0.29 — CI-VERIFIED INPUT CANDIDATE / DEVICE VERIFICATION PENDING
+
+The controls use the original engine's pad input. They do not inject mission
+commands, teleport the player or bypass progression. The selected game files
+and current context determine the action attached to each pad button.
+
+DUALSENSE / EXTENDED GAMEPAD
+Left stick: native left-pad axes (movement input).
+Right stick: native right-pad axes (camera input).
+L2/R2: independent 0..255 trigger pressure and native trigger button state.
+Cross/Circle/Square/Triangle: RDOWN/RRIGHT/RLEFT/RUP, bits 6/5/7/4.
+L1/R1: native shoulder bits 2/3.
+L3/R3: native stick-button bits 9/10, where supplied by the controller.
+Options (Apple buttonMenu): native Start, bit 11.
+Create / secondary menu (Apple buttonOptions): native Select, bit 8.
+D-pad up/right/down/left: native bits 12/13/14/15.
+Game prompts A/B/X/Y correspond to Cross/Circle/Square/Triangle.
+The engine retains sprint, jump, reload, interaction, weapon selection, aim,
+fire and menu context. Actual mission actions are not yet device-verified.
+Haptics, adaptive triggers, motion and touchpad gestures are not implemented.
+One connected extended gamepad controls the session; other controllers are
+not merged. Discovery occurs at startup and connect/disconnect notifications.
+
+TOUCH
+Use the left MOVE stick and right LOOK stick. Drag within or beyond each
+stick circle; magnitude is normalized, movement stays assigned to that
+finger until release/cancel. Pad-symbol buttons, L1/R1, L2/R2, L3/R3,
+Pause, View and a D-pad provide the same engine pad controls.
+Ten simultaneous touches are tracked in fixed slots. Move + aim + fire
+can be held together. A button drag outside its expanded hit circle releases
+that button. Stick positions and touch ownership reset after a layout change.
+The overlay uses the safe region of the aspect-fit viewport.
+
+AUTOMATIC SWITCHING
+Meaningful controller input hides the touch art immediately (alpha 0).
+The art never participates in hit testing. The game surface container still
+receives a deliberate touch, reveals the art and uses that initial gesture.
+A new press or stick/trigger excursion after neutral can reclaim controller
+mode. Drift is filtered; stick takeover uses deadzone + 0.08 hysteresis.
+Held controller controls are blocked during touch takeover until released.
+Disconnect restores touch. Reconnect, launch and resume capture a baseline:
+already-held controls cannot activate gameplay or hide the overlay.
+A source transition clears the outgoing queue and reconciles input through
+neutral state. A digital takeover can include one neutral engine update
+before its new press; analog-only neutral snapshots can coalesce.
+Short taps retain press and release across engine updates. The queue is
+bounded at 64 snapshots; analog updates coalesce without erasing digital
+edges. Overflow is counted and releases input before reconciling latest
+state; it is not reported as successful lossless delivery.
+
+INTERRUPTIONS / STOP
+Temporary interruptions clear input and touch owners. Resume requires a
+fresh controller action. Entering background stops the native session,
+preserving the existing policy against background GPU use. Start again
+after returning. Stop releases input before engine/worker cleanup.
+
+FULLSCREEN / SETTINGS
+Fullscreen is optional and persists. It requests landscape using public
+UIKit APIs, hides status chrome, allows home-indicator auto-hide and defers
+bottom-edge gestures. iOS still owns mandatory system gestures.
+Rendering stays at 640x360 with 16:9 aspect fit; no stretching/cropping.
+The standard embedded viewport is also height-bounded in landscape.
+The Settings button remains accessible with either input source. It offers
+Fullscreen On/Off, a scene timing marker, Stop and Resume controls. Exit
+fullscreen to adjust the persisted deadzone, camera sensitivity, joystick
+size and overlay opacity sliders. The engine's own pad deadzone still applies.
+No controller pairing/settings screen is required to switch input sources.
+
+NEXT DEVICE CHECK (NOT AUTOMATICALLY VERIFIED)
+Keep the same graphics settings and optional reference-shadow setting as
+in the successful 0.28 run. Pair DualSense in iPhone Bluetooth settings.
+At the movement prompt: check left-stick direction/magnitude, right-stick
+camera, simultaneous movement/aim/fire, sprint/jump/context/reload/weapon
+controls and Options pause/resume against the game's own pad prompts.
+Touch the game while holding a controller input: controls should appear,
+outgoing movement/fire should release, and the first touch should work.
+Return the controller to neutral and use it: touch art should vanish.
+Check disconnect/reconnect, temporary interruption and background/return;
+no input should stay held. Test fullscreen both ways, safe-area placement,
+Settings access and settings persistence after relaunch.
+The report's input counters and event-to-hook mean/max measure delivery
+inside the app, not Bluetooth latency or proof that the player moved.
+
+Production graphics, shadow compatibility, texture data, cache capacity,
+640x360 resolution and one-64-KiB/eight-descriptor asset limits are preserved.
+No Stage 3/4 completion or FPS improvement is claimed by this candidate.

@@ -1,0 +1,1 @@
+PASS: 18 bundled gzip shader packs and original index; exact pinned sizes/SHA256, truncated inputs and decompression bounds; 71761794 raw bytes / 9323940 compressed pack bytes. CI-only inputs; no network or gameplay success simulated.

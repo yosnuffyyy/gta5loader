@@ -1,7 +1,23 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-15. Native 0.28 optional compatibility candidate; Stage 3 remains active; five stages left.
+Updated 2026-10-15. Native0.29 controls candidate; Stage4 input engineering active; physical closure gates remain pending.
 
-LATEST EVIDENCE —0.28
+LATEST EVIDENCE —0.29 CONTROLS CANDIDATE
+User reports the latest physical run reached a movement prompt:~24 seconds
+of marked3D at~15-16displayedFPS and normal manual Stop with optional shadow
+compatibility. That is not verified player control or a sustained route.
+0.29 delivers actual synchronous engine pad input, event-driven controllers,
+multitouch, source switching, persisted fullscreen/input settings and bounded
+input diagnostics. 78 UIKit/profile checks and71 original-engine checks pass,
+plus input sanitizers and all4808 Metal shader/pipeline/native runtime suites.
+157 renderer/asset files are unchanged;256-entry cache/optional shadow mode,
+SRV5633 and640x360 remain. 28 old IPAs preserved;0.29 unsigned ARM64 audited.
+No Stage3/4 completion or physical FPS/control success is claimed.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38811113198
+See ENGINEERING-0.29.txt and INPUT-CONTROLS-0.29.txt.
+Next:physical movement/look/action and handoff verification; then mission
+audio and sustained Prologue progression under the existing roadmap gates.
+
+PREVIOUS EVIDENCE —0.28
 Native CI/ARM64 IPA audit PASS; physical0.28 verification is pending.
 An opt-in, strict-by-default empty depth cube matches the recovered
 reference worker for the exact active709 resource/sampler contract.

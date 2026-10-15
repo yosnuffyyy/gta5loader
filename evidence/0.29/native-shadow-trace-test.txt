@@ -1,0 +1,1 @@
+PASS: bounded shadow transitions: active/inactive/ambiguous raw states, CB offsets/generations, source/view reuse, coalescing and 32 overwrites; storage 4624 bytes. No rendering decisions depend on this trace.

@@ -1,18 +1,24 @@
-Native 0.28 — unsigned ARM64 experimental compatibility candidate
+Native0.29 — unsigned ARM64 controls test candidate
 
-Preserve0.27. Install0.28 with the existing signing/sideload setup.
-Select the existing extracted web folder. Enable the new
-"Reference empty-shadow compatibility" switch, then Trace Prologue startup.
-It starts OFF: off retains the strict SRV 709 failure for diagnosis.
+Preserve0.28. Install GTA-Native-Probe-0.29-unsigned.ipa with the existing
+signing/sideload setup. Select your extracted web folder and keep640x360.
+Use the same optional reference-shadow setting that let0.28 progress.
+Pair DualSense through iPhone Bluetooth settings, then Trace Prologue startup.
 
-Mark the actual visible scene. Keep640x360. If it continues, observe at
-least60seconds of characters, textures, camera movement and animation.
-Check shadows while lights/camera move. Stop and save the full report,
-including compatibility mode/uses/allocations, actual display intervals
-and the first fatal operation if another error occurs.
-No continuous-rendering, shadow-correctness or FPS improvement is claimed
-until physical verification. Producer selection remains under investigation.
+At the movement prompt, check movement/camera and the game pad actions:
+aim/fire together, sprint/jump, contextual action/reload/weapon and Options.
+A/B/X/Y game prompts correspond to Cross/Circle/Square/Triangle.
+Touch the game: pad overlay should appear and the initial gesture should
+work. Use a fresh controller action after neutral: it should disappear.
+Test held input handoff, disconnect/reconnect and no stuck movement/fire.
+Fullscreen and sensitivity/deadzone/size/opacity preferences persist. The
+Settings button remains available in fullscreen. Backgrounding stops the
+native session safely; start again after returning.
 
-SHA256:f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38799948852
-See ENGINEERING-0.28.txt. Stage 3 remains in progress.
+Mark actual visible3D; preserve the final report including Input counters,
+queue/overflow/latency and actual display intervals. These diagnostics alone
+do not verify successful gameplay. Physical controls are pending verification.
+See INPUT-CONTROLS-0.29.txt and ENGINEERING-0.29.txt.
+
+SHA256:4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38811113198

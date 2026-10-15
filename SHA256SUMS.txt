@@ -6,3 +6,5 @@ f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b  GTA-Native-Pro
 77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a  GTA-Native-Probe-0.26-unsigned.ipa
 0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd  GTA-Native-Probe-0.27-unsigned.ipa
 f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52  GTA-Native-Probe-0.28-unsigned.ipa
+
+4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d  GTA-Native-Probe-0.29-unsigned.ipa

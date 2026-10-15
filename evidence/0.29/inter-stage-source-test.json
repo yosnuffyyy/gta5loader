@@ -1,0 +1,124 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "modulesInspected": 4808,
+  "graphicsInterfaces": 4779,
+  "sparseVertexInterfaces": 500,
+  "maximumVertexOutputCount": 13,
+  "deviceLocationLimit": 15,
+  "exactPair": {
+    "vertex": {
+      "stage": "vs",
+      "effect": "cloth_normal_spec",
+      "program": "VS_Transform_DOF",
+      "ok": true,
+      "p": [
+        1,
+        1724500,
+        4699,
+        0
+      ]
+    },
+    "fragment": {
+      "stage": "ps",
+      "effect": "glass_normal_spec_reflect",
+      "program": "PS_Textured_Eight_DOF",
+      "ok": true,
+      "consts": true,
+      "p": [
+        4,
+        1037469,
+        52949,
+        21
+      ]
+    },
+    "vertexOutputs": [
+      {
+        "location": 0,
+        "name": "o0",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 1,
+        "name": "o1",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 2,
+        "name": "o2",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 3,
+        "name": "o3",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 4,
+        "name": "o4",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 5,
+        "name": "o5",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 6,
+        "name": "o6",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 15,
+        "name": "tint_symbol_4",
+        "type": "vec4<f32>"
+      }
+    ],
+    "fragmentInputs": [
+      {
+        "location": 0,
+        "name": "v0",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 1,
+        "name": "v1",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 2,
+        "name": "v2",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 3,
+        "name": "v3",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 4,
+        "name": "v4",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 5,
+        "name": "v5",
+        "type": "vec4<f32>"
+      },
+      {
+        "location": 6,
+        "name": "v6",
+        "type": "vec4<f32>"
+      }
+    ],
+    "map": [
+      [
+        15,
+        7
+      ]
+    ],
+    "allOutputsRetained": true,
+    "clipBuiltinsRetained": true
+  },
+  "gpuPipelineValidation": false,
+  "pixelVerification": false
+}

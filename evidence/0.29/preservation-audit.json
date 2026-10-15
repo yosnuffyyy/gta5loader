@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "unchangedRendererAssetFiles": 157,
+  "graphicsBaseline": "0.28",
+  "pipelineCapacity": 256,
+  "resolution": "640x360",
+  "archiveReader": "1x64KiB, <=8 open descriptors"
+}

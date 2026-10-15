@@ -1,0 +1,25 @@
+Native0.29 — PASS native CI / unsigned ARM64 package audit
+Source:911742c5fbdeca223748fd7299b1bb0c597d0b93
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38811113198
+IPA:GTA-Native-Probe-0.29-unsigned.ipa
+Bytes:102311532
+SHA256:4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d
+
+78 production UIKit/controller snapshot assertions, iPhone16ProMax simulator,
+iOS26.2. Engine/render launch stubs abort; no simulator gameplay claimed.
+71 checks: production C input bytes through original engine pad functions,
+0 unexpected imports, no engine instructions changed. Same bytes pass71
+checks locally on Windows. Native memory/thread sanitizers PASS.
+100000 event/consume pairs:23.466ms under ASan/UBSan,228.870ms under TSan;
+not physical input latency. No iPhone FPS improvement claimed.
+4808 native Metal modules/pipelines,500 clip shaders,0 failures.
+All existing graphics/runtime/worker/memory/archive/startup suites PASS in
+2 processes. SRV709/5633, compute, readbacks and occlusion remain verified.
+256-entry working-set cache:192 creates/384 hits/0 evictions per576 draws.
+157 renderer/asset source files unchanged;207 published entries verified.
+All28 earlier IPAs preserved by size and SHA256; main unchanged.
+
+Physical DualSense/touch gameplay, mission actions, fullscreen on iOS27,
+actual latency and sustained animation still require the iPhone.
+Stage3/4 are not marked complete. Native audio output remains separate.
+See ENGINEERING-0.29.txt, INPUT-CONTROLS-0.29.txt and evidence/0.29.
