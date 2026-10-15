@@ -1,0 +1,345 @@
+{
+  "version": "0.26",
+  "sourceCommit": "5ecf1a636c9c876f7b71e2212683e8cab55a64b8",
+  "tree": "3838d8aaff001d0ea91cb778eeb44db9622edbca",
+  "run": 38769558479,
+  "runUrl": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38769558479",
+  "previousSource": "a48d497a9198ec2d2910a1a72b7ed0b44173a8b7",
+  "previousDocumentation": "c3acbf1ab4242f0424a4305225684674e8477d19",
+  "priorIPAsPreserved": 25,
+  "ci": "PASS",
+  "ipa": {
+    "result": "PASS",
+    "architecture": "ARM64",
+    "platform": "iPhone device",
+    "minimumOS": "17.0",
+    "unsigned": true,
+    "hasWebKit": false,
+    "hasWritableExecutableSegment": false,
+    "ipaBytes": 102274708,
+    "ipaSHA256": "77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a",
+    "version": "0.26.0",
+    "build": "26",
+    "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+    "engine": {
+      "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+      "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+      "modification": "Add eleven exports only; engine instructions unchanged",
+      "probes": [
+        {
+          "name": "memcmp",
+          "sourceName": "memcmp",
+          "index": 90814
+        },
+        {
+          "name": "strcmp",
+          "sourceName": "strcmp",
+          "index": 90930
+        },
+        {
+          "name": "strlen",
+          "sourceName": "strlen",
+          "index": 90939
+        },
+        {
+          "name": "sinf",
+          "sourceName": "sinf",
+          "index": 90918
+        },
+        {
+          "name": "cosf",
+          "sourceName": "cosf",
+          "index": 90732
+        },
+        {
+          "name": "fopen",
+          "sourceName": "fopen",
+          "index": 90775
+        },
+        {
+          "name": "fclose",
+          "sourceName": "fclose",
+          "index": 90762
+        },
+        {
+          "name": "fread",
+          "sourceName": "fread",
+          "index": 90782
+        },
+        {
+          "name": "fwrite",
+          "sourceName": "fwrite",
+          "index": 90790
+        },
+        {
+          "name": "fseeko",
+          "sourceName": "__fseeko",
+          "index": 90784
+        },
+        {
+          "name": "ftello",
+          "sourceName": "__ftello",
+          "index": 90788
+        }
+      ]
+    },
+    "dylibs": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/System/Library/Frameworks/GameController.framework/GameController",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+    ],
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "initialProtection": 0
+      },
+      {
+        "name": "__TEXT",
+        "initialProtection": 5
+      },
+      {
+        "name": "__DATA_CONST",
+        "initialProtection": 3
+      },
+      {
+        "name": "__DATA",
+        "initialProtection": 3
+      },
+      {
+        "name": "__LINKEDIT",
+        "initialProtection": 1
+      }
+    ]
+  },
+  "sourceAudit": {
+    "result": "PASS",
+    "commit": "5ecf1a636c9c876f7b71e2212683e8cab55a64b8",
+    "tree": "3838d8aaff001d0ea91cb778eeb44db9622edbca",
+    "entries": 186,
+    "priorIPAsPreserved": 25,
+    "main": "de7664a8e6448096716c5a341250d32d4f594fd1",
+    "engineAndNativeRuntimeUnchanged": true,
+    "originalRootCompilerHeadersUnchanged": true
+  },
+  "shaderAudit": {
+    "result": "PASS",
+    "modules": 4808,
+    "pipelines": 4808,
+    "vs": 1112,
+    "ps": 3667,
+    "cs": 29,
+    "clip": 500,
+    "failures": 0,
+    "untranslated": 111,
+    "shards": 3,
+    "maximumConcurrentProgramsPerProcess": 1,
+    "gameSceneVerified": false
+  },
+  "sourceGuards": {
+    "result": "PASS_SOURCE_ONLY",
+    "modulesInspected": 4808,
+    "fragmentCandidates": 13,
+    "certifiedSingleUseCubeGuards": 76,
+    "exactPairGuards": [
+      {
+        "binding": 46,
+        "conditions": [
+          {
+            "slot": 6,
+            "word": 63,
+            "equals": 0,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 6,
+            "word": 63,
+            "equals": 3,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 3,
+            "word": 8,
+            "equals": 0,
+            "trueArm": false,
+            "predicate": 1
+          }
+        ]
+      },
+      {
+        "binding": 57,
+        "conditions": [
+          {
+            "slot": 6,
+            "word": 79,
+            "equals": 0,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 6,
+            "word": 79,
+            "equals": 3,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 3,
+            "word": 8,
+            "equals": 0,
+            "trueArm": true,
+            "predicate": 2
+          },
+          {
+            "slot": 3,
+            "word": 8,
+            "equals": 1,
+            "trueArm": true,
+            "predicate": 2
+          }
+        ]
+      },
+      {
+        "binding": 59,
+        "conditions": [
+          {
+            "slot": 6,
+            "word": 95,
+            "equals": 0,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 6,
+            "word": 95,
+            "equals": 3,
+            "trueArm": true,
+            "predicate": 0
+          }
+        ]
+      },
+      {
+        "binding": 61,
+        "conditions": [
+          {
+            "slot": 6,
+            "word": 111,
+            "equals": 0,
+            "trueArm": true,
+            "predicate": 0
+          },
+          {
+            "slot": 6,
+            "word": 111,
+            "equals": 3,
+            "trueArm": true,
+            "predicate": 0
+          }
+        ]
+      }
+    ],
+    "gpuValidation": false,
+    "scope": "Conservative structural guard proof, no fabricated cube data or successful scene implied."
+  },
+  "retainedLegacyGatesPassed": true,
+  "arrayRegression": {
+    "bindingCompatibilityFixed": true,
+    "originalShaderPair": true,
+    "reportedDescriptorShape": true,
+    "syntheticUploadsAndUniforms": true,
+    "draws": 12,
+    "pixels": 3072,
+    "pipelines": 1,
+    "hits": 11,
+    "evictions": 0,
+    "physicalCrashResolutionVerified": false
+  },
+  "srvContract": {
+    "positivePixelCasesPerRun": 30,
+    "pixelsPerRun": 480,
+    "controlledInvalidCasesPerRun": 10,
+    "runs": 2,
+    "sourceGenerationChecked": true,
+    "mipLayerIsolationChecked": true,
+    "depth32StencilAspectsChecked": true,
+    "dualEncodingProxyReuseChecked": true,
+    "active708MismatchResolved": false
+  },
+  "shadow": {
+    "runs": 2,
+    "pixelCasesPerRun": 20,
+    "pixelsPerCase": 256,
+    "negativeCasesPerRun": 5,
+    "capturedSRVAndShape": true,
+    "capturedOriginalUploadAndUniforms": true,
+    "originalPSAndVSValidated": true,
+    "fullPairConfigurations": 9,
+    "variantLimitPerSource": 4,
+    "pendingDrawEvictionPixelAndExactQueryVerified": true,
+    "storageVariantSubmissionBeforeRetirement": true,
+    "activeCubeSamplingPreserved": true,
+    "originalDataAndLayerCountsPreserved": true,
+    "physicalCrashResolutionVerified": false,
+    "activeMismatchFixed": false,
+    "exactActiveFailureReproduced": true
+  },
+  "cache": {
+    "runs": 2,
+    "referenceAndCorrectedCompared": true,
+    "measurements": [
+      {
+        "key": "semantic key",
+        "creates": 2,
+        "hits": 4,
+        "pipelineApiCpuMs": 13.426,
+        "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+      },
+      {
+        "key": "0.21 reference",
+        "creates": 3,
+        "hits": 3,
+        "pipelineApiCpuMs": 1.451,
+        "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+      },
+      {
+        "key": "semantic key",
+        "creates": 2,
+        "hits": 4,
+        "pipelineApiCpuMs": 0.919,
+        "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+      },
+      {
+        "key": "0.21 reference",
+        "creates": 3,
+        "hits": 3,
+        "pipelineApiCpuMs": 1.202,
+        "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+      }
+    ],
+    "physicalFPSImprovementClaimed": false
+  },
+  "performance": {
+    "trueGPUTimeImplemented": false,
+    "isolatedEngineCPUImplemented": false,
+    "displayTimestampsRetained": true,
+    "frameAndCommandRecordsEach": 8,
+    "archiveScratchBytes": 65536,
+    "archiveMaxHandles": 8,
+    "readbackMaxStagingBytes": 1048576
+  },
+  "main": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "stage": 3,
+  "stagesLeft": 5,
+  "physicalSceneThisBuildVerified": false,
+  "playable": false
+}

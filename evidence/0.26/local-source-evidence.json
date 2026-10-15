@@ -1,0 +1,19 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "modulesInspected": 4808,
+  "arrayShaderDeclarations": 10,
+  "originalVS": "6153fb6404c740ac049805cd05964a8e1ae36860f3f3f0c3e344e51335b8e538",
+  "originalPS": "c243a1fc6bf9820ca67d61b966dfcb36114372c81797cfcd091682ef379fb930",
+  "unchangedCriticalFiles": [
+    "native-ios/renderer/draw_pipeline.inc",
+    "native-ios/renderer/draw_shader.inc",
+    "native-ios/renderer/native_upload.inc",
+    "native-ios/renderer/native_queries.inc",
+    "native-ios/renderer/native_readback.inc",
+    "native-ios/renderer/native_srv.inc",
+    "native-ios/renderer/cache_budget.h"
+  ],
+  "runtimePayloadCaptured": false,
+  "scenePixelsVerified": false,
+  "physicalFPSImprovementClaimed": false
+}

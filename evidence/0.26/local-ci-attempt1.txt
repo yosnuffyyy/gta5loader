@@ -1,0 +1,5 @@
+Run 38768609611, source 0f7ce5f23a35daaaa1dd3c0f0218c8385e14cadd: FAILED
+2026-10-15T16:24:09.9354620Z PASS: captured 5632/5633 five-mip single-layer array contract; 972 dimension/layer/MS combinations; old enum-equality rejection reproduced.
+2026-10-15T16:28:13.8906200Z native-ios/renderer/array_srv_audit.inc:16:45: error: incompatible pointer types initializing 'const uint8_t *' (aka 'const unsigned char *') with an expression of type 'volatile _Atomic(uint8_t) *' [-Werror,-Wincompatible-pointer-types]
+2026-10-15T16:28:13.9700230Z ##[error]Process completed with exit code 1.
+Fixture readback verification corrected to use existing host_load atomic memory reader; production fix unchanged.

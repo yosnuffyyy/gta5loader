@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "modules": 4808,
+  "pipelines": 4808,
+  "vs": 1112,
+  "ps": 3667,
+  "cs": 29,
+  "clip": 500,
+  "failures": 0,
+  "untranslated": 111,
+  "shards": 3,
+  "maximumConcurrentProgramsPerProcess": 1,
+  "gameSceneVerified": false
+}

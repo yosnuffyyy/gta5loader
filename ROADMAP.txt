@@ -1,16 +1,18 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated2026-10-15. Native0.25; Stage3 remains active; five stages left.
+Updated2026-10-15. Native0.26; Stage3 remains active; five stages left.
 
 LATEST EVIDENCE
-User reports real Prologue characters, weapons/scenery and15-20FPS portions
-after0.24 cache work; not independently measured. Active708/709 cube/2D
-crash remains unresolved.0.25 fixes related SRV range, generation, format,
-proxy-encoding and mip-isolation defects. New pixel/negative/sanitizer gates
-and4,808 shader pipelines pass. Producer null/stale-slot handoff is a lead,
-not proven root cause. No Stage3 completion or physical performance claim.
-CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38763812970
-Audited unsigned ARM64 IPA; all24 prior IPAs preserved. Keep640x360.
-See ENGINEERING-0.25.txt and VERIFICATION-0.25.txt.
+User reports latest build rendered~4seconds of Prologue before SRV5633
+2D/array validation failure. Earlier708/709 inactive specialization worked
+in that run; cache146 creations/24068 hits/0 evictions. Prior longer scenes
+and brief~21FPS are user evidence, not sustained verification.
+0.26 fixes the0.25 one-layer2D/array validation regression. Exact original
+blit shaders pass12 draws/3072 checked pixels; full graphics/runtime suites
+pass. Physical continuation, animation and controls still need verification.
+Active708/709 cube sampling remains a separate unresolved producer mismatch.
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38769558479
+Audited unsigned ARM64 IPA; all25 prior IPAs preserved. Keep640x360.
+See ENGINEERING-0.26.txt and VERIFICATION-0.26.txt.
 
 HISTORICAL CHECKPOINTS
 

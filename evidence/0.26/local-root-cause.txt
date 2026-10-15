@@ -1,0 +1,40 @@
+Native0.26 root-cause review, before physical verification
+
+Native0.25 introduced literal SRV enum equality in srv_shader_contract.
+The reported SRV dimension4 is D3D TEXTURE2D; the reflected native enum3
+is WebGPU 2DArray, translated to D3D dimension5 by srv_shader_dimension.
+They belong to the same 2D resource family. One selected layer satisfies
+an array shader; a non-array shader requires exactly one selected layer.
+D3D11.3 functional specification section22.3.12 documents these requirements:
+https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
+
+Original VS4e1d5d361e0ed0bc is im/VS_Blit. PS57bf4a9b8c9330c5 is
+im/PS_BlitTexArray, group1 binding39 / original slot7, texture_2d_array<f32>.
+Layer index comes from cb5 element3.w and is not proven inactive. It is
+preserved. DXGI77 is BC3 UNORM (float sampling), not an integer texture.
+The image remains one 64x64 layer, five mips, version6 after five uploads.
+No additional faces, textures, shader variants or waits are introduced.
+
+The old0.24 path used shader view dimension directly; the strict0.25
+contract caused this regression.0.26 keeps all0.25 range, format, source
+ownership and generation checks while allowing valid 2D/2D-array views.
+Cube/3D/MS boundaries and numeric-format validation remain unchanged.
+
+Exact SRV words from phone: [5633,0,5632,77,4,0,5,0,0].
+The phone log supplies dimensions and upload count, not original mip bytes,
+vertex descriptor, full constants or complete stream. The new GPU fixture
+reconstructs CREATE_TEXTURE from those reported properties and uses known
+BC3 colors, synthetic full-screen vertices and uniforms with original
+unmodified shader files. It checks all five mips, sRGB, dynamic layer1 on
+an actual two-layer resource, selected-layer offsets, null descriptor,
+content update, source-ID reuse and one-pipeline reuse. It is not a replay
+of full game imagery. Previous negative stale-generation and cube tests
+remain enabled, with a new multilayer-to-nonarray rejection.
+
+Earlier708/709: the user reports certified inactivity handled this run.
+The exact active selector2/count1 mismatch remains a separate explicit
+negative fixture; this fix does not turn an active2D/cube mismatch valid.
+
+Performance: no new allocation/synchronization in runtime fix. Pipeline
+cache, uniform queue reuse, shader specialization and archive reader code
+remain identical. Benchmark and phone FPS claims require their own evidence.

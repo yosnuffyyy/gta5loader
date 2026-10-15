@@ -1,0 +1,17 @@
+PASS: production null multisample textures and typed float/uint/sint bind groups validated (3 cases). Pixel output is checked separately by rendering regressions.
+PASS: original exact Prologue pair rejected with Location[15] under a real requested device limit of 15; expected validation captured only inside this negative CI test.
+PASS: recorded Prologue VS 7db515e410659eca + PS 394c572f727d25e8: real modules, packed bindings, special constants, clip outputs and production cached pipeline. Synthetic vertex/attachment fixtures; scene pixels not claimed.
+Reported ped_alpha cold API CPU wall: modules 7.101 ms, varying link 0.811 ms, pipeline 401.145 ms; cache hit verified. Mac runner only, no iPhone FPS or GPU time claim.
+PASS: reported ped_alpha VS a276344f1111242f + PS 996bb42f448956f2: exact original sources, packed layouts, native clip outputs, 15-variable link and cached Metal pipeline. Synthetic input/attachment descriptors; missing iPhone SRV descriptor and scene pixels not verified.
+PASS: exact ped_alpha pair and captured 709/708 descriptor: four certified light guards, nine pipeline/cache configurations including original zero-light outer guard, original native clips/15-variable link, bounded variant eviction/recreation. Synthetic uniforms/layout; scene pixels not claimed.
+PASS: exact physical active binding reproduced: VS ac2dd56e1111be56 + PS 996bb42f448956f2 pipeline validates; count 1 / selector 2, captured black BC1 708/709 rejects six-layer sampling. No inactivity proof, draw, layer fabrication or crash-resolution claim.
+PASS: exact 5632/5633 BC3 five-mip SRV and original VS 4e1d5d361e0ed0bc + PS 57bf4a9b8c9330c5: 12 draws / 3072 pixels; mip ranges, sRGB, dynamic array layers, update/cache reuse and resource recreation; 1 pipeline / 11 hits / 0 evictions. Synthetic payloads; no scene or phone FPS claim.
+AUDIT progress: modules 200 pipelines 200 failures 0
+AUDIT progress: modules 400 pipelines 400 failures 0
+AUDIT progress: modules 600 pipelines 600 failures 0
+AUDIT progress: modules 800 pipelines 800 failures 0
+AUDIT progress: modules 1000 pipelines 1000 failures 0
+AUDIT progress: modules 1200 pipelines 1200 failures 0
+AUDIT progress: modules 1400 pipelines 1400 failures 0
+AUDIT progress: modules 1600 pipelines 1600 failures 0
+PASS: original shader audit shard 0/3; modules 1615; native Metal pipelines 1615; VS/PS/CS 385/1220/10; clip shaders 180; failures 0; untranslated records 42 (explicitly unavailable, not claimed fixed). No game scene or input is verified by compilation.

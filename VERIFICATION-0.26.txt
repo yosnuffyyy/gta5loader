@@ -1,0 +1,16 @@
+Native0.26 — Stage3 remains in progress.
+Source 5ecf1a636c9c876f7b71e2212683e8cab55a64b8
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38769558479 — PASS
+
+Fixed: valid one-layer2D SRV consumed by original2D-array shader.
+Exact original shader pair:12 draws/3072 pixels,1 pipeline/11 hits.
+30 GPU SRV cases/480 pixels +10 controlled failures per run, twice.
+73,216 sanitized range cases +972 dimension/layer/MS combinations.
+4,808 original modules/pipelines; existing shader/runtime gates retained.
+Physical continuation past5633 and sustained Prologue remain unverified.
+Earlier active708/709 cube mismatch remains a distinct negative test.
+
+IPA GTA-Native-Probe-0.26-unsigned.ipa
+Bytes 102274708
+SHA256 77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a
+All25 previous IPAs preserved. See ENGINEERING-0.26.txt.

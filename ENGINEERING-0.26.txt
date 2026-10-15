@@ -1,0 +1,114 @@
+NATIVE 0.26 ENGINEERING — STAGE 3 IN PROGRESS
+Source 5ecf1a636c9c876f7b71e2212683e8cab55a64b8
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38769558479 — PASS
+
+FIXED AND INDEPENDENTLY VERIFIED
+The reported 5632/5633 mismatch was a Native0.25 validation regression.
+The original SRV is a TEXTURE2D view of a one-layer BC3 image; the original
+im/PS_BlitTexArray shader expects texture_2d_array<f32>. A single selected
+2D layer is valid for an array shader. Native0.25 required identical view
+and shader enum values and rejected it before constructing the valid view.
+The common contract now accepts 2D/2D-array views within the same resource
+family, preserving the selected range. Non-array shaders still require
+exactly one selected layer. Cube, 3D, multisample, numeric type, format,
+mip/layer bounds and source-generation checks remain enforced.
+
+The shader pair is VS4e1d5d361e0ed0bc (im/VS_Blit) and
+PS57bf4a9b8c9330c5 (im/PS_BlitTexArray). Group1 binding39 maps to slot7.
+Its sample type is float; native dimension3 means2DArray, not3D.
+The original dynamic layer comes from cb5 element3.w and remains intact.
+No shader specialization, texture replication, fabricated layers, discarded
+sample or additional CPU/GPU synchronization is used by this fix.
+
+The fixture uses the exact original shader sources and reported SRV words
+[5633,0,5632,77,4,0,5,0,0]. It reconstructs the64x64 one-layer/five-mip
+resource and uploads five deterministic BC3 payloads, reaching version6.
+The phone's actual texture bytes, constants, vertices and complete command
+stream were not supplied. This is a targeted production-consumer regression,
+not a full captured Prologue replay or proof of the original scene pixels.
+See evidence/0.26/local-root-cause.txt for the specification and trace.
+
+TEST RESULTS
+First CI attempt38768609611 passed sanitized contracts, then rejected a
+plain pointer to atomic shared memory in the new pixel-check fixture.
+The fixture now reads through existing host_load; warnings remain errors.
+The subsequent complete successful run is identified above.
+- Original pair:12 real Metal draws,3072 checked pixels. Five mip ranges,
+  sRGB reinterpretation, dynamic layer1 on a genuine two-layer texture,
+  nonzero base layer, remaining-count/null descriptor, content refresh,
+  source handle recreation and cached native views.
+- That fixture creates1 pipeline, hits11 times, evicts0; no depth proxy.
+- Expanded common SRV GPU suite:30 cases/480 pixels and10 explicit invalid
+  descriptor/lifetime cases per native process, two independent processes.
+  Float/uint/sint one-layer arrays and single selected array-layer2D views
+  pass. Multi-layer views consumed as non-array are explicitly rejected.
+- Sanitized contract tests:73,216 range cases plus972 dimension/layer/MS
+  combinations, the exact old enum-equality rejection and uint32/sentinels.
+- All4,808 original shader modules/native pipelines, including500 clip
+  shaders, pass. The inventory still includes111 untranslated hull/domain/
+  geometry records; this change does not implement them.
+- All retained shader linking, original708/709 inactive guards, active-cube
+  negative test, occlusion, compute/UAV, depth proxy, format, readback,
+  buffer upload, resource transition, memory, archive and worker gates pass.
+- Local source-only audits also passed across4,808 pinned modules.
+  Ten modules declare2D arrays; no assumption that all are used by Prologue.
+- Sanitizers cover the existing pure-C tests; no claim that the whole
+  Objective-C/Metal backend was run under AddressSanitizer.
+
+PERFORMANCE AND MEMORY
+Pipeline policy, semantic cache keys, uniform queue reuse, query behavior,
+archive bounds and shader specialization are unchanged. The runtime fix
+adds no allocation, texture copy, shader variant or GPU wait.
+The exact-pair regression:1 creation/11 hits/0 evictions for12 draws.
+Retained synthetic192-key working-set benchmark:128-entry reference makes
+576 pipelines/448 evictions;256-entry policy makes192/0 over576 draws.
+Pressure mode remains bounded and tested. Uniform queue regression retains
+33->7 completion waits over96 fixture batches, identical pixels/order.
+These retained before/after comparisons are from earlier cache work, not
+newly claimed speedups from this correction. Mac API timings are recorded
+in local-stability-performance.json; they are not iPhone FPS or GPU time.
+No new physical performance or peak-memory measurement was collected.
+The latest user report146 creations/24068 hits/0 evictions is preserved as
+phone evidence. A brief21FPS window is not sustained performance proof.
+Archive reader remains one64KiB buffer/eight open descriptors; readback
+staging remains bounded to1MiB;640x360 remains the comparison baseline.
+
+REMAINING RISKS / NEXT TASK
+The previous708/709 certified-inactive path is preserved and passes its
+regressions. User reports it handled the most recent run. An ACTIVE cube
+sample against the captured single-layer2D resource remains invalid and
+has a separate negative test; no general elimination claim is made.
+Runtime combinations outside current fixtures, the111 untranslated stages,
+missing metadata/audio and full mission/control progression remain risks.
+Reflection quality is unchanged; optional quality increases remain deferred.
+The next engineering objective is sustained correct Prologue rendering,
+using any next actual failure trace rather than speculative substitutions.
+
+NEXT IPHONE VERIFICATION
+Install0.26 over the prior app and use the existing web folder. Keep640x360.
+Run Trace Prologue startup; check that it passes the previous~4-second point
+without5633 mismatch, and that characters, textures, camera and animation
+remain visually correct for at least60seconds if execution continues.
+Mark the visible-scene window when actual3D appears. Stop and save the final
+report, including fatal operation/shaders if any, real display intervals,
+pipeline creates/hits/evictions, uploads/waits and memory. Check that the
+708/709 inactive specialization still succeeds when its guards prove it.
+Do not interpret presentations or diagnostic pixels alone as gameplay.
+Stage3 remains active. No sustained iPhone scene, controls or FPS claimed.
+
+DELIVERY
+102274708 bytes, unsigned ARM64 iPhone device executable, version0.26.0/build26.
+IPA GTA-Native-Probe-0.26-unsigned.ipa
+SHA256 77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a
+All25 prior IPAs retained byte-for-byte. Native branch only; main unchanged.
+
+AFFECTED SOURCE FILES
+  native-ios/App.m
+  native-ios/Info.plist
+  native-ios/renderer/array_srv_audit.inc
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/shader_audit.inc
+  native-ios/renderer/srv_contract.h
+  native-ios/renderer/srv_fixture.inc
+  native-ios/renderer/test_srv_contract.c
+  source-manifest.json
