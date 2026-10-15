@@ -1,7 +1,17 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-15. Native0.29 controls candidate; Stage4 input engineering active; physical closure gates remain pending.
+Updated 2026-10-15. Native0.30 urgent menu-scroll fix; Stage4 input engineering active; physical closure gates remain pending.
 
-LATEST EVIDENCE —0.29 CONTROLS CANDIDATE
+LATEST URGENT FIX —0.30 MENU SCROLLING
+Native0.29 disabled menu-wide touch cancellation.0.30 scopes protection to
+active game touches, restores menu dragging over controls and moves the
+web-folder selector above input settings.101 UIKit checks and the full
+native graphics/runtime suites PASS. Unsigned ARM64 package audited;
+29 earlier IPAs preserved. Physical swipe/gameplay confirmation is pending.
+Stage3/4 closure gates remain unchanged;640x360/256-entry cache preserved.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
+See ENGINEERING-0.30.txt and VERIFICATION-0.30.txt.
+
+PREVIOUS EVIDENCE —0.29 CONTROLS CANDIDATE
 User reports the latest physical run reached a movement prompt:~24 seconds
 of marked3D at~15-16displayedFPS and normal manual Stop with optional shadow
 compatibility. That is not verified player control or a sustained route.

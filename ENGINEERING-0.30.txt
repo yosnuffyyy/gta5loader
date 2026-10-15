@@ -1,0 +1,68 @@
+Native0.30 — urgent menu-scroll fix
+Source:8d08a98cc4e08ed6a1a17c76596ab2802ee49be8
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
+IPA:GTA-Native-Probe-0.30-unsigned.ipa
+Bytes:102319677
+SHA256:35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d
+
+CONFIRMED CAUSE AND FIX
+Native0.29 set canCancelContentTouches=NO on the entire menu scroll view.
+Once a content control began tracking, UIKit could not cancel it to begin
+scrolling. Four new sliders also placed the folder selector further down.
+NativeMenuScrollView now enables cancellation for ordinary menu content,
+including buttons, sliders and switches. Only active NativeGameControls
+and its descendants retain their touches until release; game multitouch
+is preserved. Scroll dragging/bounce remains enabled. No gesture delegate,
+private API, per-frame polling or input/graphics synchronization is added.
+The folder button is immediately after the game view (hidden before launch),
+above Fullscreen and the four sliders: "Select / check web folder".
+
+CHANGED FILES
+native-ios/App.m: scoped touch ownership, folder placement and version text.
+native-ios/Info.plist: version0.30.0/build30, same bundle identity.
+native-ios/input/test_ui.m:23 additional focused assertions.
+source-manifest.json: updated hashes/scope.
+203 other source/workflow entries are byte-identical to Native0.29.
+All29 previous IPAs, including0.29, retain exact size and SHA256.
+
+VERIFIED
+101 production UIKit/controller assertions in iPhone16ProMax simulator,
+iOS26.2. New checks cover scroll configuration, cancellation over menu
+controls, folder ordering/initial visibility, nontrivial content size,
+programmatic lower-option reachability, active game touch ownership and
+three fullscreen enter/exit cycles preserving menu scrolling.
+These inspect real UIKit policy/layout; they do not inject finger swipes.
+71 original-engine input checks PASS; C-produced pad bytes and unchanged
+engine instructions. Native input ASan/UBSan and thread sanitizer PASS.
+4808 native Metal shader modules/pipelines,500 clip shaders,0 failures.
+Full graphics/runtime suite in2 processes PASS, including709 fallback,
+5633 SRV correction, occlusion, readbacks, workers, memory and archive I/O.
+256-entry cache fixture:192 creations,384 hits,0 evictions/576 draws.
+Unsigned ARM64 iPhone package audit PASS, minimumOS17, no WebKit/JSC,
+no writable+executable segment or simulator test harness in device binary.
+207 published source entries independently matched by Git blob SHA.
+
+PERFORMANCE AND LIMITATIONS
+No engine, renderer, shader, upload, cache or archive implementation changed.
+The cancellation policy runs on touch arbitration, not each game frame.
+No device latency, FPS or reflection improvement is claimed.
+Physical swipe behavior on iOS27.0.1 remains to be confirmed by the user.
+Physical DualSense/touch gameplay and sustained mission progression remain
+pending; simulator assertions and successful builds do not establish them.
+Stage3/4 completion gates remain unchanged.111 untranslated H/D/G shader
+records remain unsupported. Native audio output is a separate task.
+
+NEXT DEVICE CHECK
+Install0.30 over the previous app using the existing signing setup. At launch
+the folder selector should be near the top. Swipe vertically over menu
+buttons or slider rows to reach all lower options and return to the top.
+Verify a button tap still selects the folder without firing during a scroll.
+After starting, game-surface drags intentionally control the game; swipe
+outside that surface to scroll menus. In fullscreen use Settings >
+Fullscreen:Off to return to the scrollable menu. Recheck sticks/multitouch
+and source handoff; no physical controls success is claimed yet.
+
+UIKit behavior reference:
+https://developer.apple.com/documentation/uikit/uiscrollview/cancancelcontenttouches
+https://developer.apple.com/documentation/uikit/uiscrollview/touchesshouldcancel(in:)
+Rollback:preserved0.29 IPA and parent3d60ae276f3935552b3b06c39d147ed102c498a4.

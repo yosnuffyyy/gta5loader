@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "baseline": "Native0.29",
+  "unchangedSourceEntries": 203,
+  "changedSourceFiles": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/input/test_ui.m"
+  ],
+  "preservedIPAs": 29,
+  "rendererChanged": false,
+  "inputCoreChanged": false
+}

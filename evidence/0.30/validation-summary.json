@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "source": "8d08a98cc4e08ed6a1a17c76596ab2802ee49be8",
+  "run": 38814618343,
+  "job": 116696048002,
+  "inputEngineChecks": 71,
+  "productionUIKitChecks": 101,
+  "ASanUBSan": true,
+  "threadSanitizer": true,
+  "originalEngineInstructionsChanged": false,
+  "fullRuntimeProcesses": 2,
+  "metalShaderModules": 4808,
+  "metalPipelines": 4808,
+  "clipShaders": 500,
+  "untranslatedRecords": 111,
+  "pipelineWorkingSet": {
+    "keys": 192,
+    "draws": 576,
+    "capacity": 256,
+    "creates": 192,
+    "hits": 384,
+    "evictions": 0,
+    "processes": 2
+  },
+  "IPA": "35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d",
+  "ipaBytes": 102319677,
+  "version": "0.30.0",
+  "physicalGameplayControlsVerified": false,
+  "sourceEntriesVerified": 207,
+  "previousIPAsPreserved": 29
+}

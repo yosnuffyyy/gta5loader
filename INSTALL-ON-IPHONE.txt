@@ -1,24 +1,16 @@
-Native0.29 — unsigned ARM64 controls test candidate
+Native0.30 — urgent menu-scroll fix
+Source:8d08a98cc4e08ed6a1a17c76596ab2802ee49be8
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
+IPA:GTA-Native-Probe-0.30-unsigned.ipa
+Bytes:102319677
+SHA256:35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d
 
-Preserve0.28. Install GTA-Native-Probe-0.29-unsigned.ipa with the existing
-signing/sideload setup. Select your extracted web folder and keep640x360.
-Use the same optional reference-shadow setting that let0.28 progress.
-Pair DualSense through iPhone Bluetooth settings, then Trace Prologue startup.
-
-At the movement prompt, check movement/camera and the game pad actions:
-aim/fire together, sprint/jump, contextual action/reload/weapon and Options.
-A/B/X/Y game prompts correspond to Cross/Circle/Square/Triangle.
-Touch the game: pad overlay should appear and the initial gesture should
-work. Use a fresh controller action after neutral: it should disappear.
-Test held input handoff, disconnect/reconnect and no stuck movement/fire.
-Fullscreen and sensitivity/deadzone/size/opacity preferences persist. The
-Settings button remains available in fullscreen. Backgrounding stops the
-native session safely; start again after returning.
-
-Mark actual visible3D; preserve the final report including Input counters,
-queue/overflow/latency and actual display intervals. These diagnostics alone
-do not verify successful gameplay. Physical controls are pending verification.
-See INPUT-CONTROLS-0.29.txt and ENGINEERING-0.29.txt.
-
-SHA256:4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38811113198
+Use the existing signing/sideload setup to install0.30 over the previous app.
+Preserve all previous IPAs. "Select / check web folder" is near the top,
+above Fullscreen and the input sliders. Swipe over menu content to reach
+lower options. Game-surface drags remain gameplay controls while running.
+Fullscreen:Settings > Fullscreen:Off returns to the scrollable menu.
+Keep640x360 and the same optional shadow compatibility setting as before.
+DualSense/touch mappings and test steps:INPUT-CONTROLS-0.29.txt.
+The scroll policy/layout passed101 UIKit checks; actual finger behavior and
+gameplay controls still require physical iPhone verification.

@@ -1,0 +1,14 @@
+Native0.30 — urgent menu-scroll fix
+Source:8d08a98cc4e08ed6a1a17c76596ab2802ee49be8
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
+IPA:GTA-Native-Probe-0.30-unsigned.ipa
+Bytes:102319677
+SHA256:35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d
+
+PASS:101 UIKit assertions (23 new),71 original-engine input checks,
+ASan/UBSan,TSan,4808 Metal modules/pipelines and complete runtime suites.
+PASS:unsigned ARM64 package and207 source entries;29 previous IPAs preserved.
+Menu policy/layout/programmatic scrolling verified in simulator. Physical
+finger swipes and DualSense/touch gameplay on iOS27 are not yet verified.
+No renderer/input-core changes or FPS improvement. Stage3/4 remain open.
+See ENGINEERING-0.30.txt and evidence/0.30.
