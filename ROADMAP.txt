@@ -1,23 +1,19 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-15. Native 0.23; Stage 3 remains active; five stages left.
+Updated 2026-10-15. Native 0.24; Stage 3 remains active; five stages left.
 
 LATEST EVIDENCE
-Physical Native 0.22: user reports 20-30 seconds of real Prologue characters,
-weapons and scenery near 10 FPS, followed by source 708/SRV 709 cube/2D mismatch.
-Full failure uniforms and source history were not supplied. Native 0.23
-reproduces an additional zero-local-lights/stale-cube-selector cause and
-handles only proven unreachable sampling. Active mismatches remain errors.
-Semantic pipeline keys reduce equivalent native pipelines in pixel tests;
-new-object creation stays batched with exact query/pixel ordering verified.
-An optional user-marked actual-display window separates loading.
-All 4808 shader pipelines and retained native regressions passed in CI.
-CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496
-Audited unsigned 0.23 ARM64 IPA; all 22 previous IPAs preserved.
-No physical crash-resolution or FPS improvement claim for 0.23.
-Next: verify correct continuous Prologue and the actual guard/binding state;
-then optimize the largest correlated measured cost. Keep 640x360.
-Stages 1/2 complete; Stage 3 active; five stages left including Stage 3.
-See ENGINEERING-0.23.txt and VERIFICATION-0.23.txt.
+Physical reports confirm real Prologue characters, weapons and scenery.
+Latest marked window: 105 displays / 15.35s, then active source708/SRV709
+cube/2D mismatch; count1, selector2. Crash remains unresolved.
+Native 0.24 reproduces that exact invalid binding without inventing layers.
+Bounded 256/128 pipeline cache and queue-ordered uniform reuse passed pixel,
+query-count, pressure, lifetime and retained regressions. 4808 pipelines pass.
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38753929084
+Audited unsigned ARM64 IPA; all 23 previous IPAs preserved.
+No physical FPS gain or sustained gameplay claim. Highest priority is the
+engine forward-light shadow selection and texture-binding handoff.
+Keep 640x360. Stages 1/2 complete; Stage 3 active.
+See ENGINEERING-0.24.txt and VERIFICATION-0.24.txt.
 
 HISTORICAL CHECKPOINTS
 

@@ -1,0 +1,20 @@
+Native 0.24 — Stage 3 remains in progress
+Source 8a0ebd62741af186e3ebefa4c60e9bbbb44b128e
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38753929084 — PASS
+
+Active source708/SRV709 cube/2D mismatch remains unresolved. Exact shader,
+resource/upload/view and active guard state reproduce the failure.
+No fabricated faces or disabled required sampling. Better fatal diagnostics.
+
+GPU comparison twice: 192 required pipeline keys / 576 draws; capacity
+128->256 yields creates 576->192, evictions 448->0, exact pixels/query results.
+Pressure shrink/regrow and in-flight resource retention verified.
+Uniform ordering twice per policy: 96 batches, all pixels/counts; completion
+wait calls 33->7. Four-page query backpressure verified under both policies.
+All 4808 shader pipelines, 500 clip and retained runtime/graphics gates pass.
+Mac CI timings are not iPhone FPS; no physical crash-resolution claim.
+
+IPA GTA-Native-Probe-0.24-unsigned.ipa
+Bytes 102274626
+SHA256 f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b
+All 23 previous IPAs preserved. See ENGINEERING-0.24.txt.

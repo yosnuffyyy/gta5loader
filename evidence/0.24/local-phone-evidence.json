@@ -1,0 +1,103 @@
+{
+  "version": "Latest supplied physical report; version header omitted. Development baseline Native 0.23.",
+  "shader": {
+    "vs": "ac2dd56e1111be56",
+    "ps": "996bb42f448956f2"
+  },
+  "texture": [
+    708,
+    2,
+    4,
+    4,
+    1,
+    1,
+    1,
+    71,
+    8,
+    1
+  ],
+  "upload": [
+    708,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    4,
+    1,
+    8,
+    1,
+    8,
+    0,
+    0
+  ],
+  "srv": [
+    709,
+    0,
+    708,
+    71,
+    4,
+    0,
+    1,
+    0,
+    0
+  ],
+  "guards": [
+    {
+      "slot": 6,
+      "word": 63,
+      "bits": "40000000",
+      "value": 2
+    },
+    {
+      "slot": 3,
+      "word": 8,
+      "bits": "00000001",
+      "signedCount": 1
+    }
+  ],
+  "created": 710,
+  "uploaded": 711,
+  "lastBound": 915104,
+  "failed": 915107,
+  "draw": [
+    1,
+    672,
+    1,
+    0,
+    0,
+    0
+  ],
+  "cache": {
+    "capacity": 128,
+    "creates": 1461,
+    "hits": 108140,
+    "evictions": 1333,
+    "exactRecentRecreations": 1259
+  },
+  "completion": {
+    "count": 31491,
+    "totalMs": 17333.278,
+    "maxMs": 6.976
+  },
+  "readbacks": {
+    "count": 440,
+    "totalMs": 591.868,
+    "maxMs": 1.626
+  },
+  "pipeline": {
+    "totalMs": 2167.601,
+    "maxMs": 673.197
+  },
+  "visible": {
+    "elapsedSeconds": 15.35,
+    "displays": 105,
+    "intervalSamples": 104,
+    "meanMs": 145.005,
+    "p95Ms": 333.364,
+    "p99Ms": 383.368,
+    "maxMs": 966.755
+  },
+  "limits": "User supplied physical report; not reproduced engine execution. Sampler14 and all related SRVs are absent; no valid cube source identified."
+}

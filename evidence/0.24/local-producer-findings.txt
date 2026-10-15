@@ -1,0 +1,37 @@
+Original engine trace, read-only; physical texture failure is NOT fixed.
+
+The latest supplied history (version header omitted) proves creation at command710 as one-layer BC1,
+one zero-filled eight-byte upload at711, version2, no intervening mutation.
+Captured SRV709 is TEXTURE2D, not a cube descriptor. The current shader has
+count1 and selector2. All three enclosing conditions permit its t14 depth-
+cube sample. Removing it as inactive would be wrong.
+
+Original Wasm functions326/268 copy and serialize ArraySize, with native
+create_texture using exactly serialized array count. No lost cube faces
+were found. The exact full shaders are ped_alpha VS_PedTransform
+ac2dd56e1111be56 and PS_PedTextured_Four 996bb42f448956f2.
+
+Additional source inspection:
+44278 CLightGroup::SetForwardLights reads CParaboloidShadow::GetLightShadowIndex
+(44528), copies shadow type into a float-vector component, then obtains
+texture pointers through shadow-map arrays and SetGlobalVar(9881). Its
+invalid/no-shadow branch zeroes shadow constants and installs defaults.
+9881 stores the supplied texture pointer in the global variable table;
+it does not create layers or change formats. 43801 CreateBaseMaps allocates
+shadow arrays and a separate default texture. These static paths do not
+establish which exact pointer/default selection led to source708 on the
+phone. No engine binary patch is justified from them alone.
+
+The supplied report omits sampler14's comparison descriptor, other shadow
+SRVs, and the producing engine light/cache entry. New fatal-only diagnostics
+capture sampler14, CB3/CB6 handles/offsets, SRV14 and24..30 descriptors. No
+per-draw log flood is added. Next root-cause task is the engine's active
+forward-light shadow selection/global binding handoff, with actual resource
+and sampler state. A successful synthetic null/cube test is not a fix for
+this bound, invalid 2D resource. The browser's empty-cube substitution is
+not copied; it cannot recover the missing shadow-map data.
+
+New regression keeps the exact active failure, validates the original pair
+with synthetic vertex layout/target, and checks original data/layer retention
+and zero executed draws on rejection. GPU validation status is recorded in
+the final CI report, not assumed from this investigation.

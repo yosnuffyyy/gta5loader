@@ -1,0 +1,45 @@
+{
+  "scope": "Source evidence only; actual floor material/texture/mip/quality settings not captured.",
+  "matchingModules": 320,
+  "examples": [
+    {
+      "hash": "1128d2f96a6a9991",
+      "effect": "normal_spec_cubemap_reflect",
+      "program": "PS_Textured_Eight",
+      "sha256": "2f4f81de19f352267e43418bdb220708c2931fb5a45b89470c37ff8fcf5458b2",
+      "cubeDeclarations": [
+        "@group(1u) @binding(36u) var t4 : texture_cube<f32>;\r"
+      ],
+      "cubeSamples": [
+        "  r4 = textureSample(t4, s4, r3.xyzx.xyz);\r"
+      ]
+    },
+    {
+      "hash": "5bb1066ad5a1bc82",
+      "effect": "normal_spec_cubemap_reflect",
+      "program": "PS_Textured_Zero_DOF",
+      "sha256": "565b64aa4e29a2ef218fa9d99540fb0b007042935023868845058f387273650b",
+      "cubeDeclarations": [
+        "@group(1u) @binding(36u) var t4 : texture_cube<f32>;\r"
+      ],
+      "cubeSamples": [
+        "  r4 = textureSample(t4, s4, r3.xyzx.xyz);\r"
+      ]
+    },
+    {
+      "hash": "172bd78e9e98cedc",
+      "effect": "normal_spec_cubemap_reflect",
+      "program": "PS_Textured_Zero_CutOut",
+      "sha256": "67d1d68cd3a8de143afbc4b10cff72362763e81a09054bc90251cf826186587c",
+      "cubeDeclarations": [
+        "@group(1u) @binding(36u) var t4 : texture_cube<f32>;\r"
+      ],
+      "cubeSamples": [
+        "  r4 = textureSample(t4, s4, r3.xyzx.xyz);\r"
+      ]
+    }
+  ],
+  "samplerFindings": "Original min/mag/mip filter bits translated; nonzero D3D MipLODBias is not implemented in the current native sampler path. No evidence the floor uses one. No quality or resolution change.",
+  "baseline": "640x360; cannot infer exact reflection target size or quality from screenshot description.",
+  "finding": "Original cube-reflect material shaders declare cube resources; recorded sample expressions are not rewritten. No binding trace establishes that these examples are the floor material. Output resolution alone does not prove incorrect filtering or a half-resolution reflection target."
+}

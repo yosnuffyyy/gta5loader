@@ -1,98 +1,28 @@
-NATIVE INTEGRATION 0.20 — WINDOWS INSTALLATION
+NATIVE 0.24 — OPTIONAL PERFORMANCE AND DIAGNOSTIC BUILD
 
-Install GTA-Native-Probe-0.20-unsigned.ipa over the existing native app using
-your usual local signing tool, the same Apple account and bundle identifier.
-Keep your extracted web folder and existing installation. No game-file or
-Windows prerequisite reinstall is needed. All 19 older IPAs are preserved.
+GTA-Native-Probe-0.24-unsigned.ipa
+Source 8a0ebd62741af186e3ebefa4c60e9bbbb44b128e
+SHA256 f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b
 
-When you can test, select your existing web folder and tap Trace Prologue
-startup. Keep the game view visible. Check whether actual characters/world,
-camera movement, textures and animation appear after North Yankton and
-continue for roughly two minutes. Tap Stop and copy the full final report,
-including negotiated varying/clip/border limits, presented-pixel samples,
-logical GPU allocation trends and any fatal operation/binding breadcrumbs.
-The scene gate is stage 3. Audio output and game controls remain stage 4.
+The active source708/SRV709 cube/2D crash remains unresolved. This build
+adds verified bounded caching, uniform queue ordering and fatal diagnostics.
+It is not a crash-resolution or playable-build claim. Keep the previous IPA
+for rollback; all 23 earlier IPA files have been preserved.
 
-Optional diagnostic button: Run GPU queue + startup tests includes 180 actual
-query cases, cancellation and eight error boundaries, plus varying
-location/flat/clip pixel checks and byte-update/copy/resolve checks. CI passed
-two full runs and the exact Prologue shader pair under 15 varying slots. Its fixture
-pixels and first-archive checkpoint are separate from a real game scene.
-Required unported operations still stop with detailed diagnostics.
-See VERIFICATION-0.20.txt and ENGINEERING-0.20.txt. No physical 0.20 scene or
-responsive controls are claimed by the CI/IPA audit.
+When convenient, use your existing local signing/install procedure, same
+bundle identifier and account. Keep the extracted web folder. No original
+assets or Windows prerequisites need to be replaced for this update.
+Do not send signing credentials, certificates or private keys to this chat
+or GitHub. Use your established tool's local prompts.
 
-This is a native engine diagnostic app. It does not launch GTA gameplay yet.
-It is separate from both the working PC game and the Safari installation.
+Select the existing web folder and Trace Prologue startup. Preserve 640x360.
+Mark the visible scene only after actual characters/world appear, then
+observe textures, camera movement and animation. Compare marked actual
+display intervals, pipeline creations/evictions, uniform/query pressure
+waits, uploads and memory. If the known crash recurs, retain the complete
+report including Active shadow bindings, sampler raw data and related SRVs.
+No immediate device test is required while you are unavailable.
 
-1. The windows folder contains Apple's iTunes64Setup.exe and iCloudSetup.exe
-   linked by Sideloadly, plus SideloadlySetup64.exe from https://sideloadly.io/ .
-   Install the Apple prerequisites, then Sideloadly, following their prompts.
-   Follow the site's Windows prerequisites for Apple's web iTunes/iCloud
-   versions. Do not uninstall existing Apple software without checking those
-   instructions and your sync/backup needs.
-2. Connect your unlocked iPhone by USB and trust this computer on the phone.
-3. Open Sideloadly, select your phone, and choose GTA-Native-Probe-0.20-unsigned.ipa.
-4. Use the normal Apple ID signing/install mode with your free Apple account.
-   Enter the password and any two-factor code only in the local signing tool.
-   No account credentials, certificates or private keys belong in GitHub.
-5. Install. If requested, enable Developer Mode in iPhone Settings > Privacy
-   & Security, and trust your developer profile in Settings > General >
-   VPN & Device Management. Follow the iPhone's restart/confirmation prompts.
-6. Open GTA Native Probe, tap Check local web folder and select the extracted
-   web folder in Files. It must contain data/manifest.json and game files.
-   Tap Trace Prologue startup and copy its report. If iOS closes the app, reopen
-   it and copy the retained report.
-7. The separate Run native engine tests button retains the basic converted
-   engine and Metal diagnostic. The older renderer and worker tests remain
-   available for regression checks. None starts verified gameplay. Folder checks
-   and asset tests use bounded sample reads; no 21 GB copy or installation
-   happens in this prototype.
-   Safari's private installed-file storage is not accessible to a native app;
-   select the original extracted folder in Files, if you still have it.
-8. Optionally pair a controller in Settings > Bluetooth. Return to the app
-   and press its primary face button (PlayStation Cross / Xbox A).
-
-No JIT activation is required: the engine is compiled to ARM64 ahead of time.
-No special increased-memory entitlement is requested in this diagnostic app.
-Native apps still have iOS memory limits; this build does not bypass them.
-
-Free-account signing lasts seven days. Sideloadly can refresh the app when
-your computer and phone are connected; it does not require the computer to
-stay on while you use the app. Keep the same account and app identifier
-when refreshing. The original PC port and Safari game are separate apps.
-
-Official references, checked 2026-10-12:
-https://sideloadly.io/
-https://sideloadly.io/faq
-https://developer.apple.com/help/account/basics/about-your-developer-account
-https://support.apple.com/guide/security/app-code-signing-process-sec7c917bf14/web
-
-Official installer downloaded over HTTPS, 143898976 bytes:
-SHA-256 7f5bbd15e00897c301f51c133a552aead5064ac29134b74b116d4d200986e49b
-No Windows Authenticode signature was present. The installer has not been run.
-
-Apple prerequisites downloaded from the links on Sideloadly's official site:
-iTunes64Setup.exe — 202759648 bytes
-SHA-256 25b28905a81406a5edbf482f7f3ee4831a8641d32d29dceda5d1eb3e8d534c08
-iCloudSetup.exe — 161146680 bytes
-SHA-256 4cfd20d13cdce2b5c435f2ddaf4ee4c81d976461846bf3b954e8af6cbcdeb9f7
-
-Native0.21: https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865
-Use the audited GTA-Native-Probe-0.21-unsigned.ipa from this run. Preserve
-previous IPAs. Display diagnostics are optional and measure actual drawable
-callbacks; loading screens are included. The exact phone depth/SRV failure
-is not yet established as fixed. See ENGINEERING-0.21.txt before interpreting
-FPS or successful CI as gameplay. Stage3 remains in progress.
-
-Native0.22: https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258
-Use GTA-Native-Probe-0.22-unsigned.ipa from this run; preserve earlier IPAs.
-This candidate fixes only certified inactive cube/2D bindings. Unknown or
-required incompatible bindings remain errors. Keep the same web folder and
-640x360 baseline; see ENGINEERING-0.22.txt for the future test criteria.
-
-Native0.23: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496
-Download artifact ZIP: https://github.com/yosnuffyyy/gta5loader/actions/runs/38744202496/artifacts/11978696531
-Use GTA-Native-Probe-0.23-unsigned.ipa; preserve prior IPAs. Same web folder
-and640x360. Begin visible-scene measurement after actual3D appears.
-See ENGINEERING-0.23.txt for verification limits and future test criteria.
+Optional GPU queue/startup fixtures check deterministic pixels, query counts
+and ordering; they do not prove gameplay. Stage 3 remains in progress.
+See ENGINEERING-0.24.txt and VERIFICATION-0.24.txt for exact results/limits.

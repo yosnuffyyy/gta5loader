@@ -1,0 +1,172 @@
+NATIVE 0.24 ENGINEERING — STAGE 3 REMAINS IN PROGRESS
+Source 8a0ebd62741af186e3ebefa4c60e9bbbb44b128e
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38753929084 — PASS
+
+RESULT AND IMPORTANT LIMITATION
+The active 708/709 cube/2D crash is reproduced and remains unresolved.
+This build is a verified cache/synchronization improvement and diagnostic
+build, not a claim that the recurring crash or sustained gameplay is fixed.
+Previous physical reports establish real characters, weapons and scenery.
+No new physical iPhone result, FPS improvement, or Stage 3 completion is claimed.
+
+P0: EXACT ACTIVE TEXTURE FAILURE
+VS ac2dd56e1111be56 (ped_alpha/VS_PedTransform),
+PS 996bb42f448956f2 (ped_alpha/PS_PedTextured_Four).
+Created at command 710: [708,2,4,4,1,1,1,71,8,1].
+Uploaded at 711: one eight-byte all-zero BC1 block, one layer, one mip.
+SRV: [709,0,708,71,4,0,1,0,0], an original TEXTURE2D view.
+Version 2 and last bound command 915104; failing DRAW 915107.
+CB6 word63=0x40000000 (2.0), CB3 word8=0x00000001 (one light).
+All three conditions permit the required t14 depth-cube sample. It cannot
+be removed as inactive. Six cube faces were not present in the creation or
+upload. Native metadata and original producer ArraySize serialization agree.
+
+Original Wasm functions 326/268 preserve the descriptor and array count;
+328 carries the view description. CLightGroup::SetForwardLights (44278)
+selects shadow types/textures through shadow arrays and SetGlobalVar (9881).
+The latter stores the original texture pointer; it does not reshape it.
+CreateBaseMaps (43801) allocates arrays and a separate default texture.
+The static trace does not establish which producing light/cache pointer
+selected source 708. Upstream shadow selection/binding is the next task.
+
+The regression validates the original shader pair with a synthetic layout
+and target, then reproduces the exact captured texture/upload/SRV/guard state
+and rejection. It checks one layer, version 2, no proxy allocation and no
+executed draw. It is a negative regression, not rendered-scene verification.
+No fake layers, zero-success substitution, disabled shadows or skipped draw
+was introduced. New fatal-only records include sampler14's full descriptor,
+CB3/CB6 handles/offsets and related SRVs14,24..30 with source dimensions.
+The missing producing engine pointer history still needs investigation.
+
+P1: BOUNDED PIPELINE CACHE
+Latest physical report: 1461 creations, 1333 evictions, 1259 exact recent-key
+recreations at capacity 128. Therefore no more than 202 distinct keys were
+observed in that run (1461-1259). This is a bound from counters, not a full
+captured command trace. Capacity 256 can retain that observed set in normal
+memory conditions; future scenes may use more keys.
+The new cap is 256, falling to 128 below 256 MiB OS-reported headroom and
+recovering at 512 MiB. Headroom is checked at most once per second. Hysteresis
+limits oscillation. It is not a guaranteed total app-memory budget.
+LRU eviction releases only owned references; in-flight commands retain
+resources. Exact semantic keys are preserved. Extra fixed metadata is
+220160 bytes (215 KiB); total 534272 bytes, excluding opaque driver objects.
+No driver-memory measurement or serialized Metal pipeline cache is claimed.
+
+GPU benchmark: 192 distinct required depth-bias keys, three cycles, 576 draws,
+147456 exact occlusion samples and all 256 final pixels checked per mode.
+128 entries: 576 creates / 0 hits / 448 evictions.
+256 entries: 192 creates / 384 hits / 0 evictions.
+Pressure cycle 256->128->256: 448 creates / 128 hits / 256 evictions,
+including 64 pressure evictions. Each mode ran twice.
+Actual CI API CPU timings (Apple Paravirtual Metal, cache/order dependent):
+  Policy 128: creates/hits/evictions 576/0/448; peak 128; pressure evictions 0; pipeline API 125.389 ms, linking 48.543 ms.
+  Policy 256: creates/hits/evictions 192/384/0; peak 192; pressure evictions 0; pipeline API 43.173 ms, linking 15.55 ms.
+  Policy 1: creates/hits/evictions 448/128/256; peak 192; pressure evictions 64; pipeline API 76.785 ms, linking 31.09 ms.
+  Policy 128: creates/hits/evictions 576/0/448; peak 128; pressure evictions 0; pipeline API 87.524 ms, linking 37.088 ms.
+  Policy 256: creates/hits/evictions 192/384/0; peak 192; pressure evictions 0; pipeline API 34.799 ms, linking 13.454 ms.
+  Policy 1: creates/hits/evictions 448/128/256; peak 192; pressure evictions 64; pipeline API 82.637 ms, linking 33.117 ms.
+These are synthetic production-command fixtures, not a replay of the phone
+working set. They demonstrate correct reuse and fewer creations, not FPS.
+
+P2: QUEUE-ORDERED UNIFORM REUSE
+Previously every third flushed batch waited for all submitted GPU work
+because the three-slot uniform ring wrapped. Queue writes copy CPU bytes
+and are ordered before their associated next submission and after earlier
+submissions. Reusing the slot therefore does not itself need a CPU wait.
+Reuse is now bounded to 16 submitted batches or 4 MiB of pending uniform
+payload. A preflight bound prevents a batch from exceeding that payload cap.
+Explicit fences, required readbacks and query result dependencies remain.
+Three 512 KiB GPU uniform buffers and the existing CPU mirror are unchanged.
+The payload cap is not a measurement or bound of all driver/GPU memory.
+
+Ordering regression: 96 changing-constant batches (four alternating patterns),
+32 slot wraps, all 256 pixels and exactly 96 query samples, both policies twice.
+Completion calls fall from 33 to 7 in this fixture; no stale data accepted.
+  bounded queue reuse: 7 completion waits, 68.184 ms CPU wait, 6 uniform-pressure waits.
+  0.23 reference: 33 completion waits, 404.294 ms CPU wait, 0 uniform-pressure waits.
+  bounded queue reuse: 7 completion waits, 61.483 ms CPU wait, 6 uniform-pressure waits.
+  0.23 reference: 33 completion waits, 313.636 ms CPU wait, 0 uniform-pressure waits.
+Four-page query pool remains bounded. Greater concurrency can exercise its
+legitimate backpressure path. The original fixture's zero-wait assumption
+was replaced by exact results, all maps completed, bounded memory, stale-ID
+suppression and shutdown checks, under both policies (180 cases each):
+  bounded queue reuse: 12/12 completed maps; 2 query-pool waits, 44.678 ms.
+  0.23 reference: 12/12 completed maps; 0 query-pool waits, 0 ms.
+  bounded queue reuse: 12/12 completed maps; 3 query-pool waits, 58.092 ms.
+  0.23 reference: 12/12 completed maps; 0 query-pool waits, 0 ms.
+Query-pool waits are reported rather than hidden or counted as zero.
+
+PHONE PERFORMANCE EVIDENCE (SUPPLIED REPORT, NOT THIS BUILD)
+105 actual displays in 15.35 seconds (~6.84 displays/s); 104 measured intervals:
+mean 145.005 ms, median 150.014, p95 333.364, p99 383.368, max 966.755.
+31,491 completion waits totaled 17,333.278 ms. Pipeline API calls totaled
+2167.601 ms, with a 673.197 ms maximum. One PRESENT interval included 738.667 ms
+of pipeline creation. Upload-handler time overlaps completion waits; do not
+sum these categories. Native readback submit/map peaked at 1.626 ms in this
+run; this does not reproduce the earlier 2777 ms engine-level exposure stall.
+The render thread mostly waited for queued frames. GPU execution time and
+isolated engine CPU time are not yet measured; no GPU-bound claim is made.
+640x360 and all visual effects/settings remain unchanged.
+
+P3: REFLECTIONS AND OTHER REMAINING RISKS
+320 reflection-related modules were identified by the retained source audit.
+The actual floor material, target size and sampled mip were not captured.
+Original min/mag/mip filter bits are translated. Nonzero D3D MipLODBias is an
+existing unsupported path; no evidence establishes that the floor needs it.
+No reflection-quality change was justified. Do not infer a bad translation
+or half-resolution target solely from the 640x360 output description.
+111 hull/domain/geometry records remain untranslated. Other known remaining
+limits include partial MSAA masks, wireframe, dual-source blending, audio/
+metadata/content mismatches and unverified player controls. No new failure
+trace establishes these as the immediate Prologue blocker. No assets/classes
+were invented or replaced. Shader/presentation counts are not gameplay proof.
+
+FILES CHANGED
+renderer/cache_budget.h, test_cache_budget.c: bounded policy and boundary tests.
+renderer/draw_types.inc, draw_pipeline.inc: 256/128 LRU and pressure handling.
+renderer/native_draw.inc, native_gpu.m: bounded queue-ordered uniform reuse,
+completion accounting and regression integration.
+renderer/stability_fixture.inc, query_fixture.inc: pixel/count/lifetime and
+legacy-policy comparisons, pressure transitions and exact query checks.
+renderer/ped_shadow_audit.inc, shader_audit.inc: exact active negative fixture.
+renderer/shadow_guard.inc: fatal binding diagnostics; guard semantics unchanged.
+renderer/native_metrics.inc: capacities/pressure/uniform reuse diagnostics.
+renderer/perf_fixture.inc: truthful cache-cap label.
+renderer/build-renderer.sh: ASan/UBSan budget unit test.
+renderer/native_scene.c: replace obsolete three-second status with accurate
+prior physical scene evidence and remaining active mismatch.
+App.m, Info.plist: Native 0.24.0 / build 24; source-manifest.json regenerated.
+All renderer paths above are under native-ios/. Engine binary, native host,
+worker implementation, original asset reader, shader sources, pinned backend
+and workflow are unchanged. Native query implementation is unchanged.
+
+VERIFICATION AND BUILD
+Two runtime/GPU regression passes; four 180-case query-policy replays.
+4,808 original shader modules/pipelines, including 500 clips, passed in three
+shards; all retained format, depth-proxy, varying, raw readback, cube/array/
+mip-range, UAV/compute, query-order/cancellation, resource lifetime, byte-edge,
+worker/mailbox, memory, logging, asset, startup and ASan/UBSan CPU gates passed.
+Exact active binding fixture reproduces rejection; it does not fix it.
+CI first caught a variable-name collision, corrected before final build.
+Second CI passed all 180 query values but rejected two legitimate pool waits
+under the old test assertion; corrected with explicit two-policy coverage.
+Failures remain recorded in evidence. No successful result was fabricated.
+Unsigned ARM64 iOS app and package audited; no signing credentials changed.
+IPA: GTA-Native-Probe-0.24-unsigned.ipa
+Bytes: 102274626
+SHA256: f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b
+All 23 previous IPAs retain their hashes. main remains
+de7664a8e6448096716c5a341250d32d4f594fd1; protected PC folders untouched.
+
+NEXT DEVICE CHECK (WHEN AVAILABLE; NOT REQUIRED TO COMPLETE THIS AUDIT)
+Use 0.24 as an optional performance/diagnostic build, retaining 0.23 for rollback.
+Trace Prologue at unchanged 640x360. Mark the visible scene only when actual
+characters/scenery appear. Compare marked display intervals and compilation,
+upload, completion-wait and cache-pressure counters. Observe camera/animation
+and texture correctness. Save the final active-shadow sampler/related-SRV
+records if the known crash recurs; do not interpret presentation counts as
+successful progression. No immediate test request is needed while away.
+Highest priority remains the forward-light shadow selection/global texture
+handoff responsible for binding the active cube sample to original 2D 708.
+Do not advance Stage 3 until consecutive correct scene frames and animation
+are physically verified; controls and sustained playable performance remain.
