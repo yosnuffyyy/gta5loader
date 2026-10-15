@@ -45,7 +45,7 @@ struct NativeGpu {
  NativeMetrics metrics;
  struct w2c_env *host;GpuRing ring;pthread_t thread;bool started,ring_valid;
  _Atomic bool stop,failed,ready,closing,callback_done,map_active;
- pthread_mutex_t error_lock;char error[1600];char adapter_name[192];
+ pthread_mutex_t error_lock;char error[1600],srv_guard[320];char adapter_name[192];
  void (*cancel)(void*);void *context;void *layer;
  WGPUInstance instance;WGPUAdapter adapter;WGPUDevice device;WGPUQueue queue;
  WGPUBuffer readback_buffer;uint32_t readback_capacity,readback_allocations,readback_cases_tested;uint64_t texture_readbacks;
@@ -66,11 +66,12 @@ struct NativeGpu {
  bool counting_queries,query_pass;QueryPage query_pages[QUERY_PAGES];unsigned query_current,query_active_count,query_pending_pages,query_pages_allocated,query_cases;
  uint32_t query_active[QUERY_SCOPES];uint64_t query_token,query_begins,query_ends,query_segments,query_publications,query_empty,query_stale,query_map_requests,query_maps_completed,query_pressure_waits,query_pressure_ns,query_gpu_bytes,query_gpu_peak;
 #ifdef NATIVE_PROBE_CLI
- unsigned test_inter_stage_limit;bool test_legacy_layout_ids;
+ unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects;
  void *test_scope_context;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
  DrawState draw;
+ uint64_t fresh_flushes_avoided;
  uint32_t shader[3],layout,topology,vb[16][3],ib[3],cb[3][16][3],srv[3][128],smp[3][16],uav[3][8];
  uint32_t targets[37],blend[6],depth[2],raster,viewports[97],scissors[65];
 };
@@ -92,7 +93,7 @@ static void wake(void *context,uint64_t address){NativeGpu *g=context;native_not
 static Object *object(NativeGpu *,uint32_t);
 static void fail(NativeGpu *g,const char *message){
  pthread_mutex_lock(&g->error_lock);bool first=!atomic_load_explicit(&g->failed,memory_order_relaxed);
- if(first){Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]),*cs=object(g,g->shader[2]);snprintf(g->error,sizeof(g->error),"%s [%s, opcode %u] VS %u %08x%08x; PS %u %08x%08x; CS %u %08x%08x; payload(%u) %u,%u,%u,%u,%u,%u",message,gpu_opcode_name(g->last_op),g->last_op,g->shader[0],vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,3):0,vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,2):0,g->shader[1],ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,3):0,ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,2):0,g->shader[2],cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,3):0,cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,2):0,g->last_words,g->last_payload[0],g->last_payload[1],g->last_payload[2],g->last_payload[3],g->last_payload[4],g->last_payload[5]);atomic_store_explicit(&g->failed,true,memory_order_release);}
+ if(first){Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]),*cs=object(g,g->shader[2]);snprintf(g->error,sizeof(g->error),"%s %s [%s, opcode %u] VS %u %08x%08x; PS %u %08x%08x; CS %u %08x%08x; payload(%u) %u,%u,%u,%u,%u,%u",message,g->srv_guard,gpu_opcode_name(g->last_op),g->last_op,g->shader[0],vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,3):0,vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,2):0,g->shader[1],ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,3):0,ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,2):0,g->shader[2],cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,3):0,cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,2):0,g->last_words,g->last_payload[0],g->last_payload[1],g->last_payload[2],g->last_payload[3],g->last_payload[4],g->last_payload[5]);atomic_store_explicit(&g->failed,true,memory_order_release);}
  pthread_mutex_unlock(&g->error_lock);
  if(first){if(g->host->progress){char line[400];snprintf(line,sizeof(line),"Native fatal bindings: layout %u; RT0/depth %u/%u; VB0/index %u/%u; VS/PS/CS %u/%u/%u; PS SRV0-3 %u,%u,%u,%u; PS sampler0-3 %u,%u,%u,%u; CS UAV0-3 %u,%u,%u,%u",g->layout,g->targets[0],g->targets[32],g->vb[0][0],g->ib[0],g->shader[0],g->shader[1],g->shader[2],g->srv[1][0],g->srv[1][1],g->srv[1][2],g->srv[1][3],g->smp[1][0],g->smp[1][1],g->smp[1][2],g->smp[1][3],g->uav[2][0],g->uav[2][1],g->uav[2][2],g->uav[2][3]);g->host->progress(g->host->progress_context,line);unsigned count=g->breadcrumb_next<8?g->breadcrumb_next:8;for(unsigned j=0;j<count;j++){unsigned i=(g->breadcrumb_next-count+j)%8;snprintf(line,sizeof(line),"Native GPU breadcrumb %u/%u: %s words %u; VS/PS/CS %u/%u/%u; payload %u,%u,%u,%u,%u,%u",j+1,count,gpu_opcode_name(g->breadcrumbs[i].opcode),g->breadcrumbs[i].words,g->breadcrumbs[i].shader[0],g->breadcrumbs[i].shader[1],g->breadcrumbs[i].shader[2],g->breadcrumbs[i].payload[0],g->breadcrumbs[i].payload[1],g->breadcrumbs[i].payload[2],g->breadcrumbs[i].payload[3],g->breadcrumbs[i].payload[4],g->breadcrumbs[i].payload[5]);g->host->progress(g->host->progress_context,line);}}if(g->ring_valid)gpu_ring_failed(&g->ring);if(g->cancel)g->cancel(g->context);}
 }
@@ -338,7 +339,12 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
     The physical segment still closes/resolves using its immutable snapshot. */
  if(op==4&&n==1){Object *q=object(g,gpu_word(p,0));if(q&&q->kind==44)query_destroy_scope(g,q);}
  bool shadow_upload=false;if((op==12||op==47)&&n>=3){Object *o=object(g,gpu_word(p,0));shadow_upload=o&&o->shadow&&!o->buffer;}
- if(!shadow_upload&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
+ bool fresh_object=(op==3||op==11||op==14||op==15||op==16||op==17||op==37||op==44)&&n&&!object(g,gpu_word(p,0));
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_flush_new_objects)fresh_object=false;
+#endif
+ if(fresh_object&&g->draw.encoder)g->fresh_flushes_avoided++;
+ if(!shadow_upload&&!fresh_object&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
  switch(op){
  case 0:case 2:return true; /* Reference protocol treats both as no-ops. */
  case 3:return check(g,n==10,"Invalid texture command")&&create_texture(g,p);
@@ -404,6 +410,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
  #include "proxy_range_fixture.inc"
 #include "shadow_fixture.inc"
 #include "shadow_eviction_fixture.inc"
+#include "perf_fixture.inc"
 #include "layout_cache_fixture.inc"
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -478,10 +485,20 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,report+used,capacity-used)?0:1;}}
  if(!result){char ranges[600];if(!proxy_range_fixture(h,0,ranges,sizeof(ranges)))result=1;size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",ranges);for(unsigned i=1;i<=4&&!result;i++)if(!proxy_range_fixture(h,i,NULL,0))result=1;if(!result){used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\nPASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.");}}
  if(!result){char text[850];bool valid=shadow_fixture(h,0,text,sizeof(text));for(unsigned i=1;i<=5&&valid;i++)valid=shadow_fixture(h,i,NULL,0);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s\n%s: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.",text,valid?"PASS":"FAIL");if(!valid)result=1;}
+ if(!result){char text[900];bool valid=shadow_count_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
+#ifdef NATIVE_PROBE_CLI
+ if(valid){valid=shadow_count_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+#endif
+ if(!valid)result=1;}
  if(!result){char text[650];bool valid=shadow_eviction_fixture(h,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
  if(!result){char text[600];bool valid=layout_cache_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
 #ifdef NATIVE_PROBE_CLI
  if(valid){valid=layout_cache_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+#endif
+ if(!valid)result=1;}
+ if(!result){char text[900];bool valid=pipeline_state_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(valid){valid=fresh_object_fixture(h,false,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+#ifdef NATIVE_PROBE_CLI
+ if(valid){valid=pipeline_state_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}if(valid){valid=fresh_object_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
 #endif
  if(!valid)result=1;}
  if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}}else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);

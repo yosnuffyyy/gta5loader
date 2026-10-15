@@ -29,16 +29,13 @@ struct DrawProgram {
  WGPUTextureFormat storage_formats[8];
  ShadowPlan *shadow_plan;uint32_t inactive_mask;DrawProgram *shadow_variants[SHADOW_VARIANTS];uint64_t shadow_ages[SHADOW_VARIANTS],shadow_age;
 };
-typedef struct {
- uint32_t storage_formats[2][8],inactive_masks[2];uint32_t shader[4],layout[226],strides[16],topology,index_format;
- uint32_t blend[66],depth[13],raster[10],formats[9],samples,ro,mask;
-} DrawKey;
+#include "pipeline_key.h"
 typedef struct {
  DrawKey key; WGPURenderPipeline pipeline; uint64_t age;
  unsigned slots; uint32_t last[16],stride[16],rate[16]; bool instance[16],manual_instances;uint8_t gpu_slot[16];
 } DrawPipeline;
 typedef struct {
- DrawPipeline pipelines[DRAW_PIPELINES]; uint64_t age,hits,creates,draws,batches,instance_draws,instance_batches,indirect_decodes,inter_stage_links;
+ DrawPipeline pipelines[DRAW_PIPELINES]; DrawKey evicted_keys[64];unsigned evicted_count,evicted_next;uint64_t recent_recompiles; uint64_t age,hits,creates,draws,batches,instance_draws,instance_batches,indirect_decodes,inter_stage_links;
  WGPUCommandEncoder encoder; WGPURenderPassEncoder pass;
  uint32_t pass_targets[37]; unsigned width,height;
  WGPUBuffer uniforms[DRAW_UBO_SLOTS]; uint8_t *mirror; unsigned slot,offset;

@@ -40,8 +40,13 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
     query counts or render unmasked pixels until an exact implementation exists. */
  uint32_t sample_bits=key.samples>=32?UINT32_MAX:(1u<<key.samples)-1;
  if(!check(g,(key.mask&sample_bits)==sample_bits,"Metal partial/zero pipeline sample mask is not implemented by pinned backend"))return NULL;
+ uint32_t used_slots=0;for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]&&e[3]<16)used_slots|=1u<<e[3];}}
+#ifdef NATIVE_PROBE_CLI
+ if(!g->test_raw_pipeline_keys)
+#endif
+ pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
  DrawState *s=&g->draw;unsigned slot=0;for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *p=s->pipelines+i;if(p->pipeline&&!memcmp(&p->key,&key,sizeof(key))){p->age=++s->age;s->hits++;return p;}if(!p->pipeline){slot=i;break;}if(p->age<s->pipelines[slot].age)slot=i;}
- DrawPipeline *p=s->pipelines+slot;if(p->pipeline){g->metrics.pipeline_evictions++;wgpuRenderPipelineRelease(p->pipeline);}memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
+ DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;break;}if(p->pipeline){s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;wgpuRenderPipelineRelease(p->pipeline);}memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}
  for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;const uint32_t *sig=NULL;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]){sig=v;break;}}if(!sig)continue;
   unsigned slot=e[3],bytes=0;if(slot>=16||e[5]>1||(!e[5]&&e[6])||sig[2]>=32){char why[360];snprintf(why,sizeof(why),"Invalid vertex layout: VS %s layout %u element %u slot %u location %u class %u rate %u DXGI %u offset %u",vp->hash,g->layout,i,slot,sig[2],e[5],e[6],e[2],e[4]);fail(g,why);return NULL;}

@@ -32,6 +32,7 @@ static bool draw_uint(id n,uint64_t *out){if(![n isKindOfClass:NSNumber.class]||
 static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  *constants=nil;
  if(g->draw.fixture){
+ if(!strcmp(hash,"ffffffff00000223"))return @(shadow_count_ps);
  if(!strcmp(hash,"ffffffff00000220"))return @(shadow_fixture_ps);
  if(!strcmp(hash,"ffffffff00000222"))return @(shadow_eviction_ps);
  if(!strcmp(hash,"ffffffff00000221"))return [@(shadow_fixture_ps) stringByReplacingOccurrencesOfString:@"return vec4f(r9.zzz,1)" withString:@"return vec4f(textureSampleCompareLevel(t14,s14,vec3f(0,0,1),0.5))"];

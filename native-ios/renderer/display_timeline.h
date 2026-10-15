@@ -9,4 +9,7 @@ static inline void display_observe(DisplayTimeline *d,double time){
  if(d->last){uint64_t ns=(uint64_t)((time-d->last)*1e9);timing_add(&d->intervals,ns);if(d->cold.count<64)timing_add(&d->cold,ns);}
  d->last=time;d->displayed++;d->consecutive++;if(d->consecutive>d->longest)d->longest=d->consecutive;
 }
+/* presentedTime and CACurrentMediaTime share the host-time clock. Exclude
+   already-queued drawables actually displayed before the user's marker. */
+static inline void display_marked_observe(DisplayTimeline *d,double time,double start){if(time>=start)display_observe(d,time);}
 #endif

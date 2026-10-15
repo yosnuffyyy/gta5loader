@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_pipeline_key.c -o native-build/test-pipeline-key
+native-build/test-pipeline-key | tee native-build/evidence/native-pipeline-key-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_shadow_guard.c -o native-build/test-shadow-guard
 native-build/test-shadow-guard | tee native-build/evidence/native-shadow-guard-test.txt
 node native-ios/renderer/test_reference_inputs.mjs | tee native-build/evidence/native-reference-inputs-test.txt
