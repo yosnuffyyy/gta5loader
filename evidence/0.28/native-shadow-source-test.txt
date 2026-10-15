@@ -1,0 +1,2 @@
+PASS: exact PS996bb42f448956f2 t14 call has exactly three enclosing conditions, no preceding return/discard; count1 and selector2 permit the cube sample. Binding46/slot14 and comparison sampler30/slot14 verified. An inactive variant cannot fix this state.
+PASS: shadow source proof across 4808 original modules; 13 candidate PS / 76 cube guards; exact ped_alpha four guards plus original integer light-count control, extra-use/comment/type/packed-uniform-shadow mutations rejected. Source only.

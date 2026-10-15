@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "commit": "fc9bc139eb2376773db52cc73eb99e842a85e65e",
+  "tree": "91d03564dbcd00e9164fbc72aa48263a9a1e6bcc",
+  "entries": 197,
+  "priorIPAsPreserved": 27,
+  "main": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "defaultMode": "strict",
+  "optionalReferenceBehaviourValidated": true,
+  "producerIntentEstablished": false,
+  "physicalGameSceneValidated": false
+}

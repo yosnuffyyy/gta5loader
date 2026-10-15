@@ -1,0 +1,26 @@
+{
+  "result": "PASS_STATIC_PROVENANCE",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "defaultTextureGlobal": 12371968,
+  "defaultFactoryFunction": 9668,
+  "defaultName": {
+    "address": 1716944,
+    "value": "none"
+  },
+  "factoryNamePath": 10104,
+  "initialImage": {
+    "packedHeader": "47244902404",
+    "width": 4,
+    "height": 4,
+    "imageFormat": 11,
+    "dxgi": 87
+  },
+  "captured708": {
+    "width": 4,
+    "height": 4,
+    "dxgi": 71,
+    "uploadedBytes": 8
+  },
+  "identityEstablished": false,
+  "conclusion": "The generic null-global default is named none and starts from an image-format11/BGRA resource. This does not identify the captured BC1 source708; dimensions or an active/null cache route are insufficient provenance."
+}

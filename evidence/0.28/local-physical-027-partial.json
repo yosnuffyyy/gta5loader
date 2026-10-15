@@ -1,0 +1,85 @@
+{
+  "source": 708,
+  "shader": {
+    "vs": "a276344f1111242f",
+    "ps": "996bb42f448956f2",
+    "binding": 46,
+    "slot": 14
+  },
+  "srv": 709,
+  "command": 1206756,
+  "present": 1289,
+  "inactive": 0,
+  "cb3word8": "00000001",
+  "cb6word63": "40000000",
+  "sampler": [
+    3511,
+    3,
+    20,
+    3,
+    3,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1094713344
+  ],
+  "related": [
+    {
+      "slot": 14,
+      "srv": 709,
+      "source": 708,
+      "size": [
+        4,
+        4,
+        1
+      ]
+    },
+    {
+      "slot": 24,
+      "srv": 6446,
+      "source": 6445,
+      "size": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "slots": [
+        25,
+        27,
+        29
+      ],
+      "srv": 6624,
+      "source": 6623,
+      "size": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "slots": [
+        26,
+        28,
+        30
+      ],
+      "srv": 707,
+      "source": 706,
+      "size": [
+        4,
+        4,
+        1
+      ]
+    }
+  ],
+  "fullConstantBuffersAvailable": false,
+  "producerCacheRecordAvailable": false,
+  "inputSource": "User-supplied partial physical Native0.27 report; full CB snapshots not yet received"
+}

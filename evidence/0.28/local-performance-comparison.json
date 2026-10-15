@@ -1,0 +1,55 @@
+{
+  "baseline": "Native0.27 synthetic 576-draw working-set fixtures",
+  "current": "Native0.28 same fixtures",
+  "prior256": [
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 40.934,
+      "linkMs": 39.21
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 58.884,
+      "linkMs": 13.888
+    }
+  ],
+  "current256": [
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 20.663,
+      "linkMs": 9.388
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 22.844,
+      "linkMs": 10.278
+    }
+  ],
+  "conclusion": "Both retain192 pipelines,384 hits and zero evictions. CPU wall differences across CI runs are driver/order/host dependent and are not attributed to this fix.",
+  "iPhoneFPSMeasured": false,
+  "newPhonePerformanceClaimed": false,
+  "optionalCubeLogicalTexelBytes": 24,
+  "optionalInitializationClearPasses": 6,
+  "optionalCubeAllocationsPerTest": 1,
+  "noAddedPerDrawCompletionWait": true
+}

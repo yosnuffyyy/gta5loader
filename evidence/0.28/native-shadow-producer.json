@@ -1,0 +1,1367 @@
+{
+  "result": "PASS",
+  "engineHash": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "originalFunctionBodiesUnchanged": true,
+  "constructedStateTests": 87,
+  "tests": [
+    {
+      "label": "null light identity",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "no shadow flags",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 0",
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "label": "active bank 0 slot 0, absent map index",
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "label": "dirty bank 0 slot 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 1",
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "label": "active bank 0 slot 1, absent map index",
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "label": "dirty bank 0 slot 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 2",
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "label": "active bank 0 slot 2, absent map index",
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "label": "dirty bank 0 slot 2",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 2",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 3",
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "label": "active bank 0 slot 3, absent map index",
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "label": "dirty bank 0 slot 3",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 3",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 4",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "label": "active bank 0 slot 4, absent map index",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "label": "dirty bank 0 slot 4",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 4",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 5",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "label": "active bank 0 slot 5, absent map index",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "label": "dirty bank 0 slot 5",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 5",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 6",
+      "expected": 6,
+      "actual": 6
+    },
+    {
+      "label": "active bank 0 slot 6, absent map index",
+      "expected": 6,
+      "actual": 6
+    },
+    {
+      "label": "dirty bank 0 slot 6",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 6",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 0 slot 7",
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "label": "active bank 0 slot 7, absent map index",
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "label": "dirty bank 0 slot 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 0 slot 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 0",
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "label": "active bank 1 slot 0, absent map index",
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "label": "dirty bank 1 slot 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 1",
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "label": "active bank 1 slot 1, absent map index",
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "label": "dirty bank 1 slot 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 2",
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "label": "active bank 1 slot 2, absent map index",
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "label": "dirty bank 1 slot 2",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 2",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 3",
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "label": "active bank 1 slot 3, absent map index",
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "label": "dirty bank 1 slot 3",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 3",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 4",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "label": "active bank 1 slot 4, absent map index",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "label": "dirty bank 1 slot 4",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 4",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 5",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "label": "active bank 1 slot 5, absent map index",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "label": "dirty bank 1 slot 5",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 5",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 6",
+      "expected": 6,
+      "actual": 6
+    },
+    {
+      "label": "active bank 1 slot 6, absent map index",
+      "expected": 6,
+      "actual": 6
+    },
+    {
+      "label": "dirty bank 1 slot 6",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 6",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "active bank 1 slot 7",
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "label": "active bank 1 slot 7, absent map index",
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "label": "dirty bank 1 slot 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "different identity bank 1 slot 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 0 index 0",
+      "expected": 8,
+      "actual": 8
+    },
+    {
+      "label": "cached identity mismatch bank 0 index 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 0 index 1",
+      "expected": 9,
+      "actual": 9
+    },
+    {
+      "label": "cached identity mismatch bank 0 index 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 0 index 7",
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "label": "cached identity mismatch bank 0 index 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 0 index 43",
+      "expected": 51,
+      "actual": 51
+    },
+    {
+      "label": "cached identity mismatch bank 0 index 43",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 0 index 51",
+      "expected": 59,
+      "actual": 59
+    },
+    {
+      "label": "cached identity mismatch bank 0 index 51",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 1 index 0",
+      "expected": 8,
+      "actual": 8
+    },
+    {
+      "label": "cached identity mismatch bank 1 index 0",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 1 index 1",
+      "expected": 9,
+      "actual": 9
+    },
+    {
+      "label": "cached identity mismatch bank 1 index 1",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 1 index 7",
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "label": "cached identity mismatch bank 1 index 7",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 1 index 43",
+      "expected": 51,
+      "actual": 51
+    },
+    {
+      "label": "cached identity mismatch bank 1 index 43",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "cached bank 1 index 51",
+      "expected": 59,
+      "actual": 59
+    },
+    {
+      "label": "cached identity mismatch bank 1 index 51",
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "label": "unassigned cache index",
+      "expected": -1,
+      "actual": -1
+    }
+  ],
+  "forwardTests": [
+    {
+      "label": "active type2 entry, map=-1",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "same entry becomes dirty",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "same entry becomes active again",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "active bank 0 map 0",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 0 map 0, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 0 map 1",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 0 map 1, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 0 map 7",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 0 map 7, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 0 map 43",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 0 map 43, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 0 map 51",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 0 map 51, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 1 map 0",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 1 map 0, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 1 map 1",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 1 map 1, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 1 map 7",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 1 map 7, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 1 map 43",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 1 map 43, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "active bank 1 map 51",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "active bank 1 map 51, cube pointer null",
+      "selector": 2,
+      "first": 17476,
+      "second": 0
+    },
+    {
+      "label": "no light identity uses defaults",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "shadow bypass flag uses defaults",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 0",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 1",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 2",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 3",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 4",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 5",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 6",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 7",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 8",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 9",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 10",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 11",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 12",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 13",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 14",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 15",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 16",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 17",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 18",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 19",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 20",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 21",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 22",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 23",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 24",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 25",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 26",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 27",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 28",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 29",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 30",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 31",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 32",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 33",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 34",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 35",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 36",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 37",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 38",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 39",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 40",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 41",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 42",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 43",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 44",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 45",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 46",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 47",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 48",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 49",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 50",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 51",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 52",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 53",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 54",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 55",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 56",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 57",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 58",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 59",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 60",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 61",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 62",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 63",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 64",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 65",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 66",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 67",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 68",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 69",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 70",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 71",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 72",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 73",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 74",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 75",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 76",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 77",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 78",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 79",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 80",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 81",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 82",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 83",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 84",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 85",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 86",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 87",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 88",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 89",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 90",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 91",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 92",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 93",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 94",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 95",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 96",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 97",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 98",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 99",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 100",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 101",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 102",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 103",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 104",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 105",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 106",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 107",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 108",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 109",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 110",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 111",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 112",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 113",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 114",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 115",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 116",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 117",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 118",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 119",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 120",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 121",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 122",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 123",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 124",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    },
+    {
+      "label": "repeated changing light state 125",
+      "selector": 2,
+      "first": 0,
+      "second": 0
+    },
+    {
+      "label": "repeated changing light state 126",
+      "selector": 0,
+      "first": 4369,
+      "second": 8738
+    },
+    {
+      "label": "repeated changing light state 127",
+      "selector": 2,
+      "first": 17476,
+      "second": 13107
+    }
+  ],
+  "forwardStateTests": 153,
+  "externalCalls": [],
+  "physicalCaptureReproduced": false,
+  "productionFixValidated": false
+}

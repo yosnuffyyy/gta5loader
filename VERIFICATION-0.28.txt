@@ -1,0 +1,26 @@
+Native 0.28 — PASS native CI / unsigned ARM64 package audit
+Source:fc9bc139eb2376773db52cc73eb99e842a85e65e
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38799948852
+IPA:GTA-Native-Probe-0.28-unsigned.ipa
+Bytes:102287375
+SHA256:f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52
+
+4808 Metal shader modules/pipelines;500 clip shaders;0 failures.
+111 untranslated hull/domain/geometry records remain unsupported.
+71 sanitized policy checks;240 original-producer execution checks.
+10 optional native ring cases/320 draws/81920 pixels across two processes;
+exact1536 occlusion samples per case, real cube shadows and strict invalid
+bindings retained. Exact original0.27 shader pair/binding group validates.
+SRV 5633:12 draws/3072 pixels through all 5 BC3 mips.
+Existing graphics/runtime/worker/memory/archive checks PASS.
+197 source/workflow/manifest blobs verified;main unchanged.
+All 27 earlier IPAs checksum-preserved.
+Windows supplemental checks:644 draws/164864 pixels/3 expected rejections.
+
+Strict mode is default. Optional compatibility matches the recovered
+worker's existing empty-cube/effective-Always comparison for this exact
+capture. It does not establish producer intent or correct iPhone shadows.
+Full physical CB snapshots are still absent; fixtures use the supplied
+key lanes and synthetic remaining values.
+No physical FPS improvement, sustained Prologue or Stage 3 completion claimed.
+See ENGINEERING-0.28.txt and evidence/0.28 for complete results/limitations.

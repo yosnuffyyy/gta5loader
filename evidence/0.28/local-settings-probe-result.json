@@ -1,0 +1,69 @@
+{
+  "result": "PASS",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "externalCalls": [],
+  "cases": [
+    {
+      "constructedSettingsAtOffset40": -1,
+      "constructedSettingsAtOffset92": 0,
+      "resolution": 256,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": -1,
+      "constructedSettingsAtOffset92": 2,
+      "resolution": 256,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 0,
+      "constructedSettingsAtOffset92": 0,
+      "resolution": 2,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 0,
+      "constructedSettingsAtOffset92": 2,
+      "resolution": 2,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 1,
+      "constructedSettingsAtOffset92": 0,
+      "resolution": 256,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 1,
+      "constructedSettingsAtOffset92": 2,
+      "resolution": 256,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 2,
+      "constructedSettingsAtOffset92": 0,
+      "resolution": 512,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 2,
+      "constructedSettingsAtOffset92": 2,
+      "resolution": 512,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 3,
+      "constructedSettingsAtOffset92": 0,
+      "resolution": 512,
+      "selector": 2
+    },
+    {
+      "constructedSettingsAtOffset40": 3,
+      "constructedSettingsAtOffset92": 2,
+      "resolution": 512,
+      "selector": 2
+    }
+  ],
+  "conclusion": "The original producer preserves selector2 in these constructed settings. The existing command-line shadowQuality=-1 does not alone prove the phone used the same raw settings, or establish that substituting a texture/selector is a correct producer fix.",
+  "physicalSettingsCaptured": false
+}

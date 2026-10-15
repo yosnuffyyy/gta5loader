@@ -1,7 +1,20 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-15. Native 0.27 diagnostic candidate; Stage 3 remains active; five stages left.
+Updated 2026-10-15. Native 0.28 optional compatibility candidate; Stage 3 remains active; five stages left.
 
-LATEST EVIDENCE
+LATEST EVIDENCE —0.28
+Native CI/ARM64 IPA audit PASS; physical0.28 verification is pending.
+An opt-in, strict-by-default empty depth cube matches the recovered
+reference worker for the exact active709 resource/sampler contract.
+Captured ordinary sampler 20 already selects effective comparison Always;
+no original shader, texture, valid shadow map or shared sampler is replaced.
+320 native fixture draws/81920 pixels and 4808 Metal pipelines pass;
+SRV 5633,256-entry caching and previous runtime functionality remain.
+All 27 earlier IPAs are checksum-preserved. Producer intent, real shadows,
+sustained animation and performance still require evidence.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38799948852
+See ENGINEERING-0.28.txt and VERIFICATION-0.28.txt. Keep640x360.
+
+PREVIOUS0.27 EVIDENCE
 User reports about 3.7 seconds of marked 3D at about 15 FPS, then the
 active source 708 / SRV 709 mismatch. 181 pipelines, 159135 hits, no
 evictions. This is short user-reported evidence, not sustained verification.
@@ -15,7 +28,7 @@ Audited unsigned ARM64 diagnostic IPA; all 26 prior IPAs preserved.
 See ENGINEERING-0.27.txt and VERIFICATION-0.27.txt. Keep 640 x 360.
 
 PREVIOUS 0.26 CHECKPOINT
-User reports latest build rendered~4seconds of Prologue before SRV5633
+User reports latest build rendered~4seconds of Prologue before SRV 5633
 2D/array validation failure. Earlier708/709 inactive specialization worked
 in that run; cache146 creations/24068 hits/0 evictions. Prior longer scenes
 and brief~21FPS are user evidence, not sustained verification.
@@ -85,7 +98,7 @@ all existing GPU/CPU checks. The unsigned ARM64 IPA audit passed. Physical
 iPhone 0.12 continued without that trap: 13,118 commands,174 draws and26
 presentations. It stopped at unsupported texture READBACK during water init.
 0.13 handles raw color/compressed readbacks and original CPU row/slice layout,
-with one reusable staging buffer bounded to1MiB. Stage3 still needs a real
+with one reusable staging buffer bounded to1MiB. Stage 3 still needs a real
 Prologue scene. CI38492329773 passed all regressions,including two full
 readback replays and layout sanitizer checks. ARM64 IPA audit passed.
 Physical0.13 completed the R8 water readback and reached Prologue1 intro
@@ -114,7 +127,7 @@ compute pipeline compilations. Unsigned ARM64 IPA audit passed. Physical
 correct North Yankton scene frames; then actual input/audio and sustained
 play. No stage is completed just because a package compiles or draws count.
 The user cannot currently sideload, so no new physical scene test is
-requested now. Native0.17 audits the phone's hardware/frameworks against
+requested now. Native 0.17 audits the phone's hardware/frameworks against
 the actual port: exact16-bit normalized formats replace incorrect float/
 depth mappings; native border sampling and Apple7+ backend capability
 detection replace edge-clamp substitution. Runtime reports negotiated

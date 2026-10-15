@@ -1,0 +1,175 @@
+GTA V iOS Native 0.28 — Optional reference empty-shadow compatibility
+Status: native CI and unsigned ARM64 IPA audit PASS. Physical iPhone test pending. Stage 3 remains in progress.
+Source commit:fc9bc139eb2376773db52cc73eb99e842a85e65e
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38799948852
+GTA-Native-Probe-0.28-unsigned.ipa;102287375 bytes.
+SHA256:f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52
+All 27 earlier IPAs are checksum-verified and preserved.
+
+EVIDENCE RECEIVED THIS TURN
+User supplied partial physical0.27 context: command1206756/PRESENT1289;
+VS a276344f1111242f, PS996bb42f448956f2, binding 46/t14;
+source 708/SRV 709 single-layer4x4 BC1; CB3word8=00000001;
+CB6word63=40000000. Full236-word CB3 and124-word CB6 snapshots have
+not yet been received. Neither has the original CPU light/cache record.
+Sampler raw[3511,3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344].
+Related cube slots25/27/29 use source 6623; t14 uses source 708;
+2D slot 24 uses source 6445, slots26/28/30 use source 706.
+Do not describe this partial capture as the complete physical draw fixture.
+
+CONFIRMED CONTRACT FAILURE AND NEW FINDING
+The active shader branch really permits the cube sample. The texture is
+still one BC1 layer; no missing faces can be reconstructed from its8 bytes.
+The new sampler is NOT a comparison sampler: filter20 lacks bit0x80.
+Its ordinary filter is MIN_MAG_LINEAR_MIP_POINT. Raw comparison field1
+would mean Never if it were a comparison sampler; here it is inapplicable.
+The recovered worker's binding path and native draw_sampler already replace
+this sampler-class mismatch with their existing comparison Always dummy.
+The recovered worker also substitutes an empty depth cube for an undersized
+cube view. Thus its existing result at this exact sample is visibility1.
+The new code does not change the shared s14 sampler or remove the sample.
+This establishes reference-worker equivalence, NOT correct original-PC
+shadow semantics or proof that source 708 was intentionally a no-shadow map.
+
+ORIGINAL PRODUCER EXECUTION
+An independent harness adds exports only to the hash-pinned original Wasm;
+no original instructions, production engine binary or protected assets change.
+Engine SHA256:e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e.
+Executed87 GetLightShadowIndex cases and153 SetForwardLights cases,
+including original SetGlobalVar, with zero external/stub calls.
+GetLightShadowIndex returns an active entry if its identity matches and its
+dirty bit is clear, including a constructed entry with signed map index-1.
+SetForwardLights writes selector 2 and null texture pointers for that entry.
+For a valid map index with a nonnull2D-map pointer but null cube pointer,
+it preserves selector 2 and passes the null cube pointer unchanged.
+Rejecting/dirtying the entry instead zeroes the matrix/selector and chooses
+its named default textures, including the separately created six-face dummy.
+Switching banks, cache identities, map indices, texture pointers and repeated
+light states preserves the original function's behavior and restores stack.
+Original Technique_Pass::Bind9554 substitutes the generic default at12371968
+for a null global texture; CreateBaseMaps43801's named cube is different.
+This demonstrates an active-entry/null-cube route in the original producer.
+The generic null-global default is named none; its constructor starts with
+image format 11/DXGI 87 BGRA, distinct from captured BC1 source 708. This
+further rules out identifying the producer resource by dimensions alone.
+It does not prove the phone took this route or why its cube was absent. The existing launch shadowQuality=-1 is recorded as
+an investigation lead only; this candidate does not change quality settings.
+
+IMPLEMENTATION
+Optional switch: Reference empty-shadow compatibility. Default:OFF(strict).
+The option is copied before GPU service start and cannot change mid-run.
+Eligibility requires the exact original PS/binding/depth-cube contract,
+count 1/selector 2, captured708/709 creation/SRV descriptors, original
+one 8-byte zero BC1 upload, version 2, exactly one upload, and every captured
+sampler field except transient sampler ID. Source generation is validated
+through the existing SRV lifetime contract. Changed contents, mip ranges,
+format, identity, sample class, comparison sampler, unrelated shaders and
+unknown constant states retain strict failure behavior.
+A separate1x1x6 Depth32Float cube is lazily allocated. All six faces are
+explicitly cleared to zero in the existing encoder before dependent draws.
+The original BC1 texture, view metadata, shader and comparison path remain
+intact. The cube is retained until GPU service teardown; no per-draw CPU
+completion wait or extra submission is added. First four activations log;
+final summaries retain total uses/allocations and mode.
+View/group cache keys include the compatibility selection. Selection is
+re-evaluated against current CB offsets/bytes, sampler, descriptor, version,
+resource generation and shader on each relevant draw. Cached inactive
+variants receive the current selection rather than retaining stale state.
+The existing256-entry pipeline policy and SRV 5633 correction are unchanged.
+
+VERIFICATION SO FAR
+PASS: original-producer runtime:87 index checks+153 forward-light checks.
+PASS: Windows hardware WebGPU/AMD RDNA4,644 draws/164864 checked pixels,
+including72 new captured-sampler face/reference/transition draws and three
+expected invalid bindings. Full original PS compiles; pixel fixture contains
+the exact original count/cube/spot/no-shadow block, with synthetic geometry
+and remaining constants. This is not Metal, iPhone or game-scene validation.
+PASS: shader guard source audit4808 modules; exact three conditions retained.
+PASS: varying source audit4808 modules/4779 interfaces; no semantic stripping.
+PASS:18 bundled shader packs/index, pinned sizes/SHA256/decompression bounds.
+PASS:71 descriptor-policy checks under ASan/UBSan.
+PASS:five 32-draw optional production-ring cases in each of two native
+processes:320 draws/81920 checked pixels. Every case has exact 1536 GPU
+occlusion samples spanning initialization/readbacks,32 completed draws,
+two pipelines and zero evictions. Real-comparison mismatches, ambiguous
+selectors, changed resource versions and malformed mip ranges reject safely.
+PASS:full original a276344f1111242f/996bb42f448956f2 Metal pipeline and
+reflected binding group with the captured sampler and optional cube. The
+original seven-input vertex interface is used; synthetic other constants.
+PASS:4808 native Metal modules/pipelines,500 clip shaders,0 failures;
+111 untranslated hull/domain/geometry records remain explicitly unsupported.
+PASS:SRV 5633 original pair 12 draws/3072 pixels, all five BC3 mips.
+PASS:existing depth/proxy, occlusion, compute/UAV, readback, upload, cache,
+worker/mailbox, memory, archive and startup checks; two native processes.
+PASS:Mac and ARM64 iPhone compilation, signed-code absence, bundle28/version
+0.28.0, device-platform Mach-O, no writable/executable segments, unchanged
+pinned engine/backend inputs and no CI shader-inventory leak into the IPA.
+PASS:197 published source/workflow/manifest blobs match the audited source;
+main remains de7664a8e6448096716c5a341250d32d4f594fd1.
+131 verified compiler objects reused for each platform.
+One earlier run failed a negative-fixture counter assertion: malformed
+view validation correctly happened after an additional pipeline lookup.
+The fixture now expects that exact extra hit; production validation was
+not loosened. An earlier malformed fixture also reused a live object ID;
+it now destroys the old view first. Final complete CI passes.
+Detailed evidence: evidence/0.28/native-engine-test.txt,
+native-shader-audit-test.txt,local-native-validation.json,local-ipa-audit.json.
+
+PERFORMANCE
+No iPhone FPS or frame-pacing improvement is claimed. No cache-capacity,
+shader-source, draw-count, quality,640x360 baseline, streaming-budget,
+readback-ordering or upload-scheduling change is included.
+One optional cube has24 logical texel bytes; driver allocation is unmeasured.
+Initialization adds six one-time clear passes to the existing GPU encoder.
+The 576-draw cache workload retains 192 creations/384 hits/0 evictions in
+both0.27 and0.28; pipeline capacity remains256. Current pipeline API CPU
+wall is20.663/22.844ms for the two processes; earlier0.27 measurements are
+stored alongside them. Cross-run CPU wall differences are not attributed
+to this change. Driver bytes and iPhone FPS are unmeasured.
+Windows fixture times are not iPhone FPS.
+
+REMAINING EVIDENCE / DEVICE VERIFICATION
+The producer-side reason for the null/wrong cube remains unconfirmed.
+Full CB3/CB6 and original CPU light/cache state are not invented.
+Enable the optional switch for the next compatibility run.
+Confirm that characters remain visible after the formerly failing draw,
+check shadows while lights/camera move, and check sustained animation and
+actual displayed frame intervals. Save the final mode/use/allocation counts
+and first fatal report if another error occurs. Off mode preserves the
+original strict diagnostic reproduction. Stage 3 is not marked complete.
+
+OFFICIAL REFERENCES
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_filter
+https://www.w3.org/TR/WGSL/#texturesamplecomparelevel
+
+FILES CHANGED
+native-ios/App.m
+native-ios/ci-convert.sh
+native-ios/Info.plist
+native-ios/renderer/build-renderer.sh
+native-ios/renderer/draw_depth_proxy.inc
+native-ios/renderer/draw_shader.inc
+native-ios/renderer/draw_types.inc
+native-ios/renderer/native_draw.inc
+native-ios/renderer/native_gpu.h
+native-ios/renderer/native_gpu.m
+native-ios/renderer/native_launch.h
+native-ios/renderer/native_scene.c
+native-ios/renderer/ped_shadow_audit.inc
+native-ios/renderer/producer/producer-runtime.cjs
+native-ios/renderer/producer/test-producer.cjs
+native-ios/renderer/shader_audit.inc
+native-ios/renderer/shadow_guard.inc
+native-ios/renderer/shadow_reference.h
+native-ios/renderer/shadow_reference.inc
+native-ios/renderer/shadow_transition_fixture.inc
+native-ios/renderer/test_shadow_reference.c
+native-ios/threading/native_threads.c
+native-ios/threading/native_threads.h
+source-manifest.json
+
+TRANSFER STATUS
+The previous D:/Codex flash-drive snapshot was preserved earlier. No removable
+volume is currently mounted, so this0.28 update has not been copied to it.
+The current source, evidence and IPA are retained in this workspace and
+GitHub native branch/Actions artifacts. No protected PC folder was used.

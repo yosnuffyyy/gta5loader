@@ -1,0 +1,101 @@
+{
+  "result": "PASS",
+  "nativeOptionalCases": 10,
+  "nativeOptionalDraws": 320,
+  "nativeOptionalCheckedPixels": 81920,
+  "exactQuerySamplesPerCase": 1536,
+  "contractChecks": 71,
+  "producerIndexCases": 87,
+  "producerForwardCases": 153,
+  "originalPairBindingValidation": true,
+  "SRV5633Regression": true,
+  "shaders": {
+    "result": "PASS",
+    "modules": 4808,
+    "pipelines": 4808,
+    "vs": 1112,
+    "ps": 3667,
+    "cs": 29,
+    "clip": 500,
+    "failures": 0,
+    "untranslated": 111,
+    "shards": 3,
+    "maximumConcurrentProgramsPerProcess": 1,
+    "gameSceneVerified": false
+  },
+  "cache": [
+    {
+      "policy": 128,
+      "creates": 576,
+      "hits": 0,
+      "evictions": 448,
+      "peak": 128,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 59.741,
+      "linkMs": 28.672
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 20.663,
+      "linkMs": 9.388
+    },
+    {
+      "policy": 1,
+      "creates": 448,
+      "hits": 128,
+      "evictions": 256,
+      "peak": 192,
+      "pressureEvictions": 64,
+      "pipelineApiMs": 48.027,
+      "linkMs": 22.361
+    },
+    {
+      "policy": 128,
+      "creates": 576,
+      "hits": 0,
+      "evictions": 448,
+      "peak": 128,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 58.998,
+      "linkMs": 28.072
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 22.844,
+      "linkMs": 10.278
+    },
+    {
+      "policy": 1,
+      "creates": 448,
+      "hits": 128,
+      "evictions": 256,
+      "peak": 192,
+      "pressureEvictions": 64,
+      "pipelineApiMs": 45.789,
+      "linkMs": 21.684
+    }
+  ],
+  "compilerObjects": [
+    {
+      "target": "macos",
+      "reused": 131
+    },
+    {
+      "target": "ios",
+      "reused": 131
+    }
+  ],
+  "environment": "macos-15 Apple Paravirtual Metal, synthetic original-branch fixtures; not physical iPhone gameplay or FPS",
+  "physicalFullConstantBuffersReplayed": false,
+  "producerIntentEstablished": false
+}

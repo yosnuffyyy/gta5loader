@@ -1,0 +1,28 @@
+[
+  {
+    "run": 38797895139,
+    "conclusion": "cancelled",
+    "finding": "Negative malformed-view fixture reused a live ID; corrected by explicitly destroying the old view. Four preceding native compatibility cases passed."
+  },
+  {
+    "run": 38798597961,
+    "conclusion": "cancelled",
+    "reason": "Superseded by additional occlusion-ordering coverage and exact seven-input original vertex interface."
+  },
+  {
+    "run": 38798818402,
+    "conclusion": "cancelled",
+    "reason": "Superseded by malformed-view fixture protocol correction."
+  },
+  {
+    "run": 38799018003,
+    "conclusion": "failure",
+    "finding": "Malformed mip descriptor correctly rejected after one cache hit; fixture had expected30 hits instead of31. Exact assertion corrected, production validation unchanged."
+  },
+  {
+    "run": 38799948852,
+    "conclusion": "success",
+    "sourceCommit": "fc9bc139eb2376773db52cc73eb99e842a85e65e",
+    "completeEvidenceAudited": true
+  }
+]

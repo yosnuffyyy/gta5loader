@@ -1,0 +1,1 @@
+PASS: buffer upload edge layout: 47905 exhaustive ranges, surrounding-byte guards, empty/overflow rejection; old padded-tail corruption reproduced.

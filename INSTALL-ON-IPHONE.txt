@@ -1,13 +1,18 @@
-Native 0.27 — unsigned ARM64 diagnostic candidate, Stage 3 in progress
+Native 0.28 — unsigned ARM64 experimental compatibility candidate
 
-Active SRV 709 is NOT fixed. This build preserves full failure evidence
-and validates changing shader states. Keep the prior IPA. When convenient,
-install with your existing signing/sideload method; select the existing web
-folder and Trace Prologue startup. Mark actual visible 3D; keep 640 x 360.
-Save the full final report, especially Retained shadow failure context,
-CB3/CB6 blocks, source lifetime and sampler. The same invalid active binding
-will still stop safely. No sustained-rendering/FPS improvement is claimed.
+Preserve0.27. Install0.28 with the existing signing/sideload setup.
+Select the existing extracted web folder. Enable the new
+"Reference empty-shadow compatibility" switch, then Trace Prologue startup.
+It starts OFF: off retains the strict SRV 709 failure for diagnosis.
 
-SHA256 0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd
-CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38781748092
-See ENGINEERING-0.27.txt for evidence, limits and next steps.
+Mark the actual visible scene. Keep640x360. If it continues, observe at
+least60seconds of characters, textures, camera movement and animation.
+Check shadows while lights/camera move. Stop and save the full report,
+including compatibility mode/uses/allocations, actual display intervals
+and the first fatal operation if another error occurs.
+No continuous-rendering, shadow-correctness or FPS improvement is claimed
+until physical verification. Producer selection remains under investigation.
+
+SHA256:f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38799948852
+See ENGINEERING-0.28.txt. Stage 3 remains in progress.

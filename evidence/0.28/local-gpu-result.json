@@ -1,0 +1,58 @@
+{
+  "result": "PASS",
+  "adapter": {
+    "vendor": "amd",
+    "architecture": "rdna-4",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+  },
+  "backend": "browser WebGPU / Windows; not wgpu-native Metal",
+  "exactOriginalShadowBlock": true,
+  "shaderSHA256": "4ad02b0bf5054064d685a4d50e4f6eb4f03aaaaa3e5dd6dc60364fef3b3ac666",
+  "originalPSCompiled": true,
+  "draws": 644,
+  "pixels": 164864,
+  "invalidChecks": 3,
+  "cases": [
+    "512 actual-branch comparison draws: all eight functions, four depths, eight references, nearest/linear",
+    "42 six-face normal/no-shadow/neutral-boundary/counterexample draws",
+    "12 alternating normal/zero-neutral/one-neutral cube draws",
+    "72 new captured-sampler draws: 48 face/reference cases, 24 inactive/real-shadow/active-empty/no-light transitions; existing Always sampler semantics unchanged",
+    "five queue-ordered clear/reuse/replacement draws; normal shadow remains effective"
+  ],
+  "invalid": [
+    {
+      "label": "captured 2D view cannot be a six-face cube",
+      "message": "Texture view array layer range (baseArrayLayer: 0, arrayLayerCount: 6) exceeds the texture's array layer count (1).\n - While validating [TextureViewDescriptor] against [Texture \"captured source 708 single-layer BC1\"].\n - While calling [Texture \"captured source 708 single-layer BC1\"].CreateView([TextureViewDescriptor]).\n"
+    },
+    {
+      "label": "captured 2D BC1 cannot satisfy cube depth layout",
+      "message": "None of the supported sample types (Float|UnfilterableFloat) of [Texture \"captured source 708 single-layer BC1\"] match the expected sample types (Depth).\n - While validating entries[3] against { binding: 46, visibility: ShaderStage::Fragment, texture: {sampleType: TextureSampleType::Depth, viewDimension: TextureViewDimension::Cube, multisampled: 0} }.\n - While validating [BindGroupDescriptor] against [BindGroupLayout (unlabeled)]\n - While calling [Device].CreateBindGroup([BindGroupDescriptor]).\n"
+    },
+    {
+      "label": "one-layer depth view still fails cube dimension",
+      "message": "Dimension (TextureViewDimension::e2D) of [TextureView of Texture (unlabeled 4x4 px, TextureFormat::Depth32Float)] doesn't match the expected dimension (TextureViewDimension::Cube).\n - While validating entries[3] against { binding: 46, visibility: ShaderStage::Fragment, texture: {sampleType: TextureSampleType::Depth, viewDimension: TextureViewDimension::Cube, multisampled: 0} }.\n - While validating [BindGroupDescriptor] against [BindGroupLayout (unlabeled)]\n - While calling [Device].CreateBindGroup([BindGroupDescriptor]).\n"
+    }
+  ],
+  "capturedSampler": [
+    3511,
+    3,
+    20,
+    3,
+    3,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1094713344
+  ],
+  "effectiveReferenceCompare": "always",
+  "source708IdentityEstablished": false,
+  "productionFallbackValidated": false
+}
