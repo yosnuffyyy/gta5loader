@@ -1,0 +1,156 @@
+OPTIONAL SHADOW-CUBE FALLBACK INVESTIGATION — 2026-10-15
+
+Result: neutral-cube mechanics tested; production fallback is NOT enabled.
+Source 708 has not been established as an intentional no-shadow placeholder.
+The recurring active SRV709 failure remains unresolved. Native0.27 remains
+the latest audited IPA. No new IPA or physical rendering claim is made.
+
+NEW PRODUCER EVIDENCE
+The pinned original engine SHA256 is
+e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e.
+A read-only reconstruction of all4,077 data segments identifies the string
+at address1080603 as DummyShadowCubemap. CParaboloidShadow::CreateBaseMaps
+(43801) calls grcImage::Create with [1,1,1,32,1,0,5], zero-fills the base
+image data and creates a texture under that custom name. The image creation
+code9518 validates cube image type1 against six-face groups. CreateInternal
+9516 builds the additional image chain through offset40. TextureInit10060
+counts that chain; CreateInternal10061 selects a cube SRV for image type1.
+The DX11 image-format lookup in10101/10102 maps image format32 to DXGI41
+(R32_FLOAT), read at address4334071 from the reconstructed original data.
+Thus this named dummy requests six image faces in R32_FLOAT. Captured708
+instead requests one BC1_UNORM layer, DXGI71,4x4. A matching name for708 or
+its producing engine pointer is not supplied. These findings do NOT prove
+708 is the named dummy or that its active use is intentionally unshadowed.
+They also do not establish that all original dummy faces were initialized.
+Disassemblies and producer-audit.json are under work/native-shadow-fallback.
+
+ACTUAL SHADER AND REFERENCE BEHAVIOR
+The original recovered PS996bb42f448956f2 has one t14 comparison call:
+textureSampleCompareLevel(t14,s14,direction,reference).
+Binding46/t14 is a depth cube. Binding30/s14 is a comparison sampler.
+The same sampler is shared by t24,t25,t26,t27,t28,t29,t30, so changing that
+sampler to Always would also disable comparisons for other valid lights.
+The shader's explicit no-shadow branch sets visibility r9.z=1.0 and then
+multiplies lighting by that visibility. This is independently distinguishable
+from merely supplying black or zero-depth data. The cube reference is a
+length multiplied by CB6[17].w; no clamp to[0,1] appears before the sample.
+The captured count1/selector2 state permits the sample. Its active sampler
+descriptor, complete transforms and intended selected resource remain
+missing from the supplied phone evidence.
+
+The preserved reference worker returns null for an undersized cube view.
+Its caller supplies a newly created1x1x6 depth32float cube, with no explicit
+upload/clear in dummyTexture. This uses WebGPU zero-initialization. A valid
+original comparison sampler is preserved; dummySampler Always is selected
+only when a compatible real comparison sampler is absent. Therefore the
+reference's empty cube is NOT a universal neutral-shadow operation.
+Primary API references:
+https://www.w3.org/TR/webgpu/#security-uninitialized-data
+https://www.w3.org/TR/WGSL/#texturesamplecomparelevel
+
+VERIFIED LOCAL HARDWARE GPU TESTS
+Reusable standalone test: work/native-shadow-fallback/run-gpu.cjs
+The source preparer verifies the pinned shader pack hash, the exact PS bytes
+and the unchanged original cube/spot/no-shadow block in the fixture. The
+full original PS is also compiled, separately from fixture pixel rendering.
+Shader SHA256:
+4ad02b0bf5054064d685a4d50e4f6eb4f03aaaaa3e5dd6dc60364fef3b3ac666.
+
+Final run PASS:572 draws,146,432 pixels, all checked. Three deliberately
+invalid bindings produced the expected validation errors. Adapter: AMD,
+RDNA4, isFallbackAdapter=false. This is Edge/Dawn WebGPU on Windows, NOT
+wgpu-native/Metal, NOT an A18 Pro test, and NOT the full game renderer.
+
+Coverage:
+-512 original-branch draws: all8 comparison functions,4 constant depths,
+  8 reference values from-0.5 to1.5, nearest and linear filtering.
+-42 six-face cases: normal shadow occlusion, original no-shadow branch,
+  empty-cube behavior, equality boundaries and counterexamples.
+-12 alternating normal/zero-neutral/one-neutral bindings.
+-One valid draw after deliberate invalid binding rejection.
+-Five queued-clear/reuse/replacement draws. Changing a cube to depth1 then
+  back to0 is visible in subsequent comparisons. Normal shadows still
+  occlude after the neutral resource is replaced.
+-Captured4x4 single-layer BC1 source descriptor and8 zero upload bytes;
+  six-face view rejected, depth-sample-layout mismatch rejected. A separate
+  single-layer Depth32Float view also rejects the cube dimension contract.
+Readbacks wait for actual map completion and inspect all256 pixels per
+draw. Resources are bounded and destroyed after submitted work completes.
+
+Observed comparison results:
+  GreaterEqual, depth0, reference>=0: visibility1 in the tested domain.
+  LessEqual, depth1, reference<=1: visibility1 in the tested domain.
+  LessEqual, depth0, reference0.5: visibility0, NOT neutral.
+  LessEqual, depth1, reference1.5: visibility0, NOT universally neutral.
+  Less, depth1, reference1.0: visibility0 at the equality boundary.
+These tests establish mechanics and counterexamples, not eligibility of708
+for substitution. Nonfinite reference behavior was not certified.
+
+REGRESSION AND PRESERVATION CHECKS
+PASS: existing shadow source audit across4,808 pinned modules.
+PASS: existing inter-stage source audit across4,808 modules and4,779 graphics
+interfaces, including the exact Prologue15->7 location linking case.
+PASS: all192 published source entries remain unchanged; all26 prior IPAs
+retain their recorded hashes. The latest0.27 IPA is separately verified
+in the flash-drive backup. No source shader, native binding/validation,
+pipeline cache, upload, synchronization, source708 data or resource was
+changed. This investigation adds no runtime overhead or FPS claim.
+Existing full macOS/Metal0.27 CI remains PASS; it was not rerun because
+production code is unchanged. New Windows GPU tests are distinct evidence.
+
+Initial fixture preparation failed on an extraction-end search and was
+corrected before GPU validation. The original-engine data parser initially
+missed explicit memory32 address wraps; it was corrected and now checks
+all4,077 segments. An inter-stage audit command initially used reversed
+arguments; the corrected invocation passes. Those attempts are not counted
+as passed tests. The final GPU result is572 draws; earlier experimental
+runs are not added to that count.
+
+SAFE IMPLEMENTATION GATE
+A production option is deferred because the specific resource's intent and
+the active sampler/reference domain have not been established. An optional
+switch must not turn a genuinely broken shadow-map selection into an
+unreported no-shadow image. A future validated path should:
+1. Identify the engine placeholder by verified provenance and generation,
+   not only transient handles708/709, dimensions or8 zero bytes.
+2. Match the exact shader/binding contract and original descriptor, and
+   prove neutral visibility for the real comparison and reference domain.
+   Do not replace the shared s14 comparison function globally.
+3. Lazily allocate a separate single-mip, six-layer Depth32Float cube,
+   initialize ALL faces explicitly, and bind only for the eligible case.
+   Keep the original source/view/data intact. Valid shadow maps use their
+   original path. Other mismatches continue to fail strict validation.
+4. Order initialization before dependent draws on the same GPU stream;
+   retain the cube and view through submitted work. No per-draw CPU wait.
+5. Keep strict mode as the default and log bounded activation counts with
+   provenance. Freeze the option per run or include it in every affected
+   view/bind-group cache key; invalidate on mutation/replacement/generation.
+6. Re-run original-pair, mixed-light, dynamic-constant, resource-lifetime,
+   invalid-binding and Metal pixel tests before producing a candidate IPA.
+
+NEXT PRODUCER-SIDE TASK
+Correlate the actual s14 sampler descriptor and selected light/cache texture
+pointer with the engine's named R32_FLOAT dummy and bound BC1 source708.
+Determine whether selection falls back through a generic default, whether
+a required shadow map is absent, or whether the recovered shader/resource
+contract is inconsistent. The named dummy alone does not choose among
+these causes. The0.27 retained full failure report can narrow that state.
+No new iPhone test is required to validate the findings recorded here.
+
+REPRODUCING THE NEW LOCAL TEST
+From the original workspace, with Node and installed Microsoft Edge:
+  node work/native-shadow-fallback/prepare-fixture.cjs
+  node work/native-shadow-fallback/run-gpu.cjs
+  node work/native-shadow-fallback/producer-audit.cjs
+The GPU test uses its own isolated temporary browser profile and a local
+loopback server. The profile is not part of the transfer or evidence.
+No new dependencies, certificates or signing settings were installed.
+
+FLASH-DRIVE BACKUP
+D:\Codex\GTA-iPhone-Native-2026-10-15T18-42-59-864Z
+Initial backup:5,561 checksum-verified source files,6,988,075,903 bytes,
+all27 release IPAs and191 current native source-manifest entries. Exact
+16-chunk original engine inputs are preserved. START-HERE.txt explains
+restoration and the separate game-asset requirement. This investigation
+is added as a separately checksum-verified follow-up, without overwriting
+the completed original snapshot.

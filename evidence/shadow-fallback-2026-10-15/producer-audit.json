@@ -1,0 +1,34 @@
+{
+  "result": "PASS_STATIC_EVIDENCE",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "reconstructedDataSegments": 4077,
+  "dummyName": {
+    "address": 1080603,
+    "name": "DummyShadowCubemap"
+  },
+  "creationArguments": [
+    1,
+    1,
+    1,
+    32,
+    1,
+    0,
+    5
+  ],
+  "formatMapping": {
+    "imageFormat": 32,
+    "lookupAddress": 4334071,
+    "dxgi": 41,
+    "meaning": "R32_FLOAT"
+  },
+  "faceChain": 6,
+  "capturedSource708": {
+    "dxgi": 71,
+    "meaning": "BC1_UNORM",
+    "layers": 1,
+    "width": 4,
+    "height": 4
+  },
+  "conclusion": "The named engine dummy requests six image faces in R32_FLOAT. The captured one-layer BC1 resource has a different contract. Static evidence does not identify source708 as that dummy or establish its intended no-shadow meaning.",
+  "productionFallbackJustified": false
+}

@@ -1,0 +1,107 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "modulesInspected": 4808,
+  "fragmentCandidates": 13,
+  "certifiedSingleUseCubeGuards": 76,
+  "exactPairGuards": [
+    {
+      "binding": 46,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": false,
+          "predicate": 1
+        }
+      ]
+    },
+    {
+      "binding": 57,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 2
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 1,
+          "trueArm": true,
+          "predicate": 2
+        }
+      ]
+    },
+    {
+      "binding": 59,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 61,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    }
+  ],
+  "gpuValidation": false,
+  "scope": "Conservative structural guard proof, no fabricated cube data or successful scene implied."
+}
