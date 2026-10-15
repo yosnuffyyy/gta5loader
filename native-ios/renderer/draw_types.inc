@@ -1,4 +1,5 @@
 /* GPU-thread-owned draw state. All caches and uniform storage are bounded. */
+#include "shadow_guard.h"
 enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=128,
        DRAW_UBO_BYTES=512*1024, DRAW_UBO_SLOTS=3 };
 typedef struct DrawProgram DrawProgram;
@@ -26,9 +27,10 @@ struct DrawProgram {
  WGPUComputePipeline compute;bool variant;
  DrawProgram *variants[8];uint64_t variant_ages[8],variant_age;
  WGPUTextureFormat storage_formats[8];
+ ShadowPlan *shadow_plan;uint32_t inactive_mask;DrawProgram *shadow_variants[SHADOW_VARIANTS];uint64_t shadow_ages[SHADOW_VARIANTS],shadow_age;
 };
 typedef struct {
- uint32_t storage_formats[2][8];uint32_t shader[4],layout[226],strides[16],topology,index_format;
+ uint32_t storage_formats[2][8],inactive_masks[2];uint32_t shader[4],layout[226],strides[16],topology,index_format;
  uint32_t blend[66],depth[13],raster[10],formats[9],samples,ro,mask;
 } DrawKey;
 typedef struct {

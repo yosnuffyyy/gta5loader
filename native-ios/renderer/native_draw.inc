@@ -19,6 +19,7 @@ static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!
 #include "draw_instance.inc"
 #include "draw_depth_proxy.inc"
 #include "native_uav.inc"
+#include "shadow_guard.inc"
 #include "uav_clear.inc"
 #include "native_mips.inc"
 #include "sampler_border.h"
@@ -71,7 +72,7 @@ static bool draw_pass(NativeGpu *g){DrawState *s=&g->draw;if(s->pass&&!memcmp(g-
 #include "native_compute.inc"
 static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
  unsigned kind=gpu_word(payload,0),count=gpu_word(payload,1),instances=gpu_word(payload,2),start=gpu_word(payload,3),first_instance=gpu_word(payload,5);int32_t base=(int32_t)gpu_word(payload,4);if(!check(g,kind<=5,"Unknown draw kind"))return false;if(kind<4&&(!count||!instances))return true;
- Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;vp=storage_program(g,vp);if(pp)pp=storage_program(g,pp);if(!vp||(ps&&!pp))return false;
+ Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;vp=storage_program(g,vp);if(pp)pp=storage_program(g,pp);if(!vp||(ps&&!pp))return false;if(pp)pp=shadow_program(g,pp);if(ps&&!pp)return false;
  DrawPipeline *pipeline=draw_pipeline(g,vs,ps,vp,pp);if(!pipeline)return false;
  if(kind>=4&&(pipeline->manual_instances||vp->vertex_id||vp->instance_id)){uint32_t args[5]={0};if(!draw_indirect_decode(g,payload,kind,args))return false;count=args[0];instances=args[1];start=args[2];base=kind==4?(int32_t)args[3]:0;first_instance=args[kind==4?4:3];kind=kind==4?3:2;if(!count||!instances)return true;}
  if(!draw_prepare_proxies(g,vp)||(pp&&!draw_prepare_proxies(g,pp))||!storage_prepare(g,vp)||(pp&&!storage_prepare(g,pp)))return false;

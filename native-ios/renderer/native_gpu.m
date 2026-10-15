@@ -36,7 +36,7 @@ typedef struct {
  WGPUSampler sampler; DrawProgram *program;
  WGPUTextureDescriptor td;WGPUTextureFormat views[2];
  NativeGpu *owner;uint64_t tracked_bytes;QueryState query;
- uint64_t version; DepthProxy *proxies[3];
+ uint64_t version,created_command,last_upload_command,texture_uploads,last_bound_command;uint32_t last_upload[12],last_bind[2],upload_prefix[2]; DepthProxy *proxies[3];
  WGPUBuffer counter,storage_proxy;uint64_t storage_proxy_size;
  NativeGpu *storage_owner;
  MipChain *mips[2];
@@ -66,7 +66,7 @@ struct NativeGpu {
  bool counting_queries,query_pass;QueryPage query_pages[QUERY_PAGES];unsigned query_current,query_active_count,query_pending_pages,query_pages_allocated,query_cases;
  uint32_t query_active[QUERY_SCOPES];uint64_t query_token,query_begins,query_ends,query_segments,query_publications,query_empty,query_stale,query_map_requests,query_maps_completed,query_pressure_waits,query_pressure_ns,query_gpu_bytes,query_gpu_peak;
 #ifdef NATIVE_PROBE_CLI
- unsigned test_inter_stage_limit;
+ unsigned test_inter_stage_limit;bool test_legacy_layout_ids;
  void *test_scope_context;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
@@ -76,6 +76,8 @@ struct NativeGpu {
 };
 static uint64_t now_ns(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
 #include "native_metrics.inc"
+static void slow_command_observe(NativeGpu *,uint32_t,const uint8_t *,uint32_t,uint64_t,uint64_t);
+static void frame_cost_report(NativeGpu *);
 static void sample_memory(NativeGpu *g){uint64_t now=now_ns();if(now-g->last_sample<1000000000ull)return;g->last_sample=now;
  task_vm_info_data_t info={0};mach_msg_type_number_t count=TASK_VM_INFO_COUNT;if(task_info(mach_task_self(),TASK_VM_INFO,(task_info_t)&info,&count)!=KERN_SUCCESS)return;
  double footprint=(double)info.phys_footprint/1048576.0;
@@ -110,7 +112,7 @@ static bool wait_callback(NativeGpu *g){uint64_t deadline=now_ns()+15000000000ul
  }return !atomic_load(&g->failed);}
 static bool completed(NativeGpu *g){uint64_t start=now_ns();uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);timing_add(&g->metrics.windows[METRIC_COMPLETION],now_ns()-start);atomic_store(&g->live_phase,previous);return ok;}
 static Object *object(NativeGpu *g,uint32_t id){return id?(Object*)CFDictionaryGetValue(g->objects,(const void*)(uintptr_t)id):NULL;}
-static Object *create(NativeGpu *g,uint32_t id,uint32_t kind){if(!check(g,id&&!object(g,id),"Zero or duplicate GPU object ID"))return NULL;Object *o=calloc(1,sizeof(*o));if(!check(g,o!=NULL,"GPU object metadata allocation"))return NULL;o->id=id;o->kind=kind;o->version=1;o->owner=g;CFDictionarySetValue(g->objects,(const void*)(uintptr_t)id,o);return o;}
+static Object *create(NativeGpu *g,uint32_t id,uint32_t kind){if(!check(g,id&&!object(g,id),"Zero or duplicate GPU object ID"))return NULL;Object *o=calloc(1,sizeof(*o));if(!check(g,o!=NULL,"GPU object metadata allocation"))return NULL;o->id=id;o->kind=kind;o->version=1;o->owner=g;o->created_command=g->ring.executed;CFDictionarySetValue(g->objects,(const void*)(uintptr_t)id,o);return o;}
 static void draw_program_free(DrawProgram *);
 static void proxy_destroy(Object *);
 static void mip_destroy(Object *);
@@ -189,7 +191,7 @@ static bool create_buffer(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_
  if((o->bind&(1|2|8|0x80))||(o->misc&0x10)){WGPUBufferDescriptor d=WGPU_BUFFER_DESCRIPTOR_INIT;d.size=((uint64_t)o->size+3)&~3ull;d.usage=WGPUBufferUsage_CopySrc|WGPUBufferUsage_CopyDst;if(o->bind&1)d.usage|=WGPUBufferUsage_Vertex;if(o->bind&2)d.usage|=WGPUBufferUsage_Index;if(o->bind&(8|0x80))d.usage|=WGPUBufferUsage_Storage;if(o->misc&0x10)d.usage|=WGPUBufferUsage_Indirect;o->buffer=wgpuDeviceCreateBuffer(g->device,&d);if(o->buffer&&!atomic_load(&g->failed))track_resource(g,o,d.size);}
  return !atomic_load(&g->failed);
 }
-static bool create_texture(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_word(p,0),3);if(!o)return false;uint32_t dim=gpu_word(p,1),dxgi=gpu_word(p,7);o->dxgi=dxgi;o->a8=dxgi==65;o->bind=gpu_word(p,8);o->td=(WGPUTextureDescriptor)WGPU_TEXTURE_DESCRIPTOR_INIT;
+static bool create_texture(NativeGpu *g,const uint8_t *p){Object *o=create(g,gpu_word(p,0),3);if(!o)return false;o->words=10;o->meta=malloc(40);if(!check(g,o->meta!=NULL,"Texture create descriptor history allocation"))return false;memcpy(o->meta,p,40);uint32_t dim=gpu_word(p,1),dxgi=gpu_word(p,7);o->dxgi=dxgi;o->a8=dxgi==65;o->bind=gpu_word(p,8);o->td=(WGPUTextureDescriptor)WGPU_TEXTURE_DESCRIPTOR_INIT;
  o->td.dimension=dim==3?WGPUTextureDimension_3D:dim==1?WGPUTextureDimension_1D:WGPUTextureDimension_2D;o->td.size=(WGPUExtent3D){gpu_word(p,2),dim==1?1:gpu_word(p,3),gpu_word(p,dim==3?4:6)};o->td.mipLevelCount=gpu_word(p,5);o->td.sampleCount=gpu_word(p,9);o->td.format=format(dxgi,o->bind);
  if(!check(g,dim>=1&&dim<=3&&o->td.format!=WGPUTextureFormat_Undefined,"Unsupported texture dimension/DXGI format"))return false;
  if((dxgi==31||dxgi==51||dxgi==63)&&(o->bind&0x20)&&!check(g,g->format_caps_enabled,"SNORM render target requires native adapter format capabilities"))return false;
@@ -219,7 +221,7 @@ static bool state(NativeGpu *g,uint32_t op,const uint8_t *p,uint32_t n){
  else if(op==21){if(!check(g,n==2+b*3&&a<=16&&b<=16-a,"Invalid vertex buffer range"))return false;for(unsigned i=0;i<b;i++)for(unsigned k=0;k<3;k++)g->vb[a+i][k]=gpu_word(p,2+3*i+k);}
  else if(op==22){if(!check(g,n==3,"Invalid index buffer state"))return false;for(unsigned k=0;k<3;k++)g->ib[k]=gpu_word(p,k);}
  else if(op==23){if(!check(g,a<3&&b<=16&&c<=16-b&&n==3+3*c,"Invalid constant buffer range"))return false;for(unsigned i=0;i<c;i++)for(unsigned k=0;k<3;k++)g->cb[a][b+i][k]=gpu_word(p,3+3*i+k);}
- else if(op==24||op==25){unsigned limit=op==24?128:16;if(!check(g,a<3&&b<=limit&&c<=limit-b&&n==3+c,"Invalid shader binding range"))return false;for(unsigned i=0;i<c;i++){uint32_t id=gpu_word(p,3+i);if(op==24)g->srv[a][b+i]=id;else g->smp[a][b+i]=id;}}
+ else if(op==24||op==25){unsigned limit=op==24?128:16;if(!check(g,a<3&&b<=limit&&c<=limit-b&&n==3+c,"Invalid shader binding range"))return false;for(unsigned i=0;i<c;i++){uint32_t id=gpu_word(p,3+i);if(op==24){g->srv[a][b+i]=id;Object *v=object(g,id);if(v&&v->kind==17&&v->words==9){Object *t=object(g,v->meta[2]);if(t&&t->texture){t->last_bound_command=g->ring.executed;t->last_bind[0]=a;t->last_bind[1]=b+i;}}}else g->smp[a][b+i]=id;}}
  else if(op==38)return uav_set(g,p,n);
  else if(op==26){if(!check(g,n==37,"Invalid render target state"))return false;for(unsigned i=0;i<37;i++)g->targets[i]=gpu_word(p,i);}
  else if(op==27){if(!check(g,n==6,"Invalid blend state"))return false;for(unsigned i=0;i<6;i++)g->blend[i]=gpu_word(p,i);}
@@ -309,7 +311,7 @@ static bool upload_texture(NativeGpu *g,const uint8_t *p){Object *o=object(g,gpu
   for(unsigned z=0;z<depth;z++)for(unsigned y=0;y<height;y+=chunkRows){unsigned count=height-y<chunkRows?height-y:chunkRows;memset(rgba,0,(size_t)count*width*4);for(unsigned r=0;r<count;r++)for(unsigned x=0;x<width;x++)rgba[((size_t)r*width+x)*4+3]=p[48+((uint64_t)z*rows+y+r)*pitch+x];
    WGPUTexelCopyTextureInfo dst=t;dst.origin.y+=y;dst.origin.z+=z;WGPUTexelCopyBufferLayout packed=WGPU_TEXEL_COPY_BUFFER_LAYOUT_INIT;packed.bytesPerRow=width*4;packed.rowsPerImage=count;WGPUExtent3D part={width,count,1};wgpuQueueWriteTexture(g->queue,&dst,rgba,(size_t)count*width*4,&packed,&part);
   }free(rgba);
- }proxy_dirty(o);g->uploads++;return !atomic_load(&g->failed);
+ }memcpy(o->last_upload,p,48);o->upload_prefix[0]=o->upload_prefix[1]=0;memcpy(o->upload_prefix,p+48,(size_t)(bytes<8?bytes:8));o->texture_uploads++;o->last_upload_command=g->ring.executed;proxy_dirty(o);g->uploads++;return !atomic_load(&g->failed);
 }
 static void draw_end_pass(NativeGpu *);
 static bool draw_flush(NativeGpu *);
@@ -336,7 +338,7 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
     The physical segment still closes/resolves using its immutable snapshot. */
  if(op==4&&n==1){Object *q=object(g,gpu_word(p,0));if(q&&q->kind==44)query_destroy_scope(g,q);}
  bool shadow_upload=false;if((op==12||op==47)&&n>=3){Object *o=object(g,gpu_word(p,0));shadow_upload=o&&o->shadow&&!o->buffer;}
- if(!shadow_upload&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){if(!draw_flush(g))return false;}
+ if(!shadow_upload&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
  switch(op){
  case 0:case 2:return true; /* Reference protocol treats both as no-ops. */
  case 3:return check(g,n==10,"Invalid texture command")&&create_texture(g,p);
@@ -367,8 +369,9 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  default:{char text[320];Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u (%08x%08x) PS %u (%08x%08x), %llu commands executed",gpu_opcode_name(op),g->shader[0],vs&&vs->kind==14?vs->meta[3]:0,vs&&vs->kind==14?vs->meta[2]:0,g->shader[1],ps&&ps->kind==14?ps->meta[3]:0,ps&&ps->kind==14?ps->meta[2]:0,(unsigned long long)g->ring.executed);fail(g,text);return false;}
  }
 }
-static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t start=now_ns(),frames=g->presents;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
-static void release_hardware(NativeGpu *g){metrics_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
+static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(op==13&&n>=12)g->metrics.upload_bytes+=gpu_word(p,11);else if((op==12||op==47)&&n>=3)g->metrics.upload_bytes+=gpu_word(p,2);slow_command_observe(g,op,p,n,end,elapsed);if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
+#include "frame_costs.inc"
+static void release_hardware(NativeGpu *g){metrics_report(g);frame_cost_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
 #ifdef NATIVE_PROBE_CLI
  free(g->test_scope_context);g->test_scope_context=NULL;
 #endif
@@ -379,8 +382,8 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  else if(hardware(g)&&(!g->test_bc||(clip_sample_test(g)&&snorm_sample_test(g)&&norm16_sample_test(g)&&border_sample_test(g)&&bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
    if(gpu_ring_drain(&g->ring,256)<0){if(!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,g->ring.error);break;}
-   if(!draw_flush(g))break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
-   if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head)native_wait32(&g->host->memory,g->ring.base,head,g->query_pending_pages?2000000:100000000);atomic_store(heap_word(g,g->ring.base+20),0);}
+   uint64_t flush_start=now_ns();bool flushed=draw_flush(g);g->metrics.drain_flush_ns+=now_ns()-flush_start;if(!flushed)break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
+   if(head==g->ring.tail){atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head){uint64_t idle_start=now_ns();native_wait32(&g->host->memory,g->ring.base,head,g->query_pending_pages?2000000:100000000);g->metrics.idle_wait_ns+=now_ns()-idle_start;}atomic_store(heap_word(g,g->ring.base+20),0);}
   }
  }
  if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");atomic_store(&g->live_phase,8);release_hardware(g);wasm_rt_free_thread();}return NULL;}
@@ -399,6 +402,8 @@ void native_gpu_snapshot(NativeGpu *g,char *text,size_t size){
 void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(text,size,"Native GPU service not created");return;}snprintf(text,size,"Native GPU: %s; ready %u; native BC %u; BC sample formats %u; native format caps %u; SNORM cases %u; commands %llu; uploads %llu; readbacks %llu; surface frames %llu; draws %llu; pipelines %llu (hits %llu); last opcode %s; readback staging peak %u KiB (%u allocations); readback cases %u; instance cases %u; stepped draws/batches %llu/%llu; indirect decodes %llu; depth proxy cases %u; proxy allocations/refreshes/reuses %u/%llu/%llu; proxy peak %llu KiB; live proxy bytes/passes %llu/%u; UAV cases %u; compute pipelines/dispatches %u/%llu; counter reset/initial-count-unused/copy %llu/%llu/%llu; UAV clears %llu; view proxy peak %llu KiB (%u copies), live %llu; mips %llu (live passes %u); presented pixel samples %u, RGB %u/%u; normalized16 cases %u; border cases %u; clip cases %u",g->adapter_name,(unsigned)atomic_load(&g->ready),(unsigned)g->bc_enabled,g->bc_formats_tested,(unsigned)g->format_caps_enabled,g->snorm_cases_tested,(unsigned long long)g->ring.executed,(unsigned long long)g->uploads,(unsigned long long)g->readbacks,(unsigned long long)g->surface_frames,(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,gpu_opcode_name(g->last_op),g->readback_capacity/1024,g->readback_allocations,g->readback_cases_tested,g->instance_cases_tested,(unsigned long long)g->draw.instance_draws,(unsigned long long)g->draw.instance_batches,(unsigned long long)g->draw.indirect_decodes,g->draw.proxy_cases,g->draw.proxy_allocations,(unsigned long long)g->draw.proxy_refreshes,(unsigned long long)g->draw.proxy_reuses,(unsigned long long)((g->draw.proxy_peak+1023)/1024),(unsigned long long)g->draw.proxy_bytes,g->draw.proxy_passes,g->draw.uav_cases,g->draw.compute_shaders,(unsigned long long)g->draw.dispatches,(unsigned long long)g->draw.counter_resets,(unsigned long long)g->draw.counter_ignored,(unsigned long long)g->draw.counter_copies,(unsigned long long)g->draw.uav_clears,(unsigned long long)(g->draw.storage_proxy_peak/1024),g->draw.storage_proxy_copies,(unsigned long long)g->draw.storage_proxy_bytes,(unsigned long long)g->draw.mip_generations,g->draw.mip_passes,g->pixel_samples,g->pixel_min,g->pixel_max,g->norm16_cases_tested,g->border_cases_tested,g->clip_cases_tested);size_t used=strlen(text);if(used<size)snprintf(text+used,size-used,"; byte-edge dispatches/words %llu/%llu; whole-copy subresources/submissions %llu/%llu; resource cases %u; queue submissions %llu",(unsigned long long)g->upload_edge_dispatches,(unsigned long long)g->upload_edge_words,(unsigned long long)g->whole_copy_subresources,(unsigned long long)g->whole_copy_submissions,g->resource_cases,(unsigned long long)g->submissions);used=strlen(text);if(used<size)snprintf(text+used,size-used,"; logical engine GPU payload live/peak %llu/%llu KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated)",(unsigned long long)((g->buffer_bytes+g->texture_bytes+1023)/1024),(unsigned long long)((g->resource_peak+1023)/1024));used=strlen(text);if(used<size)snprintf(text+used,size-used,"; varying limit/links %u/%llu",g->inter_stage_limit,(unsigned long long)g->draw.inter_stage_links);used=strlen(text);if(used<size)snprintf(text+used,size-used,"; varying pixel cases %u",g->inter_stage_cases);used=strlen(text);if(used<size)snprintf(text+used,size-used,"; occlusion count cap %u; query cases %u; scope begins/ends %llu/%llu; segments/maps %llu/%llu; results/empty/stale %llu/%llu/%llu; query pages %u/%u; query GPU live/peak %llu/%llu KiB; pool waits %llu (%llu us)",g->counting_queries,g->query_cases,(unsigned long long)g->query_begins,(unsigned long long)g->query_ends,(unsigned long long)g->query_segments,(unsigned long long)g->query_map_requests,(unsigned long long)g->query_publications,(unsigned long long)g->query_empty,(unsigned long long)g->query_stale,g->query_pages_allocated,QUERY_PAGES,(unsigned long long)(g->query_gpu_bytes/1024),(unsigned long long)((g->query_gpu_peak+1023)/1024),(unsigned long long)g->query_pressure_waits,(unsigned long long)(g->query_pressure_ns/1000));}
 
  #include "proxy_range_fixture.inc"
+#include "shadow_fixture.inc"
+#include "layout_cache_fixture.inc"
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
    publication independently of engine startup or game assets. */
@@ -471,6 +476,12 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!trap){wasm_rt_allocate_memory_shared(&h->memory,64,65536,false,65536);allocated=true;result=native_gpu_replay_test(h,report,capacity)?0:1;
  if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,report+used,capacity-used)?0:1;}}
  if(!result){char ranges[600];if(!proxy_range_fixture(h,0,ranges,sizeof(ranges)))result=1;size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",ranges);for(unsigned i=1;i<=4&&!result;i++)if(!proxy_range_fixture(h,i,NULL,0))result=1;if(!result){used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\nPASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.");}}
+ if(!result){char text[850];bool valid=shadow_fixture(h,0,text,sizeof(text));for(unsigned i=1;i<=5&&valid;i++)valid=shadow_fixture(h,i,NULL,0);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s\n%s: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.",text,valid?"PASS":"FAIL");if(!valid)result=1;}
+ if(!result){char text[600];bool valid=layout_cache_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
+#ifdef NATIVE_PROBE_CLI
+ if(valid){valid=layout_cache_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+#endif
+ if(!valid)result=1;}
  if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}}else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
  if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}free(h);wasm_rt_free_thread();return result;
 }

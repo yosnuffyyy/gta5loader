@@ -2,6 +2,7 @@
    no network access, whole-pack cache or game-file duplication at runtime. */
 #include "storage_formats.inc"
 #include "compute_fixture_sources.inc"
+#include "shadow_fixture_source.inc"
 static NSRegularExpression *draw_regex(NSString *pattern){return [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];}
 static NSString *draw_capture(NSString *s,NSTextCheckingResult *m,unsigned i){return [s substringWithRange:[m rangeAtIndex:i]];}
 static NSArray<NSTextCheckingResult*> *draw_matches(NSString *pattern,NSString *s){return [draw_regex(pattern) matchesInString:s options:0 range:NSMakeRange(0,s.length)];}
@@ -31,6 +32,8 @@ static bool draw_uint(id n,uint64_t *out){if(![n isKindOfClass:NSNumber.class]||
 static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  *constants=nil;
  if(g->draw.fixture){
+ if(!strcmp(hash,"ffffffff00000220"))return @(shadow_fixture_ps);
+ if(!strcmp(hash,"ffffffff00000221"))return [@(shadow_fixture_ps) stringByReplacingOccurrencesOfString:@"return vec4f(r9.zzz,1)" withString:@"return vec4f(textureSampleCompareLevel(t14,s14,vec3f(0,0,1),0.5))"];
  if(!strcmp(hash,"ffffffff00000155")||!strcmp(hash,"ffffffff00000156")){bool cube=!strcmp(hash,"ffffffff00000156");NSString *s=[@(draw_fixture_ps) stringByReplacingOccurrencesOfString:@"var s2 : sampler;" withString:@"var s2 : sampler_comparison;"];s=[s stringByReplacingOccurrencesOfString:@"texture_2d<f32>" withString:cube?@"texture_depth_cube":@"texture_depth_2d_array"];return [s stringByReplacingOccurrencesOfString:@"textureSample(t2, s2, v2.xy.xyxx.xy)" withString:cube?@"vec4<f32>(textureSampleCompare(t2,s2,vec3f(1,0,0),0.5),0,0,1)":@"vec4<f32>(textureSampleCompare(t2,s2,v2.xy,0,0.5),0,0,1)"];}
  if(!strcmp(hash,"ffffffff00000190")||!strcmp(hash,"ffffffff00000192")){NSString *s=[@(draw_fixture_vs) stringByReplacingOccurrencesOfString:@"@location(1u)" withString:!strcmp(hash,"ffffffff00000192")?@"@location(15u) @interpolate(flat)":@"@location(15u)"];return s;}
  if(!strcmp(hash,"ffffffff00000191")||!strcmp(hash,"ffffffff00000193"))return [@(draw_fixture_ps) stringByReplacingOccurrencesOfString:@"@location(1u)" withString:!strcmp(hash,"ffffffff00000193")?@"@location(15u) @interpolate(flat)":@"@location(15u)"];
@@ -59,8 +62,9 @@ static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  if(!check(g,source&&source.length<=1024*1024,"Local shader source unavailable or exceeds 1 MiB"))return nil;
  return [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
 }
-static void draw_program_free(DrawProgram *p){if(!p)return;for(unsigned i=0;i<8;i++)draw_program_free(p->variants[i]);if(p->compute)wgpuComputePipelineRelease(p->compute);for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(p->groups[i])wgpuBindGroupRelease(p->groups[i]);for(unsigned i=0;i<p->count;i++){if(p->bindings[i].view)wgpuTextureViewRelease(p->bindings[i].view);if(p->bindings[i].dummy_buffer){wgpuBufferDestroy(p->bindings[i].dummy_buffer);wgpuBufferRelease(p->bindings[i].dummy_buffer);}if(p->bindings[i].dummy){wgpuTextureDestroy(p->bindings[i].dummy);wgpuTextureRelease(p->bindings[i].dummy);}}if(p->constants){if(!p->variant)wgpuBufferDestroy(p->constants);wgpuBufferRelease(p->constants);}if(p->layout)wgpuBindGroupLayoutRelease(p->layout);if(p->module)wgpuShaderModuleRelease(p->module);free(p->source);free(p);}
+static void draw_program_free(DrawProgram *p){if(!p)return;for(unsigned i=0;i<SHADOW_VARIANTS;i++)draw_program_free(p->shadow_variants[i]);free(p->shadow_plan);for(unsigned i=0;i<8;i++)draw_program_free(p->variants[i]);if(p->compute)wgpuComputePipelineRelease(p->compute);for(unsigned i=0;i<DRAW_UBO_SLOTS;i++)if(p->groups[i])wgpuBindGroupRelease(p->groups[i]);for(unsigned i=0;i<p->count;i++){if(p->bindings[i].view)wgpuTextureViewRelease(p->bindings[i].view);if(p->bindings[i].dummy_buffer){wgpuBufferDestroy(p->bindings[i].dummy_buffer);wgpuBufferRelease(p->bindings[i].dummy_buffer);}if(p->bindings[i].dummy){wgpuTextureDestroy(p->bindings[i].dummy);wgpuTextureRelease(p->bindings[i].dummy);}}if(p->constants){if(!p->variant)wgpuBufferDestroy(p->constants);wgpuBufferRelease(p->constants);}if(p->layout)wgpuBindGroupLayoutRelease(p->layout);if(p->module)wgpuShaderModuleRelease(p->module);free(p->source);free(p);}
 #include "program_layout.inc"
+#include "shadow_guard_reflect.inc"
 static DrawProgram *draw_program(NativeGpu *g,Object *o){
  if(!check(g,o&&o->kind==14&&o->meta[1]<3,"Shader descriptor has an invalid stage"))return NULL;if(o->program)return o->program;
  DrawProgram *p=calloc(1,sizeof(*p));if(!check(g,p!=NULL,"Shader program allocation"))return NULL;o->program=p;p->stage=o->meta[1];p->group=p->stage==2?0:p->stage;snprintf(p->hash,sizeof(p->hash),"%08x%08x",o->meta[3],o->meta[2]);
@@ -105,6 +109,7 @@ static DrawProgram *draw_program(NativeGpu *g,Object *o){
   for(unsigned i=1;i<p->count;i++){DrawBinding v=p->bindings[i];unsigned j=i;while(j&&p->bindings[j-1].binding>v.binding){p->bindings[j]=p->bindings[j-1];j--;}p->bindings[j]=v;}
   if(!program_layout(g,p))return NULL;
   if([constants isKindOfClass:NSArray.class]){NSArray *values=constants;if(!check(g,values.count<=16384,"Special constants exceed 256 KiB"))return NULL;size_t bytes=values.count?values.count*16:16;uint32_t *data=calloc(1,bytes);if(!check(g,data!=NULL,"Special constant storage allocation"))return NULL;for(unsigned i=0;i<values.count;i++){uint64_t v;if(!draw_uint(values[i],&v)||v>UINT32_MAX){free(data);fail(g,"Invalid special constant table value");return NULL;}data[i*4]=(uint32_t)v;}WGPUBufferDescriptor bd=WGPU_BUFFER_DESCRIPTOR_INIT;bd.size=bytes;bd.usage=WGPUBufferUsage_Uniform|WGPUBufferUsage_CopyDst;p->constants=wgpuDeviceCreateBuffer(g->device,&bd);if(p->constants)wgpuQueueWriteBuffer(g->queue,p->constants,0,data,bytes);free(data);}
+  shadow_reflect(p,text,members);
   p->source=strdup(text.UTF8String);if(!check(g,p->source!=NULL,"Shader source copy allocation"))return NULL;WGPUShaderSourceWGSL wgsl=WGPU_SHADER_SOURCE_WGSL_INIT;wgsl.code=(WGPUStringView){p->source,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&wgsl.chain;md.label=(WGPUStringView){p->hash,WGPU_STRLEN};atomic_store(&g->live_phase,3);uint64_t module_start=now_ns();p->module=wgpuDeviceCreateShaderModule(g->device,&md);timing_add(&g->metrics.windows[METRIC_SHADER],now_ns()-module_start);atomic_store(&g->live_phase,1);
   if(!check(g,p->module&&p->layout&&!atomic_load(&g->failed),"Shader module/layout validation failed"))return NULL;
  }return p;

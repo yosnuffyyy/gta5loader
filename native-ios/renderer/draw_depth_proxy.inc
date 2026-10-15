@@ -1,4 +1,6 @@
 #include "depth_proxy_layout.h"
+static void texture_history(NativeGpu *g,Object *o){ if(g->host->progress){char line[650];snprintf(line,sizeof(line),"SRV source lifetime: created command %llu; original CREATE_TEXTURE[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u]; uploads %llu last command %llu, UPLOAD_TEXTURE[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u], first <=8 bytes %08x/%08x; last bound command %llu stage/slot %u/%u. Live state only; no earlier device history inferred.",(unsigned long long)o->created_command,o->meta&&o->words==10?o->meta[0]:0,o->meta&&o->words==10?o->meta[1]:0,o->meta&&o->words==10?o->meta[2]:0,o->meta&&o->words==10?o->meta[3]:0,o->meta&&o->words==10?o->meta[4]:0,o->meta&&o->words==10?o->meta[5]:0,o->meta&&o->words==10?o->meta[6]:0,o->meta&&o->words==10?o->meta[7]:0,o->meta&&o->words==10?o->meta[8]:0,o->meta&&o->words==10?o->meta[9]:0,(unsigned long long)o->texture_uploads,(unsigned long long)o->last_upload_command,o->last_upload[0],o->last_upload[1],o->last_upload[2],o->last_upload[3],o->last_upload[4],o->last_upload[5],o->last_upload[6],o->last_upload[7],o->last_upload[8],o->last_upload[9],o->last_upload[10],o->last_upload[11],o->upload_prefix[0],o->upload_prefix[1],(unsigned long long)o->last_bound_command,o->last_bind[0],o->last_bind[1]);g->host->progress(g->host->progress_context,line);}
+}
 /* Match the browser's D3D depth/stencil/float SRV adapters. All conversions
    remain on the GPU and in the same encoder as the dependent game draw.
    Each source owns its proxies; passes/views are cached lazily. Only requested
@@ -33,6 +35,7 @@ static bool proxy_pipeline(NativeGpu *g,unsigned kind){DrawState *s=&g->draw;if(
 static bool draw_srv_range(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,uint32_t *mips,uint32_t *layers){
  uint32_t requested=b->dim==WGPUTextureViewDimension_2D||b->dim==WGPUTextureViewDimension_1D?1:b->dim==WGPUTextureViewDimension_Cube?6:srv->meta[8];
  if(depth_proxy_range(o->td.mipLevelCount,o->td.size.depthOrArrayLayers,srv->meta[5],srv->meta[6],srv->meta[7],requested,mips,layers))return true;
+ texture_history(g,o);
  char why[700];snprintf(why,sizeof(why),"SRV range outside texture: source %u DXGI %u native %u, dimension %u size %ux%ux%u mips %u samples %u version %llu; SRV %u raw[%u,%u,%u,%u,%u,%u,%u,%u,%u]; shader binding %u slot %u dimension %u sample %u MS %u; requested layers %u. Explicit invalid ranges are not clamped",o->id,o->dxgi,o->td.format,o->td.dimension,o->td.size.width,o->td.size.height,o->td.size.depthOrArrayLayers,o->td.mipLevelCount,o->td.sampleCount,(unsigned long long)o->version,srv->id,srv->meta[0],srv->meta[1],srv->meta[2],srv->meta[3],srv->meta[4],srv->meta[5],srv->meta[6],srv->meta[7],srv->meta[8],b->binding,b->slot,b->dim,b->sample,b->ms,requested);fail(g,why);return false;
 }
 static WGPUTexture draw_proxy(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,unsigned kind){

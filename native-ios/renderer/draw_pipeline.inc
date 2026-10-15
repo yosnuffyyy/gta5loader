@@ -20,8 +20,13 @@ static WGPUVertexFormat draw_vertex_format(uint32_t f,unsigned *bytes){switch(f)
 }}
 static bool draw_state_words(NativeGpu *g,uint32_t id,uint32_t kind,uint32_t *dst,unsigned count){if(!id)return true;Object *o=object(g,id);if(!check(g,o&&o->kind==16&&o->words==count+2&&o->meta[1]==kind,"Invalid draw state object/descriptor size"))return false;memcpy(dst,o->meta+2,count*4);return true;}
 static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgram *vp,DrawProgram *pp){
- DrawKey key={0};memcpy(key.storage_formats[0],vp->storage_formats,sizeof(vp->storage_formats));if(pp)memcpy(key.storage_formats[1],pp->storage_formats,sizeof(pp->storage_formats));key.shader[0]=vs->meta[2];key.shader[1]=vs->meta[3];if(ps){key.shader[2]=ps->meta[2];key.shader[3]=ps->meta[3];}
+ DrawKey key={0};key.inactive_masks[0]=vp->inactive_mask;key.inactive_masks[1]=pp?pp->inactive_mask:0;memcpy(key.storage_formats[0],vp->storage_formats,sizeof(vp->storage_formats));if(pp)memcpy(key.storage_formats[1],pp->storage_formats,sizeof(pp->storage_formats));key.shader[0]=vs->meta[2];key.shader[1]=vs->meta[3];if(ps){key.shader[2]=ps->meta[2];key.shader[3]=ps->meta[3];}
  Object *layout=object(g,g->layout);if(!check(g,layout&&layout->kind==15,"Draw input layout missing"))return NULL;memcpy(key.layout,layout->meta,layout->words*4);
+ /* Object IDs are ownership handles, not vertex-layout semantics. */
+#ifdef NATIVE_PROBE_CLI
+ if(!g->test_legacy_layout_ids)
+#endif
+ key.layout[0]=0;
  key.topology=g->topology;key.index_format=g->ib[0]?g->ib[1]:0;key.mask=g->blend[5];
  for(unsigned i=0;i<16;i++)key.strides[i]=g->vb[i][0]?g->vb[i][1]:0;
  if(!draw_state_words(g,g->blend[0],0,key.blend,66)||!draw_state_words(g,g->depth[0],1,key.depth,13)||!draw_state_words(g,g->raster,2,key.raster,10))return NULL;
