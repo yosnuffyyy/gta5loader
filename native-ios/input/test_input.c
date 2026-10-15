@@ -16,7 +16,7 @@ int main(int argc,char **argv){
  FILE *fixture=argc>1?fopen(argv[1],"wb"):NULL;if(argc>1)assert(fixture);
  for(unsigned i=0;i<16;i++){
   NIState s={.buttons=bits[i],.lt=bits[i]==NI_L2?1:0,.rt=bits[i]==NI_R2?1:0};ni_controller((NIState){0});drain();ni_controller(s);drain();assert(mask()==bits[i]);if(fixture)assert(fwrite(pad,1,56,fixture)==56);
-  ni_consume(pad);assert(mask()==bits[i]);ni_controller((NIState){0});drain();assert(mask()==0);
+  NIMetrics before,after;ni_metrics(&before);ni_controller(s);ni_metrics(&after);assert(before.queued==after.queued);ni_consume(pad);assert(mask()==bits[i]);ni_controller((NIState){0});drain();assert(mask()==0);
  }
  ni_controller((NIState){.lx=.6f,.ly=1,.rx=1,.ry=.6f,.lt=.4f,.rt=.7f});drain();assert(pad[21]<128&&pad[22]>128&&pad[24]==102&&pad[25]==179);if(fixture)assert(fwrite(pad,1,56,fixture)==56);if(fixture)assert(fclose(fixture)==0);
  /* A tap between engine updates must remain press, then release. */
@@ -34,6 +34,7 @@ int main(int argc,char **argv){
  ni_connect(false);drain();assert(ni_source()==NI_TOUCH&&mask()==0);ni_connect(true);assert(ni_source()==NI_TOUCH);ni_controller((NIState){.buttons=NI_CROSS});drain();assert(ni_source()==NI_TOUCH&&mask()==0);ni_controller((NIState){0});ni_controller((NIState){.buttons=NI_CROSS});drain();assert(mask()==NI_CROSS);
  /* NaN and infinities never escape normalization. */
  ni_controller((NIState){.lx=NAN,.rx=INFINITY,.lt=NAN,.rt=-1});drain();assert(pad[20]==128&&pad[22]==128&&pad[24]==0&&pad[25]==0);
+ ni_configure(NAN,INFINITY);ni_touch((NIState){0},true);ni_controller((NIState){0});ni_controller((NIState){.lx=.04f});drain();assert(ni_source()==NI_TOUCH);ni_configure(.15f,1);
  ni_end();drain();assert(mask()==0&&pad[50]==0&&pad[55]==0);
  uint8_t control[4];int32_t v;ni_control(control);memcpy(&v,control,4);assert(v==-4);ni_begin();ni_control(control);memcpy(&v,control,4);assert(v==0);assert(ni_is_control(24488864)&&!ni_is_control(24488865));
  /* Shared production geometry, multitouch and resize cancellation. */

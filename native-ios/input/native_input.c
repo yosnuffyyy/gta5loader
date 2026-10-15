@@ -36,7 +36,7 @@ void ni_begin(void){lock();input.running=true;input.focused=true;input.baseline=
 void ni_end(void){lock();input.running=false;input.focused=false;rearm();neutral();unlock();}
 void ni_focus(bool focused){lock();input.focused=focused;input.baseline=input.connected;rearm();neutral();input.source=NI_TOUCH;unlock();}
 void ni_connect(bool connected){lock();input.connected=connected;input.baseline=connected;input.physical=(NIState){0};rearm();if(!connected){switch_to(NI_TOUCH);neutral();}unlock();}
-void ni_configure(float deadzone,float sensitivity){lock();input.deadzone=finite_clamp(deadzone,.05f,.4f);input.sensitivity=finite_clamp(sensitivity,.25f,2);unlock();}
+void ni_configure(float deadzone,float sensitivity){lock();input.deadzone=isfinite(deadzone)?finite_clamp(deadzone,.05f,.4f):.15f;input.sensitivity=isfinite(sensitivity)?finite_clamp(sensitivity,.25f,2):1;unlock();}
 NISource ni_source(void){lock();NISource s=input.source;unlock();return s;}
 NISource ni_controller(NIState raw){
  lock();NIState s=clean(raw),old=input.physical;input.physical=s;input.metrics.events++;
