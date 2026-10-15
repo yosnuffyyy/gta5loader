@@ -10,6 +10,8 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-shadow-guard | tee native-build/evidence/native-shadow-guard-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_shadow_trace.c -o native-build/test-shadow-trace
 native-build/test-shadow-trace | tee native-build/evidence/native-shadow-trace-test.txt
+clang -fobjc-arc -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/test_shadow_failure_log.m -framework Foundation -o native-build/test-shadow-failure-log
+native-build/test-shadow-failure-log | tee native-build/evidence/native-shadow-failure-log-test.txt
 node native-ios/renderer/test_reference_inputs.mjs | tee native-build/evidence/native-reference-inputs-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_timing_window.c -o native-build/test-timing-window
 native-build/test-timing-window | tee native-build/evidence/native-timing-window-test.txt

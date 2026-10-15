@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 27084,
-      "sha256": "6a1f7058ac436bbe96377323147e42830136571bc89a26b8bc9db06dafa068b7"
+      "bytes": 27689,
+      "sha256": "b37e9588619b5c317aafee1325f23f33994f42b444b0bdeddff83aa0aa204f25"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -173,8 +173,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 6097,
-      "sha256": "ef32860beb56a72817a5d1f248565f5174d5a021e0c238dee51bf3e8359a7489"
+      "bytes": 6371,
+      "sha256": "131d939ef17a2b18ad429aa9ddb3a71b04a97dad8254ff009628ef72ae35bed1"
     },
     {
       "path": "native-ios/renderer/cache_budget.h",
@@ -423,8 +423,8 @@
     },
     {
       "path": "native-ios/renderer/ped_shadow_audit.inc",
-      "bytes": 9578,
-      "sha256": "141106d2a29dc76962ab63762711a149f0c67d48ffe7d3579bc3d28acc4d25aa"
+      "bytes": 10584,
+      "sha256": "a0fa6fedb46010446cfbcf63fd7b006e5de48d7ebb8a651a36a6517c6829199d"
     },
     {
       "path": "native-ios/renderer/perf_fixture.inc",
@@ -613,8 +613,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_transition_fixture.inc",
-      "bytes": 6352,
-      "sha256": "830e61fe0edf3574e58b2262052bf22b865e7b28e877f384a380d3364263499a"
+      "bytes": 6658,
+      "sha256": "428d7908813db9792063880f538eaacc80fedd5596ac65c5490af4a1141a9225"
     },
     {
       "path": "native-ios/renderer/snorm_fixture.inc",
@@ -877,6 +877,11 @@
       "sha256": "5cfb68fa4dce1c654bdd1d0af73efd745fa4c0d174e68154965bc54d77915515"
     },
     {
+      "path": "native-ios/shadow_failure_log.h",
+      "bytes": 1010,
+      "sha256": "3d49e37db6803f99d335a9c534d0fdeefbc1900d5efda8218e51996dd346efff"
+    },
+    {
       "path": "native-ios/test-bulk.mjs",
       "bytes": 3447,
       "sha256": "af6da43b67548f66bfe5d660d78f1d7f91e09fc2580dfb8c0bfcb3590b56d50e"
@@ -890,6 +895,11 @@
       "path": "native-ios/test_host.c",
       "bytes": 6555,
       "sha256": "19aac8429e3aadf973c8228913d0ab4cbb1e30d0dd3fd13273b258fda47c7c76"
+    },
+    {
+      "path": "native-ios/test_shadow_failure_log.m",
+      "bytes": 2087,
+      "sha256": "0a4fabbe237283303f9a9b32059d0982a3a21c6140e21db78e382518b8fd2bb4"
     },
     {
       "path": "native-ios/test_wait.c",

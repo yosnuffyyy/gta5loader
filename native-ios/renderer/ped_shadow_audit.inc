@@ -17,8 +17,18 @@ static bool audit_ped_shadow(NativeGpu *g){@autoreleasepool{
 /* Exact 0.23 phone state: active light count=1, selector=2, original black
    2D BC1 view. A required cube cannot be reconstructed from this descriptor.
    Preserve a negative regression rather than falsifying a successful draw. */
+typedef struct { unsigned cb3_rows,cb6_rows; bool count,type,history; } ShadowCaptureCheck;
+static void audit_shadow_capture(void *context,const char *text){
+ ShadowCaptureCheck *c=context;
+ if(strncmp(text,"Shadow fatal CB3 words ",23)==0)c->cb3_rows++;
+ if(strncmp(text,"Shadow fatal CB6 words ",23)==0)c->cb6_rows++;
+ if(strstr(text,"Shadow fatal CB3 words 8: 00000001"))c->count=true;
+ if(strstr(text,"Shadow fatal CB6 words 56:")&&strstr(text,"40000000"))c->type=true;
+ if(strstr(text,"Shadow transition history:"))c->history=true;
+}
 static bool audit_active_shadow(struct w2c_env *h){@autoreleasepool{
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;bool ok=false;g->test_inter_stage_limit=15;
+ native_progress saved_progress=h->progress;void *saved_context=h->progress_context;ShadowCaptureCheck capture_check={0};h->progress=audit_shadow_capture;h->progress_context=&capture_check;
  if(!hardware(g))goto cleanup;reset_state(g);
  const uint64_t hashes[]={UINT64_C(0xac2dd56e1111be56),UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
  for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:25;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:5;for(unsigned i=0;!st&&i<5;i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
@@ -53,6 +63,7 @@ static bool audit_active_shadow(struct w2c_env *h){@autoreleasepool{
  for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;
  g->srv[1][14]=709;g->last_op=32;g->last_words=6;uint32_t payload[]={1,672,1,0,0,0};memcpy(g->last_payload,payload,sizeof(payload));
  ok=!draw_execute(g,(uint8_t*)payload)&&native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&strstr(native_gpu_error(g),"ac2dd56e1111be56")&&strstr(native_gpu_error(g),"raw40000000")&&strstr(native_gpu_error(g),"raw00000001")&&!g->draw.draws&&!g->draw.proxy_bytes&&object(g,708)->td.size.depthOrArrayLayers==1&&object(g,708)->version==2;
- if(ok)puts("PASS: exact physical active binding reproduced: VS ac2dd56e1111be56 + PS 996bb42f448956f2 pipeline validates; count 1 / selector 2, captured black BC1 708/709 rejects six-layer sampling. No inactivity proof, draw, layer fabrication or crash-resolution claim.");
- cleanup:release_hardware(g);native_gpu_end(g);return ok;
+ ok=ok&&capture_check.cb3_rows==30&&capture_check.cb6_rows==16&&capture_check.count&&capture_check.type&&capture_check.history;
+ if(ok)puts("PASS: exact physical active binding reproduced: VS ac2dd56e1111be56 + PS 996bb42f448956f2 pipeline validates; count 1 / selector 2, captured black BC1 708/709 rejects six-layer sampling. Bounded history and both original constant blocks verified through the report callback. No inactivity proof, draw, layer fabrication or crash-resolution claim.");
+ cleanup:release_hardware(g);native_gpu_end(g);h->progress=saved_progress;h->progress_context=saved_context;return ok;
 }}

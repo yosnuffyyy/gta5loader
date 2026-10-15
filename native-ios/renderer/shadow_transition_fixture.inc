@@ -32,6 +32,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,char *r
    memset(cmd,0,sizeof(cmd));cmd[0]=714;cmd[1]=first*16;cmd[2]=496;memcpy(cmd+3,values,sizeof(values));EMIT(12,127);
    uint32_t cb[]={1,6,1,714,first,31};memcpy(cmd,cb,sizeof(cb));EMIT(23,6);cb[1]=3;cb[3]=715;cb[5]=3;memcpy(cmd,cb,sizeof(cb));EMIT(23,6);
    if(test==16){cmd[0]=709;EMIT(4,1);cmd[0]=708;EMIT(4,1);memcpy(cmd,capture,sizeof(capture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;EMIT(13,14);memcpy(cmd,captured_srv,sizeof(captured_srv));EMIT(17,9);}
+   if(test==16){cmd[0]=711;EMIT(4,1);cmd[0]=710;EMIT(4,1);memcpy(cmd,cube,sizeof(cube));EMIT(3,10);for(unsigned face=0;face<6;face++){memset(cmd,0,sizeof(cmd));cmd[0]=710;cmd[2]=face;float replacement=.75f;memcpy(cmd+3,&replacement,4);EMIT(5,7);}memcpy(cmd,cube_srv,sizeof(cube_srv));EMIT(17,9);}
   }
   uint32_t type=mode==0?0:mode==3?0x40400000u:mode==6?0x80000000u:0x40000000u;
   uint32_t count=mode==2||mode==7?0:1,selected=mode==1||mode==4||mode==5?711:709;
@@ -42,7 +43,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,char *r
   cmd[0]=715;cmd[1]=first*16+32;cmd[2]=4;cmd[3]=count;EMIT(12,4);
   cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=selected;EMIT(24,4);
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
-  expected[test]=selected==711?0:255;
+  expected[test]=selected==711&&test<16?0:255;
   memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)(dst+test*1024);cmd[10]=(dst+test*1024)>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
  }
  memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[9]=(uint32_t)(dst+32768);cmd[10]=(dst+32768)>>32;cmd[11]=cmd[12]=cmd[14]=8;EMIT(42,17);

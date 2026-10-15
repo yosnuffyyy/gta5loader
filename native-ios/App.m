@@ -6,6 +6,7 @@
 #import <mach/mach.h>
 #import <QuartzCore/CAMetalLayer.h>
 #include "probe.h"
+#include "shadow_failure_log.h"
 #include "renderer/native_renderer.h"
 #include "renderer/native_launch.h"
 #include <math.h>
@@ -46,10 +47,12 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,assign) BOOL busy;
 @property(nonatomic,strong) NSLock *logLock;
 @property(nonatomic,strong) NSMutableString *pendingLog;
+@property(nonatomic,strong) NSMutableString *shadowFailureLog;
 @property(nonatomic,assign) BOOL logScheduled;
 @property(nonatomic,assign) NSTimeInterval lastPersist;
 - (void)append:(NSString *)text;
 - (void)queueProgress:(NSString *)text;
+- (void)appendShadowFailure;
 @end
 static void RuntimeProgress(void *context,const char *line) {
     ProbeController *controller=(__bridge ProbeController *)context;
@@ -94,13 +97,16 @@ static void RuntimeProgress(void *context,const char *line) {
     [self refreshControllers];
 }
 - (void)dealloc {[NSNotificationCenter.defaultCenter removeObserver:self];}
-- (void)setWorking:(BOOL)working {self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];}
+- (void)setWorking:(BOOL)working {if(working){[self.logLock lock];self.shadowFailureLog=nil;[self.logLock unlock];}self.busy=working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];}
 - (void)flushProgress {
     [self.logLock lock];NSString *text=[self.pendingLog copy];[self.pendingLog setString:@""];self.logScheduled=NO;[self.logLock unlock];if(text.length)[self append:text];
 }
 - (void)queueProgress:(NSString *)text {
-    [self.logLock lock];[self.pendingLog appendFormat:@"\n%@",text];if(self.pendingLog.length>16384)[self.pendingLog deleteCharactersInRange:NSMakeRange(0,self.pendingLog.length-16384)];BOOL schedule=!self.logScheduled;self.logScheduled=YES;[self.logLock unlock];
+    [self.logLock lock];if(NativeShadowFailureLine(text)){if(!self.shadowFailureLog)self.shadowFailureLog=[NSMutableString string];NativeShadowFailureAppend(self.shadowFailureLog,text);}[self.pendingLog appendFormat:@"\n%@",text];if(self.pendingLog.length>16384)[self.pendingLog deleteCharactersInRange:NSMakeRange(0,self.pendingLog.length-16384)];BOOL schedule=!self.logScheduled;self.logScheduled=YES;[self.logLock unlock];
     if(schedule)dispatch_after(dispatch_time(DISPATCH_TIME_NOW,50*NSEC_PER_MSEC),dispatch_get_main_queue(),^{[self flushProgress];});
+}
+- (void)appendShadowFailure {
+    [self.logLock lock];NSString *text=NativeShadowFailureReport(self.shadowFailureLog);self.shadowFailureLog=nil;[self.logLock unlock];if(text.length)[self append:text];
 }
 - (void)append:(NSString *)text {
     NSString *joined=[self.report.text stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Earlier startup messages omitted to bound log memory.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.text=joined;
@@ -161,7 +167,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];
         NSString *result=[NSString stringWithUTF8String:report]?:@"FAIL: invalid startup report";NSString *memory=Footprint();
-        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];if(layer.displayMetrics){self.performanceLabel.text=[layer.displayMetrics overlay];[self append:[layer.displayMetrics summary]];}self.timingSwitch.enabled=YES;[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];});
+        dispatch_async(dispatch_get_main_queue(),^{[self flushProgress];if(layer.displayMetrics){self.performanceLabel.text=[layer.displayMetrics overlay];[self append:[layer.displayMetrics summary]];}self.timingSwitch.enabled=YES;if(code)[self appendShadowFailure];[self append:[NSString stringWithFormat:@"%@\nExit: %d\nAfter startup cleanup: %@",result,code,memory]];[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"probeRunning"];self.sceneRunning=NO;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];});
     }}];thread.stackSize=4*1024*1024;thread.name=@"Native scene startup";thread.qualityOfService=NSQualityOfServiceUserInitiated;[thread start];
 }
 - (void)runRenderer {
