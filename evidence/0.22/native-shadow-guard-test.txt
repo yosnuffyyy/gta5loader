@@ -1,0 +1,1 @@
+PASS: shadow guard 111 IEEE f32 branch cases; zero/signed zero, cube/spot modes, adjacent floats, infinities and NaN. No texture data inferred.

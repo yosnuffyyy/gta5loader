@@ -1,0 +1,24 @@
+NATIVE 0.22 VERIFICATION — STAGE 3 IN PROGRESS
+Source f8e29f713ace699c8f87ed4145b726dda1303d36
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258 — PASS
+
+PASS: captured SRV 709/source 708 replay with original shadow block; 20 GPU
+cases/5120 pixels and five negative cases per run, twice. Original full
+ped_alpha pair: four guards, eight pipeline/cache configurations.
+PASS: 111 IEEE f32 branch cases; source audit all 4808 modules, 13 candidate PS
+and 76 cube guards; conservative extra-use/comment/type rejection.
+PASS: equivalent-layout benchmark, six draws/1536 pixels per mode, twice: old
+3 creates/3 hits -> semantic key 2 creates/4 hits, changed descriptor retained.
+PASS: all retained 4808 shader/native pipelines,500 clip modules and runtime/
+worker/query/readback/resource/format regression gates.
+PASS: 175 source entries, unsigned ARM64 IPA audit, preserved 21 old IPAs.
+
+IPA GTA-Native-Probe-0.22-unsigned.ipa
+Bytes 102259690
+SHA256 4bfa23afb8171bb7076da063622eb6690de5fbddb774914e5e407aaaa2709005
+
+LIMIT: phone's light uniforms and original creation/upload history absent.
+Inactive branches are specialized only after proof; active/unknown/invalid
+cube bindings still fail. Original texture data/layers are never fabricated.
+No sustained physical scene, FPS improvement or gameplay proof for 0.22.
+Stage 3 remains active; five stages left. Full findings: ENGINEERING-0.22.txt.

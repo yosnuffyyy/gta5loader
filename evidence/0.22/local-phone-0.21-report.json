@@ -1,0 +1,47 @@
+{
+  "source": "Latest user physical report",
+  "device": "iPhone 16 Pro Max / A18 Pro / iOS 27.0.1",
+  "fatal": {
+    "source": 708,
+    "DXGI": 71,
+    "nativeFormat": 50,
+    "size": [
+      4,
+      4,
+      1
+    ],
+    "mips": 1,
+    "version": 2,
+    "srv": 709,
+    "raw": [
+      709,
+      0,
+      708,
+      71,
+      4,
+      0,
+      1,
+      0,
+      0
+    ],
+    "shaderBinding": 46,
+    "slot": 14,
+    "viewDimension": 4,
+    "requestedLayers": 6,
+    "opcode": 32,
+    "vs": "a276344f1111242f",
+    "ps": "996bb42f448956f2"
+  },
+  "timings": {
+    "postComputePresentMeanMs": 96.066,
+    "samples": 17,
+    "pipelineMaxMs": 411.418,
+    "uploadHandlerMaxMs": 68.852,
+    "displayIntervalMaxMs": 616.723,
+    "sceneEstimatedFPS": [
+      5,
+      8
+    ]
+  },
+  "limits": "Resource creation/upload history and full uniform values were not supplied. PRESENT intervals include loading; timing maxima are not correlated events or sustained scene FPS."
+}

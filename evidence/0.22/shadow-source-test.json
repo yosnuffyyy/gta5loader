@@ -1,0 +1,78 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "modulesInspected": 4808,
+  "fragmentCandidates": 13,
+  "certifiedSingleUseCubeGuards": 76,
+  "exactPairGuards": [
+    {
+      "binding": 46,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 0,
+          "trueArm": true
+        },
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 3,
+          "trueArm": true
+        }
+      ]
+    },
+    {
+      "binding": 57,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 0,
+          "trueArm": true
+        },
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 3,
+          "trueArm": true
+        }
+      ]
+    },
+    {
+      "binding": 59,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 0,
+          "trueArm": true
+        },
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 3,
+          "trueArm": true
+        }
+      ]
+    },
+    {
+      "binding": 61,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 0,
+          "trueArm": true
+        },
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 3,
+          "trueArm": true
+        }
+      ]
+    }
+  ],
+  "gpuValidation": false,
+  "scope": "Conservative structural guard proof, no fabricated cube data or successful scene implied."
+}

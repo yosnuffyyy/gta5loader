@@ -1,0 +1,273 @@
+GTA V iOS NATIVE 0.22 — STAGE 3 ENGINEERING REPORT
+2026-10-14 (America/Sao_Paulo). Stage 3 remains active; five stages left.
+
+RESULT
+Unsigned ARM64 Native 0.22.0/build 22 passed the independently available CI
+and package checks below. A valid original 2D SRV is no longer forced into a
+cube view when a proven uniform branch makes its cube sample unreachable.
+Active cube paths, unknown control flow and invalid descriptors still fail
+instead of receiving fabricated faces, dummy visibility or skipped draws.
+
+The supplied descriptor establishes the immediate interface mismatch. The
+phone's original CREATE_TEXTURE/UPLOAD_TEXTURE history and light-type uniform
+were not supplied. We cannot infer those missing historical values or claim
+the physical crash is resolved before that conditional path is exercised on
+the phone. Sustained correct scene animation and gameplay are not verified.
+
+1. EXACT FAILURE AND RESOURCE TRACE
+Source 708: DXGI 71 / native 50 (BC1 RGBA UNORM), 4 x 4 x 1, one mip,
+version 2. SRV 709: [709,0,708,71,4,0,1,0,0]. The original D3D SRV dimension
+4 is TEXTURE2D. Shader binding 46 maps to pixel texture slot 14; its WGSL
+declaration is texture_depth_cube. The old consumer selected the shader's
+cube dimension and requested six layers from the one-layer source. It also
+attempted a color-to-depth proxy for this compressed color source.
+This is not a remaining-mip or UINT_MAX array-range case.
+
+The exact unchanged shaders are:
+  VS a276344f1111242f: ped_alpha / VS_PedTransformSkin
+  PS 996bb42f448956f2: ped_alpha / PS_PedTextured_Four
+The PS contains separate cube and spot shadow resources in one static shader.
+For light zero, cb6[15].w == 0 disables the shadow sample; == 3 selects the
+2D spot resource; other values select the cube path. Other light selectors
+are at cb6[19].w, [23].w and [27].w. The same source supplies the proof;
+these branches were not guessed from a resource's size or its pixel color.
+
+Approved original-engine disassembly was inspected without modifying it:
+  function 326 copies D3D11_TEXTURE2D_DESC into the resource;
+  function 268 forwards width/height, mip count, max(1, ArraySize), format,
+  bind flags and sample count, then uploads mipCount * arrayCount records;
+  function 328 serializes the SRV dimension and range. Cube counts already
+  become faces at the producer; the consumer must not multiply again;
+  native create_texture takes packet field 6 as the 2D array-layer count;
+  uploads use the serialized layer and mip. Version starts at 1 and changes
+  after writes; resource-ID destruction changes the binding-cache epoch.
+No six-to-one reduction was found in these producer/consumer code paths.
+That does not reconstruct the missing physical creation packet. Version 2
+alone does not establish which write produced the phone's current contents.
+
+New bounded per-resource history retains the original ten-word creation
+packet, last twelve-word upload header, upload count/command, first up-to-eight
+upload bytes, version and latest stage/slot binding command. Failing range
+reports retain all nine SRV words, formats, dimensions and shader expectation.
+The inactive/active decision also reports the actual uniform words/values.
+This is live history from the next run, not invented past device events.
+
+2. CORRECT COMPATIBILITY FIX
+shadow_guard_reflect.inc recognizes only a narrow, structured translator
+pattern: an immediate uniform f32 equality test, select/bitcast boolean and
+its corresponding lexical true arm. The uniform must be an element of
+the original sole packed vec4<f32> array. Only a depth-cube resource with one
+direct comparison-sample use can be certified. Extra uses, aliases, comments,
+unknown forms, storage writes or unproven conditions preserve normal binding
+validation. There are at most eight proof entries and 32 control regions.
+
+Before each DRAW, the GPU service reads the exact same constant-buffer shadow,
+first-constant offset and zero-filled missing-byte convention as draw_group.
+For a valid original one-layer 2D SRV with a compatible format, it can remove
+the cube declaration and its sample expression only if an enclosing guard is
+false for that draw. The replacement expression is unreachable; it never
+substitutes zero for an executed texture sample. All other shader operations,
+uniform tests, clipping, interpolation and outputs are retained.
+
+The original texture, 2D SRV, compressed bytes and layer count are unchanged.
+Proofs use raw f32 bits for exact signed-zero/three equality. Subnormals,
+NaN and infinity never certify removal; packed-uniform shadowing and else-arm
+inference are rejected. Uniform or resource changes are re-evaluated for every draw. Active cube
+mismatches still produce the full error, now before an unnecessary pipeline
+creation. Valid six-face cubes continue to use actual face/mip data.
+
+Before retiring a shadow or storage variant, pending commands are submitted
+so Destroy cannot invalidate resources still referenced by an unsubmitted
+encoder. This uses the existing submission/uniform-ring rules, without a new
+per-draw GPU completion wait.
+
+Variants are bounded to four per live source shader with eviction/recreation
+and shared-constant reference ownership. The pipeline key includes the
+inactive-binding mask. Existing storage variants, 128-entry scene pipeline
+cache, resource lifetime rules, queries and compute behavior remain intact.
+
+3. VERIFIED TESTS
+PASS: structural audit of all 4,808 pinned original translated modules,
+including 13 candidate fragment shaders and 76 single-use cube guards.
+The reported PS has four exact guards. Extra-use/comment/uniform-type
+mutations are rejected. This source-only audit is not GPU scene validation.
+PASS: 111 IEEE f32 branch cases, including signed zero, adjacent values,
+infinities and NaN, with AddressSanitizer/UndefinedBehaviorSanitizer.
+PASS: two production-ring runs, each with 20 cases / 5,120 checked pixels,
+using the unchanged original shadow-control block and captured SRV/shape.
+They cover disabled/cube/spot paths, valid six-face float/BC1 cubes, two mips,
+changed uniforms, source-ID reuse, variant reuse and preserved compressed
+upload bytes. Uploads, uniforms, geometry and the test entry are synthetic
+fixtures, not a capture of the phone's unknown data or actual game frames.
+PASS: five negative cases per run: required cube over 2D, malformed cube,
+excessive mip count, incompatible format and an extra unconditional sample
+that prevents certification. No invalid case publishes a draw/proxy result.
+PASS: the complete original VS/PS pair with the captured descriptor, four
+certified light selectors, eight pipeline/cache configurations, native clips,
+15-variable linking and bounded variant eviction/recreation. Its attachment
+and vertex-layout fixture are synthetic; no original-scene pixels are claimed.
+PASS: two pending-draw eviction stress runs: six nonoverlapping stripes,
+all 256 pixels checked, exact 192 occlusion samples across submission splits,
+six variants and two retirements/recreations while commands were pending.
+PASS: semantic-layout and old-key reference GPU fixtures, twice each, six
+draws / 1,536 pixels per mode. Equivalent layouts produce matching pixels;
+a changed color offset produces a distinct pipeline and changed pixels.
+PASS: five CPU PRESENT-cost records per fixture with headless presentation.
+This tests submission/counter plumbing; actual iPhone display timestamps
+and the optional overlay retain their separate physical-device gate.
+PASS: all 4,808 original native shader pipelines, including 500 clip modules,
+and all retained graphics/resource/format/readback/query/runtime gates.
+These include two 180-case counting-query runs and their invalid/lifecycle
+cases, 14 depth-proxy cases, 36 readback cases/30 formats, 44 resource cases,
+UAV/compute, instance/clip/border/BC/mip fixtures, four real-engine deliberate
+archive boundaries, 32 worker lifecycles, mailbox/save/file ABI checks,
+native RNG/statvfs, SIMD, bulk operations and wait tests.
+
+CI GPU environment: macos-15 GitHub runner, Apple Paravirtual Metal adapter.
+It is neither the A18 Pro nor an iPhone simulator proof of gameplay. The
+full-engine CI checkpoint intentionally stops before real archive bytes.
+
+4. PERFORMANCE ROOT CAUSE AND MEASUREMENTS
+Confirmed cache defect: DrawKey copied the input-layout object's ID along
+with its descriptor. Two independently owned identical layouts therefore
+produced different keys and redundant pipeline API calls. Only the ownership
+ID is now removed from the key; all semantic descriptor words remain.
+Ownership, destruction and resource-binding invalidation are unchanged.
+The old behavior is retained only behind a CLI regression-test flag.
+
+Reproducible fixture results (same geometry/pixels):
+  Two equivalent layout IDs alone: pipeline creations 2 -> 1.
+  Complete six-draw fixture, including a truly changed descriptor:
+    old key 3 creates / 3 hits; semantic key 2 creates / 4 hits.
+  Run/mode 1: semantic key, total pipeline API CPU wall 13.951 ms.
+  Run/mode 2: 0.21 reference, total pipeline API CPU wall 1.591 ms.
+  Run/mode 3: semantic key, total pipeline API CPU wall 0.942 ms.
+  Run/mode 4: 0.21 reference, total pipeline API CPU wall 1.508 ms.
+Driver cache warmth and execution order affect these CPU times. The verified
+improvement is avoiding a redundant API call, not an iPhone FPS percentage.
+  Retained nine-read fixture 1: submit/map CPU mean 8.534 ms, max 24.463 ms.
+  Retained nine-read fixture 2: submit/map CPU mean 13.215 ms, max 40.232 ms.
+  Exact reported ped_alpha pair, first-use API CPU wall on CI:
+    modules 6.311 ms; inter-stage link 0.792 ms;
+    pipeline creation 334.241 ms.
+The exact-pair result independently confirms that pipeline creation can be
+expensive in this backend. It does not identify the cause of the phone's
+particular 411.418 ms call or prove that cache identity caused that miss.
+No physical-device before/after benchmark or true GPU execution timing is
+available for 0.22. No 30-FPS result or guarantee is claimed.
+
+The latest supplied phone data remains: 96.066 ms mean post-compute PRESENT
+interval over 17 samples; max pipeline API 411.418 ms; max upload handler
+68.852 ms; max actual display interval 616.723 ms; earlier observed scene
+approximately 5-8 FPS. These maxima are not time-correlated samples and may
+overlap. They cannot be summed, subtracted from the mean, or interpreted as
+a sustained gameplay frame-rate measurement. Quantiles need more samples.
+
+5. NEW BOTTLENECK DIAGNOSTICS
+The GPU service retains eight worst CPU PRESENT intervals and eight slow
+commands >=8 ms. Each frame record has a sequence/timestamp, command/draw and
+pipeline create/hit/evict counts, upload bytes, handler/upload/allocation
+wall time, module/link/pipeline/shadow work, readback/completion waits,
+producer-idle time and drain-flush time. Slow uploads report the preceding
+mutation flush separately, because that flush is part of handler duration.
+The 68.852 ms upload maximum therefore was not necessarily transfer time.
+Records are emitted once on cleanup; storage and hot-path work remain bounded.
+Nested categories overlap and must not be added. These are CPU submission
+records, not displayed frames, isolated engine CPU or GPU execution times.
+
+The prior callback post-completion sleep fix, actual drawable timestamps,
+historical-FPS age indicator and bounded average/median/p95/p99/worst windows
+are preserved. Loading screens and first-compute markers do not identify
+gameplay. The old 2.777-second exposure wait is not yet established as fixed
+or recurring: earlier compilation/ring work and uniform-ring completion can
+contribute. Real bytes are still copied before release-ordered publication;
+no stale data or premature completion was introduced. Mapping and queue
+ordering were not rewritten speculatively.
+
+6. MEMORY, BUILD AND ROLLBACK
+Archive reader: unchanged one 64 KiB buffer and at most eight open files.
+Readback staging: unchanged maximum 1 MiB. Scene pipeline cache: 128 entries.
+New proof/variant/CPU records are bounded; driver compilation/residency and
+total phone memory effects require device measurements. No quality/effects
+were reduced. Rendering baseline remains 640 x 360.
+Two earlier CI candidates failed in new fixture setup: an included local
+variable name collision, then an unnecessary PS input absent from the IM VS.
+Both fixture defects were corrected; no failed run is counted as a passing
+Metal audit, and no production varying validation was weakened. A third
+candidate was superseded during its full shader audit by the conservative
+raw-bit proof hardening; its passing fixture runs are not substituted for
+the final source revision's complete CI result.
+Source: f8e29f713ace699c8f87ed4145b726dda1303d36
+Tree: ae1307e7bb5a6d3616c6f507c481974c0a91641d
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258 — PASS
+Unsigned ARM64 iPhoneOS IPA: GTA-Native-Probe-0.22-unsigned.ipa
+Download artifact (ZIP contains the IPA):
+https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258/artifacts/11940470633
+Version/build: 0.22.0 / 22. Minimum iOS 17.0.
+Bytes: 102259690
+SHA256: 4bfa23afb8171bb7076da063622eb6690de5fbddb774914e5e407aaaa2709005
+Package audit verifies target, identity, unsigned status, pinned engine/probe/
+backend inputs, no WebKit/JSC or writable-executable segment, and no CI-only
+verification packs in the extracted app. All 21 prior IPAs remain byte-for-
+byte intact. Engine instructions, native runtime/threading, backend patches,
+original shaders, main and protected PC packages remain unchanged. Source
+changes are published only to native-ios-prototype. The previous revision
+and IPAs provide a rollback path.
+
+7. REMAINING RISKS AND NEXT IPHONE TEST
+The actual phone guard values were not supplied. If the failing cube sample
+is required rather than inactive, its incompatible 2D binding remains an
+explicit error, now with creation/upload/binding/uniform evidence. That
+requires tracing the engine-side binding choice; adding fabricated faces is
+not a solution. Unknown guard patterns and active format/view mismatches
+also remain explicit. 111 untranslated records, partial fixed MSAA masks,
+metadata class/defaulttasks/interior/audio/logging warnings remain unresolved
+unless established by separate evidence; none were hidden by this change.
+
+When a future test is convenient, use the same web folder and 640 x 360
+baseline. Check for uninterrupted textured characters, weapons, coherent
+animation and moving camera beyond the prior crash. Keep cold startup and
+later scene intervals separate. Copy the final complete Stop/failure report:
+cube/2D decisions, actual source history, worst CPU frame/command records,
+pipeline cache statistics, display intervals/age and readback waits are the
+critical evidence. Animation does not establish responsive player controls.
+Stage 3 remains active. Highest next task: verify the phone's branch/binding
+decision and continued correct scene rendering, then optimize the largest
+correlated measured cost. No immediate physical test was required here.
+
+MODIFIED SOURCE FILES
+  native-ios/App.m
+  native-ios/generate-probe.mjs
+  native-ios/Info.plist
+  native-ios/renderer/build-renderer.sh
+  native-ios/renderer/draw_depth_proxy.inc
+  native-ios/renderer/draw_pipeline.inc
+  native-ios/renderer/draw_shader.inc
+  native-ios/renderer/draw_types.inc
+  native-ios/renderer/frame_costs.h
+  native-ios/renderer/frame_costs.inc
+  native-ios/renderer/layout_cache_fixture.inc
+  native-ios/renderer/native_compute.inc
+  native-ios/renderer/native_draw.inc
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/native_metrics.h
+  native-ios/renderer/native_metrics.inc
+  native-ios/renderer/ped_shadow_audit.inc
+  native-ios/renderer/proxy_range_fixture.inc
+  native-ios/renderer/shader_audit.inc
+  native-ios/renderer/shadow_eviction_fixture.inc
+  native-ios/renderer/shadow_fixture.inc
+  native-ios/renderer/shadow_fixture_source.inc
+  native-ios/renderer/shadow_guard.h
+  native-ios/renderer/shadow_guard.inc
+  native-ios/renderer/shadow_guard_reflect.inc
+  native-ios/renderer/test-shadow-source.mjs
+  native-ios/renderer/test_shadow_guard.c
+  source-manifest.json
+
+PRIMARY DEFINITIONS AND LOCAL EVIDENCE
+https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_srv_dimension
+https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
+Approved original producers: work/native-srv-022/func-326.txt, func-268.txt,
+prior work/native-depth-021/create-srv-disassembly.txt. These source studies
+are separate from the live history missing from the physical report.

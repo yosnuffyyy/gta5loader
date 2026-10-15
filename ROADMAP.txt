@@ -1,22 +1,22 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native0.21 candidate; Stage3 remains active.
+Updated 2026-10-14. Native 0.22 candidate; Stage 3 remains active.
 
 LATEST EVIDENCE
-User reports real North Yankton characters/weapons for about three seconds,
-then Depth proxy SRV range outside texture with the ped_alpha shader pair.
-Estimated5–8FPS is not a sustained/instrumented measurement. The exact phone
-SRV descriptor was not logged. The0.21 array-suffix fix is independently
-verified but cannot establish a fix for that 2D/cube pair. Complete resource/
-view descriptors, real display timestamps and bounded CPU/readback/cache/
-asset timing now make the next failure/performance report more informative.
-New range GPU/negative cases, exact-pair Metal pipeline/cache tests and all
-4808 shader/native-pipeline and retained runtime gates passed.
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865
-The unsigned ARM64 IPA is audited; all20 previous IPAs are preserved.
-Stages1/2 complete; Stage3 active; five stages left including Stage3.
-Next: establish the exact source/SRV failure; sustain correct Prologue scene
-frames, then input/audio and measured performance. Keep640x360 baseline.
-No Stage3 completion or30FPS claim. See ENGINEERING-0.21.txt and verification.
+Physical0.21 provided source 708 BC1 4x4x1 and SRV 709 TEXTURE2D at a cube
+shadow binding. Native 0.22 specializes only proven inactive cube samples,
+preserving source bytes/layers and all active shadows. Actual phone uniforms
+are still missing; active/unknown mismatches remain explicit failures.
+Captured-shape/original-shadow-block pixels and invalid cases, exact full
+ped_alpha pipeline/cache cases, 4808 shaders and retained runtime gates passed.
+Semantic layout keys remove redundant pipeline calls in a matching-pixel
+benchmark. New bounded CPU cost records distinguish compilation, upload
+flushes, mapping, queue waits and producer idle. No iPhone FPS gain claimed.
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258
+Audited unsigned 0.22 ARM64 IPA; all 21 prior IPAs preserved.
+Stages 1/2 complete; Stage 3 active; five stages left including Stage 3.
+Next: verify uninterrupted correct Prologue and branch/binding state; then
+optimize the largest correlated measured cost. Baseline remains 640x360.
+See ENGINEERING-0.22.txt and VERIFICATION-0.22.txt.
 
 HISTORICAL CHECKPOINTS
 

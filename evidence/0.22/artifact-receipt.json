@@ -1,0 +1,24 @@
+{
+  "run": 38662521258,
+  "sourceCommit": "f8e29f713ace699c8f87ed4145b726dda1303d36",
+  "result": "PASS",
+  "artifacts": [
+    {
+      "id": 11940470633,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 89943514,
+      "sha256": "0d4cb95528043f56c1b4c1de8abc7f19d37097edea19a3a7ae82b0ce211db540",
+      "expiresAt": "2026-11-14T01:05:13Z",
+      "download": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258/artifacts/11940470633"
+    },
+    {
+      "id": 11940460533,
+      "name": "native-compiler-evidence",
+      "bytes": 67764,
+      "sha256": "86ff4adea00dd32276fc6763e7d7bf0baf78316137cbc8d82a8acd1c51c76305",
+      "expiresAt": "2026-10-29T01:05:11Z",
+      "download": "https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258/artifacts/11940460533"
+    }
+  ],
+  "downloadedZipsSizeAndSHA256Verified": true
+}

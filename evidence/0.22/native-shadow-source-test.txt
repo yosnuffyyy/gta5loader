@@ -1,0 +1,1 @@
+PASS: shadow source proof across 4808 original modules; 13 candidate PS / 76 cube guards; exact ped_alpha four guards, extra-use/comment/type/packed-uniform-shadow mutations rejected. Source only.

@@ -1,0 +1,40 @@
+{
+  "cache": [
+    {
+      "key": "semantic key",
+      "creates": 2,
+      "hits": 4,
+      "pipelineApiCpuMs": 13.951,
+      "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+    },
+    {
+      "key": "0.21 reference",
+      "creates": 3,
+      "hits": 3,
+      "pipelineApiCpuMs": 1.591,
+      "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+    },
+    {
+      "key": "semantic key",
+      "creates": 2,
+      "hits": 4,
+      "pipelineApiCpuMs": 0.942,
+      "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+    },
+    {
+      "key": "0.21 reference",
+      "creates": 3,
+      "hits": 3,
+      "pipelineApiCpuMs": 1.508,
+      "adapter": "macos-15 CI Apple Paravirtual Metal; order/driver-cache dependent; not phone FPS"
+    }
+  ],
+  "samePixelCasesPerMode": 6,
+  "pixelsPerCase": 256,
+  "equivalentOnlyPipelineCreates": {
+    "reference": 2,
+    "corrected": 1
+  },
+  "changedDescriptorStillCreatesPipeline": true,
+  "physicalFPSMeasured": false
+}

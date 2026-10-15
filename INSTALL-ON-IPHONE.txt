@@ -84,3 +84,9 @@ previous IPAs. Display diagnostics are optional and measure actual drawable
 callbacks; loading screens are included. The exact phone depth/SRV failure
 is not yet established as fixed. See ENGINEERING-0.21.txt before interpreting
 FPS or successful CI as gameplay. Stage3 remains in progress.
+
+Native0.22: https://github.com/yosnuffyyy/gta5loader/actions/runs/38662521258
+Use GTA-Native-Probe-0.22-unsigned.ipa from this run; preserve earlier IPAs.
+This candidate fixes only certified inactive cube/2D bindings. Unknown or
+required incompatible bindings remain errors. Keep the same web folder and
+640x360 baseline; see ENGINEERING-0.22.txt for the future test criteria.
