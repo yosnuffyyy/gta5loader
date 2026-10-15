@@ -7,7 +7,7 @@ static bool srv_pixel_fixture(struct w2c_env *h){@autoreleasepool{
  WGPUBufferDescriptor bd=WGPU_BUFFER_DESCRIPTOR_INIT;bd.size=1024;bd.usage=WGPUBufferUsage_CopyDst|WGPUBufferUsage_MapRead;read=wgpuDeviceCreateBuffer(g->device,&bd);
  WGPUTextureDescriptor td=WGPU_TEXTURE_DESCRIPTOR_INIT;td.dimension=WGPUTextureDimension_2D;td.size=(WGPUExtent3D){4,4,1};td.mipLevelCount=td.sampleCount=1;td.format=WGPUTextureFormat_RGBA8Unorm;td.usage=WGPUTextureUsage_RenderAttachment|WGPUTextureUsage_CopySrc;output=wgpuDeviceCreateTexture(g->device,&td);if(output)out=wgpuTextureCreateView(output,NULL);
  WGPUSamplerDescriptor sd=WGPU_SAMPLER_DESCRIPTOR_INIT;sampler=wgpuDeviceCreateSampler(g->device,&sd);if(!read||!out||!sampler)goto done;
- for(unsigned test=0;test<26;test++){
+ for(unsigned test=0;test<30;test++){
   DrawProgram p={0};p.count=1;DrawBinding *b=p.bindings;b->kind=4;b->dim=WGPUTextureViewDimension_2D;b->sample=WGPUTextureSampleType_Float;
   WGPUShaderModule module=NULL;WGPURenderPipeline pipeline=NULL;WGPUBindGroupLayout layout=NULL;WGPUBindGroup group=NULL;bool valid=false;
   uint32_t cmd[80]={12000,2,4,4,1,2,13,28,8,1},v[9]={12001,0,12000,28,5,1,1,2,1};
@@ -22,13 +22,16 @@ static bool srv_pixel_fixture(struct w2c_env *h){@autoreleasepool{
    if(test==17){v[5]=0;expected=0;} /* truly unbound; RGBA zero */
    if(test>=18){cmd[5]=1;v[5]=0;expected=128;depth=true;b->sample=WGPUTextureSampleType_Depth;type="texture_depth_2d";expr="vec4f(textureLoad(src,vec2i(0),0),0,0,1)";if(test&1){v[3]=29;srgb=true;}}
   }
-  if(test>=24){cmd[7]=20;cmd[8]=0x48;v[3]=test==24?21:22;depth=srgb=false;expected=test==24?96:37;b->sample=test==24?WGPUTextureSampleType_Float:WGPUTextureSampleType_Uint;type=test==24?"texture_2d<f32>":"texture_2d<u32>";expr=test==24?"textureLoad(src,vec2i(0),0)":"vec4f(f32(textureLoad(src,vec2i(0),0).x)/255.0,0,0,1)";}
+  if(test==24||test==25){cmd[7]=20;cmd[8]=0x48;v[3]=test==24?21:22;depth=srgb=false;expected=test==24?96:37;b->sample=test==24?WGPUTextureSampleType_Float:WGPUTextureSampleType_Uint;type=test==24?"texture_2d<f32>":"texture_2d<u32>";expr=test==24?"textureLoad(src,vec2i(0),0)":"vec4f(f32(textureLoad(src,vec2i(0),0).x)/255.0,0,0,1)";}
+  if(test>=26){cmd[5]=2;cmd[7]=v[3]=test==27?62:test==28?64:28;cmd[8]=8;v[5]=1;depth=srgb=false;expected=13;b->dim=WGPUTextureViewDimension_2DArray;type=test==27?"texture_2d_array<u32>":test==28?"texture_2d_array<i32>":"texture_2d_array<f32>";b->sample=test==27?WGPUTextureSampleType_Uint:test==28?WGPUTextureSampleType_Sint:WGPUTextureSampleType_Float;expr=test==26?"textureLoad(src,vec2i(0),0,0)":"vec4f(f32(textureLoad(src,vec2i(0),0,0).x)/255.0,0,0,1)";
+   if(test==29){cmd[6]=4;v[4]=5;v[7]=2;v[8]=1;expected=53;b->dim=WGPUTextureViewDimension_2D;type="texture_2d<f32>";expr="textureLoad(src,vec2i(0),0)";}
+  }
   if(!execute_impl(g,3,(uint8_t*)cmd,10))goto next;
   if(test==15){float c=.5f;uint32_t clear_cmd[7]={12000};memcpy(clear_cmd+3,&c,4);float a=1;memcpy(clear_cmd+6,&a,4);if(!clear(g,(uint8_t*)clear_cmd,false))goto next;}
-  else if(test>=24){uint32_t clear_cmd[6]={12000,0,0,3,0,37};float z=.375f;memcpy(clear_cmd+4,&z,4);if(!clear(g,(uint8_t*)clear_cmd,true))goto next;}
+  else if(test==24||test==25){uint32_t clear_cmd[6]={12000,0,0,3,0,37};float z=.375f;memcpy(clear_cmd+4,&z,4);if(!clear(g,(uint8_t*)clear_cmd,true))goto next;}
   else for(unsigned mip=0;mip<cmd[5];mip++)for(unsigned layer=0;layer<(cmd[1]==3?(cmd[4]>>mip):cmd[6]);layer++){
-   unsigned side=4>>mip,channels=test==16?1:4;uint32_t upload[28]={12000,mip,cmd[1]==3?0:layer,0,0,cmd[1]==3?layer:0,side,side,1,side*channels,side,side*side*channels};
-   for(unsigned px=0;px<side*side;px++){uint8_t *data=(uint8_t*)(upload+12)+px*channels;data[0]=test>=18?128:(uint8_t)(10+20*layer+3*mip);if(channels==4)data[3]=255;}
+   unsigned side=4>>mip,channels=test==16||test==27||test==28?1:4;uint32_t upload[28]={12000,mip,cmd[1]==3?0:layer,0,0,cmd[1]==3?layer:0,side,side,1,side*channels,side,side*side*channels};
+   for(unsigned px=0;px<side*side;px++){uint8_t *data=(uint8_t*)(upload+12)+px*channels;data[0]=test>=18&&test<24?128:(uint8_t)(10+20*layer+3*mip);if(channels==4)data[3]=255;}
    if(!execute_impl(g,13,(uint8_t*)upload,12+(side*side*channels+3)/4))goto next;
   }
   if(!execute_impl(g,17,(uint8_t*)v,9))goto next;g->srv[0][0]=test==17?0:12001;
@@ -55,13 +58,14 @@ static bool srv_pixel_fixture(struct w2c_env *h){@autoreleasepool{
   if(!valid||atomic_load(&g->failed)){fprintf(stderr,"SRV pixel fixture failed case %u: %s\n",test,native_gpu_error(g)?native_gpu_error(g):"pixel/cache invariant");goto done;}
   for(unsigned id=12002;id>=12000;id--)if(!execute_impl(g,4,(uint8_t*)&id,1))goto done;passed++;
  }
- ok=passed==26&&!g->draw.proxy_bytes&&!g->draw.proxy_passes;
+ ok=passed==30&&!g->draw.proxy_bytes&&!g->draw.proxy_passes;
  done:if(out)wgpuTextureViewRelease(out);if(output){wgpuTextureDestroy(output);wgpuTextureRelease(output);}if(read){if(atomic_exchange(&g->map_active,false))wgpuBufferUnmap(read);wgpuBufferDestroy(read);wgpuBufferRelease(read);}if(sampler)wgpuSamplerRelease(sampler);release_hardware(g);native_gpu_end(g);return ok;
 }}
 
 static bool srv_invalid_fixture(struct w2c_env *h,unsigned test){
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;bool ok=false;if(!hardware(g))goto done;
  uint32_t c[]={12000,2,4,4,1,1,1,28,8,1},v[]={12001,0,12000,28,4,0,1,0,0};DrawProgram p={0};p.count=1;DrawBinding *b=p.bindings;b->kind=4;b->dim=WGPUTextureViewDimension_2D;b->sample=WGPUTextureSampleType_Float;
+ if(test==9){c[6]=2;v[4]=5;v[8]=2;} /* two visible layers cannot bind texture_2d */
  if(!execute_impl(g,3,(uint8_t*)c,10)||!execute_impl(g,17,(uint8_t*)v,9))goto done;g->srv[0][0]=12001;
  if(test==0){g->srv[0][0]=999999;}
  if(test==1||test==2){uint32_t id=12000;if(!execute_impl(g,4,(uint8_t*)&id,1))goto done;if(test==2&&!execute_impl(g,3,(uint8_t*)c,10))goto done;}

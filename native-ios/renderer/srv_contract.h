@@ -34,7 +34,14 @@ static inline const char *srv_decode(SrvTexture t,const uint32_t *w,SrvRange *r)
  *r=(SrvRange){mip,mc,first,lc,d,ms};return NULL;
 }
 static inline const char *srv_shader_contract(SrvRange r,uint32_t shader_dimension,bool ms){
- if(r.dimension!=shader_dimension||r.ms!=ms)return "SRV/shader dimension or multisample mismatch";
+ /* D3D11.3 22.3.12: Texture2DArray accepts one or more selected layers;
+    Texture2D requires exactly one. The SRV supplies the visible range, while
+    the shader supplies the native view shape. No layer replication or range
+    adjustment is needed. Keep cube/3D and multisample contracts separate. */
+ bool dimension=r.dimension==shader_dimension;
+ if((r.dimension==4||r.dimension==5)&&(shader_dimension==4||shader_dimension==5))
+  dimension=r.layers>=1&&(shader_dimension==5||r.layers==1);
+ if(!dimension||r.ms!=ms)return "SRV/shader dimension or multisample mismatch";
  return NULL;
 }
 #endif

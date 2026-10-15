@@ -4,6 +4,7 @@
 #include "recorded_pair_audit.inc"
 #include "ped_pair_audit.inc"
 #include "ped_shadow_audit.inc"
+#include "array_srv_audit.inc"
 static bool audit_null_ms(NativeGpu *g){
  const WGPUTextureSampleType types[]={WGPUTextureSampleType_UnfilterableFloat,WGPUTextureSampleType_Uint,WGPUTextureSampleType_Sint};
  for(unsigned i=0;i<3;i++){
@@ -65,7 +66,7 @@ int native_gpu_shader_audit(const char *directory,unsigned shard,unsigned parts)
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h)return 2;host_init(h);wasm_rt_allocate_memory_shared(&h->memory,64,65536,false,65536);
  h->game_root=open(directory,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);int result=1;
  if(!g||h->game_root<0)goto cleanup;
- g->test_inter_stage_limit=15;if(!hardware(g)||!audit_null_ms(g)||(shard==0&&(!audit_recorded_pair(g)||!audit_ped_pair(g)||!audit_ped_shadow(g)||!audit_active_shadow(h))))goto cleanup;
+ g->test_inter_stage_limit=15;if(!hardware(g)||!audit_null_ms(g)||(shard==0&&(!audit_recorded_pair(g)||!audit_ped_pair(g)||!audit_ped_shadow(g)||!audit_active_shadow(h)||!audit_array_srv(h))))goto cleanup;
  raw=draw_read(h->game_root,"shaders/index.json",0,0,true);index=draw_json(raw);if(![index isKindOfClass:NSDictionary.class])goto cleanup;
  unsigned selected=0,modules=0,pipelines=0,errors=0,untranslated=0,clip=0,stages[3]={0};
  for(NSString *hash in [[index allKeys] sortedArrayUsingSelector:@selector(compare:)]){@autoreleasepool{
