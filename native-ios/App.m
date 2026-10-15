@@ -140,7 +140,15 @@ static void RuntimeProgress(void *context,const char *line) {
     NSString *joined=[self.report.text stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Earlier startup messages omitted to bound log memory.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.text=joined;
     NSTimeInterval now=NSProcessInfo.processInfo.systemUptime;if(now-self.lastPersist>=1){[NSUserDefaults.standardUserDefaults setObject:joined forKey:@"lastReport"];self.lastPersist=now;}
 }
-- (void)controllerChanged:(NSNotification *)notification {dispatch_async(dispatch_get_main_queue(),^{[self refreshControllers];});}
+- (void)controllerChanged:(NSNotification *)notification {
+    void (^change)(void)=^{
+        /* A rapid reconnect can already be in GCController.controllers when
+           a queued disconnect is delivered. Release the old source first,
+           even if the framework reuses the controller object. */
+        if([notification.name isEqualToString:GCControllerDidDisconnectNotification]&&notification.object==self.activeController){self.activeController.extendedGamepad.valueChangedHandler=nil;self.activeController=nil;ni_connect(false);[self.gameControls updateSource];}
+        [self refreshControllers];
+    };if(NSThread.isMainThread)change();else dispatch_async(dispatch_get_main_queue(),change);
+}
 - (void)refreshControllers {
     NSArray<GCController *> *controllers=GCController.controllers;GCController *controller=nil;
     if(self.activeController&&[controllers containsObject:self.activeController])controller=self.activeController;
