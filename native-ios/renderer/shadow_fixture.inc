@@ -6,7 +6,7 @@ static bool shadow_fixture(struct w2c_env *h,unsigned invalid,char *report,size_
  #include "query_setup.inc"
  cmd[0]=901;cmd[1]=1;cmd[2]=invalid==5?0x221:0x220;cmd[3]=UINT32_MAX;cmd[4]=0;EMIT(14,5);uint32_t sampler[]={902,3,0x80,3,3,3,0,0,4,0,0,0,0,0,0x42000000};memcpy(cmd,sampler,sizeof(sampler));EMIT(16,15);cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=902;EMIT(25,4);
  uint32_t capture[]={708,2,4,4,1,1,1,71,8,1};memcpy(cmd,capture,sizeof(capture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;cmd[12]=0xf800;EMIT(13,14);
- uint32_t srv[]={709,0,708,71,4,0,1,0,0};if(invalid==2)srv[4]=9;if(invalid==3)srv[6]=2;if(invalid==4)srv[3]=28;memcpy(cmd,srv,sizeof(srv));EMIT(17,9);
+ uint32_t captured_srv[]={709,0,708,71,4,0,1,0,0};if(invalid==2)captured_srv[4]=9;if(invalid==3)captured_srv[6]=2;if(invalid==4)captured_srv[3]=28;memcpy(cmd,captured_srv,sizeof(captured_srv));EMIT(17,9);
  uint32_t cube[]={710,2,8,8,1,2,6,41,0x28,1};memcpy(cmd,cube,sizeof(cube));EMIT(3,10);for(unsigned m=0;m<2;m++)for(unsigned face=0;face<6;face++){memset(cmd,0,sizeof(cmd));cmd[0]=710;cmd[1]=m;cmd[2]=face;float v=m?.75f:.25f;memcpy(cmd+3,&v,4);EMIT(5,7);}uint32_t cube_srv[]={711,0,710,41,9,0,1,0,6};memcpy(cmd,cube_srv,sizeof(cube_srv));EMIT(17,9);
  uint32_t spot[]={712,2,4,4,1,1,1,41,0x28,1};memcpy(cmd,spot,sizeof(spot));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=712;float spot_depth=.75f;memcpy(cmd+3,&spot_depth,4);EMIT(5,7);uint32_t spot_srv[]={713,0,712,41,4,0,1,0,0};memcpy(cmd,spot_srv,sizeof(spot_srv));EMIT(17,9);
  cmd[0]=714;cmd[1]=496;cmd[2]=4;cmd[3]=cmd[4]=0;EMIT(11,5);uint32_t cb[]={1,6,1,714,0,31};memcpy(cmd,cb,sizeof(cb));EMIT(23,6);cmd[0]=1;cmd[1]=24;cmd[2]=1;cmd[3]=713;EMIT(24,4);cmd[0]=1;cmd[1]=901;EMIT(18,2);

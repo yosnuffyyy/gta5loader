@@ -253,8 +253,8 @@
     },
     {
       "path": "native-ios/renderer/frame_costs.h",
-      "bytes": 478,
-      "sha256": "62fb1bfd3f0dedd22667e6089e28e7575826b6e61001b1aaab86eebccfb80458"
+      "bytes": 519,
+      "sha256": "98d7359465555826d7c112809fbedf2ab089e2bf693d5ded38f482fffe342acb"
     },
     {
       "path": "native-ios/renderer/frame_costs.inc",
@@ -303,8 +303,8 @@
     },
     {
       "path": "native-ios/renderer/layout_cache_fixture.inc",
-      "bytes": 2770,
-      "sha256": "c8f40db5ff165acced4cad83590b03419036daf45ec425ad5318b8acfe59cb27"
+      "bytes": 3012,
+      "sha256": "8298c7c9c1b49891a3cbcd36222e9e2fa6eb185b8dc55bc2428c62678efb6755"
     },
     {
       "path": "native-ios/renderer/mip_replay.inc",
@@ -438,8 +438,8 @@
     },
     {
       "path": "native-ios/renderer/proxy_range_fixture.inc",
-      "bytes": 4826,
-      "sha256": "4f910143dc88d0bbcd5c85ce56cecbacc9e80a4e4428b373671c01f98fa843cd"
+      "bytes": 4825,
+      "sha256": "705719b09c047f3e8a38bbb247ea1530012287947597ea95344e98321f65337f"
     },
     {
       "path": "native-ios/renderer/ps.wgsl",
@@ -548,8 +548,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_fixture.inc",
-      "bytes": 5906,
-      "sha256": "94189026707462104c37e1d1445973336fc68e33495b051bc99451fd05ba6ce1"
+      "bytes": 5960,
+      "sha256": "e6b6c25d067c7ef56f69c23a6a82a3c50fe09bd668958cbd7c19f3f25920ce23"
     },
     {
       "path": "native-ios/renderer/shadow_fixture_source.inc",
