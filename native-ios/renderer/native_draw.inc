@@ -28,6 +28,7 @@ static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!
 }
 #include "draw_instance.inc"
 #include "native_srv.inc"
+#include "shadow_reference.inc"
 #include "draw_depth_proxy.inc"
 #include "native_uav.inc"
 #include "shadow_guard.inc"
@@ -42,11 +43,12 @@ static WGPUSampler draw_sampler(NativeGpu *g,uint32_t id,bool compare){Object *o
  if(o)return o->sampler;unsigned i=compare?1:0;if(!g->draw.dummy_sampler[i]){WGPUSamplerDescriptor d=WGPU_SAMPLER_DESCRIPTOR_INIT;if(compare)d.compare=WGPUCompareFunction_Always;g->draw.dummy_sampler[i]=wgpuDeviceCreateSampler(g->device,&d);}return g->draw.dummy_sampler[i];
 }
 static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
- if(b->view&&b->view_id==id&&b->view_epoch==g->draw.resource_epoch)return b->view;
+ if(b->view&&b->view_id==id&&b->view_epoch==g->draw.resource_epoch&&b->view_reference_empty==b->reference_empty)return b->view;
  if(b->view){wgpuTextureViewRelease(b->view);b->view=NULL;}Object *srv=object(g,id),*o=NULL;if(!check(g,!id||srv,"Nonzero texture SRV handle is missing"))return NULL;
  if(srv){if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return NULL;o=srv_source(g,srv);if(!o)return NULL;}
  WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=b->dim;
- if(o){uint32_t mips=0,layers=0;
+ if(b->reference_empty){if(!check(g,g->reference_shadow_cube!=NULL,"Reference empty cube not prepared"))return NULL;d.aspect=WGPUTextureAspect_DepthOnly;d.mipLevelCount=1;d.arrayLayerCount=6;b->view=wgpuTextureCreateView(g->reference_shadow_cube,&d);
+ }else if(o){uint32_t mips=0,layers=0;
   if(!draw_srv_range(g,o,srv,b,&mips,&layers)||!srv_native_format(g,o,srv,b))return NULL;d.baseMipLevel=srv->meta[5];d.mipLevelCount=mips;if(b->dim!=WGPUTextureViewDimension_3D){d.baseArrayLayer=srv->meta[7];d.arrayLayerCount=layers;}
   int kind=proxy_kind(o,srv,b);WGPUTexture texture=o->texture;
   if(kind>=0){if(!check(g,o->proxies[kind]&&o->proxies[kind]->texture,"Depth proxy was not prepared before binding"))return NULL;texture=o->proxies[kind]->texture;if(kind>=2)d.aspect=WGPUTextureAspect_DepthOnly;}
@@ -54,7 +56,7 @@ static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
   else if(srv->meta[3])d.format=format(srv->meta[3],0);
   b->view=wgpuTextureCreateView(texture,&d);
  }else {if(!b->dummy){WGPUTextureDescriptor t=WGPU_TEXTURE_DESCRIPTOR_INIT;t.dimension=b->dim==WGPUTextureViewDimension_3D?WGPUTextureDimension_3D:b->dim==WGPUTextureViewDimension_1D?WGPUTextureDimension_1D:WGPUTextureDimension_2D;t.size=(WGPUExtent3D){1,1,b->dim==WGPUTextureViewDimension_Cube||b->dim==WGPUTextureViewDimension_CubeArray?6:1};t.sampleCount=b->ms?4:1;t.mipLevelCount=1;t.format=b->sample==WGPUTextureSampleType_Uint?WGPUTextureFormat_RGBA8Uint:b->sample==WGPUTextureSampleType_Sint?WGPUTextureFormat_RGBA8Sint:b->sample==WGPUTextureSampleType_Depth?WGPUTextureFormat_Depth32Float:WGPUTextureFormat_RGBA8Unorm;t.usage=WGPUTextureUsage_TextureBinding|(b->ms?WGPUTextureUsage_RenderAttachment:0);b->dummy=wgpuDeviceCreateTexture(g->device,&t);}if(b->dummy)b->view=wgpuTextureCreateView(b->dummy,&d);}
- b->view_id=id;b->view_epoch=g->draw.resource_epoch;return b->view;
+ b->view_id=id;b->view_epoch=g->draw.resource_epoch;b->view_reference_empty=b->reference_empty;return b->view;
 }
 static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){DrawState *s=&g->draw;*offset=0;
  if(p->pack_size){unsigned at=s->offset;if(!check(g,at<=DRAW_UBO_BYTES&&p->pack_size<=DRAW_UBO_BYTES-at,"Uniform ring overflow"))return NULL;memset(s->mirror+at,0,p->pack_size);
@@ -62,7 +64,8 @@ static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){Dr
   *offset=at;s->offset=(at+p->pack_size+s->alignment-1)&~(s->alignment-1);
  }
  uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind==2||b->kind==3)ids[i]=g->smp[p->stage][b->slot];else if(b->kind==4)ids[i]=g->srv[p->stage][b->slot];else if(b->kind>=5)ids[i]=storage_binding_id(g,p,b);}
- unsigned slot=s->slot;if(p->groups[slot]&&p->group_epochs[slot]==s->resource_epoch&&!memcmp(ids,p->group_ids[slot],sizeof(ids)))return p->groups[slot];
+ uint64_t reference_empty=0;if(g->reference_shadow_compat)for(unsigned i=0;i<p->count;i++)if(p->bindings[i].reference_empty)reference_empty|=UINT64_C(1)<<i;
+ unsigned slot=s->slot;if(p->groups[slot]&&p->group_epochs[slot]==s->resource_epoch&&p->group_reference_empty[slot]==reference_empty&&!memcmp(ids,p->group_ids[slot],sizeof(ids)))return p->groups[slot];
  WGPUBindGroupEntry entries[DRAW_BINDINGS];for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;entries[i]=(WGPUBindGroupEntry)WGPU_BIND_GROUP_ENTRY_INIT;entries[i].binding=b->binding;
   if(b->kind==1){entries[i].buffer=b->binding==15?p->constants:s->uniforms[slot];entries[i].size=b->binding==15?WGPU_WHOLE_SIZE:p->pack_size;if(!check(g,entries[i].buffer!=NULL,"Shader special constant table missing"))return NULL;}
   else if(b->kind==2||b->kind==3){entries[i].sampler=draw_sampler(g,ids[i],b->kind==3);if(!entries[i].sampler)return NULL;}
@@ -70,7 +73,7 @@ static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){Dr
   else if(b->kind==7){entries[i].textureView=storage_texture(g,b,ids[i]);if(!entries[i].textureView)return NULL;}
   else {entries[i].textureView=draw_srv(g,b,ids[i]);if(!entries[i].textureView)return NULL;}
  }
- WGPUBindGroupDescriptor d=WGPU_BIND_GROUP_DESCRIPTOR_INIT;d.layout=p->layout;d.entryCount=p->count;d.entries=entries;WGPUBindGroup group=wgpuDeviceCreateBindGroup(g->device,&d);if(!group||atomic_load(&g->failed))return NULL;if(p->groups[slot])wgpuBindGroupRelease(p->groups[slot]);p->groups[slot]=group;memcpy(p->group_ids[slot],ids,sizeof(ids));p->group_epochs[slot]=s->resource_epoch;return group;
+ WGPUBindGroupDescriptor d=WGPU_BIND_GROUP_DESCRIPTOR_INIT;d.layout=p->layout;d.entryCount=p->count;d.entries=entries;WGPUBindGroup group=wgpuDeviceCreateBindGroup(g->device,&d);if(!group||atomic_load(&g->failed))return NULL;if(p->groups[slot])wgpuBindGroupRelease(p->groups[slot]);p->groups[slot]=group;memcpy(p->group_ids[slot],ids,sizeof(ids));p->group_epochs[slot]=s->resource_epoch;p->group_reference_empty[slot]=reference_empty;return group;
 }
 static bool draw_pass(NativeGpu *g){DrawState *s=&g->draw;if(s->pass&&!memcmp(g->targets,s->pass_targets,sizeof(g->targets)))return true;draw_end_pass(g);
  WGPURenderPassColorAttachment colors[8];WGPUTextureView views[9]={0};WGPURenderPassDepthStencilAttachment depth=WGPU_RENDER_PASS_DEPTH_STENCIL_ATTACHMENT_INIT;unsigned count=0;s->width=s->height=0;bool ok=false;

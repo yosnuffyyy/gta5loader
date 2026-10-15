@@ -67,7 +67,7 @@ static WGPUTexture draw_proxy(NativeGpu *g,Object *o,Object *srv,DrawBinding *b,
 static bool draw_prepare_proxies(NativeGpu *g,DrawProgram *p){
  uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++)if(p->bindings[i].kind==4)ids[i]=g->srv[p->stage][p->bindings[i].slot];
  if(p->proxy_scan_valid&&!p->proxy_any&&p->proxy_epoch==g->draw.resource_epoch&&!memcmp(ids,p->proxy_ids,sizeof(ids)))return true;
- bool any=false;for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind!=4)continue;Object *srv=object(g,ids[i]);if(!srv){if(!check(g,!ids[i],"Nonzero texture SRV handle is missing"))return false;continue;}
+ bool any=false;for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind!=4)continue;if(b->reference_empty){any=true;if(!shadow_reference_prepare(g))return false;continue;}Object *srv=object(g,ids[i]);if(!srv){if(!check(g,!ids[i],"Nonzero texture SRV handle is missing"))return false;continue;}
   if(!check(g,srv->kind==17&&srv->words==9&&!srv->meta[1],"Texture binding requires a texture SRV"))return false;Object *o=srv_source(g,srv);if(!o)return false;uint32_t mc,lc;if(!draw_srv_range(g,o,srv,b,&mc,&lc)||!srv_native_format(g,o,srv,b))return false;int kind=proxy_kind(o,srv,b);if(kind<0)continue;any=true;if(!draw_proxy(g,o,srv,b,(unsigned)kind))return false;
  }
  memcpy(p->proxy_ids,ids,sizeof(ids));p->proxy_epoch=g->draw.resource_epoch;p->proxy_any=any;p->proxy_scan_valid=true;return !atomic_load(&g->failed);

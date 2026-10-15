@@ -10,6 +10,7 @@ typedef struct {
  uint32_t binding,kind,slot; WGPUTextureViewDimension dim;
  WGPUTextureSampleType sample; bool ms;
  WGPUTextureView view; uint32_t view_id; uint64_t view_epoch;
+ bool reference_empty,view_reference_empty;
  WGPUTexture dummy;
  WGPUBuffer dummy_buffer;WGPUTextureFormat format;WGPUStorageTextureAccess access;
 } DrawBinding;
@@ -21,6 +22,7 @@ struct DrawProgram {
  WGPUBindGroup groups[DRAW_UBO_SLOTS];
  uint32_t group_ids[DRAW_UBO_SLOTS][DRAW_BINDINGS];
  uint64_t group_epochs[DRAW_UBO_SLOTS];
+ uint64_t group_reference_empty[DRAW_UBO_SLOTS];
  bool vertex_id,instance_id; char hash[17];
  uint32_t proxy_ids[DRAW_BINDINGS]; uint64_t proxy_epoch;
  bool proxy_scan_valid,proxy_any;

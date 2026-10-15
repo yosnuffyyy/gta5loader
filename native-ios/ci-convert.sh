@@ -8,6 +8,7 @@ xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-a
 plutil -lint native-ios/Info.plist
 bash native-ios/renderer/build-renderer.sh
 node native-ios/prepare-engine.mjs
+NATIVE_SHADOW_ENGINE=native-build/engine-original.wasm NATIVE_SHADOW_REPORT=native-build/evidence/native-shadow-producer.json node native-ios/renderer/producer/test-producer.cjs | tee native-build/evidence/native-shadow-producer-test.txt
 git clone --depth 1 --branch 1.0.42 https://github.com/WebAssembly/wabt.git native-build/wabt
 test "$(git -C native-build/wabt rev-parse HEAD)" = ff0ef7e0009402740c805a9744c09b05be063e48
 git -C native-build/wabt submodule update --init --depth 1 third_party/picosha2 third_party/simde

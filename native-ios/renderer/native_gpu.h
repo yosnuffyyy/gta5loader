@@ -3,6 +3,7 @@
 #include "native_host.h"
 typedef struct NativeGpu NativeGpu;
 NativeGpu *native_gpu_create(struct w2c_env*,void*,void(*)(void*),void*);
+void native_gpu_reference_shadow_option(NativeGpu*,bool);
 void native_gpu_start(NativeGpu*,uint64_t,uint64_t,uint64_t);
 void native_gpu_stop(NativeGpu*);
 void native_gpu_end(NativeGpu*);

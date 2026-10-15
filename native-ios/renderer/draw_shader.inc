@@ -32,6 +32,10 @@ static bool draw_uint(id n,uint64_t *out){if(![n isKindOfClass:NSNumber.class]||
 static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  *constants=nil;
  if(g->draw.fixture){
+#ifdef NATIVE_PROBE_CLI
+ /* Test-only alias for the unchanged original shadow block, not a game shader replacement. */
+ if(g->reference_shadow_compat&&!strcmp(hash,"996bb42f448956f2"))return @(shadow_count_ps);
+#endif
  if(!strcmp(hash,"ffffffff00000223"))return @(shadow_count_ps);
  if(!strcmp(hash,"ffffffff00000220"))return @(shadow_fixture_ps);
  if(!strcmp(hash,"ffffffff00000222"))return @(shadow_eviction_ps);
