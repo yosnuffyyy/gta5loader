@@ -1,0 +1,14 @@
+Native0.25 — Stage3 in progress; exact active708/709 crash UNRESOLVED.
+Source a48d497a9198ec2d2910a1a72b7ed0b44173a8b7
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38763812970 — PASS
+
+Related SRV range/lifetime/format/proxy/mip corrections verified.
+73,216 exhaustive sanitized CPU cases;26 GPU pixel cases/416 pixels and
+nine controlled failures per native run, twice. Mip layer isolation verified.
+4,808 shader pipelines/500 clip and retained graphics/runtime gates pass.
+No physical FPS gain or complete SRV subsystem claim. See ENGINEERING-0.25.txt.
+
+IPA GTA-Native-Probe-0.25-unsigned.ipa
+Bytes 102274132
+SHA256 4a07c0820f59bb104d990c12edb495816aed177bc10264d9423e218292f647b3
+All24 previous IPAs preserved.

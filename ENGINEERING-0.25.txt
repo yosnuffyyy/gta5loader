@@ -1,0 +1,172 @@
+NATIVE 0.25 ENGINEERING — STAGE 3 REMAINS IN PROGRESS
+Source a48d497a9198ec2d2910a1a72b7ed0b44173a8b7
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38763812970 — PASS
+
+RESULT / TASK NOT COMPLETE
+The exact active source708/SRV709 cube/2D mismatch is still unresolved.
+This build fixes independently demonstrated SRV lifetime, range and format
+defects. It is not a claim that the recurring Prologue crash is eliminated.
+The original captured active fixture still fails safely. The user-requested
+completion criterion that this draw succeeds with correct pixels is NOT met.
+No new iPhone test, sustained animation, FPS improvement or gameplay claim.
+
+EXACT FAILURE AND PRODUCER INVESTIGATION
+Source708: CREATE_TEXTURE[708,2,4,4,1,1,1,71,8,1]. One BC1 2D layer.
+UPLOAD_TEXTURE[708,0,0,0,0,0,4,4,1,8,1,8], one zero eight-byte block.
+SRV709: [709,0,708,71,4,0,1,0,0], a valid TEXTURE2D SRV.
+PS996bb42f448956f2 declares a depth-cube sample at binding46/slot14.
+VSac2dd56e1111be56 was in the full captured report; earlier reports name
+VSa276344f1111242f. Both recorded pairs remain in the shader audit.
+CB6 word63=0x40000000 (selector2), CB3 word8=1: all three guards permit
+the cube operation. Its result contributes to diffuse/specular lighting.
+The mismatch is real; it is not lost cube faces or an inactive declaration.
+Original producer326/268 preserves ArraySize, and328 preserves view dimension.
+No evidence establishes that another slot's cube belongs in slot14.
+
+New static trace:44278 SetForwardLights may pass a null shadow texture while
+retaining a nonzero type. 9881 stores the global pointer;9543/9554 bind the
+program's texture globals. 10006 SetProgramResources skips updating the
+previous PS-slot cache when the texture pointer or returned SRV is null.
+This is a concrete POSSIBLE stale-binding path, not proof of this draw's
+cause. Missing evidence: the producing light/map index, parameter type,
+global texture pointer and returned SRV. See local-producer-findings.txt.
+No engine null-binding patch, fabricated cube, disabled sample or guessed
+slot substitution was introduced. Full archive startup is unavailable in
+this CI environment; the retained engine checkpoint stops before bytes.
+
+VERIFIED RELATED CORRECTIONS
+1. Common SRV decoder used by normal views, depth proxies and mip generation:
+   original view dimension, multisampling, overflow-safe mip/layer bounds,
+   remaining-subresource ABI, cube square faces and cube-array face count.
+   Cube-array first face need not be divisible by six; count must be.
+2. Source generation recorded at SRV/UAV creation and checked at consumption.
+   Destroyed or reused numeric handles cannot retarget an old view. Missing
+   nonzero handles fail explicitly; genuine unbound zero remains separate.
+   All metadata remains owned by the existing GPU consumer thread.
+3. Depth32FloatStencil8 SRV formats21/22 now preserve that resource family;
+   they previously selected Depth24PlusStencil8. Typed depth and stencil
+   aspect/sample compatibility is validated before native view creation.
+4. Color-to-depth proxies honor the declared linear/sRGB view encoding.
+   Separate bounded cache entries avoid reusing one encoding's depth values
+   for the other. Content writes refresh both correctly when subsequently used.
+5. GenerateMips now respects the same SRV range: a non-array2D view with an
+   unused zero count selects one layer, instead of affecting adjacent slices.
+6. Numeric sample-type, native view-format and source-kind incompatibilities
+   fail through controlled diagnostics before entering the native API.
+
+REGRESSION EVIDENCE
+The new CPU decoder ran with AddressSanitizer and UndefinedBehaviorSanitizer:
+73,216 exhaustive small-range cases plus uint32 edge/sentinel matrices.
+Two full native runtime runs each pass26 new pixel cases (416 checked pixels):
+all12 cube-array faces with nonzero first face, dynamic array indexing,3D,
+multisample, integer, genuine null, linear/sRGB views and two cached proxies,
+content mutation, depth32/stencil aspects, and view reuse. Nine controlled
+invalid descriptor/lifetime cases per run verify no draw/proxy publication.
+Mip-generation regression additionally checks the unselected layer is unchanged.
+The exact captured active mismatch remains a NEGATIVE reproduction; valid
+diagnostic cube pixels do not prove that invalid captured draw is repaired.
+
+Retained gates:4,808 modules/pipelines including500 clip shaders; original
+Prologue pairs and inter-stage linking;20 captured shadow pixel cases plus
+active/uncertified rejection; depth proxies;18 normalized16/18 border/12 clip
+cases;9 SNORM;36 raw-readback cases across30 formats;10 vertex/instance cases;
+44 resource transition cases;16 UAV/compute output cases and29 original
+compute pipelines;180 occlusion/query cases per policy; worker/proxy waits,
+mailboxes, host/runtime, memory, archive index and reference-input integrity.
+Read build-result.json and native-engine-test.txt for full asserted counters.
+No sanitizer result is claimed for the entire Objective-C GPU backend.
+
+First CI run38762717810 failed a stale combined fixture pipeline counter.
+The corrected array-view test adds a distinct diagnostic shader:41 draws now
+need16 pipelines/25 hits rather than15/26. The assertion was corrected; pixel
+and invalid-input gates were retained. Final CI above passed, including new
+mip, proxy and depth/stencil tests. This was not an ignored validation error.
+
+PERFORMANCE / MEMORY
+0.24 production cache, uniform batching, upload, query, engine and worker code
+was hash-checked unchanged. No new per-draw GPU completion wait is introduced.
+Cache normal/pressure limits remain256/128; uniform queue limits16 batches/
+4MiB; archive reader one64KiB buffer/eight descriptors; total depth-proxy
+payload budget256MiB. Generation checks are constant-size metadata accesses.
+Each Object adds two64-bit generations and one proxy pointer; driver object
+memory is opaque. The fourth proxy is allocated only for a used alternate
+encoding, within the existing aggregate budget. No phone memory delta measured.
+
+Retained production-command benchmark, two runs:192 required pipeline keys
+over576 draws. Capacity128 creates576/evicts448; capacity256 creates192/
+evicts0, hits384. Pressure shrink/regrow still creates448/evicts256.
+Uniform fixture:96 ordered batches, exact pixels/query counts, reference33
+completion calls versus bounded reuse7. These are retained0.24 improvements,
+not new0.25 performance claims. Actual CI API timings in
+local-stability-performance.json are synthetic, order/cache dependent and
+not iPhone FPS or GPU execution time. The latest user's ~174 creations,
+zero evictions and15-20FPS portions are supplied observations, not a new
+measurement. No equivalent physical before/after workload is available.
+
+REFLECTIONS AND REMAINING SRV LIMITATIONS
+No captured reflection target/LOD/filter state proves a reflection defect.
+The confirmed sRGB proxy and mip-isolation fixes are not claimed to explain
+the blurry floor. Resolution and quality remain640x360.
+Known limitations explicitly retained: true null comparison sampling needs
+an exact comparison-result implementation for all references/samplers;
+null D3D cube descriptors lose the cube misc flag in the original protocol;
+multisample depth proxies and some1D-array/MS-array paths are unsupported;
+typed reinterpretation beyond supported compatible families is not emulated;
+typed buffer formats outside the existing storage table need a dedicated
+format/range audit (the old stride fallback remains); nonzero sampler LOD
+bias remains unsupported.111 hull/domain/geometry records remain untranslated.
+No complete SRV support or exhaustive future-crash elimination claim.
+Parser/scenario/defaulttasks, missing audio/interiors and logging diagnostics
+are not repaired by this graphics work. Native pixel fixtures are not scene
+rendering or mission progression. Real GPU time/isolated engine CPU timing
+remain unavailable in the existing report.
+
+BUILD / ROLLBACK
+IPA GTA-Native-Probe-0.25-unsigned.ipa
+Bytes 102274132
+SHA256 4a07c0820f59bb104d990c12edb495816aed177bc10264d9423e218292f647b3
+Audited ARM64 iPhone binary, unsigned, expected bundle/version, no writable
+executable segments; pinned backend/engine provenance and payload checks pass.
+All24 earlier IPA hashes are preserved. Main remainsde7664a8e6448096716c5a341250d32d4f594fd1.
+Previous source8a0ebd62741af186e3ebefa4c60e9bbbb44b128e / Native0.24.
+Only native-ios-prototype published. Protected PC packages untouched.
+
+NEXT TASK / OPTIONAL PHONE CHECK
+Highest priority: reproduce the producer-side forward-light selection ->
+program-global binding -> SetProgramResources handoff with actual light/map
+and texture/SRV pointers. Capture on the producer thread or with safe
+coordination; never race live engine memory from the GPU consumer.
+The known crash may still occur in0.25. No immediate phone test is required.
+When available, preserve0.24, install0.25 with the usual local signing method,
+use the same web folder/640x360, run GPU queue/startup tests, then Trace
+Prologue. Mark the visible3D window; observe characters, textures, camera
+and animation. Save complete final error/binding/sampler/lifetime details and
+display/cache/memory statistics. Presentation counts alone do not finish Stage3.
+
+CHANGED SOURCE FILES (relative to native prototype root)
+  native-ios/App.m
+  native-ios/Info.plist
+  native-ios/renderer/build-renderer.sh
+  native-ios/renderer/depth_proxy_replay.inc
+  native-ios/renderer/draw_depth_proxy.inc
+  native-ios/renderer/draw_shader.inc
+  native-ios/renderer/mip_replay.inc
+  native-ios/renderer/mip_verify.inc
+  native-ios/renderer/native_draw.inc
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/native_mips.inc
+  native-ios/renderer/native_srv.inc
+  native-ios/renderer/native_uav.inc
+  native-ios/renderer/ped_shadow_audit.inc
+  native-ios/renderer/shadow_fixture.inc
+  native-ios/renderer/shadow_guard.inc
+  native-ios/renderer/srv_contract.h
+  native-ios/renderer/srv_fixture.inc
+  native-ios/renderer/test_srv_contract.c
+  source-manifest.json
+
+SPECIFICATION REFERENCES
+https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_texcube_array_srv
+These support view-range/null-resource rules; they do not establish that
+this bound dimensional mismatch may be replaced by a successful null sample.

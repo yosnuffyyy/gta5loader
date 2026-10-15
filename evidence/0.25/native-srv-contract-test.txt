@@ -1,0 +1,2 @@
+PASS: SRV protocol contracts, captured 708/709 mismatch, cube arrays starting at any face, 3D/MS, sentinels and uint32 overflow boundaries.
+Exhaustive range cases: 73216

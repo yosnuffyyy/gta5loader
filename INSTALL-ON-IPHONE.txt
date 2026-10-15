@@ -1,28 +1,17 @@
-NATIVE 0.24 — OPTIONAL PERFORMANCE AND DIAGNOSTIC BUILD
+NATIVE0.25 — SRV SAFETY/COMPATIBILITY BUILD
+GTA-Native-Probe-0.25-unsigned.ipa
+Source a48d497a9198ec2d2910a1a72b7ed0b44173a8b7
+SHA256 4a07c0820f59bb104d990c12edb495816aed177bc10264d9423e218292f647b3
 
-GTA-Native-Probe-0.24-unsigned.ipa
-Source 8a0ebd62741af186e3ebefa4c60e9bbbb44b128e
-SHA256 f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b
+The active708/709 crash remains unresolved. This build contains independently
+verified related fixes; it is not advertised as passing that crash point.
+Keep0.24 for rollback. All24 previous IPA files are preserved.
 
-The active source708/SRV709 cube/2D crash remains unresolved. This build
-adds verified bounded caching, uniform queue ordering and fatal diagnostics.
-It is not a crash-resolution or playable-build claim. Keep the previous IPA
-for rollback; all 23 earlier IPA files have been preserved.
-
-When convenient, use your existing local signing/install procedure, same
-bundle identifier and account. Keep the extracted web folder. No original
-assets or Windows prerequisites need to be replaced for this update.
-Do not send signing credentials, certificates or private keys to this chat
-or GitHub. Use your established tool's local prompts.
-
-Select the existing web folder and Trace Prologue startup. Preserve 640x360.
-Mark the visible scene only after actual characters/world appear, then
-observe textures, camera movement and animation. Compare marked actual
-display intervals, pipeline creations/evictions, uniform/query pressure
-waits, uploads and memory. If the known crash recurs, retain the complete
-report including Active shadow bindings, sampler raw data and related SRVs.
-No immediate device test is required while you are unavailable.
-
-Optional GPU queue/startup fixtures check deterministic pixels, query counts
-and ordering; they do not prove gameplay. Stage 3 remains in progress.
-See ENGINEERING-0.24.txt and VERIFICATION-0.24.txt for exact results/limits.
+When convenient, use your established local signing/install procedure, same
+bundle identifier and existing extracted web folder. Preserve640x360. Run
+GPU queue/startup tests, then Trace Prologue. Mark the visible scene only
+after actual3D characters/world appear. Observe texture, camera and animation
+correctness. Save the complete final report, especially fatal bindings,
+sampler/lifetime details, marked display intervals, cache and memory counters.
+No immediate physical test required; Stage3 remains in progress.
+See ENGINEERING-0.25.txt for verified results and unresolved limitations.

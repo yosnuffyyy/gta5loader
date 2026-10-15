@@ -1,0 +1,45 @@
+Native 0.25 P0 investigation: exact active 708/709 mismatch is NOT fixed.
+
+Confirmed from supplied capture and original binary/shader:
+CREATE_TEXTURE is single-layer 4x4 BC1; UPLOAD contains one eight-byte block.
+CREATE_SRV declares TEXTURE2D. The native consumer preserves these fields.
+PS996bb42f448956f2 declares t14 texture_depth_cube and compares a cube sample.
+Count1 / selector2 permits the sample. It contributes to diffuse and specular
+lighting. Neither inactive-binding elimination nor replacing it with a different
+slot's cube is established by the supplied state.
+
+The original producer functions326/268 preserve ArraySize. Function328 emits
+the original SRV dimension; cube-array NumCubes is already multiplied by six.
+The existing browser workaround synthesizes an empty cube for mismatches;
+it cannot recover missing shadow data and is deliberately not adopted.
+
+New static trace extends the earlier light-selection audit:
+44278 CLightGroup::SetForwardLights writes the selected shadow type and reads
+the shadow-map index. Its negative map-index branch passes a null texture to
+SetGlobalVar while the selected type can remain nonzero.
+9881 SetGlobalVar stores the texture pointer in global table12432448.
+9543 BeginPass calls9554 Technique_Pass::Bind. The fragment-program path copies
+selected global texture pointers into table12629344.
+10006 SetProgramResources reads that table and, for texture entries, branches
+past the cache update when the pointer or returned SRV is null. It preserves
+the prior slot cache at12624480, then emits the changed range through the
+PSSetShaderResources interface (10333 -> 474 -> 475).
+
+This is a concrete possible stale-binding path, NOT a demonstrated explanation
+of this phone draw: the report does not contain the selected light/map index,
+the program parameter type, global pointer, or the returned SRV pointer. The
+engine can also intentionally retain bindings in other paths. No change to
+engine null-binding behavior is justified without a fixture establishing the
+intended shadow semantics. No engine binary or binding remapping is patched.
+
+Next highest-value investigation: capture/replay the same producer-side
+SetForwardLights -> Bind -> SetProgramResources handoff, including null/map
+selection and the outgoing original SRV. This distinguishes stale retention
+from an explicitly selected default texture. Capture must execute on the
+producer thread or after safe coordination, not race live engine memory from
+the GPU consumer. Full archive startup is unavailable in this CI environment;
+retained fixtures stop before archive bytes and are not scene verification.
+
+Read-only original disassemblies saved beside this report: func9543,9554,9850,
+9880,10006,10333,474. Earlier326,268,328,44278,44528,43801,9881 remain in
+approved independent native work directories. Protected PC packages untouched.

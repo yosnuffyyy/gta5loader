@@ -1,0 +1,4 @@
+2026-10-15T15:43:18.3562160Z PASS: SRV protocol contracts, captured 708/709 mismatch, cube arrays starting at any face, 3D/MS, sentinels and uint32 overflow boundaries.
+2026-10-15T15:43:18.3563430Z Exhaustive range cases: 73216
+2026-10-15T15:48:19.7750570Z Combined draw/pipeline counters failed  [FENCE, opcode 8] VS 0 0000000000000000; PS 0 0000000000000000; CS 0 0000000000000000; payload(3) 4060164,0,99,0,0,0
+2026-10-15T15:48:19.7756390Z Error: Native regression process 1 failed; full stdout preserved in evidence

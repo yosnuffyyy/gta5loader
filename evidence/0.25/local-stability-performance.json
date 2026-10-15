@@ -1,0 +1,122 @@
+{
+  "cache": [
+    {
+      "policy": 128,
+      "creates": 576,
+      "hits": 0,
+      "evictions": 448,
+      "peak": 128,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 106.393,
+      "linkMs": 42.956
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 41.938,
+      "linkMs": 20.248
+    },
+    {
+      "policy": 1,
+      "creates": 448,
+      "hits": 128,
+      "evictions": 256,
+      "peak": 192,
+      "pressureEvictions": 64,
+      "pipelineApiMs": 75.202,
+      "linkMs": 31.587
+    },
+    {
+      "policy": 128,
+      "creates": 576,
+      "hits": 0,
+      "evictions": 448,
+      "peak": 128,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 98.865,
+      "linkMs": 39.005
+    },
+    {
+      "policy": 256,
+      "creates": 192,
+      "hits": 384,
+      "evictions": 0,
+      "peak": 192,
+      "pressureEvictions": 0,
+      "pipelineApiMs": 26.916,
+      "linkMs": 11.345
+    },
+    {
+      "policy": 1,
+      "creates": 448,
+      "hits": 128,
+      "evictions": 256,
+      "peak": 192,
+      "pressureEvictions": 64,
+      "pipelineApiMs": 67.595,
+      "linkMs": 29.44
+    }
+  ],
+  "uniform": [
+    {
+      "policy": "bounded queue reuse",
+      "waits": 7,
+      "cpuWaitMs": 58.691,
+      "pressureWaits": 6
+    },
+    {
+      "policy": "0.23 reference",
+      "waits": 33,
+      "cpuWaitMs": 245.334,
+      "pressureWaits": 0
+    },
+    {
+      "policy": "bounded queue reuse",
+      "waits": 7,
+      "cpuWaitMs": 70.168,
+      "pressureWaits": 6
+    },
+    {
+      "policy": "0.23 reference",
+      "waits": 33,
+      "cpuWaitMs": 280.281,
+      "pressureWaits": 0
+    }
+  ],
+  "queries": [
+    {
+      "policy": "bounded queue reuse",
+      "completedMaps": 12,
+      "requestedMaps": 12,
+      "pressureWaits": 2,
+      "pressureCpuMs": 49.545
+    },
+    {
+      "policy": "0.23 reference",
+      "completedMaps": 12,
+      "requestedMaps": 12,
+      "pressureWaits": 0,
+      "pressureCpuMs": 0
+    },
+    {
+      "policy": "bounded queue reuse",
+      "completedMaps": 12,
+      "requestedMaps": 12,
+      "pressureWaits": 2,
+      "pressureCpuMs": 41.959
+    },
+    {
+      "policy": "0.23 reference",
+      "completedMaps": 12,
+      "requestedMaps": 12,
+      "pressureWaits": 0,
+      "pressureCpuMs": 0
+    }
+  ],
+  "environment": "macos-15 Apple Paravirtual Metal, order and driver-cache dependent; synthetic working set with production commands, not captured phone sequence or iPhone FPS",
+  "sourceMismatchFixed": false
+}
