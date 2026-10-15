@@ -1,0 +1,289 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "shaders": {
+    "a276344f1111242f": {
+      "stage": "vs",
+      "effect": "ped_alpha",
+      "program": "VS_PedTransformSkin",
+      "ok": true,
+      "p": [
+        9,
+        568177,
+        5358,
+        0
+      ],
+      "sourceSHA256": "d4b7d084e0b868ccbafbec2088b21d892e75b87def996c9643bbdb09178bff9f",
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "cb4_4",
+          "type": "cb765_struct"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "cb1_1",
+          "type": "cb16_struct"
+        },
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "cb0_0",
+          "type": "cb1_struct"
+        }
+      ]
+    },
+    "996bb42f448956f2": {
+      "stage": "ps",
+      "effect": "ped_alpha",
+      "program": "PS_PedTextured_Four",
+      "ok": true,
+      "consts": true,
+      "p": [
+        9,
+        427713,
+        46672,
+        21
+      ],
+      "sourceSHA256": "4ad02b0bf5054064d685a4d50e4f6eb4f03aaaaa3e5dd6dc60364fef3b3ac666",
+      "bindings": [
+        {
+          "group": 1,
+          "binding": 1,
+          "name": "cb1_1",
+          "type": "cb16_struct"
+        },
+        {
+          "group": 1,
+          "binding": 2,
+          "name": "cb2_2",
+          "type": "cb23_struct"
+        },
+        {
+          "group": 1,
+          "binding": 3,
+          "name": "cb3_3",
+          "type": "cb59_struct"
+        },
+        {
+          "group": 1,
+          "binding": 5,
+          "name": "cb5_5",
+          "type": "cb8_struct"
+        },
+        {
+          "group": 1,
+          "binding": 13,
+          "name": "cb13_13",
+          "type": "cb5_struct"
+        },
+        {
+          "group": 1,
+          "binding": 10,
+          "name": "cb10_10",
+          "type": "cb1_struct"
+        },
+        {
+          "group": 1,
+          "binding": 6,
+          "name": "cb6_6",
+          "type": "cb31_struct"
+        },
+        {
+          "group": 1,
+          "binding": 16,
+          "name": "s0",
+          "type": "sampler"
+        },
+        {
+          "group": 1,
+          "binding": 17,
+          "name": "s1",
+          "type": "sampler"
+        },
+        {
+          "group": 1,
+          "binding": 20,
+          "name": "s4",
+          "type": "sampler"
+        },
+        {
+          "group": 1,
+          "binding": 21,
+          "name": "s5",
+          "type": "sampler"
+        },
+        {
+          "group": 1,
+          "binding": 27,
+          "name": "s11",
+          "type": "sampler"
+        },
+        {
+          "group": 1,
+          "binding": 30,
+          "name": "s14",
+          "type": "sampler_comparison"
+        },
+        {
+          "group": 1,
+          "binding": 31,
+          "name": "s15",
+          "type": "sampler_comparison"
+        },
+        {
+          "group": 1,
+          "binding": 32,
+          "name": "t0",
+          "type": "texture_2d<f32>"
+        },
+        {
+          "group": 1,
+          "binding": 33,
+          "name": "t1",
+          "type": "texture_2d<f32>"
+        },
+        {
+          "group": 1,
+          "binding": 36,
+          "name": "t4",
+          "type": "texture_2d<f32>"
+        },
+        {
+          "group": 1,
+          "binding": 37,
+          "name": "t5",
+          "type": "texture_2d<f32>"
+        },
+        {
+          "group": 1,
+          "binding": 43,
+          "name": "t11",
+          "type": "texture_2d<f32>"
+        },
+        {
+          "group": 1,
+          "binding": 46,
+          "name": "t14",
+          "type": "texture_depth_cube"
+        },
+        {
+          "group": 1,
+          "binding": 47,
+          "name": "t15",
+          "type": "texture_depth_2d"
+        },
+        {
+          "group": 1,
+          "binding": 56,
+          "name": "t24",
+          "type": "texture_depth_2d"
+        },
+        {
+          "group": 1,
+          "binding": 57,
+          "name": "t25",
+          "type": "texture_depth_cube"
+        },
+        {
+          "group": 1,
+          "binding": 58,
+          "name": "t26",
+          "type": "texture_depth_2d"
+        },
+        {
+          "group": 1,
+          "binding": 59,
+          "name": "t27",
+          "type": "texture_depth_cube"
+        },
+        {
+          "group": 1,
+          "binding": 60,
+          "name": "t28",
+          "type": "texture_depth_2d"
+        },
+        {
+          "group": 1,
+          "binding": 61,
+          "name": "t29",
+          "type": "texture_depth_cube"
+        },
+        {
+          "group": 1,
+          "binding": 62,
+          "name": "t30",
+          "type": "texture_depth_2d"
+        },
+        {
+          "group": 1,
+          "binding": 15,
+          "name": "v",
+          "type": "tint_symbol_8"
+        }
+      ]
+    }
+  },
+  "physicalFailure": {
+    "message": "Depth proxy SRV range outside texture",
+    "opcode": 32,
+    "vertexID": 3994,
+    "fragmentID": 4000,
+    "originalResourceDescriptorAvailable": false,
+    "originalSRVDescriptorAvailable": false,
+    "exactPhoneRootCauseEstablished": false,
+    "exactDescriptorPixelReplayClaimed": false
+  },
+  "confirmedIndependentBug": {
+    "before": "Remaining UINT_MAX layer count rejected by proxy and SRV creation; duplicate range handling; non-3D SRV path did not reject explicit excessive mip counts before WebGPU.",
+    "after": "Common checked suffix normalization for zero/UINT_MAX, subtraction bounds, explicit excessive counts rejected before conversion/view creation."
+  },
+  "referenceCubeMismatch": {
+    "evidence": [
+      {
+        "line": 21046,
+        "text": "[wgpu] cube SRV over a texture with 1 layer(s): bound as an empty cube"
+      },
+      {
+        "line": 42336,
+        "text": "[wgpu] cube SRV over a texture with 1 layer(s): bound as an empty cube"
+      },
+      {
+        "line": 63779,
+        "text": "[wgpu] cube SRV over a texture with 1 layer(s): bound as an empty cube"
+      },
+      {
+        "line": 85406,
+        "text": "[wgpu] cube SRV over a texture with 1 layer(s): bound as an empty cube"
+      }
+    ],
+    "inference": "Plausible distinct incompatibility for the reported cube/2D shader pair; not proven to be the phone descriptor; no dummy cube workaround added."
+  },
+  "engineCompilerCacheInputsUnchanged": [
+    [
+      "native-ios/native_host.h",
+      "2592f7fab3149d3772dc5e8204e676a60d16b44cec968a23f563eff5ec8a6e33"
+    ],
+    [
+      "native-ios/native_wait.h",
+      "ccb443e1f743492a86912b96294ca971729cce7b8323594c9d6345610a886b04"
+    ],
+    [
+      "native-ios/probe.h",
+      "9f4c176aa4694e54be5e206330360dbe88bdfaa858d377a2eedf1bb53ff06cb8"
+    ]
+  ],
+  "phonePerformance": {
+    "estimateFPS": [
+      5,
+      8
+    ],
+    "durationSeconds": 3,
+    "source": "User observation, not instrumented sustained FPS",
+    "newDeviceMeasurementsAvailable": false
+  },
+  "stage": 3,
+  "stagesLeft": 5
+}

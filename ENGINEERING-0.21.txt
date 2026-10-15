@@ -1,0 +1,274 @@
+GTA V iOS NATIVE 0.21 — STAGE 3 ENGINEERING REPORT
+2026-10-14. Stages 1/2 completed; Stage 3 in progress; five stages left.
+
+RESULT AND IMPORTANT LIMIT
+The reported latest build displayed real North Yankton characters/weapons
+for about three seconds. That is physical scene evidence supplied by the
+user. Estimated 5–8 FPS is not a measured sustained frame rate. Correct
+continuous animation, camera progression and responsive controls remain
+unverified. Native 0.21 is an independently validated engineering candidate,
+not a claim that the exact phone crash or playable performance is solved.
+
+The exact failing SRV/resource descriptor was not logged or supplied. We
+therefore cannot establish the complete phone-specific root cause, or replay
+that exact resource/view combination. This limitation is preserved explicitly
+in evidence/0.21/local-depth-investigation.json and the build result.
+
+1. DEPTH-PROXY INVESTIGATION AND FIXES
+The error originated in draw_depth_proxy.inc before converting the source
+texture: the requested shader view had to fit the source mip/layer range.
+Both original shader hashes were identified and extracted from SHA-pinned
+pack9, without changing original shader data:
+  VS 3994 a276344f1111242f: ped_alpha / VS_PedTransformSkin
+  PS 4000 996bb42f448956f2: ped_alpha / PS_PedTextured_Four
+The vertex shader has no texture bindings. The fragment shader contains 2D
+and cube textures/comparison shadows; its declarations contain no arrays.
+
+A separate source-proven bug was corrected: UINT_MAX array-layer suffixes
+were interpreted as a literal enormous count, while mip suffixes already
+recognized UINT_MAX. Conversion and final SRV creation also duplicated range
+handling. Both now use a common checked suffix calculation. Explicit invalid
+counts and base indices still fail; no clamping, dummy cube, skipped draw or
+fake visibility result was introduced. The direct 3D SRV path also rejects an
+excessive explicit mip count before asking WebGPU to create the view.
+
+Crucially, that array-sentinel bug cannot by itself explain the exact reported
+pair, whose shader views are 2D/cube. It must not be presented as a confirmed
+fix for that phone crash. New fatal diagnostics retain the actual source ID,
+DXGI/native formats, dimensions, width/height/layers, mips, sample count,
+source version, all nine original SRV packet words, shader binding/slot,
+expected view/sample type and requested layer count. Existing shader hashes,
+DRAW payload and eight final command breadcrumbs remain available.
+
+The approved older browser trace contains four occurrences of a cube SRV
+over a one-layer texture. This supports a cube/2D mismatch hypothesis, but
+does not identify the phone's descriptor. The browser's empty-cube fallback
+was deliberately not copied. Base mip/layer errors or stale metadata remain
+other possibilities. Resource-ID reuse is covered by the new GPU fixture.
+
+The pinned engine's CreateShaderResourceView producer was disassembled:
+CubeArray NumCubes is multiplied by six before serialization; ordinary cubes
+already carry six faces. Counts must not be multiplied again in the consumer.
+No engine instructions, assets or original shaders were patched.
+
+2. INDEPENDENT VERIFICATION
+PASS: 9,360 exhaustive suffix/base/explicit-invalid range combinations with
+ASan/UBSan, plus existing storage-budget and widened-arithmetic tests.
+PASS: two production-ring GPU runs, each with nine new pixel cases (2,304
+pixels), array/mip suffixes, source changes, cached reuse, source-ID reuse,
+a genuine six-face cube and direct depth-array binding. Four invalid range
+cases per run fail before a draw or proxy allocation; the full descriptor
+diagnostic is required by the negative test.
+PASS: the exact ped_alpha shader pair through original loading, uniform
+packing, real binding layouts, native clip outputs, the 15-variable linker
+and the production Metal pipeline cache. Vertex/attachment descriptors are
+synthetic interface fixtures, not a capture of the missing phone descriptors.
+No GTA scene pixels are claimed from this pipeline-compilation test.
+PASS: all 4,808 pinned translated modules and native Metal pipelines,
+including 500 clip shaders, plus the retained exact older shader-pair test.
+PASS: retained GPU/resource/compute/texture/query/readback/worker gates:
+  - two 180-case counting-occlusion/predicate runs, cancellation and eight
+    invalid order/type/address/sample-mask boundaries per run;
+  - retained 14 depth-proxy, 36 readback/30-format, 44 resource-transition,
+    16 UAV/compute, 10 instance, 12 clip-pixel cases per GPU process;
+  - retained BC, SNORM, normalized16, border sampler, mip and pixel fixtures;
+  - four deliberate engine/archive checkpoints, 32 engine workers, mailbox,
+    persistent-save/file ABI, native RNG/statvfs, waits, SIMD and bulk checks.
+PASS: bounded timing/display arithmetic and all 18 exact pinned gzip inputs,
+including truncated-input and decompression-bound rejection tests. Synthetic 32-FPS timestamps test arithmetic only, not game performance.
+The deliberate engine CI checkpoint still stops before real archive bytes.
+See the preserved compiler evidence for individual results and full counts.
+
+3. PERFORMANCE MEASUREMENTS AND LIMITS
+No new iPhone CPU, GPU or sustained FPS measurements are available. The
+three-second 5–8 FPS estimate cannot establish GPU saturation or thermal/
+steady-state behavior. No claim of reaching, or guaranteeing, 30 FPS is made.
+The target remains about 33.3 ms/frame at the unchanged 640 x 360 baseline.
+
+Measured macos-15 CI Apple Paravirtual Metal fixture CPU submit-to-map
+timings (nine reads/run); this is a virtualized CI adapter, not A18 Pro:
+  Run 1: mean 10.594 ms; maximum 23.592 ms; 13 post-completion sleep requests avoided; proxy peak 7680 bytes.
+  Run 2: mean 12.635 ms; maximum 27.734 ms; 13 post-completion sleep requests avoided; proxy peak 7680 bytes.
+Quantiles for these nine-read samples are withheld. These are CPU-side
+submission/mapping durations on the Mac CI runner, not GPU execution times,
+iPhone readback latency or game frame times.
+Exact ped_alpha first-use CPU API timing on that runner (driver caches may
+already be warm; this is not a matched cold-start benchmark):
+  Original modules 6.589 ms; varying reflection/link 0.858 ms; render pipeline 407.81 ms.
+No matched physical before/after gameplay benchmark exists.
+
+A confirmed unnecessary wait was removed: the old callback loop requested
+a 1 ms nanosleep even after a device poll had completed its callback. The
+new loop returns after successful completion checks. Polling while pending,
+failure handling, cancellation and the 15-second deadline are preserved.
+This demonstrably removes those sleep requests; it is not a measured FPS
+gain or proof that a 2.777-second wait has been eliminated.
+
+The next build records CPU wall time for original modules, varying linking,
+game pipeline creation, readback submit/map, queue completion, upload and
+resource handlers, plus GPU-service thread CPU between PRESENT submissions.
+It records bounded cache creates/hits/evictions so a 128-entry cache can be
+evaluated for thrashing before changing capacity. Nested timings overlap and
+must not be added. GPU-service CPU is not isolated engine CPU frame time.
+True GPU timestamp instrumentation and isolated engine-frame/worker CPU
+timings are not implemented by this change. Existing engine profiles and
+worker/mailbox/phase reports remain available; missing values are not guessed.
+
+4. READBACK STALL FINDINGS
+The existing path correctly flushes earlier draws before an ordered copy,
+submits the copy, maps the staging buffer, copies actual bytes to the shared
+heap, unmaps, and only then publishes success with release ordering. The
+buffer is reused and remains capped at 1 MiB. There is no additional explicit
+completed() call in readback_map itself; uniform-slot reuse may have waited
+inside the preceding draw flush. That dependency was not removed speculatively.
+
+An engine-side wait for a READBACK can also include commands and shader/
+pipeline compilation ahead of it in the ring. A reported 2.777-second engine
+wait is not enough to call it 2.777 seconds of GPU execution. The new report
+separates the readback's submit-to-map CPU duration from cumulative module/
+pipeline CPU time and the preceding command/frame workload. Event detail is
+capped at 16 records; lifetime counts/maxima and latest-256 distributions
+remain available. It is not yet established whether exposure initialization
+is a one-time or recurring phone stall. No stale/fabricated data or deferred
+publication without completed bytes was introduced to hide the wait.
+
+5. DISPLAY, MEMORY AND STREAMING DIAGNOSTICS
+An optional two-line display overlay uses MTLDrawable presented handlers and
+positive presentedTime values, not PRESENT-command or draw-call counts.
+It shows historical FPS over the latest up-to-16 display intervals, mean
+interval, completed callbacks and the age of the last actual display. The
+report retains latest-256 and first-64 intervals, empirical nearest-rank
+mean/median/p95/p99/max (quantiles withheld below 20 samples), zero/invalid
+timestamps, nonmonotonic callback counts and consecutive callback counters.
+Loading screens are included. Neither display nor first-compute markers
+prove scene correctness. A stalled historical FPS value is labelled as such.
+Callback delivery and the overlay on the physical phone remain unverified.
+
+Callbacks retain an independent monitor, never a freed NativeGpu or engine.
+The monitor is replaced between runs; a lock protects its small bounded
+timeline. No per-frame sorting is performed. CPU timing state uses fixed
+256-entry windows; there is no new persistent GPU timing allocation.
+Existing logical GPU live/peak accounting, process footprint/heap/headroom,
+mission/camera diagnostics and final command breadcrumbs are preserved.
+
+Asset service latency and descriptor-cache hits/misses are now reported
+after the reader joins. Service time explicitly excludes unknown queued wait.
+The archive reader still has one 64 KiB buffer and at most eight open files.
+No whole-archive cache or fabricated assets/metadata/audio were added.
+
+6. BUILD, INTEGRITY AND ROLLBACK
+Source commit: 8794e8f9719c47db24c98bb6c6219ec6f03da7df
+Source tree: e8626d5e2322836c9fd09d189023c3e85187c546
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865 — PASS
+Unsigned IPA: GTA-Native-Probe-0.21-unsigned.ipa
+Version/build: 0.21.0 / 21. ARM64 iPhoneOS; minimum iOS 17.0.
+IPA bytes: 102240118
+IPA SHA256: d883dbf5e2b8afe5474210741d6a04b5f12062697ec932099416001dd20f0264
+The executable/package audit verifies platform, bundle identity, absence of
+signature/profile/WebKit/JSC/writable-executable segments and preserved pinned
+engine/probe/backend/shader inputs. It is not proof of phone gameplay.
+All 20 prior IPAs, including 0.18, 0.19 and 0.20, remain byte-for-byte intact.
+Source is published only to native-ios-prototype; main and the protected
+Desktop PC folders/old offline package remain untouched. Focused commits and
+the previous source/artifacts provide rollback paths.
+
+Four earlier CI attempts failed on upstream reference transfers: complete
+requests, bounded retries and checked ranges all encountered failures. The
+fourth run passed both full runtime/GPU fixture processes before a later
+reference timeout. No failed run was counted as a complete audit.
+The final source includes 19 CI-only gzip inputs (9,444,083 compressed bytes),
+expanded with a fixed bound and checked against the unchanged original sizes
+and SHA256 pins. This eliminates the unreliable origin transfer for this
+audit. These inputs do not ship in the IPA; the extracted app is checked
+recursively. No gameplay I/O or original shader data changed. No network
+speedup or FPS ratio is claimed. Presentation instrumentation was placed
+under renderer/ so original global engine compiler-header inputs remain
+identical. The established workflow and engine compiler remain unchanged.
+
+7. REMAINING RISKS AND NEXT DEVICE CHECK
+The highest-priority remaining objective is obtaining/replaying the exact
+phone source/SRV descriptor and removing its established root cause without
+substituting fabricated views. A passing generic range/pipeline fixture
+cannot establish that fix. Continuous visually correct scene frames and
+responsive controls are still required for the appropriate roadmap gates.
+
+111 records remain untranslated (71 domain, 18 hull, 20 geometry, two compute).
+Partial fixed MSAA sample masks remain an explicit pinned-backend limitation.
+Scenario type/class metadata, defaulttasks PSO registration, interior
+references, missing audio banks, log-thread setup and cloth upload warnings
+remain unresolved unless separately established in the retained evidence.
+Their diagnostics were not suppressed or "fixed" with invented data.
+
+Earlier supplied reports advanced from repeated NEW_LOAD_SCENE_START_SPHERE
+messages to the animated Prologue1 camera, then a graphics fatal. Repetition
+alone therefore does not establish a permanent streaming deadlock. Native
+0.17 reported 14,309 asset requests / 406 MiB delivered with zero I/O errors,
+size mismatches or unexpected short reads; that does not validate metadata
+class compatibility or prove all assets are present. No scene-script behavior
+or missing asset content was rewritten on the basis of those diagnostics.
+
+When a future phone test is convenient, keep the same local web folder and
+640 x 360 baseline. Run Trace Prologue startup with display diagnostics on.
+Look specifically for continued rendering beyond the previous three-second
+point, textured characters/weapons/world, moving camera and coherent
+animation. Compare a cold and later run separately if practical. Copy the
+complete report after Stop or failure: the exact SRV packet, source shape,
+frame age/display distributions, compile/cache metrics and readback records
+are the critical evidence. Do not infer working controls from animation.
+No immediate device test was requested during this engineering session.
+
+MODIFIED SOURCE FILES (relative to the approved native repository)
+  native-ios/App.m
+  native-ios/asset_io/native_assets.c
+  native-ios/Info.plist
+  native-ios/renderer/build-renderer.sh
+  native-ios/renderer/depth_proxy_layout.h
+  native-ios/renderer/display_timeline.h
+  native-ios/renderer/draw_depth_proxy.inc
+  native-ios/renderer/draw_pipeline.inc
+  native-ios/renderer/draw_shader.inc
+  native-ios/renderer/native_draw.inc
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/native_metrics.h
+  native-ios/renderer/native_metrics.inc
+  native-ios/renderer/native_readback.inc
+  native-ios/renderer/native_scene.c
+  native-ios/renderer/ped_pair_audit.inc
+  native-ios/renderer/prepare-shader-audit.mjs
+  native-ios/renderer/presentation_metrics.inc
+  native-ios/renderer/proxy_range_fixture.inc
+  native-ios/renderer/shader_audit.inc
+  native-ios/renderer/test_depth_proxy_layout.c
+  native-ios/renderer/test_display_timeline.c
+  native-ios/renderer/test_reference_inputs.mjs
+  native-ios/renderer/test_timing_window.c
+  native-ios/renderer/timing_window.h
+  native-ios/renderer/verification-inputs/index.json.gz
+  native-ios/renderer/verification-inputs/pack0.9dbe8980.bin.gz
+  native-ios/renderer/verification-inputs/pack1.d3742737.bin.gz
+  native-ios/renderer/verification-inputs/pack10.6575950e.bin.gz
+  native-ios/renderer/verification-inputs/pack11.e0073b7d.bin.gz
+  native-ios/renderer/verification-inputs/pack12.1d6edb08.bin.gz
+  native-ios/renderer/verification-inputs/pack13.cfffe2fb.bin.gz
+  native-ios/renderer/verification-inputs/pack14.40a1313e.bin.gz
+  native-ios/renderer/verification-inputs/pack15.b3b18db2.bin.gz
+  native-ios/renderer/verification-inputs/pack16.bbdfb437.bin.gz
+  native-ios/renderer/verification-inputs/pack17.6e3bb314.bin.gz
+  native-ios/renderer/verification-inputs/pack2.a20536fd.bin.gz
+  native-ios/renderer/verification-inputs/pack3.f4cea8c6.bin.gz
+  native-ios/renderer/verification-inputs/pack4.d2ee201a.bin.gz
+  native-ios/renderer/verification-inputs/pack5.95428237.bin.gz
+  native-ios/renderer/verification-inputs/pack6.9c7b675b.bin.gz
+  native-ios/renderer/verification-inputs/pack7.ed73a534.bin.gz
+  native-ios/renderer/verification-inputs/pack8.b3a27300.bin.gz
+  native-ios/renderer/verification-inputs/pack9.3396ed27.bin.gz
+  source-manifest.json
+
+PRIMARY API REFERENCES
+Microsoft SRV helper/count definitions:
+https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-cd3d11_shader_resource_view_desc
+Apple actual-display timestamps and callback behavior:
+https://developer.apple.com/documentation/metal/mtldrawable/presentedtime
+https://developer.apple.com/documentation/metal/mtldrawable/addpresentedhandler(_:)
+Reference worker, original shader packs and the pinned engine were inspected
+only from approved independent work inputs; their bytes were preserved.

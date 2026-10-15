@@ -1,0 +1,140 @@
+{
+  "scope": "CI-only gzip fixtures of the unchanged previously pinned original references; no game archive and no IPA payload",
+  "files": [
+    {
+      "path": "native-ios/renderer/verification-inputs/index.json.gz",
+      "bytes": 120143,
+      "sha256": "2c7edaba881d97cfbc844d125cfbd1794c0648e22b719379f3339ba92c5a8332",
+      "sha": "b00c92abd528e0890e27922334a83c2027139631",
+      "uncompressedBytes": 685955
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack0.9dbe8980.bin.gz",
+      "bytes": 404637,
+      "sha256": "81be464365eb3c5bfada3db70a96317ecd9545ed4f22518442d64576352dac3d",
+      "sha": "d4a298565db434a649e30b78d189c2a875589213",
+      "uncompressedBytes": 4183080
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack1.d3742737.bin.gz",
+      "bytes": 498421,
+      "sha256": "d8e19811238dbcf166ed07378207c7edf14dc183edf579b85ae1d88502691ad6",
+      "sha": "b463c4fc0f9fae4ea216c66564543009a5620dd3",
+      "uncompressedBytes": 4178210
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack2.a20536fd.bin.gz",
+      "bytes": 530897,
+      "sha256": "16b18475f7bbcd5f758264e6c776dfff4ed47cc163871e7a8b93c1312040601c",
+      "sha": "a875cc2139df355d565920a401a4ecf9520cf5f4",
+      "uncompressedBytes": 4192523
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack3.f4cea8c6.bin.gz",
+      "bytes": 545560,
+      "sha256": "419e788d68ee304a24b362e879f2e24aa1c954567f880bee7ed0507a0f2b9539",
+      "sha": "cee4cdd8767d331066e3383adb55469471b9f6a9",
+      "uncompressedBytes": 4164869
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack4.d2ee201a.bin.gz",
+      "bytes": 503470,
+      "sha256": "d3e17220cc16d94422706d34ad9d3a570ef56309467bbd0a679f1cc933621078",
+      "sha": "d21c219c1a6ce205f52f14234273fd49175bd440",
+      "uncompressedBytes": 4152412
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack5.95428237.bin.gz",
+      "bytes": 617002,
+      "sha256": "131ec74f9755433d92593b1ce0ad978afbeeb3e7681d75353e433f34331f3a1c",
+      "sha": "730fc887583b4a36a2c4099cd63e696eb3c5ee66",
+      "uncompressedBytes": 4179792
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack6.9c7b675b.bin.gz",
+      "bytes": 608507,
+      "sha256": "cd67450f4c7211b066b9c612a34cf067d5a8455da0c5c892cb953abbca72e744",
+      "sha": "ae5171374694c8a921cf32465cd3a44b4b8116fa",
+      "uncompressedBytes": 4160403
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack7.ed73a534.bin.gz",
+      "bytes": 606116,
+      "sha256": "b82cb3e8c3583497c19c98df66e7d378414bc4f6654e3fd2f74de7db9a7bcc89",
+      "sha": "65bc9911821371fc2e05c72d9cb1ba9ebb2c9264",
+      "uncompressedBytes": 4181431
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack8.b3a27300.bin.gz",
+      "bytes": 594213,
+      "sha256": "cdfd98cedc439123509ef03bb451eea0f5f986f12cf8aabdd8cbbfbaa9d7d5a5",
+      "sha": "727f7d41e122d6250381e89ea063e2823cd9fbff",
+      "uncompressedBytes": 4144166
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack9.3396ed27.bin.gz",
+      "bytes": 570927,
+      "sha256": "323691bed7ce71db4ceebb30fee9721dee0ec1bc5be55e446a260abaa06ea113",
+      "sha": "1c51fba1f0ce6dbde97c20a2df8573430e0ac37a",
+      "uncompressedBytes": 4142891
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack10.6575950e.bin.gz",
+      "bytes": 572134,
+      "sha256": "276dfa6cff429363afadaebe3efc5d57ed4215f125505b13af3bd731bc9aa063",
+      "sha": "0b8ddaf0cf652c35549559dfe384470cd64002a5",
+      "uncompressedBytes": 4186981
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack11.e0073b7d.bin.gz",
+      "bytes": 411655,
+      "sha256": "880a9de0feafc0218fc25737b34bd80d1c86fbfd999f1b22ce6a38825923cbb2",
+      "sha": "fa00f104282d95cc8d1dd6a2fe0ef2aab9a17b29",
+      "uncompressedBytes": 4180991
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack12.1d6edb08.bin.gz",
+      "bytes": 458403,
+      "sha256": "72ce1e405931fa6eda5bf5c166f9f958d48396dddd2125bc9ebc4bf23a9537c3",
+      "sha": "3b5f3caeaeac64fec9a281f8e8a89a876562c306",
+      "uncompressedBytes": 4186877
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack13.cfffe2fb.bin.gz",
+      "bytes": 485797,
+      "sha256": "5acea0bfb50d80189473b120d2d1d903386a876c0fda67ccd9c283b86755cc2b",
+      "sha": "66b3d20495853a9581bbf25fd8903a2b6f44cd03",
+      "uncompressedBytes": 4183971
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack14.40a1313e.bin.gz",
+      "bytes": 599837,
+      "sha256": "cada9bfc3805326938708196c4e7eff95b0dbe46c41a13e3cee8ea6f28e93cc8",
+      "sha": "ede04397c2beac54ca17b85845391e1c0f13c331",
+      "uncompressedBytes": 4163329
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack15.b3b18db2.bin.gz",
+      "bytes": 642150,
+      "sha256": "2b9aa03e385072fbae22b637fdc0433ae239bfe6a8cf4b092ad4847d031a6294",
+      "sha": "d69a2194958b143024726ac7ac129553ee78fa6c",
+      "uncompressedBytes": 4177559
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack16.bbdfb437.bin.gz",
+      "bytes": 559100,
+      "sha256": "c6a366006f2c76f0a5960beef64ce065b4897b5c3ed441b604839717b8caabf5",
+      "sha": "2933f64ea8dfca272baed9c11cc29b0767fc1211",
+      "uncompressedBytes": 4188530
+    },
+    {
+      "path": "native-ios/renderer/verification-inputs/pack17.6e3bb314.bin.gz",
+      "bytes": 115114,
+      "sha256": "d0ccc6cfda1fd4fb54864276d7b9ecb80ebf7692299f2dcc8c64bec60dba89c5",
+      "sha": "b86240fa12e29c8fbe83af45fcdcb19625e86d54",
+      "uncompressedBytes": 813779
+    }
+  ],
+  "totalCompressed": 9444083,
+  "totalUncompressed": 72447749
+}

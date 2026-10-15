@@ -1,20 +1,22 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-14. Native0.20 candidate; Stage3 remains active.
+Updated 2026-10-14. Native0.21 candidate; Stage3 remains active.
 
 LATEST EVIDENCE
-Physical0.19 advanced to Prologue1/camera, then stopped at BEGIN_QUERY45,
-ID11165 (101707 commands,8323 draws). Native0.20 adds actual Metal sample
-counts/predicates, asynchronous bounded pages, safe reuse and cleanup.
-Two180-case query runs, eight error boundaries and unfinished cancellation
-per run,4808 shaders/native pipelines and all retained runtime gates passed.
-Unsigned ARM64 IPA audited separately;0.19 and18 other IPAs preserved.
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38645819844
-A smaller batched-resolve experiment failed counts and was rejected. Partial
-sample masks and other unsupported operations remain explicit errors.
-Metadata/asset diagnostics and111 untranslated records remain unresolved.
-No consecutive correct physical iPhone scene or player controls verified.
+User reports real North Yankton characters/weapons for about three seconds,
+then Depth proxy SRV range outside texture with the ped_alpha shader pair.
+Estimated5–8FPS is not a sustained/instrumented measurement. The exact phone
+SRV descriptor was not logged. The0.21 array-suffix fix is independently
+verified but cannot establish a fix for that 2D/cube pair. Complete resource/
+view descriptors, real display timestamps and bounded CPU/readback/cache/
+asset timing now make the next failure/performance report more informative.
+New range GPU/negative cases, exact-pair Metal pipeline/cache tests and all
+4808 shader/native-pipeline and retained runtime gates passed.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865
+The unsigned ARM64 IPA is audited; all20 previous IPAs are preserved.
 Stages1/2 complete; Stage3 active; five stages left including Stage3.
-See ENGINEERING-0.20.txt and VERIFICATION-0.20.txt for evidence and next work.
+Next: establish the exact source/SRV failure; sustain correct Prologue scene
+frames, then input/audio and measured performance. Keep640x360 baseline.
+No Stage3 completion or30FPS claim. See ENGINEERING-0.21.txt and verification.
 
 HISTORICAL CHECKPOINTS
 

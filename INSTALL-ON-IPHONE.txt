@@ -77,3 +77,10 @@ iTunes64Setup.exe — 202759648 bytes
 SHA-256 25b28905a81406a5edbf482f7f3ee4831a8641d32d29dceda5d1eb3e8d534c08
 iCloudSetup.exe — 161146680 bytes
 SHA-256 4cfd20d13cdce2b5c435f2ddaf4ee4c81d976461846bf3b954e8af6cbcdeb9f7
+
+Native0.21: https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865
+Use the audited GTA-Native-Probe-0.21-unsigned.ipa from this run. Preserve
+previous IPAs. Display diagnostics are optional and measure actual drawable
+callbacks; loading screens are included. The exact phone depth/SRV failure
+is not yet established as fixed. See ENGINEERING-0.21.txt before interpreting
+FPS or successful CI as gameplay. Stage3 remains in progress.

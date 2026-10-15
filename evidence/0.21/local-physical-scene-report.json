@@ -1,0 +1,29 @@
+{
+  "source": "User report in this chat",
+  "device": "iPhone 16 Pro Max, A18 Pro, iOS 27.0.1",
+  "reportedBuild": "latest native build; exact version not supplied",
+  "characters": true,
+  "weapons": true,
+  "northYankton": true,
+  "approximateSeconds": 3,
+  "estimatedFPS": [
+    5,
+    8
+  ],
+  "measuredFPS": false,
+  "fatal": {
+    "message": "Depth proxy SRV range outside texture",
+    "opcode": 32,
+    "vertexID": 3994,
+    "fragmentID": 4000,
+    "originalResourceDescriptorAvailable": false,
+    "originalSRVDescriptorAvailable": false,
+    "exactPhoneRootCauseEstablished": false,
+    "exactDescriptorPixelReplayClaimed": false
+  },
+  "continuousRenderingVerified": false,
+  "animationCorrectnessVerified": false,
+  "controlsVerified": false,
+  "stage": 3,
+  "stagesLeft": 5
+}

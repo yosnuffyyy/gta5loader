@@ -1,0 +1,27 @@
+NATIVE 0.21 VERIFICATION — STAGE 3 IN PROGRESS
+Source 8794e8f9719c47db24c98bb6c6219ec6f03da7df
+Tree e8626d5e2322836c9fd09d189023c3e85187c546
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/38656366865 — PASS
+
+PASS: 9360 checked range boundaries; 9 new GPU pixel cases and 4 explicit
+invalid descriptor cases per run, twice; exact reported ped_alpha Metal
+pipeline/cache validation with synthetic input/attachment descriptors.
+PASS: bounded timing/display arithmetic and bounded gzip/truncation/input integrity tests.
+PASS: all 4808 translated shaders/native pipelines, 500 clip shaders and all
+retained runtime/worker/query/readback/resource/format/shader gates.
+PASS: source tree (163 entries), manifest digests, ARM64 unsigned IPA audit
+and all 20 prior IPA digests. Original engine instructions and shader bytes,
+reader limits, quality baseline, main and protected PC packages preserved.
+
+IPA GTA-Native-Probe-0.21-unsigned.ipa
+Bytes 102240118
+SHA256 d883dbf5e2b8afe5474210741d6a04b5f12062697ec932099416001dd20f0264
+
+LIMIT: The actual failing phone SRV/texture descriptors were not supplied.
+The array-sentinel correction does not establish a fix for the reported
+2D/cube ped_alpha pair. No dummy cube, clamped invalid range or skipped draw.
+Physical callback/overlay behavior, uninterrupted correct phone scene frames,
+true GPU time, sustained FPS and responsive controls remain unverified.
+The user's prior three-second scene/5–8 FPS estimate is retained as a report,
+not an instrumented performance measurement. Stage 3 active; five stages left.
+See ENGINEERING-0.21.txt and evidence/0.21 for full findings and limitations.

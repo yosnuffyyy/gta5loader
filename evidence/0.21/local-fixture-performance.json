@@ -1,0 +1,30 @@
+{
+  "fixtureMaps": [
+    {
+      "calls": 9,
+      "meanMs": 10.594,
+      "worstMs": 23.592,
+      "callbackSleepsAvoided": 13,
+      "proxyPeakBytes": 7680,
+      "environment": "macos-15 CI Apple Paravirtual Metal fixture; not iPhone or GPU execution time"
+    },
+    {
+      "calls": 9,
+      "meanMs": 12.635,
+      "worstMs": 27.734,
+      "callbackSleepsAvoided": 13,
+      "proxyPeakBytes": 7680,
+      "environment": "macos-15 CI Apple Paravirtual Metal fixture; not iPhone or GPU execution time"
+    }
+  ],
+  "pairTiming": [
+    {
+      "modulesMs": 6.589,
+      "varyingLinkMs": 0.858,
+      "pipelineMs": 407.81,
+      "environment": "macos-15 CI Apple Paravirtual Metal; first-use shader-pair API CPU wall; driver caches may be warm; not iPhone frame/GPU time"
+    }
+  ],
+  "iPhoneMeasurements": false,
+  "gameFPSImprovementClaimed": false
+}
