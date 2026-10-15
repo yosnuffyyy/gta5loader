@@ -10,7 +10,7 @@ enum { SESSION_STARTUP,SESSION_LIVE,SESSION_STOPPED };
 enum { SESSION_OK,SESSION_STARTUP_TIMEOUT,SESSION_ENGINE_STALL,SESSION_FRAME_STALL };
 #define SESSION_SECOND UINT64_C(1000000000)
 typedef struct {
- uint64_t start,pause_start,paused_ns,hooks,marker_hook,engine_at,frame_at,io_at;
+ uint64_t start,pause_start,paused_ns,hooks,marker_hook,marker_frames,engine_at,frame_at,io_at;
  uint64_t commands,frames,reads,command_at,live_at;
  unsigned phase,fault;bool suspended,scene_marker;
  char script[112];
@@ -29,7 +29,7 @@ static inline void session_suspend(NativeSession *s,uint64_t now,bool suspended)
 static inline void session_hook(NativeSession *s,uint64_t now){if(s->phase!=SESSION_STOPPED){s->hooks++;s->engine_at=session_time(s,now);}}
 static inline void session_log(NativeSession *s,const char *line){
  if(s->phase==SESSION_STOPPED)return;
- if(!s->scene_marker&&strstr(line,"Animated camera intial frame")){s->scene_marker=true;s->marker_hook=s->hooks;}
+ if(!s->scene_marker&&strstr(line,"Animated camera intial frame")){s->scene_marker=true;s->marker_hook=s->hooks;s->marker_frames=s->frames;}
  if(strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))snprintf(s->script,sizeof(s->script),"%.111s",line);
 }
 static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t commands,uint64_t frames,uint64_t reads){
@@ -42,7 +42,7 @@ static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t comm
  /* Camera initialization is an actual engine scene event. A subsequent pad
     simulation hook and presentation are both required; draw counts alone
     cannot retire the startup deadline. This is liveness, not visual proof. */
- if(s->phase==SESSION_STARTUP&&s->scene_marker&&s->hooks>s->marker_hook&&s->frames){s->phase=SESSION_LIVE;s->live_at=at;}
+ if(s->phase==SESSION_STARTUP&&s->scene_marker&&s->hooks>s->marker_hook&&s->frames>s->marker_frames){s->phase=SESSION_LIVE;s->live_at=at;}
  if(s->phase==SESSION_STARTUP){if(at>=180*SESSION_SECOND)s->fault=SESSION_STARTUP_TIMEOUT;}
  else if(session_delta(at,s->engine_at)>=60*SESSION_SECOND&&session_delta(at,s->io_at)>=60*SESSION_SECOND)s->fault=SESSION_ENGINE_STALL;
  else if(session_delta(at,s->frame_at)>=60*SESSION_SECOND&&session_delta(at,s->io_at)>=60*SESSION_SECOND)s->fault=SESSION_FRAME_STALL;

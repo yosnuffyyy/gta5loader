@@ -443,8 +443,8 @@
     },
     {
       "path": "native-ios/renderer/native_scene.c",
-      "bytes": 3994,
-      "sha256": "415b9b0c07b17b30e29b3b0e7b2a864d9decc2a04970bdf8679c12ac4bf2720e"
+      "bytes": 4140,
+      "sha256": "21789db53d45d834b481692817f66967d43ba0c2504e8bc3acbd803f131059e1"
     },
     {
       "path": "native-ios/renderer/native_srv.inc",
@@ -1008,18 +1008,18 @@
     },
     {
       "path": "native-ios/threading/native_session.h",
-      "bytes": 4234,
-      "sha256": "ae852c778f3bfab7696f7a1b76b954a85f9b413ff3ca865c758c90f82bce55fb"
+      "bytes": 4292,
+      "sha256": "5aae5e351dc20d3611526ec32003d3f7dea5425f185eb4cff2bd9496341f2504"
     },
     {
       "path": "native-ios/threading/native_session_bridge.inc",
-      "bytes": 2925,
-      "sha256": "0a5b355330b56872ee92a91d6acb5ce56635f1bd171612a3504bb5510ffcd170"
+      "bytes": 3118,
+      "sha256": "65aaf655dfc7f9af210782cd80d7beef82a0ade526b0b7453f1e364c6ea05885"
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 33948,
-      "sha256": "9b50bbc2871eb3e774ae69dfe9652ea12cc51ebf3971a553ca9f51d7ace2b437"
+      "bytes": 34165,
+      "sha256": "33c63e66c2256ab72a4ae88cf66918b2296f3d1248c96be5ab02fa400f0e0ee4"
     },
     {
       "path": "native-ios/threading/native_threads.h",
@@ -1043,13 +1043,13 @@
     },
     {
       "path": "native-ios/threading/test_native_session.c",
-      "bytes": 2814,
-      "sha256": "ed5bc89298023c160c82d8f29dc6530b7085cb3dca9b0ab97788f3bfd494b131"
+      "bytes": 3184,
+      "sha256": "c487251c0b5f18de63be6dc9bc83621e092dd0fd324421af312ecf1922e63be1"
     },
     {
       "path": "native-ios/threading/test_session_bridge.c",
-      "bytes": 4048,
-      "sha256": "c10e4b7cba335434680dff7db4273e0f96c63269739e09ad7b256c89c502fd66"
+      "bytes": 4450,
+      "sha256": "c54aa39a0790608d8a8f96fa2543b81d5066fa5feb21a61a2281add5783e5fc8"
     },
     {
       "path": "native-ios/wait-fixture.wat",

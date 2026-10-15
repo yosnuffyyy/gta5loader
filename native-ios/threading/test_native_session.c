@@ -7,6 +7,7 @@ static void live(NativeSession *s){session_begin(s,NS(100));session_hook(s,NS(10
 int main(void){NativeSession s;
  session_begin(&s,NS(100));EXPECT(!session_check(&s,NS(279),999999,9999,100));EXPECT(session_check(&s,NS(280),999999,9999,100)==SESSION_STARTUP_TIMEOUT);EXPECT(s.phase==SESSION_STARTUP);
  session_begin(&s,NS(100));session_log(&s,"Animated camera intial frame");EXPECT(!session_check(&s,NS(102),1,1,0));EXPECT(s.phase==SESSION_STARTUP);session_hook(&s,NS(103));EXPECT(!session_check(&s,NS(103),1,1,0));EXPECT(s.phase==SESSION_LIVE);
+ session_begin(&s,NS(100));session_hook(&s,NS(101));EXPECT(!session_check(&s,NS(101),10,50,0));session_log(&s,"Animated camera intial frame");session_hook(&s,NS(102));EXPECT(!session_check(&s,NS(102),20,50,0));EXPECT(s.phase==SESSION_STARTUP);EXPECT(!session_check(&s,NS(103),30,51,0));EXPECT(s.phase==SESSION_LIVE); /* old loading frames cannot establish live state */
  live(&s);for(unsigned i=103;i<=1403;i++){session_hook(&s,NS(i));EXPECT(!session_check(&s,NS(i),i*100,i,30));}EXPECT(s.phase==SESSION_LIVE); /* >21 minutes */
  live(&s);EXPECT(session_check(&s,NS(162),999,100,30)==SESSION_ENGINE_STALL);EXPECT(session_check(&s,NS(163),1000,101,31)==SESSION_ENGINE_STALL); /* first fatal retained */
  live(&s);session_hook(&s,NS(162));EXPECT(session_check(&s,NS(162),999,1,30)==SESSION_FRAME_STALL); /* spinning engine is not frame progress */

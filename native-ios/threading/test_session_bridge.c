@@ -5,6 +5,7 @@
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 typedef struct {atomic_uint_fast64_t commands,frames;} NativeGpu;
 typedef struct {atomic_uint_fast64_t requests;} NativeAssets;
 typedef struct {atomic_uint lines;} NativeLog;
@@ -28,7 +29,7 @@ int main(void){NativeGpu gpu={0};NativeAssets assets={0};NativeThreads r={.watch
  pthread_t a,b,c;checked(pthread_create(&a,NULL,hooks,&r));checked(pthread_create(&b,NULL,polls,&r));checked(pthread_create(&c,NULL,polls,&r));checked(pthread_join(a,NULL));checked(pthread_join(b,NULL));checked(pthread_join(c,NULL));assert(r.session.hooks==100002&&!r.session.fault);
  native_scene_suspend(true);atomic_store(&clock_ns,NS(5000));assert(!scene_watch_poll(&r));native_scene_suspend(false);scene_watch_hook(&r);atomic_store(&gpu.frames,2);assert(!scene_watch_poll(&r));
  atomic_store(&clock_ns,NS(5060));assert(scene_watch_poll(&r));assert(atomic_load(&r.stopping)&&r.session.fault==SESSION_ENGINE_STALL&&r.watch_reported);unsigned lines=atomic_load(&r.log.lines);assert(!scene_watch_poll(&r)&&atomic_load(&r.log.lines)==lines); /* diagnostic once */
- atomic_store(&r.stopping,false);atomic_store(&r.watch_check_at,0);session_begin(&r.session,now_ns());r.watch_reported=false;atomic_store(&scene_stop,true);atomic_store(&clock_ns,NS(9999));assert(!scene_watch_poll(&r)&&!r.session.fault);session_stop(&r.session);assert(!scene_watch_poll(&r));
+ atomic_store(&r.stopping,false);atomic_store(&r.watch_check_at,0);session_begin(&r.session,now_ns());r.watch_reported=false;atomic_store(&scene_stop,false);atomic_store(&clock_ns,NS(9999));checked(pthread_mutex_lock(&r.watch_mutex));checked(pthread_create(&a,NULL,polls,&r));unsigned attempts=0;while(!atomic_load(&r.watch_check_at)&&attempts++<1000){struct timespec delay={0,1000000};nanosleep(&delay,NULL);}assert(attempts<1000);atomic_store(&scene_stop,true);checked(pthread_mutex_unlock(&r.watch_mutex));checked(pthread_join(a,NULL));assert(!r.session.fault&&!atomic_load(&r.stopping));assert(!scene_watch_poll(&r));session_stop(&r.session);assert(!scene_watch_poll(&r));
  checked(pthread_mutex_lock(&scene_status_mutex));scene_runtime=NULL;checked(pthread_mutex_unlock(&scene_status_mutex));native_scene_suspend(true);native_scene_suspend(false);checked(pthread_mutex_destroy(&r.watch_mutex));
  puts("PASS: production session bridge: actual hook/marker/presentation transition,100000 concurrent hooks/200000 polls, suspended clock, fatal latch, bounded report, cancellation and detached runtime lifetime; inert services, no gameplay claim.");return 0;
 }

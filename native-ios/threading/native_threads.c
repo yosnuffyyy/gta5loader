@@ -85,7 +85,7 @@ static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
 bool native_thread_log(struct w2c_env *h,const char *line){
  if(!current||current->host!=h||!current->boot_mode)return false;
- if(current->watch_enabled&&(strstr(line,"Animated camera intial frame")||strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))){checked(pthread_mutex_lock(&current->watch_mutex));session_log(&current->session,line);checked(pthread_mutex_unlock(&current->watch_mutex));}
+ if(current->watch_enabled&&(strstr(line,"Animated camera intial frame")||strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))){uint64_t commands=0,frames=0;native_gpu_progress(current->gpu,&commands,&frames);checked(pthread_mutex_lock(&current->watch_mutex));bool marker=!current->session.scene_marker&&strstr(line,"Animated camera intial frame");session_log(&current->session,line);if(marker)current->session.marker_frames=frames;checked(pthread_mutex_unlock(&current->watch_mutex));}
  native_log_push(&current->log,line);return true;
 }
 uint64_t native_stack_snapshot(struct w2c_env *h){
