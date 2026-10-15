@@ -403,6 +403,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
 
  #include "proxy_range_fixture.inc"
 #include "shadow_fixture.inc"
+#include "shadow_eviction_fixture.inc"
 #include "layout_cache_fixture.inc"
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -477,6 +478,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,report+used,capacity-used)?0:1;}}
  if(!result){char ranges[600];if(!proxy_range_fixture(h,0,ranges,sizeof(ranges)))result=1;size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",ranges);for(unsigned i=1;i<=4&&!result;i++)if(!proxy_range_fixture(h,i,NULL,0))result=1;if(!result){used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\nPASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.");}}
  if(!result){char text[850];bool valid=shadow_fixture(h,0,text,sizeof(text));for(unsigned i=1;i<=5&&valid;i++)valid=shadow_fixture(h,i,NULL,0);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s\n%s: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.",text,valid?"PASS":"FAIL");if(!valid)result=1;}
+ if(!result){char text[650];bool valid=shadow_eviction_fixture(h,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
  if(!result){char text[600];bool valid=layout_cache_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
 #ifdef NATIVE_PROBE_CLI
  if(valid){valid=layout_cache_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}

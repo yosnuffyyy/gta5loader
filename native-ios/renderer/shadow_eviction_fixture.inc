@@ -1,0 +1,16 @@
+static bool shadow_eviction_fixture(struct w2c_env *h,char *report,size_t capacity){
+ uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=flag+64;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+45000000000ull;while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
+ #define EMIT(op,count) do{if((count)>128||tail>127488-8-(count)*4){ok=false;fail(g,"Shadow eviction fixture overflow");}else{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(count));host_store(h,base+tail+8,cmd,(count)*4);tail+=8+(count)*4;}}while(0)
+ #include "query_setup.inc"
+ cmd[0]=901;cmd[1]=1;cmd[2]=0x222;cmd[3]=UINT32_MAX;cmd[4]=0;EMIT(14,5);cmd[0]=1;cmd[1]=901;EMIT(18,2);
+ uint32_t tex[]={708,2,4,4,1,1,1,71,8,1};memcpy(cmd,tex,sizeof(tex));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;cmd[12]=0xf800;EMIT(13,14);uint32_t captured[]={709,0,708,71,4,0,1,0,0};memcpy(cmd,captured,sizeof(captured));EMIT(17,9);
+ cmd[0]=714;cmd[1]=496;cmd[2]=4;cmd[3]=cmd[4]=0;EMIT(11,5);uint32_t cbs[]={1,6,1,714,0,31};memcpy(cmd,cbs,sizeof(cbs));EMIT(23,6);cmd[0]=105;EMIT(29,1);memset(cmd,0,sizeof(cmd));cmd[0]=116;EMIT(5,7);
+ cmd[0]=11165;cmd[1]=1;cmd[2]=(uint32_t)address;cmd[3]=address>>32;EMIT(44,4);for(unsigned i=0;i<4;i++)host_put32(h,address+i*4,0);cmd[0]=11165;EMIT(45,1);
+ unsigned masks[]={1,2,3,4,5,1},slots[]={14,25,27};for(unsigned test=0;test<6;test++){for(unsigned j=0;j<3;j++){cmd[0]=1;cmd[1]=slots[j];cmd[2]=1;cmd[3]=masks[test]&(1u<<j)?709:0;EMIT(24,4);}cmd[0]=1;cmd[1]=test*2;cmd[2]=0;cmd[3]=test*2+2;cmd[4]=16;EMIT(31,5);memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);}
+ cmd[0]=11165;cmd[1]=333;EMIT(46,2);memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);cmd[0]=(uint32_t)flag;cmd[1]=flag>>32;cmd[2]=890;host_put32(h,flag,0);EMIT(8,3);
+ #undef EMIT
+ if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&(atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=890||atomic_load_explicit(heap_word(g,address),memory_order_acquire)!=333)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
+ native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&now_ns()<deadline&&g->draw.draws==6&&g->metrics.shadow_creates==6&&g->metrics.shadow_evictions==2&&g->metrics.shadow_eviction_flushes==2&&host_u64(h,address+8)==192&&!g->query_gpu_bytes;
+ uint8_t pixels[1024];host_load(h,pixels,dst,sizeof(pixels));for(unsigned y=0;y<16&&ok;y++)for(unsigned x=0;x<16&&ok;x++)for(unsigned c=0;c<4;c++)if(pixels[(y*16+x)*4+c]!=(x<12?255:0))ok=false;
+ if(report&&capacity)snprintf(report,capacity,"%s: pending-draw shadow eviction: six stripes, 256 pixels, exact 192 occlusion samples; 6 variants, 2 evictions/submits, cached pipeline recreation and final cleanup. %s",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"No per-draw completion wait.");native_gpu_end(g);return ok;
+}

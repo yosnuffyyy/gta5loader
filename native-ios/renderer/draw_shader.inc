@@ -33,6 +33,7 @@ static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  *constants=nil;
  if(g->draw.fixture){
  if(!strcmp(hash,"ffffffff00000220"))return @(shadow_fixture_ps);
+ if(!strcmp(hash,"ffffffff00000222"))return @(shadow_eviction_ps);
  if(!strcmp(hash,"ffffffff00000221"))return [@(shadow_fixture_ps) stringByReplacingOccurrencesOfString:@"return vec4f(r9.zzz,1)" withString:@"return vec4f(textureSampleCompareLevel(t14,s14,vec3f(0,0,1),0.5))"];
  if(!strcmp(hash,"ffffffff00000155")||!strcmp(hash,"ffffffff00000156")){bool cube=!strcmp(hash,"ffffffff00000156");NSString *s=[@(draw_fixture_ps) stringByReplacingOccurrencesOfString:@"var s2 : sampler;" withString:@"var s2 : sampler_comparison;"];s=[s stringByReplacingOccurrencesOfString:@"texture_2d<f32>" withString:cube?@"texture_depth_cube":@"texture_depth_2d_array"];return [s stringByReplacingOccurrencesOfString:@"textureSample(t2, s2, v2.xy.xyxx.xy)" withString:cube?@"vec4<f32>(textureSampleCompare(t2,s2,vec3f(1,0,0),0.5),0,0,1)":@"vec4<f32>(textureSampleCompare(t2,s2,v2.xy,0,0.5),0,0,1)"];}
  if(!strcmp(hash,"ffffffff00000190")||!strcmp(hash,"ffffffff00000192")){NSString *s=[@(draw_fixture_vs) stringByReplacingOccurrencesOfString:@"@location(1u)" withString:!strcmp(hash,"ffffffff00000192")?@"@location(15u) @interpolate(flat)":@"@location(15u)"];return s;}
