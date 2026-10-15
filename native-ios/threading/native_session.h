@@ -11,7 +11,7 @@ enum { SESSION_OK,SESSION_STARTUP_TIMEOUT,SESSION_ENGINE_STALL,SESSION_FRAME_STA
 #define SESSION_SECOND UINT64_C(1000000000)
 typedef struct {
  uint64_t start,pause_start,paused_ns,hooks,marker_hook,marker_frames,engine_at,frame_at,io_at;
- uint64_t commands,frames,reads,command_at,live_at;
+ uint64_t commands,frames,io_bytes,command_at,live_at;
  unsigned phase,fault;bool suspended,scene_marker;
  char script[112];
 } NativeSession;
@@ -32,12 +32,12 @@ static inline void session_log(NativeSession *s,const char *line){
  if(!s->scene_marker&&strstr(line,"Animated camera intial frame")){s->scene_marker=true;s->marker_hook=s->hooks;s->marker_frames=s->frames;}
  if(strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))snprintf(s->script,sizeof(s->script),"%.111s",line);
 }
-static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t commands,uint64_t frames,uint64_t reads){
+static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t commands,uint64_t frames,uint64_t io_bytes){
  if(s->fault||s->phase==SESSION_STOPPED)return s->fault;
  uint64_t at=session_time(s,now);
  if(commands>s->commands){s->commands=commands;s->command_at=at;}
  if(frames>s->frames){s->frames=frames;s->frame_at=at;}
- if(reads>s->reads){s->reads=reads;s->io_at=at;}
+ if(io_bytes>s->io_bytes){s->io_bytes=io_bytes;s->io_at=at;}
  if(s->suspended)return SESSION_OK;
  /* Camera initialization is an actual engine scene event. A subsequent pad
     simulation hook and presentation are both required; draw counts alone
@@ -51,8 +51,8 @@ static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t comm
 static inline void session_stop(NativeSession *s){s->phase=SESSION_STOPPED;}
 static inline const char *session_failure(unsigned fault){
  switch(fault){case SESSION_STARTUP_TIMEOUT:return "native scene startup made no verified live-session transition within 180 active seconds";
- case SESSION_ENGINE_STALL:return "native live session stalled: no engine input-update hook or completed asset request for 60 active seconds";
- case SESSION_FRAME_STALL:return "native live session stalled: no successful PRESENT or completed asset request for 60 active seconds";
+ case SESSION_ENGINE_STALL:return "native live session stalled: no engine input-update hook or delivered asset data for 60 active seconds";
+ case SESSION_FRAME_STALL:return "native live session stalled: no successful PRESENT or delivered asset data for 60 active seconds";
  default:return NULL;}
 }
 static inline void session_summary(const NativeSession *s,uint64_t now,char *out,size_t size){

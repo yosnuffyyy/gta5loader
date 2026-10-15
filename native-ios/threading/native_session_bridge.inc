@@ -9,7 +9,7 @@ static bool scene_watch_poll(NativeThreads *r){
  /* Cancellation can arrive while this poll waits for the policy lock. */
  if(atomic_load(&scene_stop)||atomic_load(&r->stopping)){checked(pthread_mutex_unlock(&r->watch_mutex));return false;}
  uint64_t commands=0,frames=0;native_gpu_progress(r->gpu,&commands,&frames);
- unsigned fault=session_check(&r->session,now_ns(),commands,frames,native_assets_requests(r->assets));
+ unsigned fault=session_check(&r->session,now_ns(),commands,frames,native_assets_progress(r->assets));
  bool first=fault&&!r->watch_reported;if(first)r->watch_reported=true;
  bool transitioned=before==SESSION_STARTUP&&r->session.phase==SESSION_LIVE;char text[512];
  if(first||transitioned)session_summary(&r->session,now_ns(),text,sizeof(text));

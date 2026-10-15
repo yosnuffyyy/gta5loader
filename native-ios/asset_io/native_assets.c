@@ -25,6 +25,7 @@ struct NativeAssets {
  bool started;
  _Atomic bool stopping,armed;
  _Atomic unsigned requests;
+ _Atomic uint64_t delivered;
  _Atomic(const char*) failure;
  _Atomic(const char*) boundary;
  void (*on_boundary)(void*);void *context;
@@ -59,7 +60,7 @@ static int32_t serve(NativeAssets *a,uint32_t id,uint64_t offset,uint64_t dst,ui
   size_t n=length-done;if(n>sizeof(a->scratch))n=sizeof(a->scratch);
   ssize_t got;do{got=pread(fd,a->scratch,n,(off_t)(offset+done));}while(got<0&&errno==EINTR);
   if(got<0){a->io_errors++;asset_diagnostic(a,"read failure",id,offset+done,(uint32_t)n,errno);a->bytes_read+=done;return done?(int32_t)done:-1;}if(!got){a->short_reads++;asset_diagnostic(a,"unexpected physical EOF",id,offset+done,(uint32_t)n,0);break;}
-  host_store(a->host,dst+done,a->scratch,(size_t)got);done+=(uint32_t)got;
+  host_store(a->host,dst+done,a->scratch,(size_t)got);done+=(uint32_t)got;atomic_fetch_add_explicit(&a->delivered,(uint64_t)got,memory_order_relaxed);
  }
  a->bytes_read+=done;return (int32_t)done;
 }
@@ -120,7 +121,7 @@ void native_assets_start(NativeAssets *a,uint64_t table){
 void native_assets_arm(NativeAssets *a,void(*callback)(void*),void *context){a->on_boundary=callback;a->context=context;atomic_store(&a->armed,true);}
 const char *native_assets_boundary(NativeAssets *a){return a?atomic_load(&a->boundary):NULL;}
 const char *native_assets_failure(NativeAssets *a){return a?atomic_load(&a->failure):NULL;}
-uint64_t native_assets_requests(NativeAssets *a){return a?atomic_load(&a->requests):0;}
+uint64_t native_assets_progress(NativeAssets *a){return a?atomic_load_explicit(&a->delivered,memory_order_relaxed):0;}
 void native_assets_summary(NativeAssets *a,char *out,size_t size){if(!a){snprintf(out,size,"Asset reader not started");return;}snprintf(out,size,"Asset reads: %u requests, %llu MiB delivered; I/O errors %llu; size mismatches %llu; unexpected short reads %llu. Expected EOF/range clipping is not an error.",atomic_load(&a->requests),(unsigned long long)(a->bytes_read/1048576),(unsigned long long)a->io_errors,(unsigned long long)a->size_mismatches,(unsigned long long)a->short_reads);if(a->host->progress){char text[440];timing_text(&a->service_times,"Asset read service wall (excludes queued wait)",text,sizeof(text));a->host->progress(a->host->progress_context,text);snprintf(text,sizeof(text),"Asset descriptor cache hits/misses %llu/%llu; one 64 KiB buffer and at most eight descriptors preserved.",(unsigned long long)a->cache_hits,(unsigned long long)a->cache_misses);a->host->progress(a->host->progress_context,text);}for(unsigned i=0;i<a->diagnostic_count;i++)if(a->host->progress)a->host->progress(a->host->progress_context,a->diagnostics[i]);}
 static void sample(NativeAssets *a,w2c_gta *e,uint64_t scratch,unsigned sample){
  static const char *paths[]={"common/data/levels/gta5/paths.xml","x64/anim/cutscene/cuts_prologue.rpf","x64/levels/gta5/_prologue/plg_01.rpf"};
