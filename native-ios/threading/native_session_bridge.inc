@@ -5,10 +5,10 @@ static bool scene_watch_poll(NativeThreads *r){
  if(!r->watch_enabled||atomic_load(&scene_stop)||atomic_load(&r->stopping))return false;
  uint64_t now=now_ns(),next=atomic_load_explicit(&r->watch_check_at,memory_order_relaxed);
  if(now<next||!atomic_compare_exchange_strong_explicit(&r->watch_check_at,&next,now+100000000, memory_order_relaxed,memory_order_relaxed))return false;
- uint64_t commands=0,frames=0;native_gpu_progress(r->gpu,&commands,&frames);
  checked(pthread_mutex_lock(&r->watch_mutex));unsigned before=r->session.phase;
  /* Cancellation can arrive while this poll waits for the policy lock. */
  if(atomic_load(&scene_stop)||atomic_load(&r->stopping)){checked(pthread_mutex_unlock(&r->watch_mutex));return false;}
+ uint64_t commands=0,frames=0;native_gpu_progress(r->gpu,&commands,&frames);
  unsigned fault=session_check(&r->session,now_ns(),commands,frames,native_assets_requests(r->assets));
  bool first=fault&&!r->watch_reported;if(first)r->watch_reported=true;
  bool transitioned=before==SESSION_STARTUP&&r->session.phase==SESSION_LIVE;char text[512];

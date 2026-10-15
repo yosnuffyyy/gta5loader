@@ -35,9 +35,9 @@ static inline void session_log(NativeSession *s,const char *line){
 static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t commands,uint64_t frames,uint64_t reads){
  if(s->fault||s->phase==SESSION_STOPPED)return s->fault;
  uint64_t at=session_time(s,now);
- if(commands!=s->commands){s->commands=commands;s->command_at=at;}
- if(frames!=s->frames){s->frames=frames;s->frame_at=at;}
- if(reads!=s->reads){s->reads=reads;s->io_at=at;}
+ if(commands>s->commands){s->commands=commands;s->command_at=at;}
+ if(frames>s->frames){s->frames=frames;s->frame_at=at;}
+ if(reads>s->reads){s->reads=reads;s->io_at=at;}
  if(s->suspended)return SESSION_OK;
  /* Camera initialization is an actual engine scene event. A subsequent pad
     simulation hook and presentation are both required; draw counts alone

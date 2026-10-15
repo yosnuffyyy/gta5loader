@@ -1008,13 +1008,13 @@
     },
     {
       "path": "native-ios/threading/native_session.h",
-      "bytes": 4292,
-      "sha256": "5aae5e351dc20d3611526ec32003d3f7dea5425f185eb4cff2bd9496341f2504"
+      "bytes": 4289,
+      "sha256": "435cfa7775748ad31c3f89751a094f585cd0c629a0805f572ca77b1d172f3c4f"
     },
     {
       "path": "native-ios/threading/native_session_bridge.inc",
       "bytes": 3118,
-      "sha256": "65aaf655dfc7f9af210782cd80d7beef82a0ade526b0b7453f1e364c6ea05885"
+      "sha256": "4f990321b416afe0d8e85942c2b25a3959d0c752f86ca8515acca1f4ad082aa2"
     },
     {
       "path": "native-ios/threading/native_threads.c",
@@ -1043,8 +1043,8 @@
     },
     {
       "path": "native-ios/threading/test_native_session.c",
-      "bytes": 3184,
-      "sha256": "c487251c0b5f18de63be6dc9bc83621e092dd0fd324421af312ecf1922e63be1"
+      "bytes": 3500,
+      "sha256": "dad5b4bf528130508197b8d85e1d9c188ca073d9c092dd51d7db9204f43c3287"
     },
     {
       "path": "native-ios/threading/test_session_bridge.c",
