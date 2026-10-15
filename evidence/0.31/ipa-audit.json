@@ -1,0 +1,112 @@
+{
+  "result": "PASS",
+  "architecture": "ARM64",
+  "platform": "iPhone device",
+  "minimumOS": "17.0",
+  "unsigned": true,
+  "hasWebKit": false,
+  "hasWritableExecutableSegment": false,
+  "ipaBytes": 102309108,
+  "ipaSHA256": "42e8fa3d0c68f41cc9d69d315a00b970e426d3237605f3aa1132a2554ac2dde2",
+  "version": "0.31.0",
+  "build": "31",
+  "bundleIdentifier": "io.github.yosnuffyyy.gtanativeprobe",
+  "engine": {
+    "originalSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+    "probeSHA256": "f95653b9b90857474ec8ba5012b6f8945de227aa0a5cf20ea3071a2b96c9582b",
+    "modification": "Add eleven exports only; engine instructions unchanged",
+    "probes": [
+      {
+        "name": "memcmp",
+        "sourceName": "memcmp",
+        "index": 90814
+      },
+      {
+        "name": "strcmp",
+        "sourceName": "strcmp",
+        "index": 90930
+      },
+      {
+        "name": "strlen",
+        "sourceName": "strlen",
+        "index": 90939
+      },
+      {
+        "name": "sinf",
+        "sourceName": "sinf",
+        "index": 90918
+      },
+      {
+        "name": "cosf",
+        "sourceName": "cosf",
+        "index": 90732
+      },
+      {
+        "name": "fopen",
+        "sourceName": "fopen",
+        "index": 90775
+      },
+      {
+        "name": "fclose",
+        "sourceName": "fclose",
+        "index": 90762
+      },
+      {
+        "name": "fread",
+        "sourceName": "fread",
+        "index": 90782
+      },
+      {
+        "name": "fwrite",
+        "sourceName": "fwrite",
+        "index": 90790
+      },
+      {
+        "name": "fseeko",
+        "sourceName": "__fseeko",
+        "index": 90784
+      },
+      {
+        "name": "ftello",
+        "sourceName": "__ftello",
+        "index": 90788
+      }
+    ]
+  },
+  "dylibs": [
+    "/System/Library/Frameworks/UIKit.framework/UIKit",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/System/Library/Frameworks/Metal.framework/Metal",
+    "/System/Library/Frameworks/GameController.framework/GameController",
+    "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+    "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+    "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+    "/System/Library/Frameworks/IOSurface.framework/IOSurface",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/usr/lib/libSystem.B.dylib",
+    "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
+  ],
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "initialProtection": 0
+    },
+    {
+      "name": "__TEXT",
+      "initialProtection": 5
+    },
+    {
+      "name": "__DATA_CONST",
+      "initialProtection": 3
+    },
+    {
+      "name": "__DATA",
+      "initialProtection": 3
+    },
+    {
+      "name": "__LINKEDIT",
+      "initialProtection": 1
+    }
+  ]
+}

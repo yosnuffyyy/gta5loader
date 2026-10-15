@@ -1,5 +1,20 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated 2026-10-15. Native0.30 urgent menu-scroll fix; Stage4 input engineering active; physical closure gates remain pending.
+Updated2026-10-15. Native0.31:session watchdog/input/staging fixes; no stage closure.
+
+LATEST —0.31 LIVE SESSION WATCHDOG
+User physically reached the Prologue vault with working touch input in0.30;
+it ended at the unconditional180s startup deadline, not a reported SRV failure.
+0.31 retires that deadline only after camera event+fresh engine hook+PRESENT,
+retains startup/stall/cancellation protection and excludes suspended time.
+1374 clock-policy assertions, production bridge/input sanitizers,103 UIKit
+checks,71 original-engine checks,4808 Metal modules/pipelines and two full
+runtime processes PASS. Ordered-map staging fixture cuts pressure waits6->0
+and explicit completions7->1 without changed pixels/draws.256 cache,640x360,
+64KiB/8-file reader and optional shadow path preserved.30 old IPAs preserved.
+No device0.31 FPS/vault-duration claim. Stage3/4 closure gates stay unchanged.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38822783112
+See ENGINEERING-0.31.txt and VERIFICATION-0.31.txt.
+
 
 LATEST URGENT FIX —0.30 MENU SCROLLING
 Native0.29 disabled menu-wide touch cancellation.0.30 scopes protection to

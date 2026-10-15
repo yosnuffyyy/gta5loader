@@ -1,0 +1,53 @@
+{
+  "watchdogAssertions": 1374,
+  "sessionBridgeSanitizers": [
+    "ASan/UBSan",
+    "TSan"
+  ],
+  "simulatedLiveSeconds": 1303,
+  "readbackRetirement": {
+    "pressureWaitsBefore": 6,
+    "pressureWaitsAfter": 0,
+    "explicitCompletionBefore": 7,
+    "explicitCompletionAfter": 1,
+    "draws": 96,
+    "maps": 13,
+    "pixels": 256,
+    "occlusionSamples": 96,
+    "processes": 2
+  },
+  "inputQueue": {
+    "latestMovementAndFireHooks": 1,
+    "priorAnalogBacklogHooks": 2,
+    "physicalLatencyMeasured": false
+  },
+  "result": "PASS",
+  "source": "f116cae0bb6b242be4131c18ad82b07273051102",
+  "run": 38822783112,
+  "job": 116724102506,
+  "inputEngineChecks": 71,
+  "productionUIKitChecks": 103,
+  "ASanUBSan": true,
+  "threadSanitizer": true,
+  "originalEngineInstructionsChanged": false,
+  "fullRuntimeProcesses": 2,
+  "metalShaderModules": 4808,
+  "metalPipelines": 4808,
+  "clipShaders": 500,
+  "untranslatedRecords": 111,
+  "pipelineWorkingSet": {
+    "keys": 192,
+    "draws": 576,
+    "capacity": 256,
+    "creates": 192,
+    "hits": 384,
+    "evictions": 0,
+    "processes": 2
+  },
+  "IPA": "42e8fa3d0c68f41cc9d69d315a00b970e426d3237605f3aa1132a2554ac2dde2",
+  "ipaBytes": 102309108,
+  "version": "0.31.0",
+  "physicalGameplayControlsVerified": false,
+  "sourceEntriesVerified": 213,
+  "previousIPAsPreserved": 30
+}

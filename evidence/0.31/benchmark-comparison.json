@@ -1,0 +1,35 @@
+{
+  "source": "f116cae0bb6b242be4131c18ad82b07273051102",
+  "environment": "macOS GitHub Actions Metal; not A18 Pro",
+  "orderedReadbackComparisons": [
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.003ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 57.232ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.002ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 52.715ms. Same16-batch/4MiB bound, no new staging or GPU waits."
+  ],
+  "inputMicrobench": [
+    {
+      "file": "native-input-test.txt",
+      "report": "PASS: native input mapping, trigger pressure, press/hold/release, queued tap, source takeover, held-axis blocking, drift/hysteresis, reconnect, focus, NaN, pad restoration, multitouch, viewport and concurrency. 100000 event/consume pairs 24.562 ms (0.246 us/pair); bridge queue capacity 64, no heap allocations. Not device latency.",
+      "warning": "Sanitizer microbenchmark, not physical input latency; no before/after device comparison"
+    },
+    {
+      "file": "native-input-thread-test.txt",
+      "report": "PASS: native input mapping, trigger pressure, press/hold/release, queued tap, source takeover, held-axis blocking, drift/hysteresis, reconnect, focus, NaN, pad restoration, multitouch, viewport and concurrency. 100000 event/consume pairs 282.210 ms (2.822 us/pair); bridge queue capacity 64, no heap allocations. Not device latency.",
+      "warning": "Sanitizer microbenchmark, not physical input latency; no before/after device comparison"
+    }
+  ],
+  "limits": {
+    "uniformBatches": 16,
+    "uniformBytes": 4194304,
+    "readbackBytes": 1048576,
+    "pipelineCapacity": 256,
+    "renderWidth": 640,
+    "renderHeight": 360,
+    "archiveScratchBytes": 65536,
+    "archiveDescriptors": 8
+  },
+  "deviceFPSBefore": "User reports low performance and vault reached in Native0.30",
+  "deviceFPSAfter": null,
+  "physicalInputLatencyAfter": null
+}

@@ -1,16 +1,20 @@
-Native0.30 — urgent menu-scroll fix
-Source:8d08a98cc4e08ed6a1a17c76596ab2802ee49be8
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
-IPA:GTA-Native-Probe-0.30-unsigned.ipa
-Bytes:102319677
-SHA256:35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d
+Native0.31 — live-session watchdog and input/staging correctness
+Source:f116cae0bb6b242be4131c18ad82b07273051102
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38822783112
+IPA:GTA-Native-Probe-0.31-unsigned.ipa
+Bytes:102309108
+SHA256:42e8fa3d0c68f41cc9d69d315a00b970e426d3237605f3aa1132a2554ac2dde2
 
-Use the existing signing/sideload setup to install0.30 over the previous app.
-Preserve all previous IPAs. "Select / check web folder" is near the top,
-above Fullscreen and the input sliders. Swipe over menu content to reach
-lower options. Game-surface drags remain gameplay controls while running.
-Fullscreen:Settings > Fullscreen:Off returns to the scrollable menu.
-Keep640x360 and the same optional shadow compatibility setting as before.
-DualSense/touch mappings and test steps:INPUT-CONTROLS-0.29.txt.
-The scroll policy/layout passed101 UIKit checks; actual finger behavior and
-gameplay controls still require physical iPhone verification.
+Install using the existing signing/sideload setup. Preserve all previous IPAs.
+Select the existing web folder; selector remains above input settings and the
+menu scroll fix is preserved. Keep640x360 and the same optional reference-shadow
+setting as the previous successful run. Controls:INPUT-CONTROLS-0.29.txt.
+
+After real scene initialization look for Session live in the report. The
+startup-only180s cutoff then ends; runtime still detects genuine60-active-second
+engine or presentation stalls without delivered asset progress. Settings and
+interruptions suspend its clock. Backgrounding safely stops the session.
+Continue movement/vault progression beyond180s toward10-20min, exercise pause,
+settings/fullscreen return and manual Stop, then retain the final full report.
+New build device performance and sustained mission progression remain unverified.
+See ENGINEERING-0.31.txt for exact tests, behavior and limitations.

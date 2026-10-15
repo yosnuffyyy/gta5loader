@@ -1,0 +1,163 @@
+Native0.31 — session watchdog, ordered readback retirement and input queue
+Verified source:f116cae0bb6b242be4131c18ad82b07273051102
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38822783112
+IPA:GTA-Native-Probe-0.31-unsigned.ipa
+Bytes:102309108
+SHA256:42e8fa3d0c68f41cc9d69d315a00b970e426d3237605f3aa1132a2554ac2dde2
+
+CONFIRMED ROOT CAUSE
+Native0.30 resets the engine deadline to180 seconds in native_boot_prepare_options.
+native_wait_cancelled then checks that deadline throughout the whole session;
+there was no startup-to-live transition. Reaching the vault did not retire it.
+The supplied fatal report is a watchdog termination, not evidence of a vault
+shader, SRV, asset or mission crash. Working touch input/vault progress is user
+reported physical evidence; the new build is not yet physically verified.
+
+RUNTIME FIX
+The real display-enabled, non-checkpoint Prologue uses a separate session policy.
+Startup keeps its180-active-second deadline. A real animated-camera engine log,
+a subsequent original simulation pad hook and a subsequent successful PRESENT
+must all occur before entering LIVE. Old loading frames and draw counts alone
+cannot qualify. This establishes liveness, not correct scene pixels or gameplay.
+LIVE has no total-duration cutoff. It stops after60 active seconds without an
+engine pad-update hook or delivered asset data, or without a successful PRESENT
+or delivered asset data. Positive bytes stored in engine memory extend genuine
+loading progress; failed, empty and EOF-only requests cannot manufacture it.
+Long cutscenes and in-game pause remain valid while hooks/presentation advance.
+Settings and app interruptions suspend the active clock. Backgrounding safely
+stops the session as before; returning does not resume a background engine.
+User cancellation wins even if a policy poll was waiting on its lock. First
+fatal reason is retained. Diagnostic/checkpoint deadlines and15-second GPU
+callback protection remain. The monitor reuses existing wait/status paths,
+amortizes checks to at most10Hz and creates no new polling thread or GPU wait.
+Bounded reports show phase, active time, engine/frame/IO ages, last script,
+GPU phase/opcode/shader and worker/proxy/mailbox state. Existing engine freeze
+profiling and display-timestamp diagnostics remain.
+
+VERIFIED INPUT QUEUE FIX
+A leading obsolete analog-only state could delay a later fire/release edge by
+one engine hook after a render stall. The consumer now skips only leading states
+whose buttons exactly match the last state actually delivered, and only when a
+newer queued state exists. Every button edge, tap, source-handoff neutral and
+focus release remains ordered. The controlled1.8-second-stall test delivers
+movement+fire or release on the next hook; the previous algorithm required two
+hooks by source analysis. This does not deliver input while the simulation is
+blocked on rendering and does not establish improved physical-device latency.
+No UI-thread engine-memory writes, controller polling or new GPU waits.
+The latency label now explicitly means oldest coalesced event to engine hook;
+the original coalescing preserved the oldest timestamp, not the latest gesture.
+
+VERIFIED GPU STAGING ACCOUNTING FIX
+Successful ordered readback mapping already retires prior queue submissions,
+but0.30 kept their uniform batches counted as pending until an explicit wait.
+The same retirement helper now clears only submitted accounting after a valid
+mapped readback. Unsubmitted draw constants remain intact. Failed mappings do
+not retire accounting. Caps remain16 batches/4MiB and1MiB readback staging.
+The actual Metal fixture compares corrected and0.30-reference accounting:
+96 changing draws,13 exact readbacks,256 checked pixels and96 exact occlusion
+samples per mode, in each of two independent runtime processes.
+Pressure waits:6 ->0. Explicit completions:7 ->1. Draws/readbacks/pixels unchanged.
+This is a fixture operation-count reduction, not a measured iPhone FPS gain.
+Exact measured CPU wait times are retained in benchmark-comparison.json;
+driver timings vary and are not a sustained-gameplay benchmark.
+Queue-order evidence was checked against pinned wgpu-core29.0.3 map_async and
+submission retirement implementation, not assumed from a successful build.
+https://github.com/gfx-rs/wgpu/blob/v29.0.3/wgpu-core/src/resource.rs
+https://github.com/gfx-rs/wgpu/blob/v29.0.3/wgpu-core/src/device/life.rs
+
+PIPELINE/VAULT INVESTIGATION
+290 creations/34 evictions alone do not identify the vault working set or prove
+which shader pairs were repeatedly recompiled. Keep256/128 pressure policy and
+all semantic cache keys. Eight bounded worst pipeline-creation records now name
+VS/PS, PRESENT index, semantic-key fingerprint, duration and exact recently
+evicted-key recreation status (64-key history is explicitly incomplete).
+This exposes new vault shaders versus cache reuse without per-draw logging.
+The controlled192-key Metal working set remains192 creates/384 hits/0 evictions
+at256 entries. No cache-capacity increase, speculative prewarming or shader
+output change. The reported358ms compilation and>2s frame stalls are not claimed
+resolved. High real upload/submission pressure still needs device correlation.
+No retained vault command/asset fixture establishes an additional script or
+streaming defect. A scripted deadlock is not inferred from the old180s cutoff.
+
+FILES
+  native-ios/App.m
+  native-ios/asset_io/native_assets.c
+  native-ios/asset_io/native_assets.h
+  native-ios/ci-convert.sh
+  native-ios/compile-native.mjs
+  native-ios/Info.plist
+  native-ios/input/ci-test-input.sh
+  native-ios/input/native_input.c
+  native-ios/input/native_input.h
+  native-ios/input/test_input_queue.c
+  native-ios/input/test_ui.m
+  native-ios/renderer/draw_pipeline.inc
+  native-ios/renderer/draw_types.inc
+  native-ios/renderer/native_gpu.h
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/native_launch.h
+  native-ios/renderer/native_metrics.h
+  native-ios/renderer/native_metrics.inc
+  native-ios/renderer/native_readback.inc
+  native-ios/renderer/native_scene.c
+  native-ios/renderer/stability_fixture.inc
+  native-ios/threading/ci-test-session.sh
+  native-ios/threading/native_session.h
+  native-ios/threading/native_session_bridge.inc
+  native-ios/threading/native_threads.c
+  native-ios/threading/test_native_session.c
+  native-ios/threading/test_session_bridge.c
+  source-manifest.json
+
+VALIDATION
+PASS:1374 deterministic watchdog assertions with injected monotonic clock,
+>21min virtual live session, startup/stalls, delivered-byte loading, failed/EOF
+requests, stale progress snapshots, camera ordering, pause/suspension, clean
+stop/restart and first-fatal retention.
+PASS:production bridge100000 concurrent hooks/200000 polls under ASan/UBSan and
+TSan; controllable clock, actual marker/hook/frame gate, cancellation while
+lock-blocked, bounded report and detached runtime lifetime. Services are inert;
+this concurrency harness does not simulate successful gameplay.
+PASS:controlled-clock input queue and existing mapping/concurrency sanitizers;
+71 original-engine checks execute production bridge bytes with unchanged engine
+instructions and zero unexpected external calls.103 UIKit assertions pass.
+PASS:4808 Metal shader modules and pipelines, including500 clip shaders;0 errors.
+PASS:two full runtime processes, persistent save, worker/mailbox/wait tests,
+bounded archive reader, shadow709 optional and strict paths, SRV5633, depth
+proxy, clip/varying, UAV/compute, occlusion, format and resource-lifetime suites.
+PASS:unsigned device ARM64/minimum iOS17 package, backend/engine pins, no W+X,
+no WebKit/JSC, no CI reference packs or UI test entry point in device executable.
+PASS:213 source entries matched published source;185 unchanged versus0.30.
+All30 previous IPA artifacts hash-preserved; no working release overwritten.
+The first candidate CI failed because a new test harness left the production
+summary helper unused under-Werror. The test now checks the real summary.
+Intermediate runs were superseded/cancelled; only the final source/run above is
+the release evidence. No failed or cancelled run is represented as passing.
+
+LIMITATIONS AND NEXT TASK
+Windows has no local Apple compiler/Metal GPU; native checks ran in macOS CI.
+No physical0.31 FPS, memory, input latency or vault progression measurement yet.
+Microbench input/sanitizer and fixture times are not A18 Pro performance.
+The liveness gate intentionally recognizes the verified Prologue camera event;
+new game startup flows need an evidenced equivalent, not relaxed draw thresholds.
+Cancellation is cooperative: no unsafe forced thread kill can unwind a driver
+call or engine loop that never returns to a host boundary. Diagnostic monitoring
+does not prove recovery from such a hang. Resource limits remain conservative.
+111 hull/domain/geometry records remain untranslated; no new trace proves they
+are required here. Metadata/audio/producer issues remain separately tracked.
+Stage3 and physical Stage4 closure remain open; no mission completion claim.
+Highest next engineering task:correlate bounded vault pipeline/upload records
+with actual displayed frames and engine waits, then optimize a proven working
+set or repeated transfer rather than expanding caches blindly.
+
+NEXT IPHONE CHECK
+Install0.31 over the current app; preserve old IPAs and existing web folder.
+Keep640x360 and the same optional reference-shadow setting as the successful run.
+After camera/scene startup confirm the report says Session live. Continue
+walking into and through the vault past180 seconds; aim for10-20min if practical.
+Exercise pause, Settings/fullscreen return, controller/touch handoff and manual
+Stop. Backgrounding still deliberately ends the session. Check movement/release
+after a compile stall. Save the full final report, actual marked display window,
+pipeline CPU records, uniform-retired counter and input queue/age diagnostics.
+Report animation/progression separately from frame submissions. No next test is
+required to accept the independently verified fixes described above.
