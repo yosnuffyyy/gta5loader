@@ -1,10 +1,10 @@
 {
-  "scope": "Native0.29 controls candidate: real synchronous engine pad bridge; event-driven GameController; multitouch pad overlay and deterministic source switching; optional public-API fullscreen with persisted settings. User reports0.28~24sec Prologue,15-16displayedFPS and manual normal stop with optional shadow compatibility. Graphics unchanged,640x360,256pipelinecache. Physical input and sustained gameplay verification pending.",
+  "scope": "Native0.30 urgent menu-scroll correction; active game touch ownership retained; web-folder selector moved above input settings. Native0.29 graphics/input preserved. Physical swipe and gameplay verification pending.",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 39562,
-      "sha256": "24f2a306f76dfd214ad0926739bce2f60b3db9068d6f943c65d2d6e59f17583d"
+      "bytes": 40116,
+      "sha256": "845918a83d455cc9753a0643d9a4e417060a0c1518af84666aa80843e9263b18"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -64,7 +64,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "e07a8b19ad038e2ed709ad07651cbe910130193aae4a8e3caf5d1233965d431d"
+      "sha256": "cb7c24bd8616f925e5998bdf60a64eb458674418978c167b471688c2acc974d4"
     },
     {
       "path": "native-ios/input/ci-test-input.sh",
@@ -103,8 +103,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 7100,
-      "sha256": "c1e7e9eced294e079a23e5ee5fe35b71d25d48ca0052d7745122319ab812b99d"
+      "bytes": 8938,
+      "sha256": "d7524f64c5ec5c65cbde71672627425aefc580b902c3823eddc5c0660e1a7352"
     },
     {
       "path": "native-ios/input/touch_layout.h",
