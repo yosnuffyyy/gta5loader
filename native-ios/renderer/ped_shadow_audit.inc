@@ -31,8 +31,8 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
  native_progress saved_progress=h->progress;void *saved_context=h->progress_context;ShadowCaptureCheck capture_check={0};h->progress=audit_shadow_capture;h->progress_context=&capture_check;
  if(!hardware(g))goto cleanup;reset_state(g);
  const uint64_t hashes[]={reference?UINT64_C(0xa276344f1111242f):UINT64_C(0xac2dd56e1111be56),UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
- for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:25;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:5;for(unsigned i=0;!st&&i<5;i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
- Object *input=create(g,21529,15);if(!input)goto cleanup;input->words=37;input->meta=calloc(input->words,4);if(!input->meta)goto cleanup;input->meta[0]=input->id;input->meta[1]=5;const unsigned formats[]={6,2,16,6,2};unsigned stride=0;for(unsigned i=0;i<5;i++){unsigned bytes=0;draw_vertex_format(formats[i],&bytes);uint32_t *e=input->meta+2+i*7;e[0]=i+1;e[2]=formats[i];e[4]=stride;stride+=bytes;}if(stride!=64)goto cleanup;g->layout=input->id;g->vb[0][0]=14637;g->vb[0][1]=stride;
+ for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:5+(reference?7:5)*4;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:reference?7:5;for(unsigned i=0;!st&&i<(reference?7:5);i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
+ Object *input=create(g,21529,15);if(!input)goto cleanup;input->words=2+(reference?7:5)*7;input->meta=calloc(input->words,4);if(!input->meta)goto cleanup;input->meta[0]=input->id;input->meta[1]=reference?7:5;const unsigned formats[]={6,2,16,6,2},reference_formats[]={6,2,2,16,6,2,2};unsigned stride=0;for(unsigned i=0;i<(reference?7:5);i++){unsigned format=(reference?reference_formats:formats)[i],bytes=0;draw_vertex_format(format,&bytes);uint32_t *e=input->meta+2+i*7;e[0]=i+1;e[2]=format;e[4]=stride;stride+=bytes;}if(stride!=(reference?96u:64u))goto cleanup;g->layout=input->id;g->vb[0][0]=14637;g->vb[0][1]=stride;
  uint32_t creation[]={708,2,4,4,1,1,1,71,8,1},upload[]={708,0,0,0,0,0,4,4,1,8,1,8,0,0},cb3[]={8306,976,4,0,0},cb6[]={8307,528,4,0,0};
  if(!create_texture(g,(uint8_t*)creation)||!upload_texture(g,(uint8_t*)upload)||!create_buffer(g,(uint8_t*)cb3)||!create_buffer(g,(uint8_t*)cb6))goto cleanup;
  uint32_t count=1,type=0x40000000;memcpy(object(g,8306)->shadow+32,&count,4);memcpy(object(g,8307)->shadow+252,&type,4);g->cb[1][3][0]=8306;g->cb[1][6][0]=8307;
@@ -62,9 +62,11 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
  {uint32_t a[]={8306,32,4,1},b[]={8307,252,4,0x40000000};g->cb[1][3][1]=g->cb[1][6][1]=0;if(!execute_impl(g,12,(uint8_t*)a,4)||!execute_impl(g,12,(uint8_t*)b,4))goto cleanup;}
  for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;
  g->srv[1][14]=709;g->last_op=32;g->last_words=6;uint32_t payload[]={1,672,1,0,0,0};memcpy(g->last_payload,payload,sizeof(payload));
- if(reference){
+ {
   uint32_t captured_sampler[]={3511,3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344};
   if(!execute_impl(g,16,(uint8_t*)captured_sampler,15))goto cleanup;g->smp[1][14]=3511;
+ }
+ if(reference){
   DrawProgram *selected=shadow_program(g,pp);unsigned offset=0;
   ok=selected==pp&&draw_prepare_proxies(g,pp)&&draw_uniforms(g)&&draw_group(g,pp,&offset)&&!native_gpu_error(g)&&g->reference_shadow_uses==1&&g->reference_shadow_allocations==1;
   if(ok)puts("PASS: original a276344f1111242f/996bb42f448956f2 pipeline and full reflected binding group validate with exact0.27 sampler, active count1/selector2 and optional reference empty cube. Original shader unchanged; synthetic remaining constants, no scene-pixel claim.");

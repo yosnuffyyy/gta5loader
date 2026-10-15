@@ -423,8 +423,8 @@
     },
     {
       "path": "native-ios/renderer/ped_shadow_audit.inc",
-      "bytes": 11396,
-      "sha256": "6d6de066734b115b1b73e2bdebd1096c382d6a2fd1a813c3b3dfc4fc71734a4a"
+      "bytes": 11582,
+      "sha256": "53ac51c09b6d45bd7de1c21123e50b220d0d4d57f0c5e2939bfa850466adfae6"
     },
     {
       "path": "native-ios/renderer/perf_fixture.inc",
