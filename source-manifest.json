@@ -618,8 +618,8 @@
     },
     {
       "path": "native-ios/renderer/test_display_timeline.c",
-      "bytes": 1591,
-      "sha256": "8261f2e31d94c35d02ccc221f184ea0160ffb95f24fd88c391c055e41778df23"
+      "bytes": 1611,
+      "sha256": "e3c168781ad81030260c85f2f43dfbf10c7f9129000268cf61120b3aa727732f"
     },
     {
       "path": "native-ios/renderer/test_gpu_ring.c",
