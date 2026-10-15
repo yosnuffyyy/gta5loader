@@ -638,8 +638,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_transition_fixture.inc",
-      "bytes": 8488,
-      "sha256": "182063cadbefefc7181ece4797b0809aedc9381966542415a3220118505265fe"
+      "bytes": 8517,
+      "sha256": "431a86581ee94a6ae39586bcccdc3b97f8fbdbc525a3b8c39ef3f107ca670fe0"
     },
     {
       "path": "native-ios/renderer/snorm_fixture.inc",

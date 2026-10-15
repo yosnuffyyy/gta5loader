@@ -67,7 +67,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  if(ready&&ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=888&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);
  bool state=invalid?(native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&(reference||strstr(native_gpu_error(g),invalid==1?"raw40000000":"raw7fc00000"))):!native_gpu_error(g);
- ok=ok&&state&&g->draw.draws==32&&g->metrics.shadow_creates==1&&g->metrics.shadow_hits>=19&&g->draw.creates==2&&g->draw.hits==30&&g->metrics.pipeline_evictions==0;
+ ok=ok&&state&&g->draw.draws==32&&g->metrics.shadow_creates==1&&g->metrics.shadow_hits>=19&&g->draw.creates==2&&g->draw.hits==(reference&&invalid==4?31u:30u)&&g->metrics.pipeline_evictions==0;
  if(reference)ok=ok&&g->reference_shadow_uses==4&&g->reference_shadow_allocations==1&&host_u64(h,query_address+8)==1536&&atomic_load_explicit(heap_word(g,query_address),memory_order_acquire)==991;
  for(unsigned t=0;t<32&&ok;t++){uint8_t pixels[1024];host_load(h,pixels,dst+t*1024,sizeof(pixels));for(unsigned i=0;i<256&&ok;i++)for(unsigned c=0;c<4;c++)if(pixels[i*4+c]!=(c==3?255:expected[t]))ok=false;}
  {uint32_t original[2];host_load(h,original,dst+32768,8);ok=ok&&!original[0]&&!original[1];}
