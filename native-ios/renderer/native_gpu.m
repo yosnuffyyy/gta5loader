@@ -484,7 +484,10 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h){snprintf(report,capacity,"FAIL: replay host allocation");return 1;}host_init(h);
  volatile bool allocated=false;volatile int result=1;wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(!trap){wasm_rt_allocate_memory_shared(&h->memory,64,65536,false,65536);allocated=true;result=native_gpu_replay_test(h,report,capacity)?0:1;
- if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,report+used,capacity-used)?0:1;}}
+ if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,false,report+used,capacity-used)?0:1;}}
+#ifdef NATIVE_PROBE_CLI
+ if(!result){size_t used=strlen(report);if(used+2>=capacity)result=1;else{report[used++]='\n';report[used]=0;result=query_fixture(h,true,report+used,capacity-used)?0:1;}}
+#endif
  if(!result){char ranges[600];if(!proxy_range_fixture(h,0,ranges,sizeof(ranges)))result=1;size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",ranges);for(unsigned i=1;i<=4&&!result;i++)if(!proxy_range_fixture(h,i,NULL,0))result=1;if(!result){used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\nPASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.");}}
  if(!result){char text[850];bool valid=shadow_fixture(h,0,text,sizeof(text));for(unsigned i=1;i<=5&&valid;i++)valid=shadow_fixture(h,i,NULL,0);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s\n%s: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.",text,valid?"PASS":"FAIL");if(!valid)result=1;}
  if(!result){char text[900];bool valid=shadow_count_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);

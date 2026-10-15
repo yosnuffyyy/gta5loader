@@ -1,6 +1,11 @@
 /* Separate production-ring fixture retains all 0.19 fixture counters. */
-static bool query_fixture(struct w2c_env *h,char *report,size_t capacity){
+static bool query_fixture(struct w2c_env *h,bool old,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;
+#ifdef NATIVE_PROBE_CLI
+ g->test_uniform_wrap_wait=old;
+#else
+ if(old){native_gpu_end(g);return false;}
+#endif
  g->draw.fixture=true;host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
  #define EMIT(op,count) do{if((count)>128||tail>127488-8-(count)*4){ok=false;fail(g,"Query fixture ring overflow");}else{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(count));host_store(h,base+tail+8,cmd,(count)*4);tail+=8+(count)*4;}}while(0)
@@ -17,8 +22,11 @@ static bool query_fixture(struct w2c_env *h,char *report,size_t capacity){
   for(unsigned j=4;j<32&&ok;j++)if((j<8||j>=16)&&data[j]!=0xa5){fail(g,"Occlusion result wrote outside protocol words");ok=false;}
   if(ok)g->query_cases++;
  }
- if(ok&&(g->query_cases!=Q_TOTAL||g->query_pending_pages||g->query_gpu_bytes||g->query_active_count||g->query_pressure_waits||!g->query_stale||!g->query_pages_allocated||g->query_pages_allocated>QUERY_PAGES)){fail(g,"Query cleanup, stale suppression or bounded asynchronous pool verification failed");ok=false;}
- char summary[2200];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native counting occlusion/predicate queries: %u cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.\n%s\n%s",ok?"PASS":"FAIL",g->query_cases,summary,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+ /* Without the old implicit uniform-ring waits, four outstanding pages can
+    legitimately require bounded backpressure. Verify every result and map,
+    rather than treating a scheduling-dependent zero-wait count as correctness. */
+ if(ok&&(g->query_cases!=Q_TOTAL||g->query_pending_pages||g->query_gpu_bytes||g->query_active_count||g->query_maps_completed!=g->query_map_requests||g->query_pressure_waits>g->query_map_requests||!g->query_stale||!g->query_pages_allocated||g->query_pages_allocated>QUERY_PAGES||g->query_gpu_peak>QUERY_PAGES*(QUERY_RESOLVE_BYTES+QUERY_MAP_BYTES+QUERY_SEGMENTS*8))){fail(g,"Query cleanup, map completion, stale suppression or bounded asynchronous pool verification failed");ok=false;}
+ char summary[2200];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: native counting occlusion/predicate queries: %u cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.\nQuery queue policy %s: %llu/%llu map completions, %llu bounded-pool waits (%.3fms); every query result checked.\n%s\n%s",ok?"PASS":"FAIL",g->query_cases,old?"0.23 reference":"bounded queue reuse",(unsigned long long)g->query_maps_completed,(unsigned long long)g->query_map_requests,(unsigned long long)g->query_pressure_waits,g->query_pressure_ns/1e6,summary,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
 }
 static bool query_mask_boundary_fixture(struct w2c_env *h,uint32_t mask){
  uint64_t base=atomic_load(&h->memory.size)-262144;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;
