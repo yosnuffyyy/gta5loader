@@ -467,8 +467,9 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
   uint8_t pixels[64];for(unsigned copy=0;copy<2;copy++){host_load(h,pixels,dst+256+copy*256,64);for(unsigned i=0;i<16;i++)if(abs(pixels[i*4]-64)>1||abs(pixels[i*4+1]-128)>1||abs(pixels[i*4+2]-191)>1||pixels[i*4+3]!=255)ok=false;}
   host_load(h,pixels,dst+768,64);for(unsigned i=0;i<64;i++)if(pixels[i]!=(i<16?i*17:0xa5))ok=false;if(atomic_load(heap_word(g,flag+8))!=7||host_u64(h,flag+16)!=1)ok=false;
   for(unsigned test=0;test<10&&ok;test++){uint8_t rendered[1024];host_load(h,rendered,dst+4096+test*1024,sizeof(rendered));for(unsigned i=0;i<256&&ok;i++){bool painted=test!=8&&(test!=6||(i%16>=4&&i%16<12&&i/16>=3&&i/16<13));float scale=test==0&&i%16>=8?.5f:(test%3+1)*.25f;int expected[4]={painted?(int)lroundf(200*scale):0,painted?(int)lroundf(100*scale):0,painted?(int)lroundf(50*scale):0,painted?255:0};if(test==7){expected[0]=101;expected[1]=51;expected[2]=57;expected[3]=128;}for(unsigned k=0;k<4;k++)if(abs(rendered[i*4+k]-expected[k])>1){ok=false;snprintf(g->error,sizeof(g->error),"Draw fixture case %u pixel %u channel %u: got %u expected %d",test,i,k,rendered[i*4+k],expected[k]);atomic_store(&g->failed,true);break;}}}
-  /* Dynamic scissor enable no longer creates a second equivalent pipeline. */
-  if(g->draw.draws!=41||g->draw.creates!=15||g->draw.hits!=26){fail(g,"Combined draw/pipeline counters failed");ok=false;}
+  /* Dynamic scissor shares its pipeline; the array-SRV diagnostic shader
+     intentionally adds one distinct pipeline to the non-array baseline. */
+  if(g->draw.draws!=41||g->draw.creates!=16||g->draw.hits!=25){fail(g,"Combined draw/pipeline counters failed");ok=false;}
  #include "readback_verify.inc"
  #include "instance_verify.inc"
  #include "depth_proxy_verify.inc"
@@ -513,7 +514,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  const unsigned policies[]={128,256,1};for(unsigned i=0;i<3&&valid;i++){valid=pipeline_working_set_fixture(h,policies[i],text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
 #endif
  if(!valid)result=1;}
- if(!result){bool valid=srv_pixel_fixture(h);for(unsigned i=0;i<9&&valid;i++)valid=srv_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: SRV contract GPU suite: 24 cases / 384 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, content refresh and cache reuse; nine controlled descriptor/lifetime failures.",valid?"PASS":"FAIL");if(!valid)result=1;}
+ if(!result){bool valid=srv_pixel_fixture(h);for(unsigned i=0;i<9&&valid;i++)valid=srv_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: SRV contract GPU suite: 26 cases / 416 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; nine controlled descriptor/lifetime failures.",valid?"PASS":"FAIL");if(!valid)result=1;}
  if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}}else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
  if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}free(h);wasm_rt_free_thread();return result;
 }
