@@ -6,6 +6,7 @@ exec > >(tee native-build/evidence/build.log) 2>&1
 sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-arc -Inative-ios -fsyntax-only native-ios/App.m
 plutil -lint native-ios/Info.plist
+bash native-ios/input/ci-test-ui.sh
 bash native-ios/renderer/build-renderer.sh
 node native-ios/prepare-engine.mjs
 bash native-ios/input/ci-test-input.sh

@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 2412,
-      "sha256": "5710309e00e318287b0677e8fcc561b379b5e9254b129605a24af89f6e811249"
+      "bytes": 2448,
+      "sha256": "20a493f5bf835278357802cc6a1317029689d30a4f6d5c4f768665c4e5f7ddcf"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -72,14 +72,19 @@
       "sha256": "3dfb3b057e8e29f803f434916b11909c552f120097bee3522ec9b2c3d4920ee5"
     },
     {
+      "path": "native-ios/input/ci-test-ui.sh",
+      "bytes": 2861,
+      "sha256": "6c6f8f621a0ff37b61ddb2b702ecabfc800159980c369b61dcdb84be02bb8279"
+    },
+    {
       "path": "native-ios/input/NativeControls.inc",
       "bytes": 7203,
       "sha256": "ce4c88b56c9b376f780b54465395b0ac1324bc64dc529e8d9bd44c452d8c8be4"
     },
     {
       "path": "native-ios/input/native_input.c",
-      "bytes": 6485,
-      "sha256": "778809bbaa5d9a342fe2d9c18fce215dfa149247d87bbee6222aed6a7ffd8c4f"
+      "bytes": 6680,
+      "sha256": "7b0f8626961c741611a96edf4fc582db9245584d6a319a809c673da43b0943ee"
     },
     {
       "path": "native-ios/input/native_input.h",
@@ -93,8 +98,13 @@
     },
     {
       "path": "native-ios/input/test_input.c",
-      "bytes": 5514,
-      "sha256": "d31f2297e9bdb870c14421558707e7dbcd26366a680dac59bd316bd3a1f1cef3"
+      "bytes": 5635,
+      "sha256": "13811b0d69afaf1bd3a52af1f158c8e53d573fb75fbb76e4d95d5ab64f81a98d"
+    },
+    {
+      "path": "native-ios/input/test_ui.m",
+      "bytes": 6416,
+      "sha256": "1969fa0a5fe6775d1e390623bf58125f87ceaf84f10c6c5bc0ed2643209d207f"
     },
     {
       "path": "native-ios/input/touch_layout.h",

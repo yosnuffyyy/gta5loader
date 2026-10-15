@@ -9,7 +9,7 @@ typedef struct {NIState state;uint64_t at;} NIEvent;
 static struct {
  pthread_mutex_t lock;
  NIState physical,output;NIEvent queue[NI_QUEUE];unsigned head,count;
- uint32_t blocked;bool connected,running,focused,stick_ready[2],stick_blocked[2],trigger_ready[2],pad_saved;
+ uint32_t blocked;bool connected,running,focused,baseline,stick_ready[2],stick_blocked[2],trigger_ready[2],pad_saved;
  uint8_t saved50,saved55;NISource source;
  float deadzone,sensitivity;NIMetrics metrics;
 } input={.lock=PTHREAD_MUTEX_INITIALIZER,.deadzone=.15f,.sensitivity=1};
@@ -32,14 +32,15 @@ static void enqueue(NIState s){
 static void neutral(void){input.head=input.count=0;input.output=(NIState){0};input.queue[input.count++]=(NIEvent){0};}
 static void rearm(void){input.blocked=input.physical.buttons;float m[2]={hypotf(input.physical.lx,input.physical.ly),hypotf(input.physical.rx,input.physical.ry)};for(unsigned i=0;i<2;i++){input.stick_blocked[i]=m[i]>=input.deadzone;input.stick_ready[i]=!input.stick_blocked[i];}input.trigger_ready[0]=input.physical.lt<.03f;input.trigger_ready[1]=input.physical.rt<.03f;}
 static void switch_to(NISource s){if(s==input.source)return;neutral();input.source=s;input.metrics.switches++;if(s==NI_TOUCH)rearm();}
-void ni_begin(void){lock();input.running=true;input.focused=true;input.source=NI_TOUCH;input.metrics=(NIMetrics){0};input.pad_saved=false;rearm();neutral();unlock();}
+void ni_begin(void){lock();input.running=true;input.focused=true;input.baseline=input.connected;input.source=NI_TOUCH;input.metrics=(NIMetrics){0};input.pad_saved=false;rearm();neutral();unlock();}
 void ni_end(void){lock();input.running=false;input.focused=false;rearm();neutral();unlock();}
-void ni_focus(bool focused){lock();input.focused=focused;rearm();neutral();input.source=NI_TOUCH;unlock();}
-void ni_connect(bool connected){lock();input.connected=connected;input.physical=(NIState){0};rearm();if(!connected){switch_to(NI_TOUCH);neutral();}unlock();}
+void ni_focus(bool focused){lock();input.focused=focused;input.baseline=input.connected;rearm();neutral();input.source=NI_TOUCH;unlock();}
+void ni_connect(bool connected){lock();input.connected=connected;input.baseline=connected;input.physical=(NIState){0};rearm();if(!connected){switch_to(NI_TOUCH);neutral();}unlock();}
 void ni_configure(float deadzone,float sensitivity){lock();input.deadzone=finite_clamp(deadzone,.05f,.4f);input.sensitivity=finite_clamp(sensitivity,.25f,2);unlock();}
 NISource ni_source(void){lock();NISource s=input.source;unlock();return s;}
 NISource ni_controller(NIState raw){
  lock();NIState s=clean(raw),old=input.physical;input.physical=s;input.metrics.events++;
+ if(input.baseline){input.baseline=false;rearm();NISource mode=input.source;unlock();return mode;}
  if(!input.running||!input.focused||!input.connected){rearm();NISource mode=input.source;unlock();return mode;}
  input.blocked&=s.buttons;uint32_t rising=s.buttons&~old.buttons&~input.blocked;
  bool activity=(rising&~(NI_L2|NI_R2))!=0;float magnitude[2]={hypotf(s.lx,s.ly),hypotf(s.rx,s.ry)};
