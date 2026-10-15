@@ -55,7 +55,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  if(invalid){
   if(reference){cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=invalid==1?902:3511;EMIT(25,4);
    if(invalid==3){memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;EMIT(13,14);}
-   if(invalid==4){uint32_t malformed[]={709,0,708,71,4,0,2,0,0};memcpy(cmd,malformed,sizeof(malformed));EMIT(17,9);}
+   if(invalid==4){cmd[0]=709;EMIT(4,1);uint32_t malformed[]={709,0,708,71,4,0,2,0,0};memcpy(cmd,malformed,sizeof(malformed));EMIT(17,9);}
   }
   cmd[0]=714;cmd[1]=32+252;cmd[2]=4;cmd[3]=invalid==2?0x7fc00000:0x40000000;EMIT(12,4);
   cmd[0]=715;cmd[1]=32+32;cmd[2]=4;cmd[3]=1;EMIT(12,4);
