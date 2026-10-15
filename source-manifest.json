@@ -83,8 +83,8 @@
     },
     {
       "path": "native-ios/input/native_input.c",
-      "bytes": 6728,
-      "sha256": "29204b29d13680e4558c03817062ce1eda265ea506a427c72a54293658b133b6"
+      "bytes": 6804,
+      "sha256": "ab5432a317649ed5311e624cea5819b53a2cb06156c23ce5149cd08cbb5b7ae6"
     },
     {
       "path": "native-ios/input/native_input.h",
@@ -98,8 +98,8 @@
     },
     {
       "path": "native-ios/input/test_input.c",
-      "bytes": 6864,
-      "sha256": "96e6e446b551e051559123cf4f134a6bf36188ed9994a7b2bb90b194860490f4"
+      "bytes": 7176,
+      "sha256": "0fa5e65a458aedb93edcda884b5d5f04a0e1d6db990b5aa8665f8ce5a33dfb5f"
     },
     {
       "path": "native-ios/input/test_ui.m",

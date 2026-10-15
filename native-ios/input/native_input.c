@@ -35,7 +35,7 @@ static void switch_to(NISource s){if(s==input.source)return;neutral();input.sour
 void ni_begin(void){lock();input.running=true;input.focused=true;input.baseline=input.connected;input.source=NI_TOUCH;input.metrics=(NIMetrics){0};input.pad_saved=false;rearm();neutral();unlock();}
 void ni_end(void){lock();input.running=false;input.focused=false;rearm();neutral();unlock();}
 void ni_focus(bool focused){lock();input.focused=focused;input.baseline=input.connected;rearm();neutral();input.source=NI_TOUCH;unlock();}
-void ni_connect(bool connected){lock();input.connected=connected;input.baseline=connected;input.physical=(NIState){0};rearm();if(!connected){switch_to(NI_TOUCH);neutral();}unlock();}
+void ni_connect(bool connected){lock();input.connected=connected;input.baseline=connected;input.physical=(NIState){0};rearm();/* Release a disconnected physical source, but preserve an already active touch hold. */if(!connected)switch_to(NI_TOUCH);unlock();}
 void ni_configure(float deadzone,float sensitivity){lock();input.deadzone=isfinite(deadzone)?finite_clamp(deadzone,.05f,.4f):.15f;input.sensitivity=isfinite(sensitivity)?finite_clamp(sensitivity,.25f,2):1;unlock();}
 NISource ni_source(void){lock();NISource s=input.source;unlock();return s;}
 NISource ni_controller(NIState raw){

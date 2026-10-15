@@ -32,6 +32,7 @@ int main(int argc,char **argv){
  ni_focus(false);drain();assert(mask()==0&&pad[24]==0);ni_controller((NIState){.buttons=NI_CROSS,.ly=1});ni_focus(true);ni_controller((NIState){.buttons=NI_CROSS,.ly=1});drain();assert(ni_source()==NI_TOUCH&&mask()==0);
  ni_controller((NIState){0});ni_controller((NIState){.buttons=NI_CROSS});drain();assert(mask()==NI_CROSS);
  ni_connect(false);drain();assert(ni_source()==NI_TOUCH&&mask()==0);ni_connect(true);assert(ni_source()==NI_TOUCH);ni_controller((NIState){.buttons=NI_CROSS});drain();assert(ni_source()==NI_TOUCH&&mask()==0);ni_controller((NIState){0});ni_controller((NIState){.buttons=NI_CROSS});drain();assert(mask()==NI_CROSS);
+ ni_touch((NIState){.buttons=NI_SQUARE},true);drain();assert(mask()==NI_SQUARE);ni_connect(false);drain();assert(mask()==NI_SQUARE);ni_connect(true);ni_controller((NIState){0});drain();assert(ni_source()==NI_TOUCH&&mask()==NI_SQUARE);ni_controller((NIState){.buttons=NI_CROSS});drain();assert(mask()==NI_CROSS);
  /* NaN and infinities never escape normalization. */
  ni_controller((NIState){.lx=NAN,.rx=INFINITY,.lt=NAN,.rt=-1});drain();assert(pad[20]==128&&pad[22]==128&&pad[24]==0&&pad[25]==0);
  ni_configure(NAN,INFINITY);ni_touch((NIState){0},true);ni_controller((NIState){0});ni_controller((NIState){.lx=.04f});drain();assert(ni_source()==NI_TOUCH);ni_configure(.15f,1);
