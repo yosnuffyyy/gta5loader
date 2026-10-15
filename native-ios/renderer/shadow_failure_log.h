@@ -5,7 +5,8 @@ enum { NATIVE_SHADOW_FAILURE_LIMIT=16384 };
 static inline BOOL NativeShadowFailureLine(NSString *text){
  return [text hasPrefix:@"Shadow transition "]||[text hasPrefix:@"Shadow fatal CB"]||[text hasPrefix:@"Active shadow "]||[text hasPrefix:@"SRV source lifetime:"];
 }
-/* Caller serializes access. Keep fatal evidence separate from periodic
+/* Host-only helper: do not invalidate cached generated engine objects.
+   Caller serializes access. Keep fatal evidence separate from periodic
    timing/cleanup output, which can roll the ordinary progress buffer. */
 static inline void NativeShadowFailureAppend(NSMutableString *buffer,NSString *text){
  if(!NativeShadowFailureLine(text))return;

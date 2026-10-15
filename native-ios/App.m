@@ -6,7 +6,7 @@
 #import <mach/mach.h>
 #import <QuartzCore/CAMetalLayer.h>
 #include "probe.h"
-#include "shadow_failure_log.h"
+#include "renderer/shadow_failure_log.h"
 #include "renderer/native_renderer.h"
 #include "renderer/native_launch.h"
 #include <math.h>
