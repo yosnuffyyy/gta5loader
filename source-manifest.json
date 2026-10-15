@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 38940,
-      "sha256": "afb2532e32feab283d680e15c3672596df15cbf6f0a40e17e8f22402c2de7967"
+      "bytes": 38986,
+      "sha256": "0300d9d283bf4f3c31061399a3e439e2b8a4d46ef73d7c9b0c929d1336c0266a"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -98,8 +98,8 @@
     },
     {
       "path": "native-ios/input/test_input.c",
-      "bytes": 6668,
-      "sha256": "5ade683e0491e4c7194ec553d6102822b91cd7106d0fcdeacd0f668bbe8fd170"
+      "bytes": 6864,
+      "sha256": "96e6e446b551e051559123cf4f134a6bf36188ed9994a7b2bb90b194860490f4"
     },
     {
       "path": "native-ios/input/test_ui.m",
@@ -108,8 +108,8 @@
     },
     {
       "path": "native-ios/input/touch_layout.h",
-      "bytes": 3178,
-      "sha256": "4ddee17ba8a1ed4a6e6784ee88b4c60e6d8fe8bb8702ac24e291bc7cdb9b406e"
+      "bytes": 3313,
+      "sha256": "b3d4bb906bfad5af52ec078f983d86aa3446149eabd2c16f85e164311b6db124"
     },
     {
       "path": "native-ios/input/ui_presentation_stub.inc",
@@ -998,8 +998,8 @@
     },
     {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 31825,
-      "sha256": "6f99ec9a088f3ad7c1f7951296bd8e2f77711bb7702499d3b24bf7c53c3a88d5"
+      "bytes": 31934,
+      "sha256": "cbd1348b26b53c4f8c549564db9d81fab96dc91dfd6023676a62cb721bda81f1"
     },
     {
       "path": "native-ios/threading/native_threads.h",

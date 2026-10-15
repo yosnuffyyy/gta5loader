@@ -349,7 +349,9 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
   check(h,current&&current->main_mode,"input hook outside engine main");
   if(!current->boot_mode||!current->display)return;
   if(pointer==12840656){uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
-  else {check(h,ni_is_control(pointer),"unknown pinned CControl input hook");uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
+  else if(ni_is_control(pointer)){uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
+  /* As in the pinned browser bridge, other CControl instances retain their
+     engine-owned source field. Never write an unverified object layout. */
   return;
  }
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");

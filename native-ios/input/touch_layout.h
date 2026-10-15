@@ -23,7 +23,7 @@ typedef struct {bool used,inside;unsigned control;float x,y;} NITouchPoint;
 typedef struct {NITouchPoint points[NI_TOUCHES];NIRect rect;float scale;} NITouches;
 static inline NIRect ni_aspect_fit(float w,float h){float fw=fminf(w,h*16/9),fh=fw*9/16;return (NIRect){(w-fw)/2,(h-fh)/2,fw,fh};}
 static inline float ni_radius(NITouches *t,unsigned c){float base=fminf(t->rect.w/11,t->rect.h*.23f);return c<2?base*t->scale:fmaxf(t->rect.w>=600?22:15,base*.40f);}
-static inline void ni_center(NITouches *t,unsigned c,float *x,float *y){*x=t->rect.x+ni_controls[c].x*t->rect.w;*y=t->rect.y+ni_controls[c].y*t->rect.h;}
+static inline void ni_center(NITouches *t,unsigned c,float *x,float *y){float r=ni_radius(t,c);*x=t->rect.x+(t->rect.w<2*r?t->rect.w/2:fminf(t->rect.w-r,fmaxf(r,ni_controls[c].x*t->rect.w)));*y=t->rect.y+(t->rect.h<2*r?t->rect.h/2:fminf(t->rect.h-r,fmaxf(r,ni_controls[c].y*t->rect.h)));}
 static inline int ni_touch_hit(NITouches *t,float x,float y){if(t->rect.w<=0||t->rect.h<=0)return -1;for(unsigned c=0;c<NI_CONTROL_COUNT;c++){float cx,cy;ni_center(t,c,&cx,&cy);if(hypotf(x-cx,y-cy)<=ni_radius(t,c))return (int)c;}return -1;}
 static inline void ni_touch_clear(NITouches *t){memset(t->points,0,sizeof(t->points));}
 static inline bool ni_touch_begin(NITouches *t,unsigned slot,float x,float y){if(slot>=NI_TOUCHES)return false;int c=ni_touch_hit(t,x,y);if(c<0)return false;/* One finger per stick; buttons allow independent owners. */if(c<2)for(unsigned i=0;i<NI_TOUCHES;i++)if(t->points[i].used&&t->points[i].control==(unsigned)c)return false;t->points[slot]=(NITouchPoint){true,true,(unsigned)c,x,y};return true;}
