@@ -11,6 +11,7 @@ static bool draw_uniforms(NativeGpu *g){DrawState *s=&g->draw;if(s->mirror)retur
 static void draw_end_pass(NativeGpu *g){query_end_pass(g);if(g->draw.pass){wgpuRenderPassEncoderEnd(g->draw.pass);wgpuRenderPassEncoderRelease(g->draw.pass);g->draw.pass=NULL;}}
 static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
  unsigned uniform_bytes=s->offset;
+ if(uniform_would_overflow(s->queued_uniform_bytes,uniform_bytes)){s->uniform_pressure_waits++;if(!completed(g))return false;}
  if(s->offset)wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);
  WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e)||!query_submitted(g))return false;g->counter_slot=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
  /* QueueWriteBuffer copies CPU bytes immediately and schedules the transfer

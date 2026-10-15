@@ -58,9 +58,9 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
- DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
- for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty==DRAW_PIPELINES)empty=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
- unsigned slot=s->pipeline_live<capacity?empty:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
+ DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
+ for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
+ unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
  DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;break;}
  if(p->pipeline)pipeline_evict(g,p,false);memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}

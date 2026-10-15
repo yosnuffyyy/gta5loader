@@ -11,5 +11,9 @@ int main(void){
  assert(pipeline_budget(256,256*mb)==256);
  assert(!uniform_pressure(15,4*mb-1));
  assert(uniform_pressure(16,0));assert(uniform_pressure(1,4*mb));
+ assert(!uniform_would_overflow(4*mb-512*1024,512*1024));
+ assert(uniform_would_overflow(4*mb-512*1024+1,512*1024));
+ assert(uniform_would_overflow(UINT64_MAX,1));
+ assert(uniform_would_overflow(0,UINT64_MAX));
  puts("PASS: pipeline capacity pressure/hysteresis and bounded queue staging thresholds");
 }

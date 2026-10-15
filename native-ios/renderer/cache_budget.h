@@ -14,4 +14,8 @@ static inline unsigned pipeline_budget(unsigned current,uint64_t available){
 static inline int uniform_pressure(unsigned batches,uint64_t bytes){
  return batches>=16||bytes>=UINT64_C(4)*1024*1024;
 }
+static inline int uniform_would_overflow(uint64_t queued,uint64_t next){
+ const uint64_t cap=UINT64_C(4)*1024*1024;
+ return next>cap||queued>cap-next;
+}
 #endif
