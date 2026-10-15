@@ -71,7 +71,7 @@ struct NativeGpu {
  bool counting_queries,query_pass;QueryPage query_pages[QUERY_PAGES];unsigned query_current,query_active_count,query_pending_pages,query_pages_allocated,query_cases;
  uint32_t query_active[QUERY_SCOPES];uint64_t query_token,query_begins,query_ends,query_segments,query_publications,query_empty,query_stale,query_map_requests,query_maps_completed,query_pressure_waits,query_pressure_ns,query_gpu_bytes,query_gpu_peak;
 #ifdef NATIVE_PROBE_CLI
- unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait;unsigned test_pipeline_capacity;
+ unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement;unsigned test_pipeline_capacity;
  void *test_scope_context;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
@@ -116,7 +116,17 @@ static bool wait_callback(NativeGpu *g){uint64_t deadline=now_ns()+15000000000ul
  if(atomic_load(&g->callback_done)){g->metrics.callback_sleeps_avoided++;break;}
  struct timespec d={0,1000000};nanosleep(&d,NULL);
  }return !atomic_load(&g->failed);}
-static bool completed(NativeGpu *g){uint64_t start=now_ns();uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);if(ok){g->draw.queued_uniform_batches=0;g->draw.queued_uniform_bytes=0;}timing_add(&g->metrics.windows[METRIC_COMPLETION],now_ns()-start);atomic_store(&g->live_phase,previous);return ok;}
+/* Successful ordered readback maps retire all earlier submitted uniform
+   writes, just as a queue-completion callback does. No future/unsubmitted
+   draw data is retired. The service thread is the only queue producer. */
+static void uniform_retired(NativeGpu *g,bool mapped_readback){
+#ifdef NATIVE_PROBE_CLI
+ if(mapped_readback&&g->test_no_map_retirement)return;
+#endif
+ if(mapped_readback)g->draw.uniform_map_retired+=g->draw.queued_uniform_batches;
+ g->draw.queued_uniform_batches=0;g->draw.queued_uniform_bytes=0;
+}
+static bool completed(NativeGpu *g){uint64_t start=now_ns();uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);if(ok)uniform_retired(g,false);timing_add(&g->metrics.windows[METRIC_COMPLETION],now_ns()-start);atomic_store(&g->live_phase,previous);return ok;}
 static Object *object(NativeGpu *g,uint32_t id){return id?(Object*)CFDictionaryGetValue(g->objects,(const void*)(uintptr_t)id):NULL;}
 static Object *create(NativeGpu *g,uint32_t id,uint32_t kind){if(!check(g,id&&!object(g,id),"Zero or duplicate GPU object ID"))return NULL;Object *o=calloc(1,sizeof(*o));if(!check(g,o!=NULL,"GPU object metadata allocation"))return NULL;if(!check(g,g->object_generation<UINT64_MAX,"GPU object generation exhausted")){free(o);return NULL;}o->generation=++g->object_generation;o->id=id;o->kind=kind;o->version=1;o->owner=g;o->created_command=g->ring.executed;CFDictionarySetValue(g->objects,(const void*)(uintptr_t)id,o);return o;}
 static void draw_program_free(DrawProgram *);
@@ -405,6 +415,7 @@ void native_gpu_stop(NativeGpu *g){if(!g)return;atomic_store(&g->stop,true);if(g
 void native_gpu_end(NativeGpu *g){if(!g)return;native_gpu_stop(g);if(g->layer){id held=CFBridgingRelease(g->layer);(void)held;}CFRelease(g->objects);pthread_mutex_destroy(&g->error_lock);free(g);}
 const char *native_gpu_error(NativeGpu *g){return g&&atomic_load_explicit(&g->failed,memory_order_acquire)?g->error:NULL;}
 bool native_gpu_ready(NativeGpu *g){return g&&atomic_load(&g->ready);}
+void native_gpu_progress(NativeGpu *g,uint64_t *commands,uint64_t *frames){*commands=g?atomic_load(&g->live_commands):0;*frames=g?atomic_load(&g->live_frames):0;}
 void native_gpu_snapshot(NativeGpu *g,char *text,size_t size){
  if(!g){snprintf(text,size,"GPU not started");return;}
  static const char *phases[]={"initializing","command execution","local shader read","WGSL compile","pipeline compile","drawable acquisition","GPU completion wait","queue idle","GPU cleanup"};
@@ -522,6 +533,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result){char text[1000];bool valid=uniform_order_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);
 #ifdef NATIVE_PROBE_CLI
  if(valid){valid=uniform_order_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+ for(unsigned legacy=0;legacy<2&&valid;legacy++){valid=uniform_map_fixture(h,legacy!=0,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
  const unsigned policies[]={128,256,1};for(unsigned i=0;i<3&&valid;i++){valid=pipeline_working_set_fixture(h,policies[i],text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
 #endif
  if(!valid)result=1;}

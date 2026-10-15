@@ -19,5 +19,6 @@ void native_assets_arm(NativeAssets*,void(*)(void*),void*);
 const char *native_assets_boundary(NativeAssets*);
 const char *native_assets_failure(NativeAssets*);
 void native_assets_summary(NativeAssets*,char*,size_t);
+uint64_t native_assets_requests(NativeAssets*);
 void native_assets_thread_probe(NativeAssets*,w2c_gta*,uint64_t,unsigned);
 #endif

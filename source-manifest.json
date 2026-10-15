@@ -1,20 +1,20 @@
 {
-  "scope": "Native0.30 urgent menu-scroll correction; active game touch ownership retained; web-folder selector moved above input settings. Native0.29 graphics/input preserved. Physical swipe and gameplay verification pending.",
+  "scope": "Native0.31: phase-aware startup/live-session watchdog; controllable-clock and concurrency tests; preserve input edges while folding obsolete analog snapshots; retire proven-completed uniform staging after ordered readback maps; bounded pipeline cost diagnostics. Native0.30 physical user report reached vault with touch input then unconditional180s timeout. No mission completion, device FPS or sustained stability claim.640x360,256 pipelines and shadow/SRV functionality retained.",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 40116,
-      "sha256": "845918a83d455cc9753a0643d9a4e417060a0c1518af84666aa80843e9263b18"
+      "bytes": 40469,
+      "sha256": "c63bb688ec08e567f456c807714ef7144dfbb59672a83fa082265c26b15e231a"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
-      "bytes": 11730,
-      "sha256": "4a5ecbc52a67f812c540606c51743b5b95350a23ffd827cddd4eb8f64c0844e0"
+      "bytes": 11818,
+      "sha256": "653f04efe42d50356695d2a80d136a994098ef22ac8d36751db8ed568ef9740e"
     },
     {
       "path": "native-ios/asset_io/native_assets.h",
-      "bytes": 1145,
-      "sha256": "27bf70fbe09cbce5a05c024e6d0ea169a75fcefe3b0098060be6dd93067ecf21"
+      "bytes": 1193,
+      "sha256": "02bc203f2b89caf536aff465c0ea47bfa46fe094496b05bcbcbf6b54973660c7"
     },
     {
       "path": "native-ios/asset_io/native_asset_index.m",
@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 2448,
-      "sha256": "49e64f53a0bd9eef655a563b272c1522e0f3e25cbbd2bf597ed46211924f389d"
+      "bytes": 2493,
+      "sha256": "89e86e52115c30788b19bf3271bc86f83b1b8120849145e06479eded32f48c27"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 7775,
-      "sha256": "b877206b2f263a6e5b660714087e365500d865c129c1a29003fd2e4a47700a98"
+      "bytes": 7864,
+      "sha256": "b67f702aa0393e0189bb1db20092e261c39c3b4bd7e328486d6c1fdd42acd521"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -64,12 +64,12 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1620,
-      "sha256": "cb7c24bd8616f925e5998bdf60a64eb458674418978c167b471688c2acc974d4"
+      "sha256": "0452dce2a5421fd3cbf7cdbfd9edfff28aad1b9910483d7c5e97b264f388381f"
     },
     {
       "path": "native-ios/input/ci-test-input.sh",
-      "bytes": 833,
-      "sha256": "3dfb3b057e8e29f803f434916b11909c552f120097bee3522ec9b2c3d4920ee5"
+      "bytes": 1139,
+      "sha256": "8da1bbf0ca154fd633da56b7a053fdcd75d1266e3f597ac1951f3a9d29ad2ac1"
     },
     {
       "path": "native-ios/input/ci-test-ui.sh",
@@ -83,13 +83,13 @@
     },
     {
       "path": "native-ios/input/native_input.c",
-      "bytes": 6804,
-      "sha256": "ab5432a317649ed5311e624cea5819b53a2cb06156c23ce5149cd08cbb5b7ae6"
+      "bytes": 7393,
+      "sha256": "261f713edf75e351b64dabbe7dfc3fb00671d219ff5f64be5458a2a3d8e1ae6d"
     },
     {
       "path": "native-ios/input/native_input.h",
-      "bytes": 1297,
-      "sha256": "6d35646012fea7be3690e54021be64b6dfa643828d2ea386ddbd5ead4f49d5b6"
+      "bytes": 1312,
+      "sha256": "1039bd2939fba2237855e4f96db2b779109b182e78482c6b46bc161b2cefab16"
     },
     {
       "path": "native-ios/input/test_engine_input.cjs",
@@ -102,9 +102,14 @@
       "sha256": "0fa5e65a458aedb93edcda884b5d5f04a0e1d6db990b5aa8665f8ce5a33dfb5f"
     },
     {
+      "path": "native-ios/input/test_input_queue.c",
+      "bytes": 1896,
+      "sha256": "04d25e4dc76957a37982ff274e8ff3f8d546f53fbdd52a16f48188eaa5bde698"
+    },
+    {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 8938,
-      "sha256": "d7524f64c5ec5c65cbde71672627425aefc580b902c3823eddc5c0660e1a7352"
+      "bytes": 9100,
+      "sha256": "884d9f4b2db835b8950ab67fda2dd5582a24d63e982070559a1e0c6280c240c5"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -293,8 +298,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 14964,
-      "sha256": "43518ce1f8d8031e480bfe337f6df1db93397b4c28dc6c1532adbb2f573b9fca"
+      "bytes": 15099,
+      "sha256": "5a17e17607c0791a0ee8f64112d3206fcbb40e57d55f949c0e923963cf136c75"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -308,8 +313,8 @@
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 3210,
-      "sha256": "3d6640b9885f72ac737de76384ca15b23b507b1944058be705f01eac227b48ae"
+      "bytes": 3230,
+      "sha256": "28093edba8793cf4f0702f835729387cc512f589dcae4a306a71670aab490d89"
     },
     {
       "path": "native-ios/renderer/frame_costs.h",
@@ -388,28 +393,28 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
-      "bytes": 624,
-      "sha256": "e7593bc2b86340a77fc4e2a151ef64edfbcccb24bc8db6ddfe750ccebad1064c"
+      "bytes": 682,
+      "sha256": "3377a1bcf22398c231424bf8c13a039a341c6b1b096219d155bb4a18c547c99a"
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 78159,
-      "sha256": "9f9e7c3188f36c74eae12b45bcc81274824d8a751dd7fc9dff85cf17efc02774"
+      "bytes": 79019,
+      "sha256": "67ec7505c1cf5310d36acf6632a019be64d264894898a3a7e0230e5ba08047c9"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
-      "bytes": 651,
-      "sha256": "6c885d8ccef589046e3fa9e2cbd47074434096bc23a451b95d69c83e673922e4"
+      "bytes": 684,
+      "sha256": "d036ed394a8bf446138b5af843a81ab603cc5f8ed8d7dc707fe10381205557e1"
     },
     {
       "path": "native-ios/renderer/native_metrics.h",
-      "bytes": 859,
-      "sha256": "c9ce3f4408de2b3d93e66634374544b1f8f60a813ec67e31264c9d9db6271e5f"
+      "bytes": 994,
+      "sha256": "0537c26fa60b755c26394b309d8c72175280d5af1fbaf1784a383c9cbd1b2031"
     },
     {
       "path": "native-ios/renderer/native_metrics.inc",
-      "bytes": 4811,
-      "sha256": "76ded49f1e4198654f9bf3a628bc8c2103df72c19db54fa45d23d208a1e79601"
+      "bytes": 6333,
+      "sha256": "6e5e656447c43ddb8dc45279014a38bec8bb7b5dd2bbe46b9e8f5cf49aba40e6"
     },
     {
       "path": "native-ios/renderer/native_mips.inc",
@@ -423,8 +428,8 @@
     },
     {
       "path": "native-ios/renderer/native_readback.inc",
-      "bytes": 8655,
-      "sha256": "bd6342e035df5eb4ee38588412f42a4acbb9e1668ce9dadef0abadc677bdf402"
+      "bytes": 8679,
+      "sha256": "2ba50a97971842622bfe732f597ddc9582ec41fdedfb30e3a8b5c2add2220555"
     },
     {
       "path": "native-ios/renderer/native_renderer.c",
@@ -708,8 +713,8 @@
     },
     {
       "path": "native-ios/renderer/stability_fixture.inc",
-      "bytes": 6944,
-      "sha256": "13134fe4ec50f547876a6abe825fcb253b4938aaab017ae32147e6d66ad48cd5"
+      "bytes": 8216,
+      "sha256": "28c309c0e2c9f5d1908312d0e350c1d669d37bd2202f1b376ef6fd476670d594"
     },
     {
       "path": "native-ios/renderer/storage_formats.inc",
@@ -987,6 +992,11 @@
       "sha256": "93e868c6869a825878465c6bdd75e952da1c73585de16a37b2061854486b7cc3"
     },
     {
+      "path": "native-ios/threading/ci-test-session.sh",
+      "bytes": 662,
+      "sha256": "b3152aa70f180fc700f8de19216c1f1feb8e6dd7bbc491eb69b73565044e20a4"
+    },
+    {
       "path": "native-ios/threading/native_log.h",
       "bytes": 5776,
       "sha256": "7144ea36409f9a83f3d44c7caad04c42644f8503d1ac79bf44c3511f13aa0ea5"
@@ -997,9 +1007,19 @@
       "sha256": "68db33a4b0639adc49775da2d5229ab2ce193172fdfc1ef4642012df9fa185a0"
     },
     {
+      "path": "native-ios/threading/native_session.h",
+      "bytes": 4234,
+      "sha256": "ae852c778f3bfab7696f7a1b76b954a85f9b413ff3ca865c758c90f82bce55fb"
+    },
+    {
+      "path": "native-ios/threading/native_session_bridge.inc",
+      "bytes": 2925,
+      "sha256": "0a5b355330b56872ee92a91d6acb5ce56635f1bd171612a3504bb5510ffcd170"
+    },
+    {
       "path": "native-ios/threading/native_threads.c",
-      "bytes": 31934,
-      "sha256": "cbd1348b26b53c4f8c549564db9d81fab96dc91dfd6023676a62cb721bda81f1"
+      "bytes": 33948,
+      "sha256": "9b50bbc2871eb3e774ae69dfe9652ea12cc51ebf3971a553ca9f51d7ace2b437"
     },
     {
       "path": "native-ios/threading/native_threads.h",
@@ -1020,6 +1040,16 @@
       "path": "native-ios/threading/test_native_log.c",
       "bytes": 2432,
       "sha256": "e6fe314fe33d0b662479a71320a9bdf6725714aafb263663ee5984d9ba6dd9fa"
+    },
+    {
+      "path": "native-ios/threading/test_native_session.c",
+      "bytes": 2814,
+      "sha256": "ed5bc89298023c160c82d8f29dc6530b7085cb3dca9b0ab97788f3bfd494b131"
+    },
+    {
+      "path": "native-ios/threading/test_session_bridge.c",
+      "bytes": 3943,
+      "sha256": "386238c7d7b82c9c0764952a4933682c95d3c78e92f377fa0273363b166f8d26"
     },
     {
       "path": "native-ios/wait-fixture.wat",

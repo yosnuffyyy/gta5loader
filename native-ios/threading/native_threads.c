@@ -1,6 +1,7 @@
 #include "native_threads.h"
 #include "native_pump.h"
 #include "native_log.h"
+#include "native_session.h"
 #include "native_wait.h"
 #include "platform/native_paths.h"
 #include "renderer/native_gpu.h"
@@ -58,28 +59,33 @@ struct NativeThreads {
  _Atomic bool archive_boundary;
  unsigned generations;
  NativeLog log;
+ pthread_mutex_t watch_mutex;NativeSession session;bool watch_enabled,watch_reported;_Atomic uint64_t watch_check_at;
  _Atomic bool stack_notice;
 };
 static _Thread_local NativeThreads *current;
 static _Thread_local NativeWorker *worker;
 static _Thread_local bool servicing_mailbox;
 static _Thread_local unsigned clock_ticks;
-static _Atomic bool scene_stop;
+static _Atomic bool scene_stop,scene_suspended;
 static pthread_mutex_t scene_status_mutex=PTHREAD_MUTEX_INITIALIZER;
 static NativeThreads *scene_runtime;
+static uint64_t now_ns(void);
+static void checked(int);
+#include "native_session_bridge.inc"
 void native_scene_status(char *text,size_t size){
  pthread_mutex_lock(&scene_status_mutex);NativeThreads *r=scene_runtime;
  if(!r)snprintf(text,size,"Native startup has no active runtime.");
- else {native_log_flush(&r->log,r->host->progress,r->host->progress_context);char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));}
+ else {scene_watch_poll(r);native_log_flush(&r->log,r->host->progress,r->host->progress_context);char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));size_t used=strlen(text);if(used<size){char session[400];scene_watch_summary(r,session,sizeof(session));snprintf(text+used,size-used,"\n%s",session);}}
  pthread_mutex_unlock(&scene_status_mutex);
 }
 void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
-void native_scene_reset_stop(void){atomic_store(&scene_stop,false);}
+void native_scene_reset_stop(void){atomic_store(&scene_stop,false);atomic_store(&scene_suspended,false);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
 static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
 bool native_thread_log(struct w2c_env *h,const char *line){
  if(!current||current->host!=h||!current->boot_mode)return false;
+ if(current->watch_enabled&&(strstr(line,"Animated camera intial frame")||strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))){checked(pthread_mutex_lock(&current->watch_mutex));session_log(&current->session,line);checked(pthread_mutex_unlock(&current->watch_mutex));}
  native_log_push(&current->log,line);return true;
 }
 uint64_t native_stack_snapshot(struct w2c_env *h){
@@ -101,7 +107,7 @@ static double probe_proxy(struct w2c_env *h,w2c_gta *e,uint64_t p,unsigned index
 bool native_wait_cancelled(void){
  if(!current)return false;
  if(worker&&current->main_mode)atomic_store(&worker->wait_observed,true);
- if(now_ns()>current->deadline){atomic_store(&current->stopping,true);}
+ if(current->watch_enabled){scene_watch_poll(current);}else if(now_ns()>current->deadline){atomic_store(&current->stopping,true);}
  if(native_assets_failure(current->assets)||native_gpu_error(current->gpu)||(current->boot_mode&&atomic_load(&scene_stop))){atomic_store(&current->stopping,true);}
  return atomic_load(&current->stopping);
 }
@@ -128,7 +134,7 @@ void native_thread_error(struct w2c_env *h,const char *name){
 }
 NativeThreads *native_threads_begin(struct w2c_env *h){
  check(h,!current,"thread runtime already active");NativeThreads *r=calloc(1,sizeof(*r));check(h,r!=NULL,"thread runtime allocation");
- r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));native_log_init(&r->log);servicing_mailbox=false;clock_ticks=0;current=r;return r;
+ r->host=h;r->owner=pthread_self();r->deadline=now_ns()+90000000000ull;checked(pthread_mutex_init(&r->mutex,NULL));checked(pthread_cond_init(&r->changed,NULL));native_log_init(&r->log);checked(pthread_mutex_init(&r->watch_mutex,NULL));servicing_mailbox=false;clock_ticks=0;current=r;return r;
 }
 void native_mailbox_register(struct w2c_env *h,uint64_t tcb){
  check(h,host_range(h,tcb,208)&&(tcb%8)==0,"invalid thread mailbox");
@@ -329,7 +335,7 @@ void native_threads_end(NativeThreads *r){
  native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
  checked(pthread_mutex_lock(&scene_status_mutex));if(scene_runtime==r)scene_runtime=NULL;checked(pthread_mutex_unlock(&scene_status_mutex));
- native_gpu_end(r->gpu);native_log_flush(&r->log,r->host->progress,r->host->progress_context);native_log_destroy(&r->log);checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;servicing_mailbox=false;clock_ticks=0;free(r);
+ native_gpu_end(r->gpu);native_log_flush(&r->log,r->host->progress,r->host->progress_context);native_log_destroy(&r->log);checked(pthread_mutex_destroy(&r->watch_mutex));checked(pthread_cond_destroy(&r->changed));checked(pthread_mutex_destroy(&r->mutex));current=NULL;worker=NULL;servicing_mailbox=false;clock_ticks=0;free(r);
 }
 uint32_t native_calendar(struct w2c_env *h,uint64_t seconds,uint64_t p,bool local){
  (void)local;if(!host_range(h,p,56))return 1;time_t value=(time_t)(int64_t)seconds;struct tm tm;
@@ -348,7 +354,7 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
   uint64_t pointer=~address;
   check(h,current&&current->main_mode,"input hook outside engine main");
   if(!current->boot_mode||!current->display)return;
-  if(pointer==12840656){uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
+  if(pointer==12840656){scene_watch_hook(current);uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
   else if(ni_is_control(pointer)){uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
   /* As in the pinned browser bridge, other CControl instances retain their
      engine-owned source field. Never write an unverified object layout. */
@@ -397,7 +403,7 @@ bool native_main_reached(struct w2c_env *h){
 }
 static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
 uint32_t native_has_display(void){return current&&current->display?1:0;}
-void native_boot_prepare_options(struct w2c_env *h,void *layer,bool checkpoint,bool compatibility){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");native_gpu_reference_shadow_option(r->gpu,compatibility);checked(pthread_mutex_lock(&scene_status_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
+void native_boot_prepare_options(struct w2c_env *h,void *layer,bool checkpoint,bool compatibility){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->watch_enabled=!checkpoint&&r->display;session_begin(&r->session,now_ns());session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");native_gpu_reference_shadow_option(r->gpu,compatibility);checked(pthread_mutex_lock(&scene_status_mutex));checked(pthread_mutex_lock(&r->watch_mutex));session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));checked(pthread_mutex_unlock(&r->watch_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
 void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
@@ -413,7 +419,10 @@ bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
  native_log_flush(&r->log,h->progress,h->progress_context);native_log_diagnostics(&r->log,h->progress,h->progress_context);
  if(h->progress){char assets[384];native_assets_summary(r->assets,assets,sizeof(assets));h->progress(h->progress_context,assets);}
  if(r->gpu_checkpoint){const char *path=native_assets_boundary(r->assets);bool reached=atomic_load(&r->archive_boundary)&&native_gpu_ready(r->gpu)&&r->input&&r->audio&&path&&!strcmp(path,"x64/audio/audio.rpf")&&!h->failure;return reached;}
- if(!h->failure&&!atomic_load(&scene_stop))h->failure=now_ns()>r->deadline?"native scene startup timed out (180 seconds)":"native scene engine stopped without a verified scene";
+ if(r->watch_enabled){char session[512];scene_watch_summary(r,session,sizeof(session));report(h,session);}
+ checked(pthread_mutex_lock(&r->watch_mutex));unsigned fault=r->session.fault;session_stop(&r->session);checked(pthread_mutex_unlock(&r->watch_mutex));
+ if(!h->failure&&fault)h->failure=session_failure(fault);
+ if(!h->failure&&!atomic_load(&scene_stop))h->failure=(!r->watch_enabled&&now_ns()>r->deadline)?"native diagnostic startup timed out (180 seconds)":"native scene engine stopped without a verified scene";
  return !h->failure&&atomic_load(&scene_stop);
 }
 

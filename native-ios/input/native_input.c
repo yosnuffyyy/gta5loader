@@ -8,14 +8,19 @@
 typedef struct {NIState state;uint64_t at;} NIEvent;
 static struct {
  pthread_mutex_t lock;
- NIState physical,output;NIEvent queue[NI_QUEUE];unsigned head,count;
+ NIState physical,output;NIEvent queue[NI_QUEUE];unsigned head,count;uint32_t delivered_buttons;
  uint32_t blocked;bool connected,running,focused,baseline,stick_ready[2],stick_blocked[2],trigger_ready[2],pad_saved;
  uint8_t saved50,saved55;NISource source;
  float deadzone,sensitivity;NIMetrics metrics;
 } input={.lock=PTHREAD_MUTEX_INITIALIZER,.deadzone=.15f,.sensitivity=1};
 static void lock(void){if(pthread_mutex_lock(&input.lock))abort();}
 static void unlock(void){if(pthread_mutex_unlock(&input.lock))abort();}
+#if defined(NI_TEST_CLOCK)
+extern uint64_t ni_test_clock(void);
+static uint64_t ns(void){return ni_test_clock();}
+#else
 static uint64_t ns(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t))abort();return (uint64_t)t.tv_sec*1000000000ull+(uint64_t)t.tv_nsec;}
+#endif
 static float finite_clamp(float x,float lo,float hi){return !isfinite(x)?0:fminf(hi,fmaxf(lo,x));}
 static void stick(float *x,float *y){*x=finite_clamp(*x,-1,1);*y=finite_clamp(*y,-1,1);float m=hypotf(*x,*y);if(m<input.deadzone){*x=*y=0;}else if(m>1){*x/=m;*y/=m;}}
 static NIState clean(NIState s){s.buttons&=65535;stick(&s.lx,&s.ly);stick(&s.rx,&s.ry);s.lt=finite_clamp(s.lt,0,1);s.rt=finite_clamp(s.rt,0,1);/* Trigger threshold applies consistently to both sources. */s.buttons&=~(NI_L2|NI_R2);if(s.lt>.05f)s.buttons|=NI_L2;if(s.rt>.05f)s.buttons|=NI_R2;return s;}
@@ -56,8 +61,14 @@ NISource ni_controller(NIState raw){
 NISource ni_touch(NIState raw,bool begin){lock();input.metrics.events++;if(input.running&&input.focused){if(begin)switch_to(NI_TOUCH);if(input.source==NI_TOUCH){NIState s=clean(raw);s.rx=finite_clamp(s.rx*input.sensitivity,-1,1);s.ry=finite_clamp(s.ry*input.sensitivity,-1,1);enqueue(s);}}NISource mode=input.source;unlock();return mode;}
 static uint8_t axis(float x,bool invert){x=finite_clamp(x,-1,1);if(invert)x=-x;return (uint8_t)lroundf(128+x*(x<0?128:127));}
 void ni_consume(uint8_t pad[56]){
- lock();NIState s=input.output;if(input.count){NIEvent e=input.queue[input.head];input.head=(input.head+1)%NI_QUEUE;input.count--;s=e.state;if(e.at){double ms=(ns()-e.at)/1e6;input.metrics.samples++;input.metrics.mean_ms+=(ms-input.metrics.mean_ms)/(double)input.metrics.samples;if(ms>input.metrics.max_ms)input.metrics.max_ms=ms;}}
+ lock();
+ /* A leading analog-only snapshot has no button edge if its buttons already
+    match the last engine delivery. Fold it into the next queued snapshot;
+    never skip a press/release, including neutral during source takeover. */
+ while(input.count>1&&input.queue[input.head].state.buttons==input.delivered_buttons){input.head=(input.head+1)%NI_QUEUE;input.count--;input.metrics.analog_skipped++;}
+ NIState s=input.output;if(input.count){NIEvent e=input.queue[input.head];input.head=(input.head+1)%NI_QUEUE;input.count--;s=e.state;if(e.at){double ms=(ns()-e.at)/1e6;input.metrics.samples++;input.metrics.mean_ms+=(ms-input.metrics.mean_ms)/(double)input.metrics.samples;if(ms>input.metrics.max_ms)input.metrics.max_ms=ms;}}
  if(!input.running||!input.focused)s=(NIState){0};
+ input.delivered_buttons=s.buttons;
  if(!input.pad_saved){input.saved50=pad[50];input.saved55=pad[55];input.pad_saved=true;}
  memcpy(pad+12,&s.buttons,4);pad[20]=axis(s.lx,false);pad[21]=axis(s.ly,true);pad[22]=axis(s.rx,false);pad[23]=axis(s.ry,true);pad[24]=(uint8_t)lroundf(s.lt*255);pad[25]=(uint8_t)lroundf(s.rt*255);
  pad[50]=input.running?1:input.saved50;pad[55]=input.running?1:input.saved55;input.metrics.consumed++;unlock();

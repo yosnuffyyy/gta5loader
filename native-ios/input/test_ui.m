@@ -15,6 +15,8 @@ int native_graphics_checkpoint(const char *g,const char *s,native_progress p,voi
 int native_scene_probe_options(const char *g,const char *s,void *l,bool b,native_progress p,void *c,char *r,size_t n){abort();}
 void native_scene_request_stop(void){}
 void native_scene_reset_stop(void){}
+static bool testSessionSuspended;
+void native_scene_suspend(bool value){testSessionSuspended=value;}
 void native_scene_status(char *s,size_t n){snprintf(s,n,"UI test only; no engine");}
 static unsigned checks;
 #define REQUIRE(x) do{checks++;if(!(x))[NSException raise:@"InputUITest" format:@"%s line %d",#x,__LINE__];}while(0)
@@ -50,7 +52,7 @@ static unsigned checks;
           p.fullscreenSwitch.on=NO;[p fullscreenChanged];[p.view layoutIfNeeded];REQUIRE(!p.immersive&&p.gameControls.superview==p.mainStack);REQUIRE(p.gameHeight.active&&!p.mainScroll.hidden);REQUIRE(![NSUserDefaults.standardUserDefaults boolForKey:@"inputFullscreen"]);REQUIRE(p.mainScroll.scrollEnabled&&p.mainScroll.canCancelContentTouches);REQUIRE([p.mainScroll touchesShouldCancelInContentView:p.filesButton]);
         }
         p.deadzoneSlider.value=.2;p.sensitivitySlider.value=1.25;p.opacitySlider.value=.4;p.sizeSlider.value=1.1;[p inputSettingsChanged];REQUIRE(fabsf([NSUserDefaults.standardUserDefaults floatForKey:@"inputDeadzone"]-.2f)<.001);REQUIRE(fabs(p.gameControls.art.alpha-.4)<.001);
-        [p inputInterrupted:nil];uint8_t raw[56]={0};ni_consume(raw);uint32_t mask;memcpy(&mask,raw+12,4);REQUIRE(mask==0);[p inputResumed:nil];REQUIRE(ni_source()==NI_TOUCH);
+        [p inputInterrupted:nil];REQUIRE(testSessionSuspended);uint8_t raw[56]={0};ni_consume(raw);uint32_t mask;memcpy(&mask,raw+12,4);REQUIRE(mask==0);[p inputResumed:nil];REQUIRE(!testSessionSuspended);REQUIRE(ni_source()==NI_TOUCH);
         ni_connect(false);[p.gameControls updateSource];REQUIRE(p.gameControls.art.alpha>0);p.sceneRunning=NO;p.gameControls.playing=NO;ni_end();[p applyFullscreen];REQUIRE(p.gameControls.art.alpha==0);
         ProbeController *reloaded=[[ProbeController alloc]init];[reloaded loadViewIfNeeded];REQUIRE(fabsf(reloaded.sensitivitySlider.value-1.25f)<.001);REQUIRE(fabsf(reloaded.sizeSlider.value-1.1f)<.001);result[@"result"]=@"PASS";
       } @catch(NSException *error){result[@"error"]=error.reason?:@"unknown exception";}

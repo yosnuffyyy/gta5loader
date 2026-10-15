@@ -33,7 +33,7 @@ for(const target of ['macos','ios']){
    const item={dependencyHash,args,sourceHash:hash(fs.readFileSync(source))};
 // Extra header applies only to host consumers. Engine cache keys stay unchanged.
 if(!generated.includes(source)&&!runtime.includes(source)){
- item.hostHeaders=['native-ios/input/native_input.h','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
+ item.hostHeaders=['native-ios/input/native_input.h','native-ios/threading/native_session.h','native-ios/threading/native_session_bridge.inc','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
 }
 const key=hash(JSON.stringify(item));
    const cached=cache+'/'+key+'.o',record=cache+'/'+key+'.sha256';

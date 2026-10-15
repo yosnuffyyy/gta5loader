@@ -1,12 +1,12 @@
 /* Production command replay, deterministic pixels and exact occlusion counts.
    CLI comparisons isolate policy changes; their times are not iPhone FPS. */
-static bool uniform_order_fixture(struct w2c_env *h,bool old,char *report,size_t capacity){
+static bool uniform_order_mode(struct w2c_env *h,bool old,bool maps,bool legacy,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=base+126000;
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;
 #ifdef NATIVE_PROBE_CLI
- g->test_uniform_wrap_wait=old;
+ g->test_uniform_wrap_wait=old;g->test_no_map_retirement=legacy;
 #else
- if(old){native_gpu_end(g);return false;}
+ if(old||legacy){native_gpu_end(g);return false;}
 #endif
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
@@ -22,6 +22,7 @@ static bool uniform_order_fixture(struct w2c_env *h,bool old,char *report,size_t
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
   /* Existing GPU resource mutation ends each batch, without a CPU readback. */
   cmd[0]=118;cmd[1]=0;cmd[2]=4;cmd[3]=i;EMIT(12,4);
+  if(maps&&(i%8)==7){memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);}
  }
  cmd[0]=11165;cmd[1]=901;EMIT(46,2);
  memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
@@ -30,11 +31,16 @@ static bool uniform_order_fixture(struct w2c_env *h,bool old,char *report,size_t
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=902&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&host_u64(h,address+8)==96&&atomic_load_explicit(heap_word(g,address),memory_order_acquire)==901&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)==902&&g->draw.batches==96&&g->draw.draws==96;
  uint8_t pixels[1024];host_load(h,pixels,dst,sizeof(pixels));for(unsigned i=0;i<256&&ok;i++){float scale=(i&1)?.5f:1,alpha=(i&2)?.5f:1;int expected[]={i<96?(int)lroundf(200*scale):0,i<96?(int)lroundf(100*scale):0,i<96?(int)lroundf(50*scale):0,i<96?(int)lroundf(255*alpha):0};for(unsigned c=0;c<4;c++)if(abs((int)pixels[i*4+c]-expected[c])>1)ok=false;}
- ok=ok&&g->draw.uniform_pressure_waits==(old?0u:6u)&&g->metrics.windows[METRIC_COMPLETION].count==(old?33u:7u);
+ unsigned pressure=old?0u:maps&&!legacy?0u:6u,completions=old?33u:maps&&!legacy?1u:7u;
+ ok=ok&&g->draw.uniform_pressure_waits==pressure&&g->metrics.windows[METRIC_COMPLETION].count==completions;
+ if(maps)ok=ok&&g->readbacks==13&&g->draw.uniform_map_retired==(legacy?0u:96u);
  if(report&&capacity)snprintf(report,capacity,"%s: uniform queue ordering %s: 96 changing-constant batches, 32 slot wraps, all 256 pixels and exact 96 samples; completion waits %llu, CPU wait %.3fms, pressure waits %llu; no stale uniform data. %s",ok?"PASS":"FAIL",old?"0.23 reference":"bounded queue reuse",(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,g->metrics.windows[METRIC_COMPLETION].total_ns/1e6,(unsigned long long)g->draw.uniform_pressure_waits,native_gpu_error(g)?native_gpu_error(g):"");
+ if(maps&&report&&capacity)snprintf(report,capacity,"%s: ordered readback uniform retirement %s:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits %llu, explicit completions %llu, retired batches %llu; completion CPU %.3fms. Same16-batch/4MiB bound, no new staging or GPU waits.",ok?"PASS":"FAIL",legacy?"0.30 reference":"corrected",(unsigned long long)g->draw.uniform_pressure_waits,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_map_retired,g->metrics.windows[METRIC_COMPLETION].total_ns/1e6);
  native_gpu_end(g);return ok;
 }
+static bool uniform_order_fixture(struct w2c_env *h,bool old,char *report,size_t capacity){return uniform_order_mode(h,old,false,false,report,capacity);}
 #ifdef NATIVE_PROBE_CLI
+static bool uniform_map_fixture(struct w2c_env *h,bool legacy,char *report,size_t capacity){return uniform_order_mode(h,false,true,legacy,report,capacity);}
 static bool pipeline_working_set_fixture(struct w2c_env *h,unsigned mode,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=base+126000;
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_pipeline_capacity=mode;
