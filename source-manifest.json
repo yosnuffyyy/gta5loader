@@ -29,7 +29,7 @@
     {
       "path": "native-ios/ci-convert.sh",
       "bytes": 2448,
-      "sha256": "20a493f5bf835278357802cc6a1317029689d30a4f6d5c4f768665c4e5f7ddcf"
+      "sha256": "49e64f53a0bd9eef655a563b272c1522e0f3e25cbbd2bf597ed46211924f389d"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -73,8 +73,8 @@
     },
     {
       "path": "native-ios/input/ci-test-ui.sh",
-      "bytes": 2861,
-      "sha256": "6c6f8f621a0ff37b61ddb2b702ecabfc800159980c369b61dcdb84be02bb8279"
+      "bytes": 3599,
+      "sha256": "14392e2a6060f942165af08c0b3fddf7fbfff0c5b4e26420dd3a9df159ee2c45"
     },
     {
       "path": "native-ios/input/NativeControls.inc",

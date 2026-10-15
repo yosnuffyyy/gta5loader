@@ -2,7 +2,8 @@
 set -euo pipefail
 mkdir -p native-build/input-ui
 xcrun simctl list runtimes --json > native-build/input-ui/runtimes.json
-runtime=$(node -e "const r=require('./native-build/input-ui/runtimes.json').runtimes.find(r=>r.isAvailable&&r.identifier.includes('.iOS-'));process.stdout.write(r?.identifier||'')")
+xcrun simctl list devices available --json > native-build/input-ui/devices.json
+runtime=$(node -e "const r=require('./native-build/input-ui/runtimes.json').runtimes.filter(r=>r.isAvailable&&r.identifier.includes('.iOS-')).sort((a,b)=>b.version.localeCompare(a.version,undefined,{numeric:true}))[0];process.stdout.write(r?.identifier||'')")
 if [ -z "$runtime" ]; then
   echo '{"result":"UNAVAILABLE","reason":"No installed iOS simulator runtime. UIKit execution not verified."}' > native-build/evidence/native-input-ui.json
   exit 0
@@ -17,7 +18,9 @@ cat > "$app/Info.plist" <<'PLIST'
 PLIST
 codesign --force --sign - "$app"
 xcrun simctl list devicetypes --json > native-build/input-ui/device-types.json
-kind=$(node -e "process.stdout.write(require('./native-build/input-ui/device-types.json').devicetypes.filter(x=>x.name.startsWith('iPhone')).at(-1).identifier)")
+kind=$(NATIVE_UI_RUNTIME="$runtime" node -e "const devices=require('./native-build/input-ui/devices.json').devices[process.env.NATIVE_UI_RUNTIME]||[];const d=devices.find(d=>d.name.includes('iPhone 16 Pro Max'))||devices.find(d=>d.name.startsWith('iPhone'));const supported=require('./native-build/input-ui/runtimes.json').runtimes.find(r=>r.identifier===process.env.NATIVE_UI_RUNTIME)?.supportedDeviceTypes||[];const type=supported.find(d=>d.name?.startsWith('iPhone'));process.stdout.write(d?.deviceTypeIdentifier||type?.identifier||'com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max')")
+echo "UI fixture runtime $runtime / device type $kind"
+cp native-build/input-ui/runtimes.json native-build/evidence/native-input-ui-runtimes.json
 device=$(xcrun simctl create NativeInput029 "$kind" "$runtime")
 trap 'xcrun simctl shutdown "$device" >/dev/null 2>&1 || true; xcrun simctl delete "$device" >/dev/null 2>&1 || true' EXIT
 xcrun simctl boot "$device"
