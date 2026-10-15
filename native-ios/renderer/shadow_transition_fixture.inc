@@ -22,6 +22,8 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  memset(cmd,0,sizeof(cmd));cmd[0]=712;float z=.75f;memcpy(cmd+3,&z,4);EMIT(5,7);
  uint32_t spot_srv[]={713,0,712,41,4,0,1,0,0};memcpy(cmd,spot_srv,sizeof(spot_srv));EMIT(17,9);
  cmd[0]=1;cmd[1]=24;cmd[2]=1;cmd[3]=713;EMIT(24,4);
+ uint64_t query_address=dst+32800;
+ if(reference){host_put32(h,query_address,0);cmd[0]=800;cmd[1]=1;cmd[2]=(uint32_t)query_address;cmd[3]=query_address>>32;EMIT(44,4);cmd[0]=800;EMIT(45,1);}
  unsigned expected[32]={0};
  for(unsigned test=0;test<32;test++){
   unsigned mode=test%8,first=(test/8)%2?2:0;
@@ -45,6 +47,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
   cmd[0]=715;cmd[1]=first*16+32;cmd[2]=4;cmd[3]=count;EMIT(12,4);
   cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=selected;EMIT(24,4);
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
+  if(reference&&test==5){cmd[0]=800;cmd[1]=991;EMIT(46,2);}
   expected[test]=selected==711&&test<16?0:255;
   memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)(dst+test*1024);cmd[10]=(dst+test*1024)>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
  }
@@ -65,11 +68,11 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  native_gpu_stop(g);
  bool state=invalid?(native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&(reference||strstr(native_gpu_error(g),invalid==1?"raw40000000":"raw7fc00000"))):!native_gpu_error(g);
  ok=ok&&state&&g->draw.draws==32&&g->metrics.shadow_creates==1&&g->metrics.shadow_hits>=19&&g->draw.creates==2&&g->draw.hits==30&&g->metrics.pipeline_evictions==0;
- if(reference)ok=ok&&g->reference_shadow_uses==4&&g->reference_shadow_allocations==1;
+ if(reference)ok=ok&&g->reference_shadow_uses==4&&g->reference_shadow_allocations==1&&host_u64(h,query_address+8)==1536&&atomic_load_explicit(heap_word(g,query_address),memory_order_acquire)==991;
  for(unsigned t=0;t<32&&ok;t++){uint8_t pixels[1024];host_load(h,pixels,dst+t*1024,sizeof(pixels));for(unsigned i=0;i<256&&ok;i++)for(unsigned c=0;c<4;c++)if(pixels[i*4+c]!=(c==3?255:expected[t]))ok=false;}
  {uint32_t original[2];host_load(h,original,dst+32768,8);ok=ok&&!original[0]&&!original[1];}
  if(report&&capacity)snprintf(report,capacity,"%s: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final %s. Original2D bytes/layers retained.",ok?"PASS":"FAIL",invalid==1?"active2D rejected":invalid==2?"ambiguous2D rejected":"valid transitions");
- if(reference&&report&&capacity)snprintf(report,capacity,"%s: optional reference empty-shadow ring test: 32 draws/8192 pixels, four exact captured active709 bindings, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube; final %s. Original BC1 bytes retained.",ok?"PASS":"FAIL",invalid==1?"real-comparison invalid709 rejected":invalid==2?"ambiguous selector rejected":invalid==3?"changed source version rejected":invalid==4?"invalid mip range rejected":"valid changing light states");
+ if(reference&&report&&capacity)snprintf(report,capacity,"%s: optional reference empty-shadow ring test: 32 draws/8192 pixels, four exact captured active709 bindings, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final %s. Original BC1 bytes retained.",ok?"PASS":"FAIL",invalid==1?"real-comparison invalid709 rejected":invalid==2?"ambiguous selector rejected":invalid==3?"changed source version rejected":invalid==4?"invalid mip range rejected":"valid changing light states");
  if(!ok&&report&&capacity){size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used," Actual draws/pipelines/hits/variants/variantHits %llu/%llu/%llu/%llu/%llu. %s",(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,(unsigned long long)g->metrics.shadow_creates,(unsigned long long)g->metrics.shadow_hits,native_gpu_error(g)?native_gpu_error(g):"Pixel or completion mismatch");}
  native_gpu_end(g);return ok;
 }

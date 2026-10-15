@@ -57,7 +57,7 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
    }
   }
   if(g->metrics.shadow_creates!=1||g->metrics.shadow_hits-hits!=11||g->metrics.shadow_evictions)goto cleanup;
-  puts("PASS: full original ac2dd56e1111be56/996bb42f448956f2 pair: 18 alternating required/inactive/ambiguous binding selections; one certified variant reused only after fresh uniform proofs; CB offsets and object generation changes preserved; real six-face resource for required samples. Pipeline validation, not scene pixels.");
+  printf("PASS: full original %s/996bb42f448956f2 pair: 18 alternating required/inactive/ambiguous binding selections; one certified variant reused only after fresh uniform proofs; CB offsets and object generation changes preserved; real six-face resource for required samples. Pipeline validation, not scene pixels.\n",reference?"a276344f1111242f":"ac2dd56e1111be56");
  }
  {uint32_t a[]={8306,32,4,1},b[]={8307,252,4,0x40000000};g->cb[1][3][1]=g->cb[1][6][1]=0;if(!execute_impl(g,12,(uint8_t*)a,4)||!execute_impl(g,12,(uint8_t*)b,4))goto cleanup;}
  for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;

@@ -423,8 +423,8 @@
     },
     {
       "path": "native-ios/renderer/ped_shadow_audit.inc",
-      "bytes": 11582,
-      "sha256": "53ac51c09b6d45bd7de1c21123e50b220d0d4d57f0c5e2939bfa850466adfae6"
+      "bytes": 11620,
+      "sha256": "aa2728bc41a878f6471594d7a867807d65a4b8f568cb3675ccdcfdd5a4418f6d"
     },
     {
       "path": "native-ios/renderer/perf_fixture.inc",
@@ -638,8 +638,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_transition_fixture.inc",
-      "bytes": 8044,
-      "sha256": "9f1fa04b2dacaf6f514b315e31b76c48e457508240985f319eb6fc8099a8202f"
+      "bytes": 8467,
+      "sha256": "ba1a87a15f4d33743a0d4568728041b8aad3c1dd44b2e8bfc85d1cba6477a4b0"
     },
     {
       "path": "native-ios/renderer/snorm_fixture.inc",
