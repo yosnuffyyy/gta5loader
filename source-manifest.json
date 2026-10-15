@@ -323,8 +323,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 20436,
-      "sha256": "c21561d0aa0bf1be47a9cfffa85c07629f7e4aa38b14290ac2a1f2dd97d6706f"
+      "bytes": 20416,
+      "sha256": "f045ca6fe2e496cde239a8263370989bea234cda506688c407340653f421a099"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -563,8 +563,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_fixture.inc",
-      "bytes": 7292,
-      "sha256": "3e6fd3b83c667cbe80c977d1e3cdd906a80167dbb70dc021fc2c64e2cdb94ac8"
+      "bytes": 7376,
+      "sha256": "56b5dd33621298cc3cb09c2a4457f584b3adebb246aeadbb49c73791949189c5"
     },
     {
       "path": "native-ios/renderer/shadow_fixture_source.inc",
@@ -578,8 +578,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_guard.inc",
-      "bytes": 6314,
-      "sha256": "4b0a8c7ef72dc5003d2c0b68d8de424c11df61a356dc1df20dfb29dbaf472711"
+      "bytes": 6436,
+      "sha256": "142fd1d1018f689cfc76104a7c69132985cefd6c3a6db89bff06e5db86d089d9"
     },
     {
       "path": "native-ios/renderer/shadow_guard_reflect.inc",

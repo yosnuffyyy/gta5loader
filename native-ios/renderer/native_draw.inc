@@ -71,7 +71,6 @@ static bool draw_pass(NativeGpu *g){DrawState *s=&g->draw;if(s->pass&&!memcmp(g-
 }
 #include "native_compute.inc"
 static bool draw_execute(NativeGpu *g,const uint8_t *payload){@autoreleasepool{
- g->srv_guard[0]=0;
  unsigned kind=gpu_word(payload,0),count=gpu_word(payload,1),instances=gpu_word(payload,2),start=gpu_word(payload,3),first_instance=gpu_word(payload,5);int32_t base=(int32_t)gpu_word(payload,4);if(!check(g,kind<=5,"Unknown draw kind"))return false;if(kind<4&&(!count||!instances))return true;
  Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);DrawProgram *vp=draw_program(g,vs),*pp=ps?draw_program(g,ps):NULL;if(!vp||(ps&&!pp))return false;vp=storage_program(g,vp);if(pp)pp=storage_program(g,pp);if(!vp||(ps&&!pp))return false;if(pp)pp=shadow_program(g,pp);if(ps&&!pp)return false;
  DrawPipeline *pipeline=draw_pipeline(g,vs,ps,vp,pp);if(!pipeline)return false;
