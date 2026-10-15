@@ -10,6 +10,7 @@ static NSUInteger shadow_close(NSString *s,NSUInteger start,unichar open,unichar
 }
 static void shadow_reflect(DrawProgram *p,NSString *text,NSArray *members){
  bool cube=false;for(unsigned i=0;i<p->count;i++)if(p->bindings[i].kind==4&&p->bindings[i].dim==WGPUTextureViewDimension_Cube&&p->bindings[i].sample==WGPUTextureSampleType_Depth)cube=true;if(!cube||p->stage!=1||[text containsString:@"//"]||[text containsString:@"/*"]||[text containsString:@"\""])return;for(unsigned i=0;i<p->count;i++)if(p->bindings[i].kind>=5)return;
+ if(draw_matches(@"\\b(?:var|let|const)(?:<[^>]*>)?\\s+cbpack_v\\b",text).count!=1||draw_matches(@"\\bcbpack_v\\s*:",text).count!=1)return;
  NSString *pat=@"(r\\d+\\.[xyzw]) = bitcast<f32>\\(select\\(0u, 4294967295u, !\\(\\(cbpack_v\\.(\\w+)\\.(\\w+)\\[(\\d+)u?\\]\\.([xyzw]) == (0|3)\\.0f\\)\\)\\)\\);\\s*if \\(\\(bitcast<u32>\\(\\1\\) != 0u\\)\\) \\{";
  struct {NSUInteger from,to;ShadowCondition condition;} regions[32];unsigned region_count=0;
  for(NSTextCheckingResult *m in draw_matches(pat,text)){
@@ -25,9 +26,10 @@ static void shadow_reflect(DrawProgram *p,NSString *text,NSArray *members){
   NSArray *decl=draw_matches([NSString stringWithFormat:@"@group\\(1u?\\)\\s*@binding\\(%uu?\\)\\s*var\\s+(\\w+)\\s*:\\s*texture_depth_cube\\s*;",b->binding],text);if(decl.count!=1)continue;NSTextCheckingResult *d=decl[0];NSString *name=draw_capture(text,d,1);
   NSArray *uses=draw_matches([NSString stringWithFormat:@"\\b%@\\b",[NSRegularExpression escapedPatternForString:name]],text);if(uses.count!=2)continue;NSTextCheckingResult *use=uses[1];if(use.range.location<NSMaxRange(d.range))continue;
   NSString *callPrefix=[@"textureSampleCompareLevel(" stringByAppendingString:name];NSRange call=[text rangeOfString:callPrefix options:NSBackwardsSearch range:NSMakeRange(0,NSMaxRange(use.range))];if(call.location==NSNotFound||call.location+call.length!=NSMaxRange(use.range))continue;
+  if(call.location){unichar before=[text characterAtIndex:call.location-1];if(before=='_'||[NSCharacterSet.alphanumericCharacterSet characterIsMember:before])continue;}
   NSUInteger open=call.location+[@"textureSampleCompareLevel" length],end=shadow_close(text,open,'(',')');if(end==NSNotFound)continue;
   ShadowGuard guard={.binding=b->binding,.decl_start=(uint32_t)d.range.location,.decl_length=(uint32_t)d.range.length,.call_start=(uint32_t)call.location,.call_length=(uint32_t)(end+1-call.location)};
-  for(unsigned j=0;j<region_count&&guard.count<2;j++)if(regions[j].from<call.location&&regions[j].to>end)guard.conditions[guard.count++]=regions[j].condition;
+  for(unsigned j=0;j<region_count&&guard.count<2;j++)if(regions[j].from<call.location&&regions[j].to>end&&regions[j].condition.true_arm)guard.conditions[guard.count++]=regions[j].condition;
   if(guard.count)plan.guards[plan.count++]=guard;
  }
  if(plan.count){p->shadow_plan=malloc(sizeof(plan));if(p->shadow_plan)*p->shadow_plan=plan;}

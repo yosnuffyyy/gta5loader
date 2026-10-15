@@ -563,18 +563,18 @@
     },
     {
       "path": "native-ios/renderer/shadow_guard.h",
-      "bytes": 792,
-      "sha256": "bc964020ec6ed0f882f616270302a23204fb0dc4be5d97f53363fe9809f15aea"
+      "bytes": 1275,
+      "sha256": "3335c2a7cad5fe520497f09542ecfca9b671ad8640efdd3db634709e185b71e7"
     },
     {
       "path": "native-ios/renderer/shadow_guard.inc",
-      "bytes": 5824,
-      "sha256": "4a7717299a76c29a6306e0d124bdd540c21f7dfe42c20e6b62ba2736439b72a5"
+      "bytes": 6135,
+      "sha256": "9e6747eca8a285131de27955eb217e6ecc1856cfe63f3bc71b6f415b35b762f5"
     },
     {
       "path": "native-ios/renderer/shadow_guard_reflect.inc",
-      "bytes": 5037,
-      "sha256": "247d3b799b83c3eb8e2f36b89e3b1a7e21acfd020efa2f5cb6351888a431b321"
+      "bytes": 5377,
+      "sha256": "89c2559201539c668362dd9653e3c5b495c41a2a5b1d7cb0eb0f6262c7b7455c"
     },
     {
       "path": "native-ios/renderer/snorm_fixture.inc",
@@ -593,8 +593,8 @@
     },
     {
       "path": "native-ios/renderer/test-shadow-source.mjs",
-      "bytes": 4215,
-      "sha256": "eac7181abdab89ba05bcc4cdd4290da57201ffbeb020920e68ea564ea978aed4"
+      "bytes": 4557,
+      "sha256": "627db0c416e8b9e3d5405aa144603e191daf5829d57ac3b0cceadf41bf28eed4"
     },
     {
       "path": "native-ios/renderer/test_buffer_upload.c",
@@ -653,8 +653,8 @@
     },
     {
       "path": "native-ios/renderer/test_shadow_guard.c",
-      "bytes": 940,
-      "sha256": "faf49e299be00f9bee6f9a73506879202f7ae880dcee978be4b783345d87bfe3"
+      "bytes": 1484,
+      "sha256": "aae29904fafe23c67bc3f695c61261b39e43bd50167a6307a637c13f000b3ac6"
     },
     {
       "path": "native-ios/renderer/test_timing_window.c",

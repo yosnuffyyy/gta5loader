@@ -1,17 +1,18 @@
-static float shadow_uniform(NativeGpu *g,DrawProgram *p,ShadowCondition c){
- Object *o=object(g,g->cb[p->stage][c.slot][0]);uint64_t offset=(uint64_t)g->cb[p->stage][c.slot][1]*16+(uint64_t)c.word*4;float value=0;
+static uint32_t shadow_uniform_bits(NativeGpu *g,DrawProgram *p,ShadowCondition c){
+ Object *o=object(g,g->cb[p->stage][c.slot][0]);uint64_t offset=(uint64_t)g->cb[p->stage][c.slot][1]*16+(uint64_t)c.word*4;uint32_t value=0;
  /* Exactly the packed-uniform ABI: absent bytes are zero, numConstants is
     not applied by the original browser. Partial copies are handled below. */
  if(o&&o->kind==11&&o->shadow&&offset<o->size){uint64_t n=o->size-offset;if(n>4)n=4;memcpy(&value,o->shadow+offset,(size_t)n);}return value;
 }
+static float shadow_uniform(NativeGpu *g,DrawProgram *p,ShadowCondition c){uint32_t bits=shadow_uniform_bits(g,p,c);float value;memcpy(&value,&bits,4);return value;}
 static DrawProgram *shadow_program(NativeGpu *g,DrawProgram *p){
  if(!p||!p->shadow_plan)return p;uint32_t mask=0;
  for(unsigned i=0;i<p->shadow_plan->count;i++){ShadowGuard *guard=p->shadow_plan->guards+i;Object *srv=object(g,g->srv[p->stage][guard->binding-32]);if(!srv||srv->kind!=17||srv->words!=9||srv->meta[1]||srv->meta[4]!=4)continue;Object *o=object(g,srv->meta[2]);if(!o||!o->texture||o->td.dimension!=WGPUTextureDimension_2D||o->td.sampleCount!=1||o->td.size.depthOrArrayLayers!=1)continue;
   /* This is a valid original 2D SRV, not a malformed cube descriptor. Do
      not conceal invalid original ranges or incompatible numeric formats. */
   uint32_t mips,layers;if(!depth_proxy_range(o->td.mipLevelCount,1,srv->meta[5],srv->meta[6],srv->meta[7],1,&mips,&layers))continue;WGPUTextureFormat f=srv->meta[3]?format(srv->meta[3],0):o->td.format;bool compatible=f==o->td.format;for(unsigned k=0;k<o->td.viewFormatCount;k++)compatible=compatible||f==o->views[k];if(!compatible)continue;
-  bool inactive=false;for(unsigned j=0;j<guard->count;j++)if(!shadow_condition_runs(guard->conditions[j],shadow_uniform(g,p,guard->conditions[j])))inactive=true;
-  if(g->host->progress&&g->metrics.shadow_decisions++<16){char line[420];snprintf(line,sizeof(line),"Cube/2D binding decision: PS %s binding %u SRV %u source %u version %llu; guard[%u:%u %g %s %g; %u:%u %g %s %g]; inactive proof %u. Original 2D SRV retained without adding faces.",p->hash,guard->binding,srv->id,o->id,(unsigned long long)o->version,guard->conditions[0].slot,guard->conditions[0].word,shadow_uniform(g,p,guard->conditions[0]),guard->conditions[0].true_arm?"!=":"==",guard->conditions[0].equals,guard->count>1?guard->conditions[1].slot:0,guard->count>1?guard->conditions[1].word:0,guard->count>1?shadow_uniform(g,p,guard->conditions[1]):0,guard->count>1&&guard->conditions[1].true_arm?"!=":"==",guard->count>1?guard->conditions[1].equals:0,inactive);g->host->progress(g->host->progress_context,line);texture_history(g,o);}
+  bool inactive=false;for(unsigned j=0;j<guard->count;j++)if(shadow_proven_inactive(guard->conditions[j],shadow_uniform_bits(g,p,guard->conditions[j])))inactive=true;
+  if(g->host->progress&&g->metrics.shadow_decisions++<16){char line[420];snprintf(line,sizeof(line),"Cube/2D binding decision: PS %s binding %u SRV %u source %u version %llu; guard[%u:%u %g %s %g; %u:%u %g %s %g]; inactive proof %u, raw bits %08x/%08x. Original 2D SRV retained without adding faces.",p->hash,guard->binding,srv->id,o->id,(unsigned long long)o->version,guard->conditions[0].slot,guard->conditions[0].word,shadow_uniform(g,p,guard->conditions[0]),guard->conditions[0].true_arm?"!=":"==",guard->conditions[0].equals,guard->count>1?guard->conditions[1].slot:0,guard->count>1?guard->conditions[1].word:0,guard->count>1?shadow_uniform(g,p,guard->conditions[1]):0,guard->count>1&&guard->conditions[1].true_arm?"!=":"==",guard->count>1?guard->conditions[1].equals:0,inactive,shadow_uniform_bits(g,p,guard->conditions[0]),guard->count>1?shadow_uniform_bits(g,p,guard->conditions[1]):0);g->host->progress(g->host->progress_context,line);texture_history(g,o);}
   if(inactive)mask|=1u<<i;else{for(unsigned k=0;k<p->count;k++)if(p->bindings[k].binding==guard->binding){uint32_t mc,lc;(void)draw_srv_range(g,o,srv,p->bindings+k,&mc,&lc);}return NULL;}
  }
  if(!mask)return p;unsigned slot=0;for(unsigned i=0;i<SHADOW_VARIANTS;i++){DrawProgram *v=p->shadow_variants[i];if(v&&v->inactive_mask==mask){p->shadow_ages[i]=++p->shadow_age;g->metrics.shadow_hits++;return v;}if(!v){slot=i;break;}if(p->shadow_ages[i]<p->shadow_ages[slot])slot=i;}
