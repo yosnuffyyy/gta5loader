@@ -433,6 +433,9 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
 #include "srv_fixture.inc"
 #include "shadow_fixture.inc"
 #include "shadow_transition_fixture.inc"
+#ifdef NATIVE_PROBE_CLI
+#include "shadow_semantic_fixture.inc"
+#endif
 #include "shadow_eviction_fixture.inc"
 #include "perf_fixture.inc"
 #include "stability_fixture.inc"
@@ -524,6 +527,8 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  for(unsigned i=0;i<3&&!result;i++){char text[700];bool valid=shadow_transition_fixture(h,i,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
 #ifdef NATIVE_PROBE_CLI
  for(unsigned i=0;i<5&&!result;i++){char text[900];bool valid=shadow_transition_fixture(h,i,true,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
+ for(unsigned i=0;i<5&&!result;i++){char text[900];bool valid=shadow_transition_fixture(h,i,2,text,sizeof(text));printf("PS6e9619cde3dac275 %s\n",text);if(!valid)result=1;}
+ if(!result&&!shadow_semantic_fixture(h))result=1;
 #endif
  if(!result){char text[650];bool valid=shadow_eviction_fixture(h,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);if(!valid)result=1;}
  if(!result){char text[600];bool valid=layout_cache_fixture(h,false,text,sizeof(text));size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);

@@ -34,8 +34,9 @@ static NSString *draw_source(NativeGpu *g,const char *hash,id *constants){
  if(g->draw.fixture){
 #ifdef NATIVE_PROBE_CLI
  /* Test-only alias for the unchanged original shadow block, not a game shader replacement. */
- if(g->reference_shadow_compat&&!strcmp(hash,"996bb42f448956f2"))return @(shadow_count_ps);
+ if(g->reference_shadow_compat&&(!strcmp(hash,"996bb42f448956f2")||!strcmp(hash,"6e9619cde3dac275")))return @(shadow_count_ps);
 #endif
+ if(!strcmp(hash,"ffffffff00000224")){NSString *s=[@(shadow_eviction_ps) stringByReplacingOccurrencesOfString:@"t14" withString:@"t33"];s=[s stringByReplacingOccurrencesOfString:@"@binding(46u)" withString:@"@binding(65u)"];s=[s stringByReplacingOccurrencesOfString:@"textureSampleCompareLevel(t27, s14," withString:@"textureSampleCompareLevel(t27, s13,"];return [@"@group(1u) @binding(29u) var s13:sampler_comparison;\n" stringByAppendingString:s];}
  if(!strcmp(hash,"ffffffff00000223"))return @(shadow_count_ps);
  if(!strcmp(hash,"ffffffff00000220"))return @(shadow_fixture_ps);
  if(!strcmp(hash,"ffffffff00000222"))return @(shadow_eviction_ps);

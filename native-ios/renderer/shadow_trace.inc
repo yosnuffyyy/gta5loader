@@ -14,8 +14,8 @@ static void shadow_trace_report(NativeGpu *g,DrawProgram *p){
  /* Snapshot the packed source bytes only on failure. At most two original
     blocks (944+496 bytes); no whole-buffer copies, game-memory chasing or
     GPU synchronization. Offsets and zero-fill match draw_group exactly. */
- if(strcmp(p->hash,"996bb42f448956f2"))return;
- const unsigned slots[]={3,6},limits[]={236,124};
+ if(!p->shadow_plan)return;
+ const unsigned slots[]={3,6},limits[]={236,188};
  for(unsigned i=0;i<2;i++){unsigned slot=slots[i];Object *o=object(g,g->cb[p->stage][slot][0]);uint64_t from=(uint64_t)g->cb[p->stage][slot][1]*16;
   snprintf(line,sizeof(line),"Shadow fatal CB%u: id %u kind %u generation %llu bytes %u firstConstant %u numConstants %u; following raw words use packed zero-fill ABI",slot,g->cb[p->stage][slot][0],o?o->kind:0,(unsigned long long)(o?o->generation:0),o?o->size:0,g->cb[p->stage][slot][1],g->cb[p->stage][slot][2]);g->host->progress(g->host->progress_context,line);
   for(unsigned row=0;row<limits[i];row+=8){uint32_t words[8]={0};uint64_t at=from+(uint64_t)row*4;size_t bytes=(limits[i]-row<8?limits[i]-row:8)*4;if(o&&o->kind==11&&o->shadow&&at<o->size){if(bytes>o->size-at)bytes=(size_t)(o->size-at);memcpy(words,o->shadow+at,bytes);}

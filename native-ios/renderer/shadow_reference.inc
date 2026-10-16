@@ -25,14 +25,21 @@ static bool shadow_reference_prepare(NativeGpu *g){
  }
  g->reference_shadow_allocations++;return true;
 }
-static void shadow_reference_set(DrawProgram *p,bool enabled){
- for(unsigned i=0;i<p->count;i++)if(p->bindings[i].binding==46){
+static void shadow_reference_set(DrawProgram *p,uint32_t binding,bool enabled){
+ for(unsigned i=0;i<p->count;i++)if(p->bindings[i].binding==binding){
   if(p->bindings[i].reference_empty!=enabled)p->proxy_scan_valid=false;
   p->bindings[i].reference_empty=enabled;return;
  }
 }
 static DrawProgram *shadow_reference_sync(NativeGpu *g,DrawProgram *variant,DrawProgram *source){
  if(!g->reference_shadow_compat)return variant;
- bool enabled=false;for(unsigned i=0;i<source->count;i++)if(source->bindings[i].binding==46)enabled=source->bindings[i].reference_empty;
- shadow_reference_set(variant,enabled);return variant;
+ /* Both lists are sorted; a linked variant is a subset of the source.
+    Merge by ABI binding, including texture slots above31, without hashing
+    uniforms or assuming that a binding number fits a32-bit bit mask. */
+ unsigned source_index=0;
+ for(unsigned i=0;i<variant->count;i++){DrawBinding *b=variant->bindings+i;
+  while(source_index<source->count&&source->bindings[source_index].binding<b->binding)source_index++;
+  bool enabled=source_index<source->count&&source->bindings[source_index].binding==b->binding&&source->bindings[source_index].reference_empty;
+  if(b->reference_empty!=enabled)variant->proxy_scan_valid=false;b->reference_empty=enabled;
+ }return variant;
 }

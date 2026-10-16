@@ -26,11 +26,11 @@ static void audit_shadow_capture(void *context,const char *text){
  if(strstr(text,"Shadow fatal CB6 words 56:")&&strstr(text,"40000000"))c->type=true;
  if(strstr(text,"Shadow transition history:"))c->history=true;
 }
-static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepool{
+static bool audit_active_shadow(struct w2c_env *h,unsigned reference){@autoreleasepool{
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;bool ok=false;g->test_inter_stage_limit=15;g->reference_shadow_compat=reference;
  native_progress saved_progress=h->progress;void *saved_context=h->progress_context;ShadowCaptureCheck capture_check={0};h->progress=audit_shadow_capture;h->progress_context=&capture_check;
  if(!hardware(g))goto cleanup;reset_state(g);
- const uint64_t hashes[]={reference?UINT64_C(0xa276344f1111242f):UINT64_C(0xac2dd56e1111be56),UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
+ const uint64_t hashes[]={reference?UINT64_C(0xa276344f1111242f):UINT64_C(0xac2dd56e1111be56),reference==2?UINT64_C(0x6e9619cde3dac275):UINT64_C(0x996bb42f448956f2)};Object *shaders[2]={0};
  for(unsigned st=0;st<2;st++){Object *o=shaders[st]=create(g,st?4000:3993,14);if(!o)goto cleanup;o->words=st?5:5+(reference?7:5)*4;o->meta=calloc(o->words,4);if(!o->meta)goto cleanup;o->meta[0]=o->id;o->meta[1]=st;o->meta[2]=(uint32_t)hashes[st];o->meta[3]=hashes[st]>>32;o->meta[4]=st?0:reference?7:5;for(unsigned i=0;!st&&i<(reference?7:5);i++){o->meta[5+i*4]=i+1;o->meta[7+i*4]=i;o->meta[8+i*4]=15;}g->shader[st]=o->id;}
  Object *input=create(g,21529,15);if(!input)goto cleanup;input->words=2+(reference?7:5)*7;input->meta=calloc(input->words,4);if(!input->meta)goto cleanup;input->meta[0]=input->id;input->meta[1]=reference?7:5;const unsigned formats[]={6,2,16,6,2},reference_formats[]={6,2,2,16,6,2,2};unsigned stride=0;for(unsigned i=0;i<(reference?7:5);i++){unsigned format=(reference?reference_formats:formats)[i],bytes=0;draw_vertex_format(format,&bytes);uint32_t *e=input->meta+2+i*7;e[0]=i+1;e[2]=format;e[4]=stride;stride+=bytes;}if(stride!=(reference?96u:64u))goto cleanup;g->layout=input->id;g->vb[0][0]=14637;g->vb[0][1]=stride;
  uint32_t creation[]={708,2,4,4,1,1,1,71,8,1},upload[]={708,0,0,0,0,0,4,4,1,8,1,8,0,0},cb3[]={8306,976,4,0,0},cb6[]={8307,528,4,0,0};
@@ -57,7 +57,7 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
    }
   }
   if(g->metrics.shadow_creates!=1||g->metrics.shadow_hits-hits!=11||g->metrics.shadow_evictions)goto cleanup;
-  printf("PASS: full original %s/996bb42f448956f2 pair: 18 alternating required/inactive/ambiguous binding selections; one certified variant reused only after fresh uniform proofs; CB offsets and object generation changes preserved; real six-face resource for required samples. Pipeline validation, not scene pixels.\n",reference?"a276344f1111242f":"ac2dd56e1111be56");
+  printf("PASS: full original %s/%s pair: 18 alternating required/inactive/ambiguous binding selections; one certified variant reused only after fresh uniform proofs; CB offsets and object generation changes preserved; real six-face resource for required samples. Pipeline validation, not scene pixels.\n",reference?"a276344f1111242f":"ac2dd56e1111be56",reference==2?"6e9619cde3dac275":"996bb42f448956f2");
  }
  {uint32_t a[]={8306,32,4,1},b[]={8307,252,4,0x40000000};g->cb[1][3][1]=g->cb[1][6][1]=0;if(!execute_impl(g,12,(uint8_t*)a,4)||!execute_impl(g,12,(uint8_t*)b,4))goto cleanup;}
  for(unsigned j=0;j<3;j++)if(shadow_proven_inactive(pp->shadow_plan->guards[0].conditions[j],shadow_uniform_bits(g,pp,pp->shadow_plan->guards[0].conditions[j])))goto cleanup;
@@ -74,7 +74,7 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
    ok=selected==pp&&draw_prepare_proxies(g,pp)&&draw_uniforms(g)&&draw_group(g,pp,&offset)&&!native_gpu_error(g);
   }
   ok=ok&&g->reference_shadow_uses==6&&g->reference_shadow_allocations==1;
-  if(ok)puts("PASS: original a276344f1111242f/996bb42f448956f2 pipeline and full reflected binding group validate with exact0.27 sampler, active counts1/2/3/4/5/INT32_MAX, selector2 and optional reference empty cube. Original shader unchanged; synthetic remaining constants, no scene-pixel claim.");
+  if(ok)printf("PASS: original a276344f1111242f/%s pipeline and full reflected binding group validate with exact0.27 sampler, active counts1/2/3/4/5/INT32_MAX, selector2 and optional reference empty cube. Original shader unchanged; synthetic remaining constants, no scene-pixel claim.\n",reference==2?"6e9619cde3dac275":"996bb42f448956f2");
   goto cleanup;
  }
  ok=!draw_execute(g,(uint8_t*)payload)&&native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&strstr(native_gpu_error(g),"ac2dd56e1111be56")&&strstr(native_gpu_error(g),"raw40000000")&&strstr(native_gpu_error(g),"raw00000001")&&!g->draw.draws&&!g->draw.proxy_bytes&&object(g,708)->td.size.depthOrArrayLayers==1&&object(g,708)->version==2;

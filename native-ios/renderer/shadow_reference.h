@@ -3,26 +3,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-/* Optional equivalence with the recovered browser's empty-cube + Always
-   comparison path. This is NOT a proof that the producer intended no shadow.
-   Exact captured contracts only; real comparison samplers and changed resources
-   stay on strict validation. IDs alone are never sufficient. The original
-   t14 sample is gated by signed count > 0, not count == 1. Other light
-   branches use other textures; their count thresholds do not govern t14. */
-static inline bool shadow_reference_contract(const char *hash,uint32_t binding,
- uint32_t light_count,uint32_t selector,const uint32_t creation[10],
- const uint32_t srv[9],const uint32_t sampler[15],uint64_t version,
- uint64_t uploads,const uint32_t upload[12],const uint32_t prefix[2]){
- static const uint32_t captured_create[]={708,2,4,4,1,1,1,71,8,1};
- static const uint32_t captured_srv[]={709,0,708,71,4,0,1,0,0};
- static const uint32_t captured_sampler[]={3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344};
- static const uint32_t captured_upload[]={708,0,0,0,0,0,4,4,1,8,1,8};
- return hash&&creation&&srv&&sampler&&upload&&prefix&&
-  !strcmp(hash,"996bb42f448956f2")&&binding==46&&light_count>0&&light_count<=INT32_MAX&&selector==0x40000000u&&
-  version==2&&uploads==1&&!prefix[0]&&!prefix[1]&&
-  !memcmp(creation,captured_create,sizeof(captured_create))&&
-  !memcmp(srv,captured_srv,sizeof(captured_srv))&&
-  !memcmp(sampler+1,captured_sampler,sizeof(captured_sampler))&&
-  !memcmp(upload,captured_upload,sizeof(captured_upload));
+/* Optional equivalence to the recovered empty-cube + Always comparison path.
+   The shader must independently certify a direct compare sample and its
+   sampler. No shader hash or resource handle is a semantic certificate.
+   This remains a reference-behavior option, not proof of producer intent. */
+static inline bool shadow_reference_contract(bool comparison_sample,uint32_t selector,
+ const uint32_t creation[10],const uint32_t srv[9],const uint32_t sampler[15],
+ uint64_t version,uint64_t uploads,const uint32_t upload[12],const uint32_t prefix[2]){
+ static const uint32_t shape[]={2,4,4,1,1,1,71,8,1};
+ static const uint32_t sample[]={3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344};
+ if(!comparison_sample||selector!=0x40000000u||!creation||!srv||!sampler||!upload||!prefix)return false;
+ const uint32_t view[]={srv[0],0,creation[0],71,4,0,1,0,0};
+ const uint32_t bytes[]={creation[0],0,0,0,0,0,4,4,1,8,1,8};
+ return creation[0]&&srv[0]&&version==2&&uploads==1&&!prefix[0]&&!prefix[1]&&
+  !memcmp(creation+1,shape,sizeof(shape))&&!memcmp(srv,view,sizeof(view))&&
+  !memcmp(sampler+1,sample,sizeof(sample))&&!memcmp(upload,bytes,sizeof(bytes));
 }
 #endif

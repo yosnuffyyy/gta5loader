@@ -6,16 +6,20 @@ static uint32_t shadow_uniform_bits(NativeGpu *g,DrawProgram *p,ShadowCondition 
 }
 #include "shadow_trace.inc"
 static bool shadow_reference_eligible(NativeGpu *g,DrawProgram *p,ShadowGuard *guard,Object *srv,Object *source){
- if(!g->reference_shadow_compat||p->stage!=1||guard->binding!=46||source->kind!=3||source->words!=10)return false;
- DrawBinding *binding=NULL;for(unsigned i=0;i<p->count;i++)if(p->bindings[i].binding==46)binding=p->bindings+i;
+ if(!g->reference_shadow_compat||p->stage!=1||!guard->reference_compare||guard->sampler_slot>=16||source->kind!=3||source->words!=10)return false;
+ DrawBinding *binding=NULL;for(unsigned i=0;i<p->count;i++)if(p->bindings[i].binding==guard->binding)binding=p->bindings+i;
  if(!binding||binding->kind!=4||binding->dim!=WGPUTextureViewDimension_Cube||binding->sample!=WGPUTextureSampleType_Depth||binding->ms)return false;
- Object *sampler=object(g,g->smp[p->stage][14]);if(!sampler||sampler->kind!=16||sampler->words!=15)return false;
- ShadowCondition count={.slot=3,.word=8},selector={.slot=6,.word=63};
- return shadow_reference_contract(p->hash,guard->binding,shadow_uniform_bits(g,p,count),shadow_uniform_bits(g,p,selector),
-  source->meta,srv->meta,sampler->meta,source->version,source->texture_uploads,source->last_upload,source->upload_prefix);
+ Object *sampler=object(g,g->smp[p->stage][guard->sampler_slot]);if(!sampler||sampler->kind!=16||sampler->words!=15)return false;
+ /* A paired 0/3 selector guard certifies the original cube/spot shadow
+    control family. Unknown/nonfinite selectors retain strict validation. */
+ for(unsigned i=0;i<guard->count;i++){ShadowCondition a=guard->conditions[i];if(a.predicate!=SHADOW_FLOAT_NE||!a.true_arm||a.equals!=0)continue;
+  for(unsigned j=0;j<guard->count;j++){ShadowCondition b=guard->conditions[j];if(b.predicate==SHADOW_FLOAT_NE&&b.true_arm&&b.equals==3&&a.slot==b.slot&&a.word==b.word)
+   return shadow_reference_contract(true,shadow_uniform_bits(g,p,a),source->meta,srv->meta,sampler->meta,source->version,source->texture_uploads,source->last_upload,source->upload_prefix);
+  }
+ }return false;
 }
 static DrawProgram *shadow_program(NativeGpu *g,DrawProgram *p){
- if(!p)return p;if(g->reference_shadow_compat)shadow_reference_set(p,false);if(!p->shadow_plan)return p;uint32_t mask=0;
+ if(!p)return p;if(g->reference_shadow_compat)for(unsigned k=0;k<p->count;k++)if(p->bindings[k].reference_empty)shadow_reference_set(p,p->bindings[k].binding,false);if(!p->shadow_plan)return p;uint32_t mask=0;
  for(unsigned i=0;i<p->shadow_plan->count;i++){ShadowGuard *guard=p->shadow_plan->guards+i;Object *srv=object(g,g->srv[p->stage][guard->binding-32]);if(!srv||srv->kind!=17||srv->words!=9||srv->meta[1]||srv->meta[4]!=4)continue;Object *o=srv_source(g,srv);if(!o)return NULL;if(!o->texture||o->td.dimension!=WGPUTextureDimension_2D||o->td.sampleCount!=1||o->td.size.depthOrArrayLayers!=1)continue;
   /* This is a valid original 2D SRV, not a malformed cube descriptor. Do
      not conceal invalid original ranges or incompatible numeric formats. */
@@ -28,8 +32,8 @@ static DrawProgram *shadow_program(NativeGpu *g,DrawProgram *p){
  if(shadow_proven_inactive(guard->conditions[j],bits[j]))inactive=true;}
   shadow_trace_decision(g,p,guard,srv,o,bits,inactive);
   if(!inactive&&shadow_reference_eligible(g,p,guard,srv,o)){
-   shadow_reference_set(p,true);g->reference_shadow_uses++;
-   if(g->host->progress&&g->reference_shadow_uses<=4){char line[420];snprintf(line,sizeof(line),"OPTIONAL reference empty-shadow compatibility: PS %s binding46 SRV/source %u/%u generation %llu/%llu; count%u selector2, exact captured BC1/upload/sampler contracts. Existing effective comparison Always retained, original2D data intact. Producer intent and iPhone shadows remain unverified. Uses %llu.",p->hash,srv->id,o->id,(unsigned long long)srv->generation,(unsigned long long)o->generation,shadow_uniform_bits(g,p,(ShadowCondition){.slot=3,.word=8}),(unsigned long long)g->reference_shadow_uses);g->host->progress(g->host->progress_context,line);}continue;
+   shadow_reference_set(p,guard->binding,true);g->reference_shadow_uses++;
+   if(g->host->progress&&!guard->reference_noticed){guard->reference_noticed=true;char line[420];snprintf(line,sizeof(line),"OPTIONAL reference empty-shadow compatibility: PS %s binding%u sampler-slot%u SRV/source %u/%u generation %llu/%llu; certified compare sample/selector2 and original zero BC1 placeholder contract. Effective comparison Always retained; original2D bytes intact. Producer intent/iPhone shadows unverified.",p->hash,guard->binding,guard->sampler_slot,srv->id,o->id,(unsigned long long)srv->generation,(unsigned long long)o->generation);g->host->progress(g->host->progress_context,line);}continue;
   }
   if(!inactive)shadow_trace_report(g,p);
   if(g->host->progress&&(!inactive||g->metrics.shadow_decisions++<16)){char line[420];snprintf(line,sizeof(line),"Cube/2D binding decision: PS %s binding %u SRV %u source %u version %llu; %u lexical proofs; inactive %u. Original 2D SRV/data retained.",p->hash,guard->binding,srv->id,o->id,(unsigned long long)o->version,guard->count,inactive);g->host->progress(g->host->progress_context,line);for(unsigned j=0;j<guard->count;j++){ShadowCondition c=guard->conditions[j];snprintf(line,sizeof(line),"Shadow guard: slot/word %u/%u, predicate %u (0 f32 !=, 1 i32 <=, 2 i32 >), literal %g, true arm %u, raw %08x; inactive %u",c.slot,c.word,c.predicate,c.equals,c.true_arm,shadow_uniform_bits(g,p,c),shadow_proven_inactive(c,shadow_uniform_bits(g,p,c)));g->host->progress(g->host->progress_context,line);}texture_history(g,o);}

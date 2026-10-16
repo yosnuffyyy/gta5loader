@@ -1,7 +1,7 @@
 /* Repeated production-ring transitions. The shader contains the unchanged
    original count/cube/spot branch; geometry and real cube texels are known
    test inputs. A bound active/ambiguous 2D texture must still fail safely. */
-static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool reference,char *report,size_t capacity){
+static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,unsigned reference,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000;
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->reference_shadow_compat=reference;
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+45000000000ull;
@@ -9,7 +9,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  bool ready=native_gpu_ready(g),ok=ready;uint32_t tail=64,cmd[128];
  #define EMIT(op,count) do{if((count)>128||tail>127488-8-(count)*4){ok=false;fail(g,"Shadow transition fixture ring overflow");}else{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(count));host_store(h,base+tail+8,cmd,(count)*4);tail+=8+(count)*4;}}while(0)
  #include "query_setup.inc"
- cmd[0]=901;cmd[1]=1;cmd[2]=reference?0x448956f2:0x223;cmd[3]=reference?0x996bb42f:UINT32_MAX;cmd[4]=0;EMIT(14,5);
+ cmd[0]=901;cmd[1]=1;cmd[2]=reference==2?0xe3dac275:reference?0x448956f2:0x223;cmd[3]=reference==2?0x6e9619cd:reference?0x996bb42f:UINT32_MAX;cmd[4]=0;EMIT(14,5);
  uint32_t sampler[]={902,3,0x80,3,3,3,0,0,4,0,0,0,0,0,0x42000000};memcpy(cmd,sampler,sizeof(sampler));EMIT(16,15);
  if(reference){uint32_t captured_sampler[]={3511,3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344};memcpy(cmd,captured_sampler,sizeof(captured_sampler));EMIT(16,15);}
  cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=902;EMIT(25,4);cmd[0]=1;cmd[1]=901;EMIT(18,2);
