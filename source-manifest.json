@@ -608,8 +608,8 @@
     },
     {
       "path": "native-ios/renderer/reuse_fixture.inc",
-      "bytes": 5320,
-      "sha256": "bb1f3483396007cb44c827bcc147df698e8ee31f6ff8cda9e5e9e1c31c0f2871"
+      "bytes": 5740,
+      "sha256": "53c54aae13510a959ebf70a2cb7e7c89feb3ffd6595a8fe0a7a5d5f484242c15"
     },
     {
       "path": "native-ios/renderer/sampler_border.h",
