@@ -73,8 +73,8 @@
     },
     {
       "path": "native-ios/input/ci-test-ui.sh",
-      "bytes": 3695,
-      "sha256": "39a04e7c000bd680d6399fd830839d7579cb6e0d78ecd4bb13d6e97a245961ce"
+      "bytes": 3657,
+      "sha256": "4dac9cc6d5c41214a6c4212489bb62d0f1a612611010692332a34b08b36eaac5"
     },
     {
       "path": "native-ios/input/NativeControls.inc",
