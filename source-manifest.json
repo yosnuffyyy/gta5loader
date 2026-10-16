@@ -308,8 +308,8 @@
     },
     {
       "path": "native-ios/renderer/draw_shader.inc",
-      "bytes": 19777,
-      "sha256": "eae770603a9f3f01a23877999a711afcbeea41cbe52123639bb17d54c7b2d8f6"
+      "bytes": 19887,
+      "sha256": "8a1aa2ab1f4a088cc4aafa124bd5f171b7bd31339e1afa23e5f8b89323836fe3"
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
