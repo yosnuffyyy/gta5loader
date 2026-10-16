@@ -7,6 +7,17 @@ typedef struct {
  uint32_t storage_formats[2][8],inactive_masks[2];uint32_t shader[4],layout[226],strides[16],topology,index_format;
  uint32_t blend[66],depth[13],raster[10],formats[9],samples,ro,mask;
 } DrawKey;
+/* Pipeline creation already ignores layout elements absent from the VS input
+   signature. Their declarations cannot split otherwise identical pipelines.
+   Keep all consumed descriptors, including invalid ones for normal validation. */
+static inline void pipeline_key_inputs(DrawKey *k,const uint32_t *signature,unsigned inputs){
+ unsigned count=k->layout[1],kept=0;
+ for(unsigned i=0;i<count;i++){uint32_t *e=k->layout+2+i*7;bool used=false;
+  for(unsigned j=0;j<inputs;j++)if(signature[j*4]==e[0]&&signature[j*4+1]==e[1]){used=true;break;}
+  if(used){memmove(k->layout+2+kept*7,e,7*sizeof(uint32_t));kept++;}
+ }
+ k->layout[1]=kept;memset(k->layout+2+kept*7,0,(224-kept*7)*sizeof(uint32_t));
+}
 /* Normalize only fields demonstrably absent from the resulting pipeline.
    Dynamic scissor and actual index binding still come from current draw state.
    Manual instance strides remain when the vertex shader consumes that slot. */

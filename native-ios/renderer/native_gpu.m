@@ -73,6 +73,7 @@ struct NativeGpu {
 #ifdef NATIVE_PROBE_CLI
  unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement;unsigned test_pipeline_capacity;
  void *test_scope_context;
+ bool test_unused_layout_keys,test_no_uniform_reuse,test_measure_draw;TimingWindow test_draw_times;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
  DrawState draw;
@@ -390,7 +391,11 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  default:{char text[320];Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u (%08x%08x) PS %u (%08x%08x), %llu commands executed",gpu_opcode_name(op),g->shader[0],vs&&vs->kind==14?vs->meta[3]:0,vs&&vs->kind==14?vs->meta[2]:0,g->shader[1],ps&&ps->kind==14?ps->meta[3]:0,ps&&ps->kind==14?ps->meta[2]:0,(unsigned long long)g->ring.executed);fail(g,text);return false;}
  }
 }
-static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(op==13&&n>=12)g->metrics.upload_bytes+=gpu_word(p,11);else if((op==12||op==47)&&n>=3)g->metrics.upload_bytes+=gpu_word(p,2);slow_command_observe(g,op,p,n,end,elapsed);if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
+static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_measure_draw&&op==32)timing_add(&g->test_draw_times,elapsed);
+#endif
+ g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(op==13&&n>=12)g->metrics.upload_bytes+=gpu_word(p,11);else if((op==12||op==47)&&n>=3)g->metrics.upload_bytes+=gpu_word(p,2);slow_command_observe(g,op,p,n,end,elapsed);if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
 #include "frame_costs.inc"
 static void release_hardware(NativeGpu *g){metrics_report(g);frame_cost_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->reference_shadow_cube){wgpuTextureDestroy(g->reference_shadow_cube);wgpuTextureRelease(g->reference_shadow_cube);g->reference_shadow_cube=NULL;}if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
 #ifdef NATIVE_PROBE_CLI
@@ -431,6 +436,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
 #include "shadow_eviction_fixture.inc"
 #include "perf_fixture.inc"
 #include "stability_fixture.inc"
+#include "reuse_fixture.inc"
 #include "layout_cache_fixture.inc"
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -538,7 +544,11 @@ int native_gpu_replay_probe(char *report,size_t capacity){
 #endif
  if(!valid)result=1;}
  if(!result){bool valid=srv_pixel_fixture(h);for(unsigned i=0;i<10&&valid;i++)valid=srv_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: SRV contract GPU suite: 30 cases / 480 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; single-layer 2D/array float/uint/sint bindings; ten controlled descriptor/lifetime failures.",valid?"PASS":"FAIL");if(!valid)result=1;}
- if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}}else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
+ if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}
+#ifdef NATIVE_PROBE_CLI
+ for(unsigned mode=0;mode<3&&!result;mode++){char text[2400];bool valid=reuse_fixture(h,mode,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
+#endif
+ }else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
  if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}free(h);wasm_rt_free_thread();return result;
 }
 

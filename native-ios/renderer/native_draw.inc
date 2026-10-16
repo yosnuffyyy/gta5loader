@@ -12,7 +12,7 @@ static void draw_end_pass(NativeGpu *g){query_end_pass(g);if(g->draw.pass){wgpuR
 static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
  unsigned uniform_bytes=s->offset;
  if(uniform_would_overflow(s->queued_uniform_bytes,uniform_bytes)){s->uniform_pressure_waits++;if(!completed(g))return false;}
- if(s->offset)wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);
+ if(s->offset){wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);s->uniform_upload_bytes+=s->offset;}
  WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e)||!query_submitted(g))return false;g->counter_slot=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
  /* QueueWriteBuffer copies CPU bytes immediately and schedules the transfer
     before the next submission, after earlier submissions using this slot.
@@ -58,10 +58,25 @@ static WGPUTextureView draw_srv(NativeGpu *g,DrawBinding *b,uint32_t id){
  }else {if(!b->dummy){WGPUTextureDescriptor t=WGPU_TEXTURE_DESCRIPTOR_INIT;t.dimension=b->dim==WGPUTextureViewDimension_3D?WGPUTextureDimension_3D:b->dim==WGPUTextureViewDimension_1D?WGPUTextureDimension_1D:WGPUTextureDimension_2D;t.size=(WGPUExtent3D){1,1,b->dim==WGPUTextureViewDimension_Cube||b->dim==WGPUTextureViewDimension_CubeArray?6:1};t.sampleCount=b->ms?4:1;t.mipLevelCount=1;t.format=b->sample==WGPUTextureSampleType_Uint?WGPUTextureFormat_RGBA8Uint:b->sample==WGPUTextureSampleType_Sint?WGPUTextureFormat_RGBA8Sint:b->sample==WGPUTextureSampleType_Depth?WGPUTextureFormat_Depth32Float:WGPUTextureFormat_RGBA8Unorm;t.usage=WGPUTextureUsage_TextureBinding|(b->ms?WGPUTextureUsage_RenderAttachment:0);b->dummy=wgpuDeviceCreateTexture(g->device,&t);}if(b->dummy)b->view=wgpuTextureCreateView(b->dummy,&d);}
  b->view_id=id;b->view_epoch=g->draw.resource_epoch;b->view_reference_empty=b->reference_empty;return b->view;
 }
+static bool draw_uniform_source(NativeGpu *g,DrawProgram *p,unsigned i,const uint8_t **source,unsigned *bytes){
+ unsigned slot=p->members[i].slot;uint64_t from=(uint64_t)g->cb[p->stage][slot][1]*16;Object *o=object(g,g->cb[p->stage][slot][0]);*source=NULL;*bytes=0;
+ if(o){if(!check(g,o->kind==11&&o->shadow,"Constant binding requires a shadow buffer"))return false;*bytes=from<o->size?o->size-(unsigned)from:0;if(*bytes>p->members[i].size)*bytes=p->members[i].size;if(*bytes)*source=o->shadow+from;}
+ return true; /* Preserve reference first-constant ABI; num is not applied. */
+}
 static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){DrawState *s=&g->draw;*offset=0;
- if(p->pack_size){unsigned at=s->offset;if(!check(g,at<=DRAW_UBO_BYTES&&p->pack_size<=DRAW_UBO_BYTES-at,"Uniform ring overflow"))return NULL;memset(s->mirror+at,0,p->pack_size);
-  for(unsigned i=0;i<p->member_count;i++){unsigned slot=p->members[i].slot;uint64_t from=(uint64_t)g->cb[p->stage][slot][1]*16;Object *o=object(g,g->cb[p->stage][slot][0]);if(o){if(!check(g,o->kind==11&&o->shadow,"Constant binding requires a shadow buffer"))return NULL;unsigned bytes=from<o->size?o->size-(unsigned)from:0;if(bytes>p->members[i].size)bytes=p->members[i].size;/* Match browser first-constant ABI; num is not applied by the reference. */if(bytes)memcpy(s->mirror+at+p->members[i].offset,o->shadow+from,bytes);}}
-  *offset=at;s->offset=(at+p->pack_size+s->alignment-1)&~(s->alignment-1);
+ if(p->pack_size){bool reuse=p->uniform_valid&&p->uniform_batch==s->batches&&p->uniform_offset<=s->offset&&p->pack_size<=s->offset-p->uniform_offset;
+#ifdef NATIVE_PROBE_CLI
+  if(g->test_no_uniform_reuse)reuse=false;
+#endif
+  /* A slice remains immutable until this draw batch is submitted. Compare all
+     source bytes and implicit zero fill, not handles or startup revisions.
+     Batch identity prevents reuse after mirror/slot recycling. */
+  for(unsigned i=0;i<p->member_count&&reuse;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;const uint8_t *saved=s->mirror+p->uniform_offset+p->members[i].offset;if(bytes&&memcmp(saved,source,bytes)){reuse=false;break;}for(unsigned j=bytes;j<p->members[i].size;j++)if(saved[j]){reuse=false;break;}}
+  if(reuse){*offset=p->uniform_offset;s->uniform_reuses++;}
+  else {unsigned at=s->offset;if(!check(g,at<=DRAW_UBO_BYTES&&p->pack_size<=DRAW_UBO_BYTES-at,"Uniform ring overflow"))return NULL;memset(s->mirror+at,0,p->pack_size);
+   for(unsigned i=0;i<p->member_count;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;if(bytes)memcpy(s->mirror+at+p->members[i].offset,source,bytes);}
+   *offset=at;s->offset=(at+p->pack_size+s->alignment-1)&~(s->alignment-1);p->uniform_valid=true;p->uniform_batch=s->batches;p->uniform_offset=at;s->uniform_packs++;
+  }
  }
  uint32_t ids[DRAW_BINDINGS]={0};for(unsigned i=0;i<p->count;i++){DrawBinding *b=p->bindings+i;if(b->kind==2||b->kind==3)ids[i]=g->smp[p->stage][b->slot];else if(b->kind==4)ids[i]=g->srv[p->stage][b->slot];else if(b->kind>=5)ids[i]=storage_binding_id(g,p,b);}
  uint64_t reference_empty=0;if(g->reference_shadow_compat)for(unsigned i=0;i<p->count;i++)if(p->bindings[i].reference_empty)reference_empty|=UINT64_C(1)<<i;

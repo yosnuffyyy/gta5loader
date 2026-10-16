@@ -58,6 +58,10 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
+#ifdef NATIVE_PROBE_CLI
+ if(!g->test_unused_layout_keys)
+#endif
+ pipeline_key_inputs(&key,vs->meta+5,vs->meta[4]);
  DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
  for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
  unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;

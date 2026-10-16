@@ -31,6 +31,7 @@ struct DrawProgram {
  DrawProgram *variants[8];uint64_t variant_ages[8],variant_age;
  WGPUTextureFormat storage_formats[8];
  ShadowPlan *shadow_plan;uint32_t inactive_mask;DrawProgram *shadow_variants[SHADOW_VARIANTS];uint64_t shadow_ages[SHADOW_VARIANTS],shadow_age;
+ bool uniform_valid;unsigned uniform_offset;uint64_t uniform_batch;
 };
 #include "pipeline_key.h"
 typedef struct {
@@ -40,6 +41,7 @@ typedef struct {
 typedef struct {
  unsigned pipeline_capacity,pipeline_live,pipeline_peak;uint64_t pipeline_budget_check,pipeline_pressure_evictions;
  unsigned queued_uniform_batches;uint64_t queued_uniform_bytes,uniform_wraps_avoided,uniform_pressure_waits,uniform_map_retired;
+ uint64_t uniform_packs,uniform_reuses,uniform_upload_bytes;
  DrawPipeline pipelines[DRAW_PIPELINES]; DrawKey evicted_keys[64];unsigned evicted_count,evicted_next;uint64_t recent_recompiles; uint64_t age,hits,creates,draws,batches,instance_draws,instance_batches,indirect_decodes,inter_stage_links;
  WGPUCommandEncoder encoder; WGPURenderPassEncoder pass;
  uint32_t pass_targets[37]; unsigned width,height;
