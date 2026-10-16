@@ -1,0 +1,75 @@
+STAGE4 AUDIO â€” INITIAL INVESTIGATION, NOT A PLAYBACK FIX
+User's new physical observation:Native0.31 was completely silent during
+gameplay, including dialogue, gunshots and environment. Logged audio events
+are not evidence of decoded PCM, device queue delivery or speaker playback.
+Native0.33 crash candidate was independently validated and published first.
+No production audio, renderer, control or resource behavior changed here.
+
+CONFIRMED MISSING NATIVE OUTPUT PATH
+native-ios/host-imports.json maps wasm_audio_publish_js to native_publish.
+threading/native_threads.c:native_publish validates a shared-memory address
+and stores audio/audio_capacity. No consumer reads that published PCM ring.
+There is no native AVAudioSession/AVAudioEngine/AudioUnit/AudioQueue setup
+in the source. The audited app's linked frameworks have no AVFoundation or
+AudioToolbox output implementation. Current scene launch arguments do not
+explicitly disable audio. This explains why logged engine events alone can
+never reach the speaker in this implementation. It does not prove that the
+engine has already generated valid nonzero PCM or every bank is available.
+
+REFERENCE CONTRACT
+The hash-verified original native-branch references are:
+runtime/audio-worklet.js.b13234bb591e.bin
+Git blob63486f5e2eaa0d13e7e9b44a73c167b4c6acff6f,1496bytes;
+runtime/offline-audio.js.ef38e2727c38.bin
+Git blob89e4143df32f32dea204aa4f9b8479139c80cfca,6278bytes.
+No web/reference script is attached to the release or added as app content.
+Independent copies/harness live only in work/native-audio-034.
+
+Original processor:64-byte header, uint32 write/read/capacity/heartbeat at
+words0/1/2/3, peak atword4. Stereo Float32 interleaved L/R begins atbyte64.
+Cursors count stereo frames, wrap modulo2^32, index uses capacity-1 mask.
+Original page requests48kHz interactive stereo output. Engine producer rate
+and real-device route/conversion remain to be verified before implementation.
+The current native registration bound capacity*4 is not the future stereo
+read extent64+capacity*8. No native reader exists now; a new reader must use
+checked full extents, alignment, capacity constraints and occupancy checks.
+Do not copy that registration check as proof of safe callback memory access.
+
+VERIFIED REFERENCE TEST
+PASS22 assertions executing the original pinned processor with synthetic
+PCM and an inert host:nonzero L/R ordering, empty/underrun silence, partial
+blocks, uint32/ring wrap, retained producer write cursor, read cursor,
+heartbeat and peak. This is neither a native output test nor a decoder or
+physical speaker test. Result:evidence/0.33/audio-reference-ring-test.json.
+
+MISSING BANKS AND DECODING
+Historical logs report update:/x64/audio/sfx/RESIDENT/LOW_LATENCY.awc missing
+and cutscene duration mismatches. Preserve these errors. Do not create empty
+banks or mark failed loads successful. Archive-internal lookup/version/mount
+problems can occur even if the host read service reports zero I/O errors.
+The phone's relevant archives/PCM were not supplied for this investigation;
+do not infer a decoder failure or fabricate bank contents. Determine which
+requested banks supply each cue, distinguish optional resident/low-latency
+content from mission speech/weapons, and instrument real mixer PCM first.
+
+NEXT IMPLEMENTATION GATES
+1.Verify the original producer's rate/capacity/cursor semantics and observe
+  actual write progress/nonzero PCM, separately from script audio events.
+2.Implement one bounded native stereo consumer using public iOS audio APIs.
+  Validate full heap extent and ring ownership; acquire producer writes,
+  release only consumed frames. Never falsely advance to hide a full ring.
+3.Keep callbacks free of allocations, logging, file I/O, blocking locks,
+  graphics waits and busy polling. Snapshot bounded atomic statistics off
+  the callback:frames available/consumed, underruns, peaks and callback cost.
+4.Configure/activate AVAudioSession and an output route deliberately; handle
+  route changes, rate conversion, interruptions, background and clean stop.
+  Stop callbacks before freeing Wasm memory; no stale heap pointers.
+5.Test exact PCM data/order, counter wrap, bounds, producer/consumer races,
+  detach/restart, interruptions and allocation-free callback behavior.
+  Benchmark callback overhead and buffering latency separately from FPS.
+6.Verify native API/device output where CI permits, then actual iPhone
+  dialogue/gunshot/environment audibility, synchronization and route behavior.
+
+No audio implementation or audible-output success is claimed for0.33.
+Stage4 remains open. Prioritize the published P0 guard/vault candidate;
+audio work stays separate and must preserve rendering, input and640x360.

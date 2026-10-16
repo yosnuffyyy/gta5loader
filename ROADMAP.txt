@@ -1,7 +1,7 @@
-NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
+NATIVE IPHONE ROADMAP â€” SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
 Updated2026-10-15. Native0.33 independently verified; stages remain open.
 
-LATEST —0.33 POST-GUARD SHADOW COUNTS
+LATEST â€”0.33 POST-GUARD SHADOW COUNTS
 New physical0.31 evidence:guard combat progressed, then active count3/selector2
 rejected the optional count1-only reference-shadow contract. Original t14
 control flow is count>0;0.33 covers positive counts with unchanged exact
@@ -12,12 +12,15 @@ Current fatal report no longer appends historical vault/watchdog assertions.
 32 previous IPAs preserved; no new phone FPS or mission-completion claim.
 CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38833881036
 See ENGINEERING-0.33.txt,VERIFICATION-0.33.txt and evidence/0.33.
+Separate Stage4 audio:physical0.31 was silent. Native output consumer/session
+are absent;22 original-reference ring checks PASS, not native playback.
+See AUDIO-INVESTIGATION-0.33.txt;0.33 audio is unchanged.
 Future releases:publish validated IPA only, with release notes; no web/game
 archives. Policy:PUBLISHING-NATIVE.txt. Older entries describe evidence at
 the time; the new physical0.31 report supersedes earlier absence of that test.
 
 
-LATEST —0.32 BOUNDED REUSE
+LATEST â€”0.32 BOUNDED REUSE
 User clarified physical vault/watchdog/performance evidence was Native0.29.
 0.32 preserves0.31 startup/live-session and input fixes, filters only unused
 vertex declarations from pipeline keys and reuses exact immutable uniform
@@ -30,7 +33,7 @@ CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38831335311
 See ENGINEERING-0.32.txt,VERIFICATION-0.32.txt and evidence/0.32.
 
 
-LATEST —0.31 LIVE SESSION WATCHDOG
+LATEST â€”0.31 LIVE SESSION WATCHDOG
 User clarified:the physical vault/touch/performance run was Native0.29;
 it ended at the unconditional180s startup deadline, not a reported SRV failure.
 0.31 retires that deadline only after camera event+fresh engine hook+PRESENT,
@@ -45,7 +48,7 @@ CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38822783112
 See ENGINEERING-0.31.txt and VERIFICATION-0.31.txt.
 
 
-LATEST URGENT FIX —0.30 MENU SCROLLING
+LATEST URGENT FIX â€”0.30 MENU SCROLLING
 Native0.29 disabled menu-wide touch cancellation.0.30 scopes protection to
 active game touches, restores menu dragging over controls and moves the
 web-folder selector above input settings.101 UIKit checks and the full
@@ -55,7 +58,7 @@ Stage3/4 closure gates remain unchanged;640x360/256-entry cache preserved.
 CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38814618343
 See ENGINEERING-0.30.txt and VERIFICATION-0.30.txt.
 
-PREVIOUS EVIDENCE —0.29 CONTROLS CANDIDATE
+PREVIOUS EVIDENCE â€”0.29 CONTROLS CANDIDATE
 User reports the latest physical run reached a movement prompt:~24 seconds
 of marked3D at~15-16displayedFPS and normal manual Stop with optional shadow
 compatibility. That is not verified player control or a sustained route.
@@ -71,7 +74,7 @@ See ENGINEERING-0.29.txt and INPUT-CONTROLS-0.29.txt.
 Next:physical movement/look/action and handoff verification; then mission
 audio and sustained Prologue progression under the existing roadmap gates.
 
-PREVIOUS EVIDENCE —0.28
+PREVIOUS EVIDENCE â€”0.28
 Native CI/ARM64 IPA audit PASS; physical0.28 verification is pending.
 An opt-in, strict-by-default empty depth cube matches the recovered
 reference worker for the exact active709 resource/sampler contract.
@@ -222,7 +225,7 @@ Actual iPhone scene continuation is the next gate. See VERIFICATION-0.18.txt.
 Correct successive real game frames are still required. No stage is advanced
 by a fixture alone; these fixes target the actual Prologue startup blocker.
 
-STAGE 1 — COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
+STAGE 1 â€” COMPLETE: BASELINE AND PLAYABLE PATH MAPPED
 Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.json.
 - Collect two 0.4 iPhone runs with the actual extracted web folder selected.
 - Trace startup imports, embedded host operations, file queues and GPU messages
@@ -235,7 +238,7 @@ Evidence: STARTUP-DEPENDENCIES.txt/.json and evidence/0.4/iphone-device-test.jso
 Gate: reproducible device baseline and startup/renderer dependency map.
 Fix device failures while continuing independent renderer investigation.
 
-STAGE 2 — COMPLETE: TWO IPHONE DRAW RUNS AND CPU REGRESSION PASS
+STAGE 2 â€” COMPLETE: TWO IPHONE DRAW RUNS AND CPU REGRESSION PASS
 This is the largest uncertainty; investigate it before broadening the port.
 - Inspect the actual graphics protocol and shaders before choosing a backend.
 - Compare a Metal-backed native WebGPU implementation with a direct Metal
@@ -253,7 +256,7 @@ this backend, without unresolved validation errors. A Metal fill or triangle
 alone does not establish engine rendering. If blocked, resolve the precise
 limitation or evaluate the other route before broad integration.
 
-STAGE 3 — IN PROGRESS: REAL ENGINE STARTUP AND FIRST GAME SCENE
+STAGE 3 â€” IN PROGRESS: REAL ENGINE STARTUP AND FIRST GAME SCENE
 - Replace the deliberate archive stop in a development build with real queued
   reads, preserving the successful checkpoint and IPA for rollback.
 - Implement remaining Prologue host services, worker jobs, mailbox and async
@@ -270,7 +273,7 @@ frames on iPhone. Record startup peaks and frame times. This is a visual test,
 not yet the playable release. Alternate renderer/startup fixes as dependencies
 require; the two subsystems cannot be completed independently in isolation.
 
-STAGE 4 — CONTROLS, AUDIO AND BASIC APP LIFECYCLE
+STAGE 4 â€” CONTROLS, AUDIO AND BASIC APP LIFECYCLE
 - Feed touch movement, look and actions into actual engine input state.
 - Connect GameController input for paired supported controllers; change prompts
   on actual input, prefer events over idle polling, and clear held inputs on
@@ -284,7 +287,7 @@ Gate: player movement/look/actions, progressing mission audio and functional
 pause/resume. Verify controllers separately on physical hardware. A button
 probe alone is not proof that gameplay controls work.
 
-STAGE 5 — FIRST PLAYABLE IPHONE TEST
+STAGE 5 â€” FIRST PLAYABLE IPHONE TEST
 - Play through the vault/door/cutscene transition that crashed the browser
   version and continue into the following gameplay section.
 - Exercise a repeatable route for at least 10 minutes, pause/resume and cold
@@ -299,7 +302,7 @@ tested route and explicit limitations. Target stable 30 FPS, but report actual
 results rather than promise a frame rate. Do not wait for Sandbox or high
 resolution before delivering this playable test.
 
-STAGE 6 — SANDBOX AND SUSTAINED STABILITY
+STAGE 6 â€” SANDBOX AND SUSTAINED STABILITY
 - Enable open-world startup conservatively; exercise fixed walking/driving
   routes. Add low pedestrian and traffic density in separate increments.
 - Run 20-30 minute sessions, measuring heat-related slowdown, memory trends,
@@ -309,7 +312,7 @@ STAGE 6 — SANDBOX AND SUSTAINED STABILITY
 Gate: repeatable Sandbox travel without resets/deadlocks or continuing retained
 memory growth on the tested route. Document remaining limits and artifacts.
 
-STAGE 7 — HIGHER QUALITY WITH MEASURED HEADROOM
+STAGE 7 â€” HIGHER QUALITY WITH MEASURED HEADROOM
 - Compare identical routes before/after changes: median and slow frame times,
   CPU/GPU timing where available, memory peaks and thermal state.
 - Raise resolution independently of pedestrian/traffic density, then tune

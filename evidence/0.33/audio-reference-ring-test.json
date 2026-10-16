@@ -1,0 +1,42 @@
+{
+  "result": "PASS_REFERENCE_ONLY",
+  "checks": 22,
+  "referencePins": [
+    {
+      "path": "runtime/audio-worklet.js.b13234bb591e.bin",
+      "file": "audio-worklet.js.b13234bb591e.reference.js",
+      "sha": "63486f5e2eaa0d13e7e9b44a73c167b4c6acff6f"
+    },
+    {
+      "path": "runtime/offline-audio.js.ef38e2727c38.bin",
+      "file": "offline-audio.js.ef38e2727c38.reference.js",
+      "sha": "89e4143df32f32dea204aa4f9b8479139c80cfca"
+    }
+  ],
+  "contract": {
+    "headerBytes": 64,
+    "writeWord": 0,
+    "readWord": 1,
+    "capacityWord": 2,
+    "heartbeatWord": 3,
+    "peakWord": 4,
+    "channels": 2,
+    "format": "interleaved Float32 L/R",
+    "counterUnits": "stereo frames",
+    "requestedSampleRate": 48000
+  },
+  "tested": [
+    "empty/underrun silence",
+    "nonzero stereo sample order",
+    "partial blocks",
+    "ring and uint32 counter wrap",
+    "producer-write cursor retained",
+    "read release and heartbeat",
+    "peak diagnostics"
+  ],
+  "actualNativeAudioOutputImplemented": false,
+  "actualEnginePCMDecoded": false,
+  "AVAudioSessionVerified": false,
+  "physicalSpeakerPlaybackVerified": false,
+  "scope": "Executes original pinned browser processor with synthetic PCM and inert host; no iOS audio device or native playback simulated as success."
+}
