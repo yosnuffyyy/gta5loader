@@ -108,8 +108,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 19098,
-      "sha256": "6b876cb9bbad15e7840cd3c8dd8d1e09347706e96af362f790865ef8081cf28d"
+      "bytes": 19468,
+      "sha256": "6930b0781cd9383e7fe4992ea21f2efab6f1f06d84439f56536850529c3e13f6"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -1063,8 +1063,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 23251,
-      "sha256": "285ea1a732222590b0c7ef6269332aebc7e69a75199e0a77feafc19778b7efe1"
+      "bytes": 23250,
+      "sha256": "04881d51d248b9317ba6e9df15737047b23d0b714cf7aab83c463c9bd197471d"
     },
     {
       "path": "native-ios/wait-fixture.wat",
