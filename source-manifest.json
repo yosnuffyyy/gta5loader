@@ -108,8 +108,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 16910,
-      "sha256": "700b4dc69812b0e93af84d933cb8d4088b4734ea77ce0f436a1b6c6a9ef0d36a"
+      "bytes": 18881,
+      "sha256": "cf5a2cd505480685581ccc1d919519fae8cb1745eed3a4c4315adfa581fc66b4"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -688,8 +688,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_semantic_fixture.inc",
-      "bytes": 4321,
-      "sha256": "37bc51d80cb5f2fd9a500c438c947981fa67f6dcccd614dd86aa57949e44bf7a"
+      "bytes": 4385,
+      "sha256": "d75064646c3f877c00262887f7f52cb2345e372da34b6fad84e2411aa1acc3df"
     },
     {
       "path": "native-ios/renderer/shadow_trace.h",

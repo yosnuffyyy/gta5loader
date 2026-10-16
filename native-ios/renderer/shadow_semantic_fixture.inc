@@ -17,7 +17,7 @@ static bool shadow_semantic_fixture(struct w2c_env *h){
  memcpy(cmd,texture,sizeof(texture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=708;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;EMIT(13,14);memcpy(cmd,view,sizeof(view));EMIT(17,9);
  uint32_t cube[]={710,2,4,4,1,1,6,41,0x28,1},cube_view[]={711,0,710,41,9,0,1,0,6};memcpy(cmd,cube,sizeof(cube));EMIT(3,10);memcpy(cmd,cube_view,sizeof(cube_view));EMIT(17,9);
  cmd[0]=714;cmd[1]=496;cmd[2]=4;cmd[3]=cmd[4]=0;EMIT(11,5);
- float values[124]={0};values[60]=values[65]=values[70]=1;values[71]=.5f;values[74]=-1;values[92]=values[97]=values[102]=1;values[103]=.5f;values[104]=-1;values[95]=2;
+ float values[124]={0};values[60]=values[65]=values[70]=1;values[71]=.5f;values[74]=-1;values[76]=values[81]=values[86]=1;values[87]=.5f;values[90]=-1;values[92]=values[97]=values[102]=1;values[103]=.5f;values[104]=-1;values[95]=2;
  memset(cmd,0,sizeof(cmd));cmd[0]=714;cmd[2]=496;memcpy(cmd+3,values,sizeof(values));EMIT(12,127);uint32_t cb[]={1,6,1,714,0,31};memcpy(cmd,cb,sizeof(cb));EMIT(23,6);
  for(unsigned i=0;i<12;i++){
   if(i==6){texture[0]=1800;view[0]=1801;view[2]=1800;memcpy(cmd,texture,sizeof(texture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=1800;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;EMIT(13,14);memcpy(cmd,view,sizeof(view));EMIT(17,9);}
