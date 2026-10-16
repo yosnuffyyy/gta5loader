@@ -1,10 +1,10 @@
 {
-  "scope": "P0 candidate:structural comparison-sample/sampler certificate and descriptor-based optional reference empty-cube policy across Four/Eight/related shaders. Bounded guard parser handles eight-light counts. Both shaders and multi-light/high-slot/resource-reuse pixel regressions. Existing UI unchanged except version; independent native validation pending.",
+  "scope": "Combined candidate:targeted-tested semantic shadow compatibility plus native dark dashboard, categorized settings/files/diagnostics, persistent supported preferences and focused UIKit/accessibility/session tests. Rendering controls/cache640x360 preserved; device verification pending.",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 40469,
-      "sha256": "f85c3cb17044f580968dd017d708b0e19eb4d082b3778fbad5e4137d657a8dba"
+      "bytes": 34389,
+      "sha256": "39bce23a80b8ad48cdd45512205e9389a5371de4b8ff77563e23435756545d9b"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -73,13 +73,13 @@
     },
     {
       "path": "native-ios/input/ci-test-ui.sh",
-      "bytes": 3599,
-      "sha256": "14392e2a6060f942165af08c0b3fddf7fbfff0c5b4e26420dd3a9df159ee2c45"
+      "bytes": 3695,
+      "sha256": "39a04e7c000bd680d6399fd830839d7579cb6e0d78ecd4bb13d6e97a245961ce"
     },
     {
       "path": "native-ios/input/NativeControls.inc",
-      "bytes": 7203,
-      "sha256": "ce4c88b56c9b376f780b54465395b0ac1324bc64dc529e8d9bd44c452d8c8be4"
+      "bytes": 8063,
+      "sha256": "4f8e55c9e20ac4ef39fc10f47da0fd564a952dd94801074c5676c034457974f6"
     },
     {
       "path": "native-ios/input/native_input.c",
@@ -108,8 +108,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 9100,
-      "sha256": "884d9f4b2db835b8950ab67fda2dd5582a24d63e982070559a1e0c6280c240c5"
+      "bytes": 16145,
+      "sha256": "5b1cdf81327e5c4a8740ca027b5c09f9ee3e8a2fe4b6133ab779253a32aeeb43"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -688,8 +688,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_semantic_fixture.inc",
-      "bytes": 4302,
-      "sha256": "1569230272803054155850d0439dbdbeb6ffcf1c3fe7d3c4e60c2c7037b30656"
+      "bytes": 4321,
+      "sha256": "37bc51d80cb5f2fd9a500c438c947981fa67f6dcccd614dd86aa57949e44bf7a"
     },
     {
       "path": "native-ios/renderer/shadow_trace.h",
@@ -698,8 +698,8 @@
     },
     {
       "path": "native-ios/renderer/shadow_trace.inc",
-      "bytes": 3538,
-      "sha256": "aafab8a4353b2e3b1db53290cbd2558bd87ed3dae5be6410290abe67e021dd89"
+      "bytes": 3740,
+      "sha256": "f776b84fd159d9168b39138041f347c40543e6996af050cecf915de262663cca"
     },
     {
       "path": "native-ios/renderer/shadow_transition_fixture.inc",
@@ -1060,6 +1060,11 @@
       "path": "native-ios/threading/test_session_bridge.c",
       "bytes": 4548,
       "sha256": "64b7ab9022ec0e13b982abee0ab2c484f124946d803f7ca2d2a37380f448ab49"
+    },
+    {
+      "path": "native-ios/ui/NativeDashboard.inc",
+      "bytes": 22930,
+      "sha256": "073e8feff343b8f19691185ec41273fa000d63d0461ec91fc65a19b0a14b39a8"
     },
     {
       "path": "native-ios/wait-fixture.wat",

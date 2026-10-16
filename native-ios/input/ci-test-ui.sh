@@ -21,17 +21,18 @@ xcrun simctl list devicetypes --json > native-build/input-ui/device-types.json
 kind=$(NATIVE_UI_RUNTIME="$runtime" node -e "const devices=require('./native-build/input-ui/devices.json').devices[process.env.NATIVE_UI_RUNTIME]||[];const d=devices.find(d=>d.name.includes('iPhone 16 Pro Max'))||devices.find(d=>d.name.startsWith('iPhone'));const supported=require('./native-build/input-ui/runtimes.json').runtimes.find(r=>r.identifier===process.env.NATIVE_UI_RUNTIME)?.supportedDeviceTypes||[];const type=supported.find(d=>d.name?.startsWith('iPhone'));process.stdout.write(d?.deviceTypeIdentifier||type?.identifier||'com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max')")
 echo "UI fixture runtime $runtime / device type $kind"
 cp native-build/input-ui/runtimes.json native-build/evidence/native-input-ui-runtimes.json
-device=$(xcrun simctl create NativeInput029 "$kind" "$runtime")
+device=$(xcrun simctl create NativeInput034 "$kind" "$runtime")
 trap 'xcrun simctl shutdown "$device" >/dev/null 2>&1 || true; xcrun simctl delete "$device" >/dev/null 2>&1 || true' EXIT
 xcrun simctl boot "$device"
 xcrun simctl bootstatus "$device" -b
 xcrun simctl install "$device" "$app"
 xcrun simctl launch "$device" io.github.yosnuffyyy.inputuitest
 container=$(xcrun simctl get_app_container "$device" io.github.yosnuffyyy.inputuitest data)
-for attempt in $(seq 1 30); do
+for attempt in $(seq 1 60); do
   if [ -f "$container/Documents/input-ui-result.json" ]; then break; fi
   sleep 1
 done
 cp "$container/Documents/input-ui-result.json" native-build/evidence/native-input-ui.json
+cp "$container"/Documents/ui-*.png native-build/evidence/
 cat native-build/evidence/native-input-ui.json
 node -e "const r=require('./native-build/evidence/native-input-ui.json');if(r.result!=='PASS'||r.checks<60)throw Error('UIKit/controller regression failed: '+JSON.stringify(r))"

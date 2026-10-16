@@ -30,6 +30,7 @@
 @property(nonatomic,strong) UIView *gameSurface;
 @property(nonatomic,strong) NativeTouchArt *art;
 @property(nonatomic,strong) UIButton *settingsButton;
+@property(nonatomic,strong) UILabel *performanceLabel;
 @property(nonatomic,assign) BOOL playing;
 @property(nonatomic,assign) float overlayOpacity;
 @property(nonatomic,assign) float stickScale;
@@ -41,6 +42,7 @@
 - (instancetype)initWithSurface:(UIView *)surface {if((self=[super initWithFrame:CGRectZero])){
     self.backgroundColor=UIColor.blackColor;self.multipleTouchEnabled=YES;self.gameSurface=surface;surface.userInteractionEnabled=NO;[self addSubview:surface];
     self.art=[[NativeTouchArt alloc]init];self.art.opaque=NO;self.art.backgroundColor=UIColor.clearColor;self.art.userInteractionEnabled=NO;self.art.touchState=&_touchState;[self addSubview:self.art];self.overlayOpacity=.55;self.stickScale=1;
+    self.performanceLabel=[[UILabel alloc]init];self.performanceLabel.numberOfLines=0;self.performanceLabel.font=[UIFont monospacedSystemFontOfSize:10 weight:UIFontWeightRegular];self.performanceLabel.textColor=UIColor.whiteColor;self.performanceLabel.backgroundColor=[UIColor colorWithWhite:0 alpha:.65];self.performanceLabel.layer.cornerRadius=6;self.performanceLabel.clipsToBounds=YES;self.performanceLabel.userInteractionEnabled=NO;self.performanceLabel.hidden=YES;self.performanceLabel.accessibilityLabel=@"Actual display timing, includes loading unless marked";[self addSubview:self.performanceLabel];
     self.settingsButton=[UIButton buttonWithType:UIButtonTypeSystem];[self.settingsButton setTitle:@"Settings" forState:UIControlStateNormal];self.settingsButton.backgroundColor=[UIColor colorWithWhite:0 alpha:.65];self.settingsButton.layer.cornerRadius=8;self.settingsButton.accessibilityLabel=@"Game settings and exit fullscreen";[self addSubview:self.settingsButton];
  }return self;}
 - (void)layoutSubviews {
@@ -48,7 +50,7 @@
     UIEdgeInsets s=self.safeAreaInsets;CGRect safe=UIEdgeInsetsInsetRect(self.bounds,s);CGRect area=CGRectIntersection(safe,self.gameSurface.frame);if(CGRectIsNull(area))area=safe;
     NIRect next={area.origin.x,area.origin.y,area.size.width,area.size.height};
     if(memcmp(&next,&_touchState.rect,sizeof(next))){[self clearTouches];_touchState.rect=next;}
-    _touchState.scale=self.stickScale;self.settingsButton.frame=CGRectMake(CGRectGetMaxX(safe)-88,CGRectGetMinY(safe)+4,84,32);[self.art setNeedsDisplay];
+    _touchState.scale=self.stickScale;self.settingsButton.frame=CGRectMake(CGRectGetMaxX(safe)-96,CGRectGetMinY(safe)+4,92,44);self.performanceLabel.frame=CGRectMake(CGRectGetMinX(safe)+6,CGRectGetMinY(safe)+4,MAX(0,MIN(330,safe.size.width-116)),58);[self.art setNeedsDisplay];
 }
 - (void)setPlaying:(BOOL)playing {_playing=playing;[self clearTouches];[self updateSource];}
 - (void)clearTouches {for(unsigned i=0;i<NI_TOUCHES;i++)_touchOwners[i]=nil;ni_touch_clear(&_touchState);ni_touch((NIState){0},false);[self.art setNeedsDisplay];}

@@ -44,7 +44,7 @@ static NSString *Digest(NSData *bytes) {
     unsigned char digest[CC_SHA256_DIGEST_LENGTH];CC_SHA256(bytes.bytes,(CC_LONG)bytes.length,digest);
     NSMutableString *result=[NSMutableString string];for(unsigned i=0;i<sizeof(digest);i++)[result appendFormat:@"%02x",digest[i]];return result;
 }
-@interface ProbeController : UIViewController <UIDocumentPickerDelegate>
+@interface ProbeController : UIViewController <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 @property(nonatomic,strong) UITextView *report;
 @property(nonatomic,strong) UIButton *runButton;
 @property(nonatomic,strong) UIButton *filesButton;
@@ -81,10 +81,38 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) NSMutableString *shadowFailureLog;
 @property(nonatomic,assign) BOOL logScheduled;
 @property(nonatomic,assign) NSTimeInterval lastPersist;
+@property(nonatomic,strong) UILabel *statusLabel;
+@property(nonatomic,strong) UILabel *folderLabel;
+@property(nonatomic,weak) UILabel *filesStatusLabel;
+@property(nonatomic,copy) NSString *runtimeStatus;
+@property(nonatomic,assign) BOOL folderValidated;
+@property(nonatomic,assign) BOOL optionsPresented;
+@property(nonatomic,assign) BOOL sessionLive;
+@property(nonatomic,assign) BOOL hasFatal;
+@property(nonatomic,strong) UINavigationController *settingsNavigation;
+@property(nonatomic,strong) UIButton *defaultsButton;
+- (void)inputResumed:(NSNotification *)note;
+- (void)runScene;
+- (UIButton *)button:(NSString *)title action:(SEL)action;
+- (UISlider *)inputSlider:(NSString *)label key:(NSString *)key initial:(float)value min:(float)minimum max:(float)maximum stack:(UIStackView *)stack;
+- (void)inputSettingsChanged;
+- (void)refreshControllers;
+- (void)fullscreenChanged;
+- (void)stopScene;
 - (void)append:(NSString *)text;
 - (void)queueProgress:(NSString *)text;
 - (void)appendShadowFailure;
 @end
+@interface ProbeController (NativeDashboard)
+- (void)buildDashboard;
+- (void)refreshDashboard;
+- (void)populateOptions:(NSUInteger)page stack:(UIStackView *)stack;
+- (void)showOptionsPage:(NSUInteger)page;
+- (void)closeOptions;
+- (void)applyDefaultSettings;
+- (void)preferenceSwitchChanged:(UISwitch *)sender;
+@end
+#include "ui/NativeDashboard.inc"
 static void RuntimeProgress(void *context,const char *line) {
     ProbeController *controller=(__bridge ProbeController *)context;
     NSString *text=[NSString stringWithUTF8String:line]?:@"Invalid runtime log";
@@ -96,48 +124,9 @@ static void RuntimeProgress(void *context,const char *line) {
     UIButtonConfiguration *config=[UIButtonConfiguration filledButtonConfiguration];config.title=title;button.configuration=config;
     [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];return button;
 }
-- (void)viewDidLoad {
-    [super viewDidLoad];self.logLock=[[NSLock alloc]init];self.pendingLog=[NSMutableString string];self.view.backgroundColor=UIColor.systemBackgroundColor;
-    UIScrollView *scroll=[[NativeMenuScrollView alloc]init];scroll.translatesAutoresizingMaskIntoConstraints=NO;[self.view addSubview:scroll];
-    UIStackView *stack=[[UIStackView alloc]init];stack.axis=UILayoutConstraintAxisVertical;stack.spacing=14;stack.translatesAutoresizingMaskIntoConstraints=NO;
-    self.mainStack=stack;self.mainScroll=scroll;scroll.delaysContentTouches=NO;scroll.canCancelContentTouches=YES;scroll.alwaysBounceVertical=YES;
-    [scroll addSubview:stack];UILayoutGuide *safe=self.view.safeAreaLayoutGuide,*content=scroll.contentLayoutGuide;
-    [NSLayoutConstraint activateConstraints:@[[scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],[scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],[scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],[scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],[stack.topAnchor constraintEqualToAnchor:content.topAnchor constant:16],[stack.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-16],[stack.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:20],[stack.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-20],[stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-40]]];
-    UILabel *title=[[UILabel alloc]init];title.text=@"Native engine prototype 0.34";title.font=[UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];title.adjustsFontForContentSizeCategory=YES;title.numberOfLines=0;[stack addArrangedSubview:title];
-    UILabel *description=[[UILabel alloc]init];description.text=@"Select your extracted web folder to test real archive startup and the native GPU command queue. This diagnostic reports the next startup dependency. Short Prologue scenes have rendered on iPhone. Continuous correct animation, audio output and gameplay controls are still under development.";description.numberOfLines=0;description.font=[UIFont preferredFontForTextStyle:UIFontTextStyleBody];description.adjustsFontForContentSizeCategory=YES;[stack addArrangedSubview:description];
-    self.surfaceView=[[NativeSurfaceView alloc]init];self.surfaceView.backgroundColor=UIColor.blackColor;self.gameControls=[[NativeGameControls alloc]initWithSurface:self.surfaceView];self.gameControls.hidden=YES;self.gameHeight=[self.gameControls.heightAnchor constraintEqualToAnchor:self.gameControls.widthAnchor multiplier:9.0/16.0];self.gameHeight.priority=UILayoutPriorityDefaultHigh;self.gameHeight.active=YES;[stack addArrangedSubview:self.gameControls];self.gameMaxHeight=[self.gameControls.heightAnchor constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide.heightAnchor multiplier:.75];self.gameMaxHeight.active=YES;[self.gameControls.settingsButton addTarget:self action:@selector(gameSettings) forControlEvents:UIControlEventTouchUpInside];
-    UILabel *fullscreenLabel=[[UILabel alloc]init];fullscreenLabel.text=@"Fullscreen";[stack addArrangedSubview:fullscreenLabel];self.fullscreenSwitch=[[UISwitch alloc]init];self.fullscreenSwitch.on=[NSUserDefaults.standardUserDefaults boolForKey:@"inputFullscreen"];self.fullscreenSwitch.accessibilityLabel=@"Fullscreen";[self.fullscreenSwitch addTarget:self action:@selector(fullscreenChanged) forControlEvents:UIControlEventValueChanged];[stack addArrangedSubview:self.fullscreenSwitch];
-    self.deadzoneSlider=[self inputSlider:@"Stick deadzone" key:@"inputDeadzone" initial:.15 min:.05 max:.4 stack:stack];
-    self.sensitivitySlider=[self inputSlider:@"Camera sensitivity" key:@"inputSensitivity" initial:1 min:.25 max:2 stack:stack];
-    self.opacitySlider=[self inputSlider:@"Touch opacity" key:@"inputOpacity" initial:.55 min:.15 max:1 stack:stack];
-    self.sizeSlider=[self inputSlider:@"Joystick size" key:@"inputSize" initial:1 min:.75 max:1.2 stack:stack];[self inputSettingsChanged];
-    self.performanceLabel=[[UILabel alloc]init];self.performanceLabel.numberOfLines=0;self.performanceLabel.font=[UIFont monospacedSystemFontOfSize:11 weight:UIFontWeightRegular];[stack addArrangedSubview:self.performanceLabel];
-    self.timingSwitch=[[UISwitch alloc]init];self.timingSwitch.on=YES;self.timingSwitch.accessibilityLabel=@"Actual displayed-frame diagnostics";UILabel *timingLabel=[[UILabel alloc]init];timingLabel.text=@"Measure actual displayed frames (optional)";timingLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:timingLabel];[stack addArrangedSubview:self.timingSwitch];
-    self.sceneTimingButton=[self button:@"Begin visible-scene measurement" action:@selector(markSceneTiming)];self.sceneTimingButton.enabled=NO;[stack addArrangedSubview:self.sceneTimingButton];
-    self.shadowCompatibilitySwitch=[[UISwitch alloc]init];self.shadowCompatibilitySwitch.on=NO;self.shadowCompatibilitySwitch.accessibilityLabel=@"Optional reference empty-shadow compatibility";UILabel *shadowLabel=[[UILabel alloc]init];shadowLabel.text=@"Reference empty-shadow compatibility (experimental; off keeps strict validation)";shadowLabel.numberOfLines=0;shadowLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:shadowLabel];[stack addArrangedSubview:self.shadowCompatibilitySwitch];
-    self.sceneButton=[self button:@"Trace Prologue startup (experimental)" action:@selector(runScene)];[stack addArrangedSubview:self.sceneButton];
-    self.stopButton=[self button:@"Stop native startup" action:@selector(stopScene)];self.stopButton.enabled=NO;[stack addArrangedSubview:self.stopButton];
-    self.integrationButton=[self button:@"Run GPU queue + startup tests" action:@selector(runIntegration)];[stack addArrangedSubview:self.integrationButton];
-    self.rendererButton=[self button:@"Run renderer feasibility" action:@selector(runRenderer)];[stack addArrangedSubview:self.rendererButton];
-    self.runButton=[self button:@"Run native engine tests" action:@selector(runProbe)];[stack addArrangedSubview:self.runButton];
-    self.filesButton=[self button:@"Select / check web folder" action:@selector(selectFolder)];[stack insertArrangedSubview:self.filesButton atIndex:3];
-    self.runtimeButton=[self button:@"Run asset + worker tests" action:@selector(runRuntime)];[stack addArrangedSubview:self.runtimeButton];
-    self.controllerLabel=[[UILabel alloc]init];self.controllerLabel.numberOfLines=0;self.controllerLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];[stack addArrangedSubview:self.controllerLabel];
-    self.report=[[UITextView alloc]init];self.report.editable=NO;self.report.font=[UIFont monospacedSystemFontOfSize:13 weight:UIFontWeightRegular];self.report.backgroundColor=UIColor.secondarySystemBackgroundColor;self.report.layer.cornerRadius=10;[stack addArrangedSubview:self.report];
-    [self.report.heightAnchor constraintEqualToConstant:240].active=YES;
-    [stack addArrangedSubview:[self button:@"Copy report" action:@selector(copyReport)]];
-    NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
-    self.report.text=[defaults stringForKey:@"lastReport"]?:@"Ready. Run renderer feasibility to test the native graphics backend. The asset/worker checkpoint needs the extracted web folder selected first.";
-    if([defaults boolForKey:@"probeRunning"])self.report.text=[@"Previous test ended without a result. The app may have been closed or terminated.\n\n" stringByAppendingString:self.report.text];
-    [defaults setBool:NO forKey:@"probeRunning"];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(controllerChanged:) name:GCControllerDidConnectNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(controllerChanged:) name:GCControllerDidDisconnectNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(inputInterrupted:) name:UIApplicationWillResignActiveNotification object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(inputResumed:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [self refreshControllers];
-}
+- (void)viewDidLoad {[super viewDidLoad];[self buildDashboard];}
 - (void)dealloc {self.activeController.extendedGamepad.valueChangedHandler=nil;[NSNotificationCenter.defaultCenter removeObserver:self];ni_end();}
-- (void)setWorking:(BOOL)working {if(working){[self.logLock lock];self.shadowFailureLog=nil;[self.logLock unlock];}if(!working&&!self.sceneRunning){ni_end();self.gameControls.playing=NO;[self applyFullscreen];}self.busy=working;self.shadowCompatibilitySwitch.enabled=!working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];}
+- (void)setWorking:(BOOL)working {if(working){self.hasFatal=NO;self.sessionLive=NO;self.runtimeStatus=self.sceneRunning?@"Preparing engine…":@"Checking…";[self.logLock lock];self.shadowFailureLog=nil;[self.logLock unlock];}else if(!self.hasFatal)self.runtimeStatus=@"Ready";if(!working&&!self.sceneRunning){ni_end();self.gameControls.playing=NO;[self applyFullscreen];}self.busy=working;self.shadowCompatibilitySwitch.enabled=!working;self.timingSwitch.enabled=!working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.text forKey:@"lastReport"];[self refreshDashboard];}
 - (void)flushProgress {
     [self.logLock lock];NSString *text=[self.pendingLog copy];[self.pendingLog setString:@""];self.logScheduled=NO;[self.logLock unlock];if(text.length)[self append:text];
 }
@@ -149,6 +138,8 @@ static void RuntimeProgress(void *context,const char *line) {
     [self.logLock lock];NSString *text=NativeShadowFailureReport(self.shadowFailureLog);self.shadowFailureLog=nil;[self.logLock unlock];if(text.length)[self append:text];
 }
 - (void)append:(NSString *)text {
+    if(!self.hasFatal){NSRange fatal=[text rangeOfString:@"Native startup stopped (trap"];NSRange fail=[text rangeOfString:@"FAIL:"];NSRange range=fatal.location!=NSNotFound?fatal:fail;if(range.location!=NSNotFound){self.hasFatal=YES;NSString *reason=[[text substringFromIndex:range.location] componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet].firstObject;self.runtimeStatus=[NSString stringWithFormat:@"%@ · See Diagnostics",[reason substringToIndex:MIN((NSUInteger)220,reason.length)]];[self refreshDashboard];}}
+    if(self.sceneRunning&&!self.hasFatal){NSString *status=nil;if([text containsString:@"Session transition: camera scene event"]){self.sessionLive=YES;status=@"Engine session active";}else if(!self.sessionLive&&[text containsString:@"Entering actual graphics-enabled main"])status=@"Starting game systems…";else if(!self.sessionLive&&[text containsString:@"Local asset index:"])status=@"Reading game files…";if(status&&![status isEqualToString:self.runtimeStatus]){self.runtimeStatus=status;[self refreshDashboard];}}
     NSString *joined=[self.report.text stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Earlier startup messages omitted to bound log memory.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.text=joined;
     NSTimeInterval now=NSProcessInfo.processInfo.systemUptime;if(now-self.lastPersist>=1){[NSUserDefaults.standardUserDefaults setObject:joined forKey:@"lastReport"];self.lastPersist=now;}
 }
@@ -182,26 +173,20 @@ static void RuntimeProgress(void *context,const char *line) {
     [self.gameControls clearTouches];[self.gameControls setNeedsLayout];[self.gameControls updateSource];
 }
 - (void)inputInterrupted:(NSNotification *)note {native_scene_suspend(true);ni_focus(false);[self.gameControls clearTouches];[self.gameControls updateSource];}
-- (void)inputResumed:(NSNotification *)note {native_scene_suspend(false);if(self.sceneRunning){ni_focus(true);if(self.activeController)ni_controller(NativeControllerState(self.activeController.extendedGamepad));[self.gameControls updateSource];}}
+- (void)inputResumed:(NSNotification *)note {if(self.optionsPresented||UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;native_scene_suspend(false);if(self.sceneRunning){ni_focus(true);if(self.activeController)ni_controller(NativeControllerState(self.activeController.extendedGamepad));[self.gameControls updateSource];}}
 - (BOOL)prefersStatusBarHidden {return self.immersive;}
 - (BOOL)prefersHomeIndicatorAutoHidden {return self.immersive;}
 - (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {return self.immersive?UIRectEdgeBottom:UIRectEdgeNone;}
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {return self.immersive?UIInterfaceOrientationMaskLandscape:UIInterfaceOrientationMaskAllButUpsideDown;}
 - (void)fullscreenChanged {[NSUserDefaults.standardUserDefaults setBool:self.fullscreenSwitch.isOn forKey:@"inputFullscreen"];[self applyFullscreen];}
 - (void)applyFullscreen {
-    BOOL full=self.sceneRunning&&self.fullscreenSwitch.isOn;if(full==self.immersive)return;[self.gameControls clearTouches];self.immersive=full;
+    BOOL full=self.sceneRunning&&self.fullscreenSwitch.isOn;if(full==self.immersive)return;[self.gameControls clearTouches];self.immersive=full;self.gameControls.layer.cornerRadius=full?0:16;
     if(full){[self.mainStack removeArrangedSubview:self.gameControls];self.gameMaxHeight.active=NO;[self.gameControls removeFromSuperview];self.gameHeight.active=NO;[self.view addSubview:self.gameControls];self.gameControls.translatesAutoresizingMaskIntoConstraints=NO;self.immersiveConstraints=@[[self.gameControls.topAnchor constraintEqualToAnchor:self.view.topAnchor],[self.gameControls.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],[self.gameControls.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],[self.gameControls.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]];[NSLayoutConstraint activateConstraints:self.immersiveConstraints];self.mainScroll.hidden=YES;}
     else{[NSLayoutConstraint deactivateConstraints:self.immersiveConstraints];self.immersiveConstraints=nil;[self.gameControls removeFromSuperview];[self.mainStack insertArrangedSubview:self.gameControls atIndex:2];self.gameHeight.active=YES;self.gameMaxHeight.active=YES;self.mainScroll.hidden=NO;}
     [self setNeedsStatusBarAppearanceUpdate];[self setNeedsUpdateOfHomeIndicatorAutoHidden];[self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];[self setNeedsUpdateOfSupportedInterfaceOrientations];[self.view setNeedsLayout];
     if(full){UIWindowScene *scene=self.view.window.windowScene;UIWindowSceneGeometryPreferencesIOS *p=[[UIWindowSceneGeometryPreferencesIOS alloc]initWithInterfaceOrientations:UIInterfaceOrientationMaskLandscape];__weak ProbeController *weakSelf=self;[scene requestGeometryUpdateWithPreferences:p errorHandler:^(NSError *error){dispatch_async(dispatch_get_main_queue(),^{[weakSelf append:[NSString stringWithFormat:@"Landscape request: %@. Aspect-fit viewport remains active.",error.localizedDescription]];});}];}
 }
-- (void)gameSettings {
-    if(!self.sceneRunning)return;native_scene_suspend(true);ni_focus(false);[self.gameControls clearTouches];UIAlertController *menu=[UIAlertController alertControllerWithTitle:@"Game controls" message:@"Touch the game for touch controls; use a controller action to switch back. Pad symbols keep the game's contextual mappings. Exit fullscreen to adjust sensitivity and layout." preferredStyle:UIAlertControllerStyleActionSheet];__weak ProbeController *weakSelf=self;
-    [menu addAction:[UIAlertAction actionWithTitle:self.immersive?@"Fullscreen: Off":@"Fullscreen: On" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a){ProbeController *owner=weakSelf;owner.fullscreenSwitch.on=!owner.fullscreenSwitch.isOn;[owner fullscreenChanged];[owner inputResumed:nil];}]];
-    [menu addAction:[UIAlertAction actionWithTitle:@"Mark visible-scene measurement" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a){[weakSelf markSceneTiming];[weakSelf inputResumed:nil];}]];
-    [menu addAction:[UIAlertAction actionWithTitle:@"Stop game" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *a){[weakSelf stopScene];}]];
-    [menu addAction:[UIAlertAction actionWithTitle:@"Resume controls" style:UIAlertActionStyleCancel handler:^(UIAlertAction *a){[weakSelf inputResumed:nil];}]];menu.popoverPresentationController.sourceView=self.gameControls.settingsButton;menu.popoverPresentationController.sourceRect=self.gameControls.settingsButton.bounds;[self presentViewController:menu animated:YES completion:nil];
-}
+- (void)gameSettings {if(self.sceneRunning)[self showOptionsPage:0];}
 - (void)markSceneTiming {NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(self.sceneRunning&&metrics){[metrics markScene];[self append:@"User marked visible 3D scene: displayed-frame window restarted. Loading is excluded only by this user marker; correctness and controls still need observation."];}}
 - (void)copyReport {UIPasteboard.generalPasteboard.string=self.report.text;}
 - (void)runProbe {
@@ -223,7 +208,7 @@ static void RuntimeProgress(void *context,const char *line) {
     if(!self.sceneRunning)return;NIMetrics input;ni_metrics(&input);[self append:[NSString stringWithFormat:@"Input: %@; events %llu, engine updates %llu, switches %llu, queued %u, overflows %llu; oldest-coalesced event-to-hook mean/max %.3f/%.3f ms (%llu samples; excludes Bluetooth/UI latency).",input.source==NI_CONTROLLER?@"controller":@"touch",(unsigned long long)input.events,(unsigned long long)input.consumed,(unsigned long long)input.switches,input.queued,(unsigned long long)input.overflows,input.mean_ms,input.max_ms,(unsigned long long)input.samples]];[self append:[NSString stringWithFormat:@"Input queue: %llu obsolete analog-only snapshots folded into later states; digital press/release edges retained. Render/simulation stalls still delay the engine hook.",(unsigned long long)input.analog_skipped]];char status[1100]={0};native_scene_status(status,sizeof(status));
     [self append:[NSString stringWithFormat:@"%s; %@",status,Footprint()]];NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(metrics){self.performanceLabel.text=[metrics overlay];[self append:[metrics summary]];}
 }
-- (void)stopScene {if(self.sceneRunning){ni_end();self.gameControls.playing=NO;native_scene_request_stop();self.stopButton.enabled=NO;[self startupStatus];[self append:@"Stopping native startup and joining workers…"];}}
+- (void)stopScene {if(self.sceneRunning){self.runtimeStatus=@"Stopping…";[self refreshDashboard];ni_end();self.gameControls.playing=NO;native_scene_request_stop();self.stopButton.enabled=NO;[self startupStatus];[self append:@"Stopping native startup and joining workers…"];}}
 - (void)runIntegration {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
@@ -303,10 +288,10 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)selectFolder {
     if(self.busy)return;
-    UIDocumentPickerViewController *picker=[[UIDocumentPickerViewController alloc]initForOpeningContentTypes:@[UTTypeFolder] asCopy:NO];picker.delegate=self;picker.allowsMultipleSelection=NO;[self presentViewController:picker animated:YES completion:nil];
+    UIDocumentPickerViewController *picker=[[UIDocumentPickerViewController alloc]initForOpeningContentTypes:@[UTTypeFolder] asCopy:NO];picker.delegate=self;picker.allowsMultipleSelection=NO;[(self.settingsNavigation.topViewController?:self) presentViewController:picker animated:YES completion:nil];
 }
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    NSURL *folder=urls.firstObject;if(!folder||self.busy)return;self.gameFolder=folder;[self setWorking:YES];
+    NSURL *folder=urls.firstObject;if(!folder||self.busy)return;self.gameFolder=folder;self.folderValidated=NO;NSError *bookmarkError=nil;NSData *bookmark=[folder bookmarkDataWithOptions:0 includingResourceValuesForKeys:nil relativeToURL:nil error:&bookmarkError];if(bookmark)[NSUserDefaults.standardUserDefaults setObject:bookmark forKey:@"gameFolderBookmark"];else [NSUserDefaults.standardUserDefaults removeObjectForKey:@"gameFolderBookmark"];[self setWorking:YES];
     [self append:@"Checking three local game files with 64 KiB reads. Files stored in iCloud may need to download first."];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];NSMutableString *report=[NSMutableString string];
@@ -329,8 +314,8 @@ static void RuntimeProgress(void *context,const char *line) {
             if(coordError)[report appendFormat:@"FAIL: %@ — %@\n",sample[@"path"],coordError.localizedDescription];
         }
         if(scoped)[folder stopAccessingSecurityScopedResource];
-        [report appendString:@"Sample check only; this does not validate or install the complete game.\nFolder selected for runtime tests. Tap Run asset + worker tests next."];
-        dispatch_async(dispatch_get_main_queue(),^{[self append:report];[self setWorking:NO];});
+        [report appendString:@"Sample check only; this does not validate or install the complete game.\nFolder selected. Return to Start Game, or open Advanced for more checks."];
+        dispatch_async(dispatch_get_main_queue(),^{self.folderValidated=![report containsString:@"FAIL:"];[self append:report];[self setWorking:NO];});
     }});
 }
 @end

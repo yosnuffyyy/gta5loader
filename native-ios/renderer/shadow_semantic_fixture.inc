@@ -21,7 +21,7 @@ static bool shadow_semantic_fixture(struct w2c_env *h){
  memset(cmd,0,sizeof(cmd));cmd[0]=714;cmd[2]=496;memcpy(cmd+3,values,sizeof(values));EMIT(12,127);uint32_t cb[]={1,6,1,714,0,31};memcpy(cmd,cb,sizeof(cb));EMIT(23,6);
  for(unsigned i=0;i<12;i++){
   if(i==6){texture[0]=1800;view[0]=1801;view[2]=1800;memcpy(cmd,texture,sizeof(texture));EMIT(3,10);memset(cmd,0,sizeof(cmd));cmd[0]=1800;cmd[6]=cmd[7]=4;cmd[8]=1;cmd[9]=8;cmd[10]=1;cmd[11]=8;EMIT(13,14);memcpy(cmd,view,sizeof(view));EMIT(17,9);}
-  for(unsigned face=0;face<6;face++){memset(cmd,0,sizeof(cmd));cmd[0]=710;cmd[2]=face;float depth=i%2?.75f:.25f;memcpy(cmd+3,&depth,4);EMIT(5,7);}
+  for(unsigned face=0;face<6;face++){memset(cmd,0,sizeof(cmd));cmd[0]=710;cmd[2]=face;float depth=i%3==0?.25f:i%3==1?.5f:.75f;memcpy(cmd+3,&depth,4);EMIT(5,7);}
   cmd[0]=714;cmd[1]=63*4;cmd[2]=4;cmd[3]=i%3?0x40000000:0;EMIT(12,4);cmd[1]=79*4;cmd[3]=i%4>=2?0x40000000:0;EMIT(12,4);
   uint32_t slots[]={33,25,27},views[]={view[0],view[0],711};for(unsigned j=0;j<3;j++){cmd[0]=1;cmd[1]=slots[j];cmd[2]=1;cmd[3]=views[j];EMIT(24,4);}
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
@@ -31,7 +31,7 @@ static bool shadow_semantic_fixture(struct w2c_env *h){
  #undef EMIT
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=888&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&g->draw.draws==12&&g->draw.creates==4&&g->draw.hits==8&&g->reference_shadow_uses==14&&g->reference_shadow_allocations==1;
- for(unsigned i=0;i<12&&ok;i++){uint8_t pixels[1024];host_load(h,pixels,dst+i*1024,sizeof(pixels));unsigned expected=i%2?255:170;for(unsigned j=0;j<256&&ok;j++)for(unsigned c=0;c<4;c++)if(pixels[j*4+c]!=(c==3?255:expected))ok=false;}
- printf("%s: semantic multi-shadow:12 draws/3072 checked pixels; two placeholders, independent real Less shadow, binding65/linked variants, handle replacement, one cube,14 reference uses,4 pipelines/8 hits. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"No scene-pixel or phone FPS claim.");
+ for(unsigned i=0;i<12&&ok;i++){uint8_t pixels[1024];host_load(h,pixels,dst+i*1024,sizeof(pixels));unsigned expected=i%3?255:170;for(unsigned j=0;j<256&&ok;j++)for(unsigned c=0;c<4;c++)if(pixels[j*4+c]!=(c==3?255:expected))ok=false;}
+ printf("%s: semantic multi-shadow:12 draws/3072 checked pixels; two placeholders, independent real LessEqual shadow, binding65/linked variants, handle replacement, one cube,14 reference uses,4 pipelines/8 hits. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"No scene-pixel or phone FPS claim.");
  native_gpu_end(g);return ok;
 }
