@@ -1,0 +1,16 @@
+Native0.32 — final validated candidate
+Source:0d5cd6fb17742f5704809a7ed5e45d4540087c7d
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38831335311
+IPA:GTA-Native-Probe-0.32-unsigned.ipa
+Bytes:102313930
+SHA256:d119a553ed0c09753390d15b54464a6654426402bc6894ba03a075cd6ec32d87
+
+PASS:all six Metal reuse fixtures,512 pixels/96 occlusion samples each.
+Isolated uniforms:192->18 packs,49152->4608 GPU bytes. Isolated layout keys:
+32->1 pipeline creations,64->95 hits,0 evictions;256-entry limit preserved.
+Queue counts/logical GPU peak equal; no device FPS improvement claim.
+PASS:1374 watchdog assertions, production ASan/UBSan+TSan/input tests,71
+engine checks,103 UIKit assertions,4808 Metal modules/pipelines, full runtime.
+PASS:unsigned ARM64 package,214 source entries,31 prior IPAs preserved.
+Physical vault/watchdog/performance baseline is0.29 per user correction.
+No supplied0.31/0.32 physical test; stages remain open. See ENGINEERING0.32.

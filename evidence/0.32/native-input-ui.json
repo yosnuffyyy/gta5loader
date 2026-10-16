@@ -1,0 +1,6 @@
+{
+  "result" : "PASS",
+  "scope" : "Production UIKit\/controller mapping in iOS simulator; engine launch stubs abort",
+  "gameplayVerified" : false,
+  "checks" : 103
+}

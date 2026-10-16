@@ -1,0 +1,7 @@
+BASELINE CORRECTION (user clarification,2026-10-15): The physical vault run,
+180-second cutoff and associated performance/input figures came from Native0.29,
+not0.30. Native0.30 was the subsequent menu-scroll fix. Native0.31 remains
+CI-verified only; no physical0.31 test was supplied. The source/IPA identifiers
+and automated results below are unchanged. Historical0.30 run attributions
+in the original narrative should be read as0.29.
+

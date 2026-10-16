@@ -1,0 +1,68 @@
+{
+  "uniformReuse": {
+    "isolatedBaselinePacks": 192,
+    "optimizedPacks": 18,
+    "baselineGPUBytes": 49152,
+    "optimizedGPUBytes": 4608,
+    "draws": 96,
+    "pixels": 512,
+    "processes": 2
+  },
+  "layoutReuse": {
+    "isolatedBaselineCreates": 32,
+    "optimizedCreates": 1,
+    "cacheCapacity": 256
+  },
+  "physicalEvidenceBaseline": "Native0.29 (user clarification)",
+  "watchdogAssertions": 1374,
+  "sessionBridgeSanitizers": [
+    "ASan/UBSan",
+    "TSan"
+  ],
+  "simulatedLiveSeconds": 1303,
+  "readbackRetirement": {
+    "pressureWaitsBefore": 6,
+    "pressureWaitsAfter": 0,
+    "explicitCompletionBefore": 7,
+    "explicitCompletionAfter": 1,
+    "draws": 96,
+    "maps": 13,
+    "pixels": 256,
+    "occlusionSamples": 96,
+    "processes": 2
+  },
+  "inputQueue": {
+    "latestMovementAndFireHooks": 1,
+    "priorAnalogBacklogHooks": 2,
+    "physicalLatencyMeasured": false
+  },
+  "result": "PASS",
+  "source": "0d5cd6fb17742f5704809a7ed5e45d4540087c7d",
+  "run": 38831335311,
+  "job": 116750557004,
+  "inputEngineChecks": 71,
+  "productionUIKitChecks": 103,
+  "ASanUBSan": true,
+  "threadSanitizer": true,
+  "originalEngineInstructionsChanged": false,
+  "fullRuntimeProcesses": 2,
+  "metalShaderModules": 4808,
+  "metalPipelines": 4808,
+  "clipShaders": 500,
+  "untranslatedRecords": 111,
+  "pipelineWorkingSet": {
+    "keys": 192,
+    "draws": 576,
+    "capacity": 256,
+    "creates": 192,
+    "hits": 384,
+    "evictions": 0,
+    "processes": 2
+  },
+  "IPA": "d119a553ed0c09753390d15b54464a6654426402bc6894ba03a075cd6ec32d87",
+  "ipaBytes": 102313930,
+  "version": "0.32.0",
+  "physicalGameplayControlsVerified": false,
+  "sourceEntriesVerified": 214,
+  "previousIPAsPreserved": 31
+}

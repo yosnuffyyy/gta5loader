@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "unchangedFiles": 203,
+  "inputWatchdogArchiveUnchanged": true,
+  "pipelineCapacity": 256,
+  "renderBaseline": "640x360",
+  "uniformBufferBytes": 524288,
+  "uniformSlots": 3,
+  "stagingLimitBytes": 4194304,
+  "readerBytes": 65536,
+  "openDescriptors": 8
+}

@@ -1,0 +1,190 @@
+Native0.32 — bounded pipeline/uniform reuse; corrected physical baseline
+Source:0d5cd6fb17742f5704809a7ed5e45d4540087c7d
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38831335311
+IPA:GTA-Native-Probe-0.32-unsigned.ipa
+Bytes:102313930
+SHA256:d119a553ed0c09753390d15b54464a6654426402bc6894ba03a075cd6ec32d87
+
+BASELINE CORRECTION
+The user clarified that the physical vault run,180-second cutoff,503707 queue
+submissions,1867516 uploads,19033 staging-pressure waits,~50ms upload/~92ms
+command-handler means and117.5ms average input delay came from Native0.29.
+They are not physical0.30 or0.31 results.0.30 fixed menu scrolling.0.31 introduced
+the independently tested watchdog/input/ordered-map changes. Neither0.31 nor
+0.32 has a new supplied physical test. ENGINEERING-0.31.txt has an explicit
+erratum; its source/IPA/test identifiers remain frozen and unchanged.
+
+THREE LARGEST EVIDENCED BOTTLENECKS
+1.Pipeline creation:the physical vault report contains up to~2s cumulative
+pipeline work in a frame. Source inspection confirmed the cache included
+vertex-layout elements that pipeline construction already ignores because
+the vertex shader does not consume them. Required state still splits keys.
+2.Uniform upload and synchronization:the physical counts/waits and handler
+times indicate substantial service overhead, without proving GPU saturation.
+The native path allocated/copied an entire constant pack for every draw even
+when identical bytes were already in the same immutable pending batch.
+0.31 separately proved successful ordered readback maps retired submissions
+that were still being counted as pending staging until another explicit wait.
+3.Render backpressure/input:the physical117.5ms average and1818.8ms maximum
+event-to-hook delay include engine scheduling/render stalls.0.31 fixed an
+additional obsolete-analog FIFO delay. No new physical latency improvement
+or ability to update a blocked simulation is claimed in0.32.
+
+EXACT CHANGES
+Pipeline key:retain only elements matched by semantic/index in the original
+vertex input signature. Use the existing signature scan to calculate used
+slots and filter the key in one pass. Keep consumed formats, offsets, slots,
+classes, step rates, ordering and invalid descriptors for strict validation.
+Original input layouts, shader reflection and pipeline creation are unchanged.
+Only redundant key distinctions disappear. No speculative async compilation,
+prewarming, larger cache, new shader code or quality change.
+
+Uniform packing:each live shader program remembers only its most recent
+immutable slice in the current draw batch. Compare all source bytes and
+implicit zero fill against that slice. Equality permits the same dynamic
+offset; changed/null/offset/rebound state is rechecked and gets a new pack
+when required. The immutable snapshot records copied prefix lengths, so stable missing banks
+do not trigger repeated zero-tail scans. Cache identity includes the batch
+serial; never reuse data
+after mirror/slot recycling. Constants are not deduplicated using handles,
+float equality, hashes or assumed unchanged resource revisions. Packing and
+GPU submission ordering remain unchanged. No GPU-writable buffer upload or
+texture data is guessed redundant or discarded. No extra GPU buffer or wait.
+
+Diagnostics:report immutable pack/reuse counts and actual GPU uniform-upload
+bytes separately from protocol buffer/texture upload command counts. Report
+queue submits, draw batches, byte-edge and whole-copy submissions using
+existing bounded counters. Categories overlap; they must not be added.
+Preserve worst pipeline shader/key/cost records, display timestamps, frame
+quantiles, CPU service/handler/upload waits, user scene marker, process memory,
+engine heap, script/worker state and input event-to-hook metrics.
+
+P0 AND INPUT PRESERVED
+The0.31 startup deadline ends only after a real camera scene event, a later
+original engine pad hook and a later successful PRESENT. A live session has
+no180s total-duration cutoff, but genuine60-active-second loss of engine or
+frame progress without delivered asset data still fails. Settings/interruptions
+suspend active time; backgrounding safely stops the session. Cancellation and
+first-fatal retention remain. Progress is liveness, not visual proof.
+The controlled queue test preserves taps/held/release/source handoff and
+folds obsolete leading movement states, delivering a subsequent action on
+one hook instead of the old two-hook path by source analysis. No busy loop,
+UI-thread engine-memory writes, new input polling or independent GPU waits.
+
+COMPARABLE MEASUREMENTS — NOT IPHONE GAMEPLAY
+Two full independent native runtime processes each execute all three modes.
+Each mode uses the same96 original-game shader draws,512 checked pixels (RGBA8 one-byte precision tolerance)
+and96 exact occlusion samples. Fixtures change constants, first-constant
+offsets, buffer handles, null bindings and resource lifetime; an ordered
+readback midway forces a batch boundary and tests cache invalidation.
+Mode0:both optimizations. Mode1:uniform reuse disabled only. Mode2:layout-key
+filtering disabled only. These isolate each policy; neither reference is a
+combined full0.29 device run.
+Uniform packs:192 ->18; reuse174; GPU uniform bytes49152 ->4608 (90.6% less).
+Pipeline creations:32 ->1; cache hits64 ->95; zero evictions, capacity256.
+Four draw batches, exact queue-submission counts and logical GPU resource peak
+remain equal in all modes. No submission-count improvement is claimed here.
+The production loop drains256 protocol commands at a time and then flushes.
+This753-command fixture therefore splits after draws26/48/62/96 into four
+batches (including the explicit midway readback). This independently explains
+two extra boundaries, but does not attribute all503707 physical submissions
+to the drain policy. Preserve its latency/memory bound until a replacement
+policy has dedicated ordering, bounded-memory and pacing tests.
+The existing ordered-map fixture still cuts pressure waits6 ->0 and explicit
+completions7 ->1 with identical96 draws/13 readbacks/256 pixels/96 samples.
+Observed DRAW CPU mean/median/p95/p99/max and raw operation/memory counts:
+Process1 mode0: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.013/0.001/0.003/0.937/0.937; lifetime 96 calls 1.237 ms max 0.937
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+Process1 mode1: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.015/0.001/0.004/1.072/1.072; lifetime 96 calls 1.397 ms max 1.072
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+Process1 mode2: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.063/0.002/0.176/0.965/0.965; lifetime 96 calls 6.072 ms max 0.965
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+Process2 mode0: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.011/1.073/1.073; lifetime 96 calls 1.509 ms max 1.073
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+Process2 mode1: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.008/1.126/1.126; lifetime 96 calls 1.518 ms max 1.126
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+Process2 mode2: DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.079/0.002/0.324/1.189/1.189; lifetime 96 calls 7.587 ms max 1.189
+  submits6,completions1,pressure0,logical engine GPU peak2388bytes
+The established CLI compiler uses-O0; the shipping iOS compiler uses-O1.
+Reference modes isolate policy in the same instrumented executable; they are
+not byte-for-byte reruns of an archived0.31 binary.
+CPU command samples include pipeline creation and nested waits; they are not
+actual display frame percentiles, engine-frame work or GPU execution time.
+Fixed fixture order/driver caches affect timings. Only operation-count and
+data-correctness improvements are established independently. Actual iPhone
+median/p95/p99, memory and input latency after0.32 remain unavailable.
+
+MEMORY AND LIMITS
+Cache256 entries (128 on existing pressure policy),640x360,3x512KiB uniform
+buffers,512KiB existing CPU mirror,16-batch/4MiB queued staging policy and1MiB
+readback cap remain. One64KiB archive buffer and at most8 descriptors remain.
+New cache metadata is fixed per existing live program (one flag/offset/batch
+serial and sixteen copied-prefix lengths) and three counters per session. No new retained native pipelines,
+GPU buffers, whole-archive caches, hot-path allocations or dependencies.
+Logical engine GPU bytes exclude these intermediates and driver residency;
+unchanged fixture logical peaks do not establish lower physical process RSS.
+
+TESTS AND BUILD
+PASS:32 maximum-size unused-layout variants, five consumed descriptor
+distinctions and empty signatures; existing256 semantic variants/required
+state distinctions and bounded LRU unit checks under ASan/UBSan.
+PASS:all six new actual Metal shared-ring fixtures, every pixel checked against
+the same expected RGBA8 output within one byte and exact integer query counts.
+PASS:1374 controlled-clock watchdog assertions (>21min virtual live session),
+production watchdog bridge ASan/UBSan+TSan, input queue/mapping concurrency,
+71 original-engine input checks and103 UIKit assertions.
+PASS:4808 Metal shader modules/pipelines including500 clip shaders;0 errors.
+PASS:two full native runtime processes, persistent save, worker/mailbox/wait,
+archive, original shader draws, SRV709 optional/strict and5633, depth proxies,
+clip/varyings, occlusion, UAV/compute, formats, readbacks and resource lifetime.
+PASS:unsigned ARM64 iPhone/minimum iOS17 package and pinned engine/backend;
+no W+X,WebKit/JSC,CI shader reference packs or UI test entry point in IPA.
+PASS:214 exact published source entries; all31 previous IPA hashes preserved.
+Earlier0.32 candidates were superseded for final signature-scan/diagnostic
+and copied-prefix review. A later CI failed because the new fixture expected
+two batches and14 packs, overlooking the existing256-command drain flushes.
+Source-derived boundaries after draws26/48/62/96 require four batches and18
+packs. Only that test expectation/pixel diagnostic was corrected; production
+scheduling and renderer output were not relaxed to force a pass. Only the final source/run above is release validation evidence.
+
+FILES MODIFIED
+  native-ios/App.m
+  native-ios/Info.plist
+  native-ios/renderer/draw_pipeline.inc
+  native-ios/renderer/draw_types.inc
+  native-ios/renderer/native_draw.inc
+  native-ios/renderer/native_gpu.m
+  native-ios/renderer/native_metrics.inc
+  native-ios/renderer/pipeline_key.h
+  native-ios/renderer/reuse_fixture.inc
+  native-ios/renderer/test_pipeline_key.c
+  source-manifest.json
+Documentation:ROADMAP,INSTALL,SHA256SUMS,ENGINEERING/VERIFICATION0.32, evidence;
+ENGINEERING0.31 erratum and PHYSICAL-BASELINE-CORRECTION.txt.
+
+REMAINING RISKS / NEXT TASK
+Genuine new vault pipelines can still compile synchronously for a long time.
+The unused-layout pattern's actual frequency and uniform reuse rate in that
+scene need a physical report; synthetic counts do not guarantee20/30FPS.
+GPU execution time and engine-frame CPU work are not directly measured by
+these service timers. Other required uploads, partial-byte updates, resource
+dependencies and CPU/GPU waits remain; none is silently skipped. Unknown
+metadata/audio and111 untranslated H/D/G records remain tracked separately.
+No retained vault trace establishes another mission/asset deadlock. The old
+180s stop is not classified as a vault shader/mission crash. Stage3/4 closure,
+mission completion, sustained animation, controls and performance remain
+subject to their physical verification requirements.
+Next task:correlate actual vault pipeline keys/costs, uniform reuse/upload
+bytes, submit categories and displayed frames before changing scheduling,
+cache working sets or resource-transfer policy. Keep strict resource checks.
+
+NEXT IPHONE TEST
+Install0.32 using the existing signing setup, preserving old IPAs and web
+folder. Keep640x360 and the same optional reference-shadow setting. Mark the
+visible scene, move through the vault past180s toward10-20min, check action
+press/release after stutters and controller/touch handoff. Exercise pause,
+Settings/fullscreen return and manual Stop. Backgrounding stops as before.
+Save the full0.32 report, marked display window and visual/mission observations.
+Look for Session live; pack/reuse/GPU-byte counters; slow pipeline records;
+submit/upload context; pressure waits; actual display quantiles and input
+event-to-hook age. Do not interpret submission FPS as displayed gameplay FPS.

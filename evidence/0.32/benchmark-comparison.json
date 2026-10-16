@@ -1,0 +1,163 @@
+{
+  "result": "PASS",
+  "source": "0d5cd6fb17742f5704809a7ed5e45d4540087c7d",
+  "environment": "GitHub Actions macOS Metal, existing CLI -O0 build; shipping iOS -O1, not physical A18 Pro",
+  "workload": "96 original startup-shader draws,512 checked pixels (RGBA8 one-byte precision tolerance),96 exact occlusion samples; repeated/changed/null/rebound constants, offsets, flush and replacement;32 layouts with unused vertex declarations",
+  "modes": {
+    "0": "Both optimizations enabled",
+    "1": "Only uniform reuse disabled: isolate0.31 uniform behavior with corrected layout keys",
+    "2": "Only layout filtering disabled: isolate0.31 layout behavior with uniform reuse enabled"
+  },
+  "independentRuntimeProcesses": 2,
+  "rows": [
+    {
+      "mode": 0,
+      "uniformPacks": 18,
+      "uniformReuses": 174,
+      "GPUUniformBytes": 4608,
+      "drawBatches": 4,
+      "pipelineCreates": 1,
+      "pipelineHits": 95,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.013,
+        "median": 0.001,
+        "p95": 0.003,
+        "p99": 0.937,
+        "max": 0.937
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.013/0.001/0.003/0.937/0.937; lifetime 96 calls 1.237 ms max 0.937"
+    },
+    {
+      "mode": 1,
+      "uniformPacks": 192,
+      "uniformReuses": 0,
+      "GPUUniformBytes": 49152,
+      "drawBatches": 4,
+      "pipelineCreates": 1,
+      "pipelineHits": 95,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.015,
+        "median": 0.001,
+        "p95": 0.004,
+        "p99": 1.072,
+        "max": 1.072
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.015/0.001/0.004/1.072/1.072; lifetime 96 calls 1.397 ms max 1.072"
+    },
+    {
+      "mode": 2,
+      "uniformPacks": 18,
+      "uniformReuses": 174,
+      "GPUUniformBytes": 4608,
+      "drawBatches": 4,
+      "pipelineCreates": 32,
+      "pipelineHits": 64,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.063,
+        "median": 0.002,
+        "p95": 0.176,
+        "p99": 0.965,
+        "max": 0.965
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.063/0.002/0.176/0.965/0.965; lifetime 96 calls 6.072 ms max 0.965"
+    },
+    {
+      "mode": 0,
+      "uniformPacks": 18,
+      "uniformReuses": 174,
+      "GPUUniformBytes": 4608,
+      "drawBatches": 4,
+      "pipelineCreates": 1,
+      "pipelineHits": 95,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.016,
+        "median": 0.001,
+        "p95": 0.011,
+        "p99": 1.073,
+        "max": 1.073
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.011/1.073/1.073; lifetime 96 calls 1.509 ms max 1.073"
+    },
+    {
+      "mode": 1,
+      "uniformPacks": 192,
+      "uniformReuses": 0,
+      "GPUUniformBytes": 49152,
+      "drawBatches": 4,
+      "pipelineCreates": 1,
+      "pipelineHits": 95,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.016,
+        "median": 0.001,
+        "p95": 0.008,
+        "p99": 1.126,
+        "max": 1.126
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.008/1.126/1.126; lifetime 96 calls 1.518 ms max 1.126"
+    },
+    {
+      "mode": 2,
+      "uniformPacks": 18,
+      "uniformReuses": 174,
+      "GPUUniformBytes": 4608,
+      "drawBatches": 4,
+      "pipelineCreates": 32,
+      "pipelineHits": 64,
+      "evictions": 0,
+      "queueSubmissions": 6,
+      "completionWaits": 1,
+      "stagingPressureWaits": 0,
+      "logicalEngineGPUBytesPeak": 2388,
+      "drawCPUWallMs": {
+        "mean": 0.079,
+        "median": 0.002,
+        "p95": 0.324,
+        "p99": 1.189,
+        "max": 1.189
+      },
+      "raw": "PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+      "timing": "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.079/0.002/0.324/1.189/1.189; lifetime 96 calls 7.587 ms max 1.189"
+    }
+  ],
+  "physicalBaselineVersion": "0.29 (user correction)",
+  "physicalFramePercentilesAfter": null,
+  "physicalInputLatencyAfter": null,
+  "physicalProcessMemoryAfter": null,
+  "GPUExecutionTime": null,
+  "notes": [
+    "DRAW timings are96 CPU command samples per fixture, not displayed frames or GPU execution.",
+    "Tests run in a fixed order; CPU timing differences are not a statistically controlled iPhone speedup.",
+    "Raw protocol upload counts are unchanged; the optimization reduces native uniform packing/queue-write payload bytes, not measured hardware bus traffic.",
+    "Queue submission count is unchanged in this workload; no general submission reduction is claimed."
+  ]
+}

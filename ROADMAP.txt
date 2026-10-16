@@ -1,8 +1,21 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated2026-10-15. Native0.31:session watchdog/input/staging fixes; no stage closure.
+Updated2026-10-15. Native0.32 verified pipeline/uniform reuse; stages remain open.
+
+LATEST —0.32 BOUNDED REUSE
+User clarified physical vault/watchdog/performance evidence was Native0.29.
+0.32 preserves0.31 startup/live-session and input fixes, filters only unused
+vertex declarations from pipeline keys and reuses exact immutable uniform
+slices within a batch. Six real Metal fixtures:32->1 pipeline creations and
+49152->4608 uniform bytes in isolated comparisons, matching golden pixels/exact query counts.
+Full CI/4808 shader-pipeline checks and unsigned ARM64 audit PASS.256 cache,
+640x360,staging/reader limits and shadow/controls preserved;31 old IPAs intact.
+No new physical FPS, latency or vault-completion claim.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38831335311
+See ENGINEERING-0.32.txt,VERIFICATION-0.32.txt and evidence/0.32.
+
 
 LATEST —0.31 LIVE SESSION WATCHDOG
-User physically reached the Prologue vault with working touch input in0.30;
+User clarified:the physical vault/touch/performance run was Native0.29;
 it ended at the unconditional180s startup deadline, not a reported SRV failure.
 0.31 retires that deadline only after camera event+fresh engine hook+PRESENT,
 retains startup/stall/cancellation protection and excludes suspended time.

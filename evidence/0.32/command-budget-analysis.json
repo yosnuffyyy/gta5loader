@@ -1,0 +1,29 @@
+{
+  "scope": "Source-derived schedule only; GPU output requires separate CI validation",
+  "commands": 753,
+  "drainBudget": 256,
+  "boundary": [
+    {
+      "command": 256,
+      "opcode": 32,
+      "drawsCompleted": 26
+    },
+    {
+      "command": 512,
+      "opcode": 32,
+      "drawsCompleted": 62
+    }
+  ],
+  "allBatchEndsAfterDraw": [
+    26,
+    48,
+    62,
+    96
+  ],
+  "vertexPacks": 4,
+  "pixelPacks": 14,
+  "totalPacks": 18,
+  "originalPacks": 192,
+  "alignedBytes": 4608,
+  "originalAlignedBytes": 49152
+}
