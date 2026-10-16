@@ -10,13 +10,14 @@ typedef struct {
 /* Pipeline creation already ignores layout elements absent from the VS input
    signature. Their declarations cannot split otherwise identical pipelines.
    Keep all consumed descriptors, including invalid ones for normal validation. */
-static inline void pipeline_key_inputs(DrawKey *k,const uint32_t *signature,unsigned inputs){
- unsigned count=k->layout[1],kept=0;
+static inline uint32_t pipeline_key_inputs(DrawKey *k,const uint32_t *signature,unsigned inputs){
+ unsigned count=k->layout[1],kept=0;uint32_t slots=0;
  for(unsigned i=0;i<count;i++){uint32_t *e=k->layout+2+i*7;bool used=false;
   for(unsigned j=0;j<inputs;j++)if(signature[j*4]==e[0]&&signature[j*4+1]==e[1]){used=true;break;}
-  if(used){memmove(k->layout+2+kept*7,e,7*sizeof(uint32_t));kept++;}
+  if(used){if(e[3]<16)slots|=1u<<e[3];if(kept!=i)memmove(k->layout+2+kept*7,e,7*sizeof(uint32_t));kept++;}
  }
- k->layout[1]=kept;memset(k->layout+2+kept*7,0,(224-kept*7)*sizeof(uint32_t));
+ /* DrawKey starts zeroed. Clear only removed descriptors, not its unused tail. */
+ k->layout[1]=kept;if(kept<count)memset(k->layout+2+kept*7,0,(count-kept)*7*sizeof(uint32_t));return slots;
 }
 /* Normalize only fields demonstrably absent from the resulting pipeline.
    Dynamic scissor and actual index binding still come from current draw state.

@@ -53,15 +53,16 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
     query counts or render unmasked pixels until an exact implementation exists. */
  uint32_t sample_bits=key.samples>=32?UINT32_MAX:(1u<<key.samples)-1;
  if(!check(g,(key.mask&sample_bits)==sample_bits,"Metal partial/zero pipeline sample mask is not implemented by pinned backend"))return NULL;
- uint32_t used_slots=0;for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]&&e[3]<16)used_slots|=1u<<e[3];}}
+ uint32_t used_slots=0;
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_unused_layout_keys){for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]&&e[3]<16)used_slots|=1u<<e[3];}}}
+ else
+#endif
+ used_slots=pipeline_key_inputs(&key,vs->meta+5,vs->meta[4]);
 #ifdef NATIVE_PROBE_CLI
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
-#ifdef NATIVE_PROBE_CLI
- if(!g->test_unused_layout_keys)
-#endif
- pipeline_key_inputs(&key,vs->meta+5,vs->meta[4]);
  DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
  for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
  unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
