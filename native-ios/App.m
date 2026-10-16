@@ -85,6 +85,7 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) UILabel *statusLabel;
 @property(nonatomic,strong) UILabel *folderLabel;
 @property(nonatomic,weak) UILabel *filesStatusLabel;
+@property(nonatomic,weak) UIButton *filesPageButton;
 @property(nonatomic,copy) NSString *runtimeStatus;
 @property(nonatomic,assign) BOOL folderValidated;
 @property(nonatomic,assign) BOOL optionsPresented;
