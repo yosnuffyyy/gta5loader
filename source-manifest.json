@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 34389,
-      "sha256": "39bce23a80b8ad48cdd45512205e9389a5371de4b8ff77563e23435756545d9b"
+      "bytes": 34167,
+      "sha256": "b0466b481357e54ae16244a581b97093454c989ce0480140f0141ff48712bcdd"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -108,8 +108,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 16145,
-      "sha256": "5b1cdf81327e5c4a8740ca027b5c09f9ee3e8a2fe4b6133ab779253a32aeeb43"
+      "bytes": 16910,
+      "sha256": "700b4dc69812b0e93af84d933cb8d4088b4734ea77ce0f436a1b6c6a9ef0d36a"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -1063,8 +1063,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 22930,
-      "sha256": "073e8feff343b8f19691185ec41273fa000d63d0461ec91fc65a19b0a14b39a8"
+      "bytes": 23112,
+      "sha256": "c393ce7a300776f8973174f3e2fde711eba6f435c55fcbb4faa96789ab6da310"
     },
     {
       "path": "native-ios/wait-fixture.wat",
