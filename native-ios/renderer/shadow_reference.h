@@ -6,7 +6,9 @@
 /* Optional equivalence with the recovered browser's empty-cube + Always
    comparison path. This is NOT a proof that the producer intended no shadow.
    Exact captured contracts only; real comparison samplers and changed resources
-   stay on strict validation. IDs alone are never sufficient. */
+   stay on strict validation. IDs alone are never sufficient. The original
+   t14 sample is gated by signed count > 0, not count == 1. Other light
+   branches use other textures; their count thresholds do not govern t14. */
 static inline bool shadow_reference_contract(const char *hash,uint32_t binding,
  uint32_t light_count,uint32_t selector,const uint32_t creation[10],
  const uint32_t srv[9],const uint32_t sampler[15],uint64_t version,
@@ -16,7 +18,7 @@ static inline bool shadow_reference_contract(const char *hash,uint32_t binding,
  static const uint32_t captured_sampler[]={3,20,3,3,1,0,1,1,0,0,0,0,0,1094713344};
  static const uint32_t captured_upload[]={708,0,0,0,0,0,4,4,1,8,1,8};
  return hash&&creation&&srv&&sampler&&upload&&prefix&&
-  !strcmp(hash,"996bb42f448956f2")&&binding==46&&light_count==1&&selector==0x40000000u&&
+  !strcmp(hash,"996bb42f448956f2")&&binding==46&&light_count>0&&light_count<=INT32_MAX&&selector==0x40000000u&&
   version==2&&uploads==1&&!prefix[0]&&!prefix[1]&&
   !memcmp(creation,captured_create,sizeof(captured_create))&&
   !memcmp(srv,captured_srv,sizeof(captured_srv))&&

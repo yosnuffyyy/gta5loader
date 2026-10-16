@@ -67,9 +67,14 @@ static bool audit_active_shadow(struct w2c_env *h,bool reference){@autoreleasepo
   if(!execute_impl(g,16,(uint8_t*)captured_sampler,15))goto cleanup;g->smp[1][14]=3511;
  }
  if(reference){
-  DrawProgram *selected=shadow_program(g,pp);unsigned offset=0;
-  ok=selected==pp&&draw_prepare_proxies(g,pp)&&draw_uniforms(g)&&draw_group(g,pp,&offset)&&!native_gpu_error(g)&&g->reference_shadow_uses==1&&g->reference_shadow_allocations==1;
-  if(ok)puts("PASS: original a276344f1111242f/996bb42f448956f2 pipeline and full reflected binding group validate with exact0.27 sampler, active count1/selector2 and optional reference empty cube. Original shader unchanged; synthetic remaining constants, no scene-pixel claim.");
+  const uint32_t active_counts[]={1,2,3,4,5,INT32_MAX};ok=true;
+  for(unsigned i=0;i<6&&ok;i++){
+   uint32_t update[]={8306,32,4,active_counts[i]};if(!execute_impl(g,12,(uint8_t*)update,4)){ok=false;break;}
+   DrawProgram *selected=shadow_program(g,pp);unsigned offset=0;
+   ok=selected==pp&&draw_prepare_proxies(g,pp)&&draw_uniforms(g)&&draw_group(g,pp,&offset)&&!native_gpu_error(g);
+  }
+  ok=ok&&g->reference_shadow_uses==6&&g->reference_shadow_allocations==1;
+  if(ok)puts("PASS: original a276344f1111242f/996bb42f448956f2 pipeline and full reflected binding group validate with exact0.27 sampler, active counts1/2/3/4/5/INT32_MAX, selector2 and optional reference empty cube. Original shader unchanged; synthetic remaining constants, no scene-pixel claim.");
   goto cleanup;
  }
  ok=!draw_execute(g,(uint8_t*)payload)&&native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&strstr(native_gpu_error(g),"ac2dd56e1111be56")&&strstr(native_gpu_error(g),"raw40000000")&&strstr(native_gpu_error(g),"raw00000001")&&!g->draw.draws&&!g->draw.proxy_bytes&&object(g,708)->td.size.depthOrArrayLayers==1&&object(g,708)->version==2;

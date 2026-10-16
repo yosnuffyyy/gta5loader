@@ -39,7 +39,13 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
   }
   uint32_t type=mode==0?0:mode==3?0x40400000u:mode==6?0x80000000u:0x40000000u;
   uint32_t count=mode==2||mode==7?0:1,selected=mode==1||mode==4||(!reference&&mode==5)?711:709;
-  if(reference){cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=selected==711?902:3511;EMIT(25,4);}
+  if(reference){
+   /* Keep the original count1 block; reproduce post-guard count3 and
+      higher signed-positive counts without changing the sampled light. */
+   if(mode==5)count=1+test/8;
+   if(mode==1||mode==4)count=1+test/8;
+   if(mode==6&&test>=8){const uint32_t higher[]={0,5,6,INT32_MAX};count=higher[test/8];type=0x40000000u;}
+   cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=selected==711?902:3511;EMIT(25,4);}
   /* Split writes to the selector exercise byte uploads and re-evaluation;
      an old inactive cache hit must never hide an active final value. */
   cmd[0]=714;cmd[1]=first*16+252;cmd[2]=2;cmd[3]=type&0xffff;EMIT(12,4);
@@ -58,7 +64,7 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
    if(invalid==4){cmd[0]=709;EMIT(4,1);uint32_t malformed[]={709,0,708,71,4,0,2,0,0};memcpy(cmd,malformed,sizeof(malformed));EMIT(17,9);}
   }
   cmd[0]=714;cmd[1]=32+252;cmd[2]=4;cmd[3]=invalid==2?0x7fc00000:0x40000000;EMIT(12,4);
-  cmd[0]=715;cmd[1]=32+32;cmd[2]=4;cmd[3]=1;EMIT(12,4);
+  cmd[0]=715;cmd[1]=32+32;cmd[2]=4;cmd[3]=reference?3:1;EMIT(12,4);
   cmd[0]=1;cmd[1]=14;cmd[2]=1;cmd[3]=709;EMIT(24,4);
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
  }
@@ -67,12 +73,12 @@ static bool shadow_transition_fixture(struct w2c_env *h,unsigned invalid,bool re
  if(ready&&ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=888&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);
  bool state=invalid?(native_gpu_error(g)&&strstr(native_gpu_error(g),"SRV range outside texture")&&(reference||strstr(native_gpu_error(g),invalid==1?"raw40000000":"raw7fc00000"))):!native_gpu_error(g);
- ok=ok&&state&&g->draw.draws==32&&g->metrics.shadow_creates==1&&g->metrics.shadow_hits>=19&&g->draw.creates==2&&g->draw.hits==(reference&&invalid==4?31u:30u)&&g->metrics.pipeline_evictions==0;
- if(reference)ok=ok&&g->reference_shadow_uses==4&&g->reference_shadow_allocations==1&&host_u64(h,query_address+8)==1536&&atomic_load_explicit(heap_word(g,query_address),memory_order_acquire)==991;
+ ok=ok&&state&&g->draw.draws==32&&g->metrics.shadow_creates==1&&g->metrics.shadow_hits>=(reference?16u:19u)&&g->draw.creates==2&&g->draw.hits==(reference&&invalid==4?31u:30u)&&g->metrics.pipeline_evictions==0;
+ if(reference)ok=ok&&g->reference_shadow_uses==7&&g->reference_shadow_allocations==1&&host_u64(h,query_address+8)==1536&&atomic_load_explicit(heap_word(g,query_address),memory_order_acquire)==991;
  for(unsigned t=0;t<32&&ok;t++){uint8_t pixels[1024];host_load(h,pixels,dst+t*1024,sizeof(pixels));for(unsigned i=0;i<256&&ok;i++)for(unsigned c=0;c<4;c++)if(pixels[i*4+c]!=(c==3?255:expected[t]))ok=false;}
  {uint32_t original[2];host_load(h,original,dst+32768,8);ok=ok&&!original[0]&&!original[1];}
  if(report&&capacity)snprintf(report,capacity,"%s: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final %s. Original2D bytes/layers retained.",ok?"PASS":"FAIL",invalid==1?"active2D rejected":invalid==2?"ambiguous2D rejected":"valid transitions");
- if(reference&&report&&capacity)snprintf(report,capacity,"%s: optional reference empty-shadow ring test: 32 draws/8192 pixels, four exact captured active709 bindings, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final %s. Original BC1 bytes retained.",ok?"PASS":"FAIL",invalid==1?"real-comparison invalid709 rejected":invalid==2?"ambiguous selector rejected":invalid==3?"changed source version rejected":invalid==4?"invalid mip range rejected":"valid changing light states");
+ if(reference&&report&&capacity)snprintf(report,capacity,"%s: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final %s. Original BC1 bytes retained.",ok?"PASS":"FAIL",invalid==1?"real-comparison invalid709 rejected":invalid==2?"ambiguous selector rejected":invalid==3?"changed source version rejected":invalid==4?"invalid mip range rejected":"valid changing light states");
  if(!ok&&report&&capacity){size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used," Actual draws/pipelines/hits/variants/variantHits %llu/%llu/%llu/%llu/%llu. %s",(unsigned long long)g->draw.draws,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,(unsigned long long)g->metrics.shadow_creates,(unsigned long long)g->metrics.shadow_hits,native_gpu_error(g)?native_gpu_error(g):"Pixel or completion mismatch");}
  native_gpu_end(g);return ok;
 }

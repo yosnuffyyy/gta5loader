@@ -16,5 +16,10 @@ assert.equal(ancestors.filter(x=>x.startsWith('if ')||x.includes('else')).length
 assert(!/\b(?:return|discard|break|continue)\b/.test(exact.source.slice(exact.source.indexOf('fn main_inner'),sample)));
 assert.equal(exact.plan[0].conditions.length,3);assert.deepEqual(ancestors.slice(-3),['} else','if ((bitcast<u32>(r9.z) != 0u))','if ((bitcast<u32>(r9.z) != 0u))']);
 assert.match(exact.source,/@binding\(30u\) var s14 : sampler_comparison/);assert.match(exact.source,/tint_symbol_2 : array<vec4<f32>, 59u>/);
-console.log('PASS: exact PS996bb42f448956f2 t14 call has exactly three enclosing conditions, no preceding return/discard; count1 and selector2 permit the cube sample. Binding46/slot14 and comparison sampler30/slot14 verified. An inactive variant cannot fix this state.');
+for(const count of [0,1,2,3,4,5,6,0x7fffffff,0x80000000,0xffffffff]){const signed=count|0;const reached=signed>0;assert.equal(reached,!(signed<=0));}
+assert.match(exact.source.slice(0,sample),/0i >= bitcast<i32>\(cb3_3\.tint_symbol_2\[2u\]\.x\)/);
+const countAt=exact.source.indexOf('0i >= bitcast<i32>(cb3_3.tint_symbol_2[2u].x)');
+assert(!/cb3_3\.tint_symbol_2\[2u\]\.x/.test(exact.source.slice(exact.source.indexOf('\n',countAt),sample)));
+// Other CB3 light parameters remain untouched; only this count lane gates t14.
+console.log('PASS: exact PS996bb42f448956f2 t14 call has exactly three enclosing conditions, no preceding return/discard; signed positive counts including3 and selector2 permit the same cube sample. Binding46/slot14 and comparison sampler30/slot14 verified. An inactive variant cannot fix this state.');
 const report={result:'PASS_SOURCE_ONLY',modulesInspected:inspected,fragmentCandidates:candidates,certifiedSingleUseCubeGuards:guards,exactPairGuards:exact.plan,gpuValidation:false,scope:'Conservative structural guard proof, no fabricated cube data or successful scene implied.'};fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');console.log('PASS: shadow source proof across '+inspected+' original modules; '+candidates+' candidate PS / '+guards+' cube guards; exact ped_alpha four guards plus original integer light-count control, extra-use/comment/type/packed-uniform-shadow mutations rejected. Source only.');
