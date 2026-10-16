@@ -1,0 +1,18 @@
+GTA V iOS Native0.33 — post-guard SRV709 count transition
+Source:55131bc009da2176bbdc14642c8cd17e6449f6d2
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38833881036
+IPA:GTA-Native-Probe-0.33-unsigned.ipa
+Bytes:102314936
+SHA256:9e35ec1433dcf9e055c294ec2bf50bc5160c79330cc1185858a1378845b50453
+
+PASS:optional reference-shadow signed-positive count fix, count3 included.
+10 Metal ring cases/320 draws/81920 pixels; real comparison shadows,
+original BC1 bytes, resource generations, strict invalid states verified.
+PASS:full original shader pair/group at6 positive counts in the native shader audit.
+PASS:all shader/runtime/input/watchdog/graphics regressions and ARM64 audit.
+204 unchanged source files;32 previous IPAs preserved.
+No new physical device/FPS/mission-completion claim. See ENGINEERING0.33.
+
+Published release:https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.33
+Direct IPA:https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.33/GTA-Native-Probe-0.33-unsigned.ipa
+Exactly1 uploaded release asset; server size/SHA256 matches audited IPA.

@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "sourceFiles": 213,
+  "byteIdenticalFiles": 204,
+  "changed": [
+    "native-ios/App.m",
+    "native-ios/Info.plist",
+    "native-ios/renderer/native_scene.c",
+    "native-ios/renderer/ped_shadow_audit.inc",
+    "native-ios/renderer/shadow_guard.inc",
+    "native-ios/renderer/shadow_reference.h",
+    "native-ios/renderer/shadow_transition_fixture.inc",
+    "native-ios/renderer/test-shadow-source.mjs",
+    "native-ios/renderer/test_shadow_reference.c"
+  ],
+  "cacheCapacity": 256,
+  "renderSize": [
+    640,
+    360
+  ],
+  "uniformAndLayoutOptimizationsUnchanged": true,
+  "watchdogAndInputAndArchiveUnchanged": true,
+  "physical031EvidenceNewlyReported": true
+}

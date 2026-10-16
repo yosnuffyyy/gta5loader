@@ -1,0 +1,68 @@
+{
+  "uniformReuse": {
+    "isolatedBaselinePacks": 192,
+    "optimizedPacks": 18,
+    "baselineGPUBytes": 49152,
+    "optimizedGPUBytes": 4608,
+    "draws": 96,
+    "pixels": 512,
+    "processes": 2
+  },
+  "layoutReuse": {
+    "isolatedBaselineCreates": 32,
+    "optimizedCreates": 1,
+    "cacheCapacity": 256
+  },
+  "physicalEvidenceBaseline": "New user-supplied Native0.31 post-guard SRV709 failure; earlier vault cutoff baseline0.29",
+  "watchdogAssertions": 1374,
+  "sessionBridgeSanitizers": [
+    "ASan/UBSan",
+    "TSan"
+  ],
+  "simulatedLiveSeconds": 1303,
+  "readbackRetirement": {
+    "pressureWaitsBefore": 6,
+    "pressureWaitsAfter": 0,
+    "explicitCompletionBefore": 7,
+    "explicitCompletionAfter": 1,
+    "draws": 96,
+    "maps": 13,
+    "pixels": 256,
+    "occlusionSamples": 96,
+    "processes": 2
+  },
+  "inputQueue": {
+    "latestMovementAndFireHooks": 1,
+    "priorAnalogBacklogHooks": 2,
+    "physicalLatencyMeasured": false
+  },
+  "result": "PASS",
+  "source": "55131bc009da2176bbdc14642c8cd17e6449f6d2",
+  "run": 38833881036,
+  "job": 116758515564,
+  "inputEngineChecks": 71,
+  "productionUIKitChecks": 103,
+  "ASanUBSan": true,
+  "threadSanitizer": true,
+  "originalEngineInstructionsChanged": false,
+  "fullRuntimeProcesses": 2,
+  "metalShaderModules": 4808,
+  "metalPipelines": 4808,
+  "clipShaders": 500,
+  "untranslatedRecords": 111,
+  "pipelineWorkingSet": {
+    "keys": 192,
+    "draws": 576,
+    "capacity": 256,
+    "creates": 192,
+    "hits": 384,
+    "evictions": 0,
+    "processes": 2
+  },
+  "IPA": "9e35ec1433dcf9e055c294ec2bf50bc5160c79330cc1185858a1378845b50453",
+  "ipaBytes": 102314936,
+  "version": "0.33.0",
+  "physicalGameplayControlsVerified": false,
+  "sourceEntriesVerified": 214,
+  "previousIPAsPreserved": 32
+}

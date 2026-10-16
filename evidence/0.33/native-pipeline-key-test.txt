@@ -1,0 +1,2 @@
+PASS: VS-consumed layout key:32 maximum-size unused declaration variants collapse; five consumed format/slot/offset/class/rate distinctions retained; empty signature has no input attributes.
+PASS: semantic pipeline keys: 256 equivalent descriptors, 8 required distinctions; 128-entry synthetic LRU creates/evictions 512/384 -> 1/0; metadata key 1468 bytes. CPU model, no FPS claim.

@@ -1,0 +1,22 @@
+NATIVE IPHONE RELEASE POLICY
+User instruction2026-10-15: publish finished updates on GitHub, including
+the finished IPA and an explanation of changes. Attach only the IPA;
+never attach the extracted web folder or original game archives.
+
+Use yosnuffyyy/gta5loader, native-ios-prototype only. Keep main unchanged.
+Publish native source and verification notes on the native branch as before.
+After successful CI, focused/full relevant checks and package/integrity audit,
+publish an experimental GitHub release targeting the exact tested native
+source commit. Use a unique native-X.Y tag and versioned unsigned ARM64 IPA.
+Attach exactly that IPA as the manually uploaded release asset. Do not attach
+game archives, the web directory, offline PC packages, credentials, signing
+material or entire workspace/source bundles. GitHub's automatic source links
+are not application installers; the named IPA is the downloadable build.
+
+Release notes must explain concrete changes, verified tests, known limits,
+test instructions, exact tested source/CI link, IPA size and SHA256. Keep
+device-only behavior and FPS unverified until physical evidence is received.
+Do not publish a failed or unaudited build as validated. Preserve old IPAs,
+releases and rollback revisions; never replace a working artifact silently.
+If upload fails, retain the verified IPA and report the specific publication
+limitation. Never include missing game files to make a package appear complete.

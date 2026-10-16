@@ -1,0 +1,55 @@
+{
+  "result": "PASS",
+  "scope": "CI Metal offscreen workload; not phone frame times/FPS. Existing0.32 optimizations preserved; no new performance algorithm in0.33.",
+  "rows": [
+    "PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.014/0.001/0.006/1.022/1.022; lifetime 96 calls 1.350 ms max 1.022",
+    "PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.039/1.146/1.146; lifetime 96 calls 1.567 ms max 1.146",
+    "PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.080/0.002/0.302/1.017/1.017; lifetime 96 calls 7.698 ms max 1.017",
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.001ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 52.423ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 39.455ms, link 14.690ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.005/1.063/1.063; lifetime 96 calls 1.520 ms max 1.063",
+    "PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.015/0.001/0.003/1.019/1.019; lifetime 96 calls 1.397 ms max 1.019",
+    "PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.",
+    "DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.076/0.002/0.246/1.047/1.047; lifetime 96 calls 7.288 ms max 1.047",
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.002ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 54.526ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 22.857ms, link 10.480ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. "
+  ],
+  "uniformPacks": {
+    "reference": 192,
+    "reuse": 18
+  },
+  "uniformGPUBytes": {
+    "reference": 49152,
+    "reuse": 4608
+  },
+  "unusedLayoutPipelineCreates": {
+    "reference": 32,
+    "filtered": 1
+  },
+  "stagingPressure": {
+    "reference": 6,
+    "retiredMapAccounting": 0
+  },
+  "completionWaits": {
+    "reference": 7,
+    "retiredMapAccounting": 1
+  },
+  "sameReuseFixture": {
+    "draws": 96,
+    "pixels": 512,
+    "querySamples": 96,
+    "batches": 4,
+    "submissions": 6,
+    "explicitCompletions": 1,
+    "pressureWaits": 0,
+    "logicalGPUBytes": 2388
+  },
+  "phoneMeasurements": false
+}

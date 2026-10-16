@@ -1,16 +1,23 @@
-Native0.32 — pipeline/uniform reuse, preserved live-session watchdog
-Source:0d5cd6fb17742f5704809a7ed5e45d4540087c7d
-CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38831335311
-IPA:GTA-Native-Probe-0.32-unsigned.ipa
-SHA256:d119a553ed0c09753390d15b54464a6654426402bc6894ba03a075cd6ec32d87
+GTA V iOS Native0.33 — post-guard SRV709 count transition
+Source:55131bc009da2176bbdc14642c8cd17e6449f6d2
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38833881036
+IPA:GTA-Native-Probe-0.33-unsigned.ipa
+Bytes:102314936
+SHA256:9e35ec1433dcf9e055c294ec2bf50bc5160c79330cc1185858a1378845b50453
 
-Use the existing signing/sideload setup; preserve old IPAs and web folder.
-Keep640x360 and the same optional reference-shadow setting. The folder
-selector/menu-scroll fix, DualSense, touch, automatic switching and fullscreen
-remain. Controls:INPUT-CONTROLS-0.29.txt.
-After camera startup look for Session live, then play past180s toward10-20min
-including vault movement. Mark the visible scene window and save the complete
-report after Stop. Check pause,settings/fullscreen return and input releases
-after stutters. Backgrounding still safely stops the session.
-No sustained0.32 iPhone FPS, memory, latency or mission claim. Physical baseline
-was0.29, not0.30/0.31. See ENGINEERING-0.32.txt and benchmark-comparison.json.
+Use your existing signing/sideload setup. Preserve older IPAs and web folder.
+Enable Reference empty-shadow compatibility to exercise this optional fix.
+Keep640x360; controls/fullscreen/menu scrolling remain as before.
+Mark the actual visible scene, pass the security guard and enter the vault.
+Continue beyond180 seconds toward10-20minutes; test pause/resume, held-input
+release, controller/touch switching and normal Stop. Backgrounding still stops.
+Watch for Session live / startup-only deadline retired, correct characters,
+textures, shadows and animation. Check these visually rather than inferring
+success from draw/PRESENT/fallback counts. Save the complete0.33 report,
+including the exact fatal line/context if any and marked display timings.
+Strict mode deliberately retains invalid709 failures. Other invalid resources
+still fail. Producer intent and correct physical shadows remain unverified.
+
+Published release:https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.33
+Direct IPA:https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.33/GTA-Native-Probe-0.33-unsigned.ipa
+Exactly1 uploaded release asset; server size/SHA256 matches audited IPA.

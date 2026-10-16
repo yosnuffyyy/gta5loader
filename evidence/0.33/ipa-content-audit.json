@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "file": "GTA-Native-Probe-0.33-unsigned.ipa",
+  "entries": [
+    "Payload/",
+    "Payload/NativeProbe.app/",
+    "Payload/NativeProbe.app/renderer-build.json",
+    "Payload/NativeProbe.app/renderer-backend.json",
+    "Payload/NativeProbe.app/draw-fixtures.json",
+    "Payload/NativeProbe.app/SIMDe-LICENSE.txt",
+    "Payload/NativeProbe.app/metal-bc-patch.json",
+    "Payload/NativeProbe.app/file-probes.json",
+    "Payload/NativeProbe.app/shader-fixtures.json",
+    "Payload/NativeProbe.app/NativeProbe",
+    "Payload/NativeProbe.app/WABT-LICENSE.txt",
+    "Payload/NativeProbe.app/wgpu-native-LICENSE.MIT",
+    "Payload/NativeProbe.app/wgpu-native-LICENSE.APACHE",
+    "Payload/NativeProbe.app/Info.plist",
+    "Payload/NativeProbe.app/engine-inventory.json"
+  ],
+  "webFilesOrOriginalGameArchives": false,
+  "releaseAssetCount": 1
+}

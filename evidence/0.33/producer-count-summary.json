@@ -1,0 +1,50 @@
+[
+  {
+    "result": "PASS",
+    "forwardCount": 1,
+    "constructedDuplicateLightList": true,
+    "engineHash": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+    "originalFunctionBodiesUnchanged": true,
+    "constructedStateTests": 87,
+    "forwardStateTests": 153,
+    "externalCalls": [],
+    "physicalCaptureReproduced": false,
+    "productionFixValidated": false
+  },
+  {
+    "result": "PASS",
+    "forwardCount": 2,
+    "constructedDuplicateLightList": true,
+    "engineHash": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+    "originalFunctionBodiesUnchanged": true,
+    "constructedStateTests": 87,
+    "forwardStateTests": 153,
+    "externalCalls": [],
+    "physicalCaptureReproduced": false,
+    "productionFixValidated": false
+  },
+  {
+    "result": "PASS",
+    "forwardCount": 3,
+    "constructedDuplicateLightList": true,
+    "engineHash": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+    "originalFunctionBodiesUnchanged": true,
+    "constructedStateTests": 87,
+    "forwardStateTests": 153,
+    "externalCalls": [],
+    "physicalCaptureReproduced": false,
+    "productionFixValidated": false
+  },
+  {
+    "result": "PASS",
+    "forwardCount": 4,
+    "constructedDuplicateLightList": true,
+    "engineHash": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+    "originalFunctionBodiesUnchanged": true,
+    "constructedStateTests": 87,
+    "forwardStateTests": 153,
+    "externalCalls": [],
+    "physicalCaptureReproduced": false,
+    "productionFixValidated": false
+  }
+]

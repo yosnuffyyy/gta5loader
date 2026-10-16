@@ -1,5 +1,21 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated2026-10-15. Native0.32 verified pipeline/uniform reuse; stages remain open.
+Updated2026-10-15. Native0.33 independently verified; stages remain open.
+
+LATEST —0.33 POST-GUARD SHADOW COUNTS
+New physical0.31 evidence:guard combat progressed, then active count3/selector2
+rejected the optional count1-only reference-shadow contract. Original t14
+control flow is count>0;0.33 covers positive counts with unchanged exact
+resource/upload/sampler requirements and strict validation for other cases.
+320 Metal draws/81920 pixels, full original groups, shader/runtime/input/
+watchdog checks and unsigned ARM64 audit PASS. Preserves0.32 bounded reuse.
+Current fatal report no longer appends historical vault/watchdog assertions.
+32 previous IPAs preserved; no new phone FPS or mission-completion claim.
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38833881036
+See ENGINEERING-0.33.txt,VERIFICATION-0.33.txt and evidence/0.33.
+Future releases:publish validated IPA only, with release notes; no web/game
+archives. Policy:PUBLISHING-NATIVE.txt. Older entries describe evidence at
+the time; the new physical0.31 report supersedes earlier absence of that test.
+
 
 LATEST —0.32 BOUNDED REUSE
 User clarified physical vault/watchdog/performance evidence was Native0.29.

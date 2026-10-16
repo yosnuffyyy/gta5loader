@@ -1,0 +1,1 @@
+PASS: production session bridge: actual hook/marker/presentation transition,100000 concurrent hooks/200000 polls, suspended clock, fatal latch, bounded report, cancellation and detached runtime lifetime; inert services, no gameplay claim.

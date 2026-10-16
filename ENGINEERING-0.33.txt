@@ -1,0 +1,166 @@
+GTA V iOS Native0.33 — post-guard SRV709 count transition
+Source:55131bc009da2176bbdc14642c8cd17e6449f6d2
+CI:https://github.com/yosnuffyyy/gta5loader/actions/runs/38833881036
+IPA:GTA-Native-Probe-0.33-unsigned.ipa
+Bytes:102314936
+SHA256:9e35ec1433dcf9e055c294ec2bf50bc5160c79330cc1185858a1378845b50453
+
+Native0.33 — validated post-guard reference-shadow candidate
+
+New evidence: user identifies Native0.31 physical post-security-guard draw,
+PS996bb42f448956f2 / VSa276344f1111242f, t14/binding46, source708/SRV709,
+CB3word8=3, CB6word63=2.0. Optional reference mode had143 prior uses.
+This is distinct from earlier vault/watchdog evidence corrected to0.29.
+No complete new raw report or original CPU light/cache record was supplied.
+
+Confirmed rejection: shadow_reference_contract required light_count==1.
+At3 it returnedfalse regardless of other valid captured fields.143 earlier
+uses do not establish eligibility of the later draw. Fresh evaluation and
+binding-cache selection already existed; no stale-cache bug is demonstrated.
+Original t14 sample has exactly three ancestors: signed CB3count>0, CB6type
+!=0 and!=3. Other light counts govern separate t25/t27/t29 samples. Source
+audit asserts the exact three ancestors and no second count-lane use before
+t14. Count3 permits the first cube sample; it is not certified inactive.
+
+Fix: use signed-positive count domain (raw1..INT32_MAX) instead of count1.
+Keep exact PS/binding, selector2,708/709 descriptors, version2, one original
+zero8-byte upload, regular captured sampler and lifetime requirements.
+Compatibility remainsOFF by default (strict validation). Valid real cubes bypass this
+path. Comparison-sampler mismatches, unrelated bindings, changed bytes,
+versions and invalid mip ranges remain fatal. No resource layers fabricated.
+
+Reference meaning: captured sampler filter20 lacks comparison bit0x80.
+Original browser/native existing class-mismatch path chooses comparison
+Always; original browser also chooses empty depth cube for undersized cube
+views. The optional separate initialized1x1x6 Depth32Float cube preserves
+that visibility result. It does not prove correct original-PC shadows or
+intentional no-shadow selection by the phone producer. Original BC1 bytes,
+shader sample and remaining lighting computation stay intact.
+
+Independent producer execution: original hash-pinned GetLightShadowIndex,
+SetForwardLights and SetGlobalVar ran for constructed lists of1/2/3/4 copies
+of the same light. Each run87 index tests+153 forward-state tests, zero
+external calls, original instructions unchanged. Active selector2/null-cube
+route persists for each list count. This is not the original phone record.
+Earlier CreateBaseMaps/Technique_Pass::Bind null-global/default-texture trace
+remains documented in ENGINEERING0.28; no speculative producer patch made.
+
+PASS on CI Metal: each of five production-ring reference cases32
+draws/8192 pixels;7 active709 draws counts1,2,3,4,5,6,INT32_MAX, real cube
+Less comparisons, count0/selector0/3 inactive, byte-wise CB changes/offsets,
+resource/CB/view generations, original BC1 readback, exact1536 query samples.
+Negative tails now exercise count3: true-comparison sampler, NaN selector,
+changed source version, invalid mip range. Full original pair validates its
+binding group at1/2/3/4/5/INT32_MAX; its remaining constants are synthetic.
+Pixel fixture uses original shadow-control block and synthetic geometry;
+neither fixture proves a complete correctly rendered game scene.
+
+Watchdog: native_scene.c fatal formatter appended historical vault/watchdog
+text to every fatal result. Removed that history from current-run report.
+runScene replaces prior displayed report; retained shadow context resets on
+new work. Worker threads join before completion, pending progress flushes.
+No evidence establishes two fatal errors in one attempt without raw report.
+Existing0.31 policy remains: camera event+fresh engine hook+PRESENT retires
+180active-second startup deadline; live60s engine/frame/positive-IO stall
+checks, pause accounting, cancellation and diagnostic deadlines retained.
+The old exact `native scene startup timed out (180 seconds)` literal is not
+the current live-session fault string. Do not attribute a vault crash from
+historical text. Tests cover >21virtual live minutes and real stalled paths.
+
+Performance: 204 source files byte-identical to0.32, including uniform reuse,
+VS-used pipeline keys,256-entry cache, readback retirement, input queue and
+archive one64KiB/eight-descriptor limit. No capacity increase or new waits.
+One existing optional cube remains24 logical bytes; no per-count texture or
+pipeline allocation is introduced. Driver memory and phone timing unknown.
+V31 reported pipeline358ms/upload50ms/PRESENT/input92ms are device evidence
+from before0.32 changes, not a0.32 or0.33 measurement. Preserve/retest isolated
+0.32 comparisons:32->1 pipeline creations;49152->4608 uniform GPU bytes;
+readback pressure6->0, explicit completions7->1. No claimed iPhone FPS gain.
+Cold required vault pipelines can still compile; preparing unknown variants
+without captured keys is speculative. No asynchronous driver/compiler rewrite.
+
+Local source proof PASS4808 modules; 4 producer-count runs PASS. First new
+source-audit assertion incorrectly disallowed all CB3 uses before t14; it
+failed locally because unrelated light parameters are valid there. Corrected
+assertion targets only the count lane. No production behavior was changed
+in response to that test failure. Native CI and unsigned ARM64 package audit PASS.
+
+Next device goal: same640x360, reference modeON, mark actual scene, passguard
+and vault transition, continue beyond180s, pause/resume and manualStop. Check
+textures/shadows/animation/controls and session-live transition separately.
+Save full final error/context if any. Stage3 and Stage4 remain unclosed.
+
+Delivery audit note:the first local result collector looked for the full
+original-pair binding-group line in the runtime report. It is emitted by
+the separate native shader audit (one independent audit, not two). Corrected
+the file/count expectation; all native CI tests themselves passed.
+
+VERIFIED DELIVERY
+PASS:1374 watchdog assertions, >21virtual live minutes, production session
+bridge/input ASan+UBSan+TSan,71 engine input checks,103 UIKit checks.
+PASS:4808 Metal shader modules/pipelines,500 clip shaders,0 failures.
+PASS:two full native runtime processes;10 reference-shadow ring fixtures,
+320 draws/81920 checked pixels and exact1536 query samples in each fixture.
+Seven active709 states per fixture cover counts1/2/3/4/5/6/INT32_MAX.
+PASS:full original pair/reflected group at1/2/3/4/5/INT32_MAX in the native shader audit.
+PASS:SRV5633 original shader pair/all five mips, formats, depth proxies,
+queries/UAV/compute/readbacks/lifetimes, workers/mailboxes/streaming tests.
+PASS:all6 isolated uniform/layout reuse fixtures; counts and golden pixels
+unchanged.256 cache, one optional cube,0 new per-count pipelines/allocations.
+PASS:unsigned ARM64 IPA/minOS17/noW+X/engine-backend integrity/noCIpack leak;
+214 published source entries match tested tree;32 old IPAs checksum-preserved.
+CI Metal is the available offscreen environment, not the physical A18 Pro.
+No visual mission success, improved iPhone FPS or Stage3 completion claimed.
+111 hull/domain/geometry records remain untranslated as previously reported.
+
+CHANGED SOURCE FILES
+- native-ios/App.m
+- native-ios/Info.plist
+- native-ios/renderer/native_scene.c
+- native-ios/renderer/ped_shadow_audit.inc
+- native-ios/renderer/shadow_guard.inc
+- native-ios/renderer/shadow_reference.h
+- native-ios/renderer/shadow_transition_fixture.inc
+- native-ios/renderer/test-shadow-source.mjs
+- native-ios/renderer/test_shadow_reference.c
+source-manifest.json updated.204 other source files byte-identical to0.32.
+
+REPRODUCIBLE PERFORMANCE CHECKS
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.014/0.001/0.006/1.022/1.022; lifetime 96 calls 1.350 ms max 1.022
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.039/1.146/1.146; lifetime 96 calls 1.567 ms max 1.146
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.080/0.002/0.302/1.017/1.017; lifetime 96 calls 7.698 ms max 1.017
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.001ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 52.423ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 39.455ms, link 14.690ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.005/1.063/1.063; lifetime 96 calls 1.520 ms max 1.063
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.015/0.001/0.003/1.019/1.019; lifetime 96 calls 1.397 ms max 1.019
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.076/0.002/0.246/1.047/1.047; lifetime 96 calls 7.288 ms max 1.047
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.002ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 54.526ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 22.857ms, link 10.480ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+CPU times above are CI DRAW-handler wall times, not full engine frames,
+GPU execution, display FPS or iPhone latency. CLI uses-O0, app-O1. Fixed
+mode ordering and driver caching preclude attributing cross-run timing
+differences to this small compatibility change. Logical bytes exclude
+driver/intermediate/residency overhead. See benchmark-comparison.json.
+
+PUBLISHING
+Publish the validated versioned IPA as the sole uploaded GitHub release
+asset, with changes/tests/limitations and SHA256 in release notes. No web
+folder, game archives or offline-PC package. See PUBLISHING-NATIVE.txt.
+
+Published release:https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.33
+Direct IPA:https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.33/GTA-Native-Probe-0.33-unsigned.ipa
+Exactly1 uploaded release asset; server size/SHA256 matches audited IPA.
+
+NEW SEPARATE STAGE4 DEVICE EVIDENCE
+User reports Native0.31 gameplay was entirely silent:dialogue,gunshots and
+environment. Logged audio events are not verified playback.0.33 does not
+change audio. Investigate actual PCM decoding/queue/AVAudioSession/output
+separately; do not delay or relabel this completed crash candidate.

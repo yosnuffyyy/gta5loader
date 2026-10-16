@@ -1,0 +1,1 @@
+PASS: reference empty-shadow contract: 76 checks, every captured descriptor/upload lane, regular/comparison sampler distinction, active/inactive/ambiguous constants, resource mutation and sampler ID reuse.

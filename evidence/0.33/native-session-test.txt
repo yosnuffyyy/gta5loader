@@ -1,0 +1,1 @@
+PASS: native session watchdog 1374 assertions; controlled clock, >21min live engine, startup/stalls, loading, cutscene/pause, focus suspension, cancellation, restart and first-fatal retention. No physical gameplay claim.
