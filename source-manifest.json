@@ -313,8 +313,8 @@
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 3359,
-      "sha256": "2b3469a6097fb820440ec9b0aa74bbce95fcf556aface80a5d46cd899dfeeddb"
+      "bytes": 3387,
+      "sha256": "03dfdf3e2db8d5877e7561e0da7c99707705e36dbbc4fd8e0f8967e94ec1189a"
     },
     {
       "path": "native-ios/renderer/frame_costs.h",
@@ -388,8 +388,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 22741,
-      "sha256": "76a06f73ec949136d983adacd12754927b0e6acc2004d872503d9e892e93dd37"
+      "bytes": 22949,
+      "sha256": "90d0246132beaf36ccedaa3b968a48931f3ae7d9eba86ab1c6c1e6bfc77a83ec"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",

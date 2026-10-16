@@ -71,10 +71,12 @@ static WGPUBindGroup draw_group(NativeGpu *g,DrawProgram *p,unsigned *offset){Dr
   /* A slice remains immutable until this draw batch is submitted. Compare all
      source bytes and implicit zero fill, not handles or startup revisions.
      Batch identity prevents reuse after mirror/slot recycling. */
-  for(unsigned i=0;i<p->member_count&&reuse;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;const uint8_t *saved=s->mirror+p->uniform_offset+p->members[i].offset;if(bytes&&memcmp(saved,source,bytes)){reuse=false;break;}for(unsigned j=bytes;j<p->members[i].size;j++)if(saved[j]){reuse=false;break;}}
+  /* Bytes beyond the last copied prefix were zeroed when the immutable slice
+     was made. Recheck only a newly truncated prefix, not every absent bank. */
+  for(unsigned i=0;i<p->member_count&&reuse;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;const uint8_t *saved=s->mirror+p->uniform_offset+p->members[i].offset;if(bytes&&memcmp(saved,source,bytes)){reuse=false;break;}for(unsigned j=bytes;j<p->uniform_bytes[i];j++)if(saved[j]){reuse=false;break;}}
   if(reuse){*offset=p->uniform_offset;s->uniform_reuses++;}
-  else {unsigned at=s->offset;if(!check(g,at<=DRAW_UBO_BYTES&&p->pack_size<=DRAW_UBO_BYTES-at,"Uniform ring overflow"))return NULL;memset(s->mirror+at,0,p->pack_size);
-   for(unsigned i=0;i<p->member_count;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;if(bytes)memcpy(s->mirror+at+p->members[i].offset,source,bytes);}
+  else {unsigned at=s->offset;if(!check(g,at<=DRAW_UBO_BYTES&&p->pack_size<=DRAW_UBO_BYTES-at,"Uniform ring overflow"))return NULL;p->uniform_valid=false;memset(s->mirror+at,0,p->pack_size);
+   for(unsigned i=0;i<p->member_count;i++){const uint8_t *source;unsigned bytes;if(!draw_uniform_source(g,p,i,&source,&bytes))return NULL;if(bytes)memcpy(s->mirror+at+p->members[i].offset,source,bytes);p->uniform_bytes[i]=bytes;}
    *offset=at;s->offset=(at+p->pack_size+s->alignment-1)&~(s->alignment-1);p->uniform_valid=true;p->uniform_batch=s->batches;p->uniform_offset=at;s->uniform_packs++;
   }
  }

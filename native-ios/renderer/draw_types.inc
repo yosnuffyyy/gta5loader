@@ -31,7 +31,7 @@ struct DrawProgram {
  DrawProgram *variants[8];uint64_t variant_ages[8],variant_age;
  WGPUTextureFormat storage_formats[8];
  ShadowPlan *shadow_plan;uint32_t inactive_mask;DrawProgram *shadow_variants[SHADOW_VARIANTS];uint64_t shadow_ages[SHADOW_VARIANTS],shadow_age;
- bool uniform_valid;unsigned uniform_offset;uint64_t uniform_batch;
+ bool uniform_valid;unsigned uniform_offset,uniform_bytes[DRAW_MEMBERS];uint64_t uniform_batch;
 };
 #include "pipeline_key.h"
 typedef struct {
