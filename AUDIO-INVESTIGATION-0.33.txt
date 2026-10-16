@@ -1,4 +1,4 @@
-STAGE4 AUDIO â€” INITIAL INVESTIGATION, NOT A PLAYBACK FIX
+STAGE4 AUDIO — INITIAL INVESTIGATION, NOT A PLAYBACK FIX
 User's new physical observation:Native0.31 was completely silent during
 gameplay, including dialogue, gunshots and environment. Logged audio events
 are not evidence of decoded PCM, device queue delivery or speaker playback.
