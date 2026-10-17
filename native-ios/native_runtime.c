@@ -36,6 +36,7 @@ void native_stack_probe(struct w2c_env *h,w2c_gta *engine,uint64_t scratch){
   for(unsigned i=0;i<sizeof(after);i++)require(h,after[i]==(i>=8&&i<8+sizes[c]*8?0:0xa5),"real CaptureStackTrace empty-trace bounds/terminator differs");
  }
 }
+#include "memory/diagnostics.inc"
 #include "memory/allocator_fixture.inc"
 static void putstr(struct w2c_env *h,uint64_t p,const char *s){host_store(h,p,s,strlen(s)+1);}
 static void entropy_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){

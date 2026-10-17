@@ -38,6 +38,7 @@ typedef struct {
  WGPUSampler sampler; DrawProgram *program;
  WGPUTextureDescriptor td;WGPUTextureFormat views[2];
  NativeGpu *owner;uint64_t tracked_bytes;QueryState query;
+ uint64_t draw_buffer_epoch;
  uint64_t version,created_command,last_upload_command,texture_uploads,last_bound_command;uint32_t last_upload[12],last_bind[2],upload_prefix[2]; DepthProxy *proxies[4];
  WGPUBuffer counter,storage_proxy;uint64_t storage_proxy_size;
  NativeGpu *storage_owner;
@@ -71,13 +72,13 @@ struct NativeGpu {
  bool counting_queries,query_pass;QueryPage query_pages[QUERY_PAGES];unsigned query_current,query_active_count,query_pending_pages,query_pages_allocated,query_cases;
  uint32_t query_active[QUERY_SCOPES];uint64_t query_token,query_begins,query_ends,query_segments,query_publications,query_empty,query_stale,query_map_requests,query_maps_completed,query_pressure_waits,query_pressure_ns,query_gpu_bytes,query_gpu_peak;
 #ifdef NATIVE_PROBE_CLI
- unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement;unsigned test_pipeline_capacity;
+ unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement,test_legacy_upload_flush;unsigned test_pipeline_capacity;
  void *test_scope_context;
  bool test_unused_layout_keys,test_no_uniform_reuse,test_measure_draw;TimingWindow test_draw_times;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
  DrawState draw;
- uint64_t fresh_flushes_avoided;
+ uint64_t fresh_flushes_avoided,independent_uploads,dependent_uploads;
  uint32_t shader[3],layout,topology,vb[16][3],ib[3],cb[3][16][3],srv[3][128],smp[3][16],uav[3][8];
  uint32_t targets[37],blend[6],depth[2],raster,viewports[97],scissors[65];
 };
@@ -355,12 +356,17 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
     The physical segment still closes/resolves using its immutable snapshot. */
  if(op==4&&n==1){Object *q=object(g,gpu_word(p,0));if(q&&q->kind==44)query_destroy_scope(g,q);}
  bool shadow_upload=false;if((op==12||op==47)&&n>=3){Object *o=object(g,gpu_word(p,0));shadow_upload=o&&o->shadow&&!o->buffer;}
+ bool independent_upload=false;if((op==12||op==47)&&n>=3){Object *o=object(g,gpu_word(p,0));independent_upload=o&&o->buffer&&g->draw.batches!=UINT64_MAX&&o->draw_buffer_epoch!=g->draw.batches+1;
+#ifdef NATIVE_PROBE_CLI
+ if(g->test_legacy_upload_flush)independent_upload=false;
+#endif
+ if(g->draw.encoder&&o&&o->buffer){if(independent_upload)g->independent_uploads++;else g->dependent_uploads++;}}
  bool fresh_object=(op==3||op==11||op==14||op==15||op==16||op==17||op==37||op==44)&&n&&!object(g,gpu_word(p,0));
 #ifdef NATIVE_PROBE_CLI
  if(g->test_flush_new_objects)fresh_object=false;
 #endif
  if(fresh_object&&g->draw.encoder)g->fresh_flushes_avoided++;
- if(!shadow_upload&&!fresh_object&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
+ if(!shadow_upload&&!independent_upload&&!fresh_object&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
  switch(op){
  case 0:case 2:return true; /* Reference protocol treats both as no-ops. */
  case 3:return check(g,n==10,"Invalid texture command")&&create_texture(g,p);
@@ -397,7 +403,7 @@ static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){Nativ
 #endif
  g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(op==13&&n>=12)g->metrics.upload_bytes+=gpu_word(p,11);else if((op==12||op==47)&&n>=3)g->metrics.upload_bytes+=gpu_word(p,2);slow_command_observe(g,op,p,n,end,elapsed);if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
 #include "frame_costs.inc"
-static void release_hardware(NativeGpu *g){metrics_report(g);frame_cost_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->reference_shadow_cube){wgpuTextureDestroy(g->reference_shadow_cube);wgpuTextureRelease(g->reference_shadow_cube);g->reference_shadow_cube=NULL;}if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
+static void release_hardware(NativeGpu *g){if(g->host->progress){char line[240];snprintf(line,sizeof(line),"Buffer mutation dependencies: independent uploads %llu; required pending-draw flushes %llu; 8 metadata bytes per live object; no new staging.",(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads);g->host->progress(g->host->progress_context,line);}metrics_report(g);frame_cost_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->reference_shadow_cube){wgpuTextureDestroy(g->reference_shadow_cube);wgpuTextureRelease(g->reference_shadow_cube);g->reference_shadow_cube=NULL;}if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
 #ifdef NATIVE_PROBE_CLI
  free(g->test_scope_context);g->test_scope_context=NULL;
 #endif
@@ -440,6 +446,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
 #include "perf_fixture.inc"
 #include "stability_fixture.inc"
 #include "reuse_fixture.inc"
+#include "submission_fixture.inc"
 #include "layout_cache_fixture.inc"
 /* Replay uses the exact shared-memory protocol, not direct GPU test calls.
    This small fixture verifies resource uploads, clear/readback and fence
@@ -551,6 +558,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result){bool valid=srv_pixel_fixture(h);for(unsigned i=0;i<10&&valid;i++)valid=srv_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: SRV contract GPU suite: 30 cases / 480 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; single-layer 2D/array float/uint/sint bindings; ten controlled descriptor/lifetime failures.",valid?"PASS":"FAIL");if(!valid)result=1;}
  if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}
 #ifdef NATIVE_PROBE_CLI
+ for(unsigned legacy=0;legacy<2&&!result;legacy++){char text[2400];bool valid=submission_fixture(h,legacy,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
  for(unsigned mode=0;mode<3&&!result;mode++){char text[2400];bool valid=reuse_fixture(h,mode,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
 #endif
  }else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);

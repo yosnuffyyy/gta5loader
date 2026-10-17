@@ -18,6 +18,7 @@ struct w2c_env {
  void *progress_context;
  const char *failure;
  unsigned log_lines;
+ _Atomic unsigned memory_growth_logs,memory_failure_logs;
 };
 struct w2c_wasi__snapshot__preview1 {struct w2c_env *env;};
 bool host_range(struct w2c_env*,uint64_t,uint64_t);

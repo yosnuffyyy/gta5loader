@@ -7,6 +7,7 @@ sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-arc -Inative-ios -fsyntax-only native-ios/App.m
 plutil -lint native-ios/Info.plist
 node native-ios/prepare-engine.mjs
+NATIVE_MEMORY_ENGINE=native-build/engine-original.wasm node native-ios/memory/test-reference.cjs native-build/evidence/native-memory-reference.json
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/memory/test_policy.c -o native-build/test-memory-policy
 native-build/test-memory-policy | tee native-build/evidence/native-memory-policy.txt
 bash native-ios/threading/ci-test-session.sh

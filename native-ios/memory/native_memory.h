@@ -12,6 +12,8 @@ static inline uint64_t native_stream_growth_limit(uint64_t request){
 }
 struct w2c_gta;
 uint32_t native_stream_grow(struct w2c_gta*,uint64_t,uint64_t);
+uint64_t native_stream_growth_context(struct w2c_gta*,uint64_t,uint64_t);
+void native_stream_allocation_result(struct w2c_gta*,uint64_t,uint64_t,uint64_t);
 #ifdef NATIVE_PROBE_CLI
 uint64_t native_stream_try_legacy(struct w2c_gta*,uint64_t,uint64_t,uint64_t,uint32_t);
 #endif
