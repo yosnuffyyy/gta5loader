@@ -133,8 +133,8 @@
     },
     {
       "path": "native-ios/memory/patch-generated.mjs",
-      "bytes": 2837,
-      "sha256": "f6d76e2f38a65405a3e2fecf8025aa142a69b9715091aa96cf649c0980f9bcdb"
+      "bytes": 3166,
+      "sha256": "97d1747311a520d491eac76c28716fe313dc89345ad6912f039a58b2c0228b05"
     },
     {
       "path": "native-ios/memory/test_policy.c",
