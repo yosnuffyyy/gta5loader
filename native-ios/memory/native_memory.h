@@ -16,10 +16,12 @@ static inline uint64_t native_stream_growth_limit(uint64_t request,uint32_t segm
 }
 struct w2c_gta;struct w2c_env;
 void native_memory_summary(struct w2c_env*);
+uint64_t native_stream_default_limit(struct w2c_gta*,uint64_t);
 uint32_t native_stream_grow(struct w2c_gta*,uint64_t,uint64_t);
 uint64_t native_stream_growth_context(struct w2c_gta*,uint64_t,uint64_t);
 void native_stream_allocation_result(struct w2c_gta*,uint64_t,uint64_t,uint64_t);
 #ifdef NATIVE_PROBE_CLI
+uint32_t native_stream_grow_legacy(struct w2c_gta*,uint64_t);
 uint64_t native_stream_try_legacy(struct w2c_gta*,uint64_t,uint64_t,uint64_t,uint32_t);
 #endif
 #endif

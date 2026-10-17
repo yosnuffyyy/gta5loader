@@ -14,3 +14,5 @@ uint64_t native_stream_growth_context(w2c_gta *e,uint64_t owner,uint64_t request
 void native_stream_allocation_result(w2c_gta *e,uint64_t owner,uint64_t request,uint64_t result){
  struct w2c_env *h=e->w2c_env_instance;if(!result){unsigned log=atomic_fetch_add_explicit(&h->memory_failure_logs,1,memory_order_relaxed);char line[512];snprintf(line,sizeof(line),"Streaming allocation FAILED: owner 0x%llx request %llu; returned NULL; linear committed %llu/4294967296. No archive destination is fabricated.",(unsigned long long)owner,(unsigned long long)request,(unsigned long long)atomic_load(&h->memory.size));native_memory_record(h,line,log<8);}
 }
+
+uint64_t native_stream_default_limit(w2c_gta *e,uint64_t owner){uint32_t count;host_load(e->w2c_env_instance,&count,owner+508,4);return native_stream_growth_limit(0,count);}

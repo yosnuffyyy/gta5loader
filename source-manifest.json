@@ -123,23 +123,23 @@
     },
     {
       "path": "native-ios/memory/allocator_fixture.inc",
-      "bytes": 4504,
-      "sha256": "ef69435dc238e56c6af4a94c65f3a5a145c6f30e09b0c2b329ce5643d1e899fa"
+      "bytes": 4546,
+      "sha256": "388ed3c39bdc581b1d3fe50c53efc988ad07de4075e5d233060f7a7569ea9bc9"
     },
     {
       "path": "native-ios/memory/diagnostics.inc",
-      "bytes": 2965,
-      "sha256": "1c13ddf28b3f7258a41e4a4a175f578c72ce6f2b8dc5f5e5539c6b6b408b4788"
+      "bytes": 3140,
+      "sha256": "41afd5c23c2b32f648302ab44d00102ca7f256e52d0e4e097c05ea8bb1a15ff2"
     },
     {
       "path": "native-ios/memory/native_memory.h",
-      "bytes": 1340,
-      "sha256": "e399ff8a26efed7c7185c0d10fedbaebd39e8aad8e82e97d234864ae775a7fe8"
+      "bytes": 1466,
+      "sha256": "2a0fb2878dca5405ab0cdd288b47d2bb7bc3e0e3ff6de97c506bb074dfe600fd"
     },
     {
       "path": "native-ios/memory/patch-generated.mjs",
-      "bytes": 3647,
-      "sha256": "1e2549ed0d00915740e8b0899b8933ba904edf359c004d8e1f2f2ebe586af21d"
+      "bytes": 4258,
+      "sha256": "34bf235087abb03952e15accfd272e644a67a3936062ad02cce71125ac10fb52"
     },
     {
       "path": "native-ios/memory/reference-runtime.cjs",
