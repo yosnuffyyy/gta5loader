@@ -11,4 +11,4 @@ assert(native_stream_available_bytes(0,1,536870912,0)==0);
 assert(native_stream_available_bytes(UINT64_MAX,0,UINT64_MAX,0)==0);
 for(unsigned i=0;i<40000;i++){uint64_t heap=(uint64_t)i*100003,used=i%3?heap/2:heap,target=i%2?UINT64_MAX:536870912;uint32_t slots=i%34;uint64_t n=native_stream_available_bytes(heap,used,target,slots);assert(n<=UINT64_C(4294967296)-used);if(slots>=32||heap>=target)assert(n==heap-used);cases++;}
 puts("PASS: bounded streamer preflight headroom: large loads before growth, over-target saturation, full slots, sentinel rounding, 4 GiB ceiling and 40,000 accounting cases; no allocation or OS-memory promise.");
-printf("PASS: request-aware buddy growth policy: %u boundary/overflow checks; 37,314,560 bytes requires 128 MiB segment, growth target unchanged.\n",cases+4);return 0;}
+printf("PASS: request-aware buddy growth policy: %u boundary/overflow checks; bounded segment-growth envelope; growth target unchanged.\n",cases+4);return 0;}

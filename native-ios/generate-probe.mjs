@@ -34,7 +34,7 @@ int native_engine_probe(char *report,size_t capacity){
  if(trap){
   snprintf(report,capacity,"FAIL: trap %d%s%s",trap,env->failure?" in unsupported host call ":"",env->failure?env->failure:"");
   if(instantiated)wasm2c_gta_free(engine);
-  wasm_rt_free_memory_shared(&env->memory);pthread_mutex_destroy(&env->memory.mem_lock);free(engine);free(env);wasm_rt_free_thread();return 1;
+  host_close(env);wasm_rt_free_memory_shared(&env->memory);pthread_mutex_destroy(&env->memory.mem_lock);free(engine);free(env);wasm_rt_free_thread();return 1;
  }
  wasm2c_gta_instantiate(engine,env,&wasi);instantiated=1;
  uint64_t a=512ull*1048576-4096,b=a+1024;
@@ -55,7 +55,7 @@ int native_engine_probe(char *report,size_t capacity){
  failed|=wasm_rt_grow_memory_shared(&env->memory,1)!=8192;
  failed|=w2c_gta_native_probe_strlen(engine,a)!=5;
  snprintf(report,capacity,"%s: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.\\n91,026 engine functions compiled.\\nThis is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.",failed?"FAIL":"PASS");
- wasm2c_gta_free(engine);wasm_rt_free_memory_shared(&env->memory);pthread_mutex_destroy(&env->memory.mem_lock);free(engine);free(env);wasm_rt_free_thread();
+ wasm2c_gta_free(engine);host_close(env);wasm_rt_free_memory_shared(&env->memory);pthread_mutex_destroy(&env->memory.mem_lock);free(engine);free(env);wasm_rt_free_thread();
  return failed?1:0;
 }
 #ifdef NATIVE_PROBE_CLI

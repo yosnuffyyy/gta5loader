@@ -81,5 +81,5 @@ int native_gpu_shader_audit(const char *directory,unsigned shard,unsigned parts)
  }}
  result=errors||modules!=selected||pipelines!=selected?1:0;
  printf("%s: original shader audit shard %u/3; modules %u; native Metal pipelines %u; VS/PS/CS %u/%u/%u; clip shaders %u; failures %u; untranslated records %u (explicitly unavailable, not claimed fixed). No game scene or input is verified by compilation.\n",result?"FAIL":"PASS",shard,modules,pipelines,stages[0],stages[1],stages[2],clip,errors,untranslated);
- cleanup:if(g){if(native_gpu_error(g))puts(native_gpu_error(g));release_hardware(g);native_gpu_end(g);}if(h->game_root>=0)close(h->game_root);wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);free(h);wasm_rt_free_thread();return result;
+ cleanup:if(g){if(native_gpu_error(g))puts(native_gpu_error(g));release_hardware(g);native_gpu_end(g);}host_close(h);wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);free(h);wasm_rt_free_thread();return result;
 }}
