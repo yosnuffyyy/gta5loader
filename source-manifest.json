@@ -28,8 +28,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 3262,
-      "sha256": "040005ad0c80e4beaa80950df95f912f13b745305f8ac1a7c734d07de29dcabd"
+      "bytes": 3216,
+      "sha256": "3ebcb4be49d59e12a3cf16ab097918757199379c4a035d16cebc60bbbe4797ba"
     },
     {
       "path": "native-ios/ci-test-host.sh",
