@@ -1,0 +1,7 @@
+{
+  "result": "PASS",
+  "previousIPAs": 34,
+  "originalEngineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "baselineUnchangedSourceFiles": 196,
+  "scope": "Final source whitelist and POSIX line endings verified by prepare-source; protected Desktop/offline directories not used."
+}

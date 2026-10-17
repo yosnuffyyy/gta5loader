@@ -1,0 +1,249 @@
+{
+  "originalShaders": [
+    {
+      "hash": "079fe5baf3c1b0ff",
+      "effect": "postfx",
+      "program": "CS_BokehBitonicSort",
+      "bytes": 3799,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/079fe5baf3c1b0ff.wgsl",
+      "sha256": "61cbf1585945cbc3a2419f37a8159839220b2cb22eb2607a7eeb2ec3ec0715a4"
+    },
+    {
+      "hash": "09596507b8362aed",
+      "effect": "tiled_lighting",
+      "program": "DepthDownsampleCS_B",
+      "bytes": 7938,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/09596507b8362aed.wgsl",
+      "sha256": "434b99b2e14e7cea6bcab5bf12ab916b639ff96955380d62535d52dce91866ce"
+    },
+    {
+      "hash": "0dc3ceaf067b2775",
+      "effect": "dofCompute",
+      "program": "DOF_COCSpread_V_compute",
+      "bytes": 7668,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/0dc3ceaf067b2775.wgsl",
+      "sha256": "06ec8345071f59a94f9f00d7e1221699e51b68a112ce5c765272ceaa8db38b94"
+    },
+    {
+      "hash": "14c5e4cf01998350",
+      "effect": "MemoryCS",
+      "program": "CS_GpuFill512",
+      "bytes": 2024,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/14c5e4cf01998350.wgsl",
+      "sha256": "bc6052ac7de3914ec69a70205dce0773b79df2db7594d47dd61d38599f550a65"
+    },
+    {
+      "hash": "23a7a3c1c0d38f46",
+      "effect": "tiled_lighting",
+      "program": "DepthDownsampleCS_Default",
+      "bytes": 7943,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/23a7a3c1c0d38f46.wgsl",
+      "sha256": "6abc853190922d4056100d837f304dd8f380e88c12da12dc0c72c632fbaba768"
+    },
+    {
+      "hash": "2bf2f39e8838ed2d",
+      "effect": "dofCompute",
+      "program": "DOF_H_compute_Adaptive",
+      "bytes": 34247,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/2bf2f39e8838ed2d.wgsl",
+      "sha256": "b0640357f45669f14bbfaa72ac5ca46459d36d69215ec62b2d02a855fb2c291a"
+    },
+    {
+      "hash": "2c0123be87a75394",
+      "effect": "HDAO2",
+      "program": "CS_HDAO_High",
+      "bytes": 61278,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/2c0123be87a75394.wgsl",
+      "sha256": "937cea880f4684146aa18b66de858b57434eabec4d4fb6fe959e0f06cd2a2701"
+    },
+    {
+      "hash": "31cd036064c92330",
+      "effect": "adaptiveDof",
+      "program": "ReductionCS",
+      "bytes": 7382,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/31cd036064c92330.wgsl",
+      "sha256": "271bfd033dd06f948bfc018ac7975d6be5ae28de21e57dfc71e1d2ade412ca66"
+    },
+    {
+      "hash": "3526959f9f442eb7",
+      "effect": "dofCompute",
+      "program": "DOF_V_compute_Adaptive",
+      "bytes": 34264,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/3526959f9f442eb7.wgsl",
+      "sha256": "ead8662ebed662e50fc2e945f2fd010424581f396fdf14857a10ed5963ddef09"
+    },
+    {
+      "hash": "380e834717083abc",
+      "effect": "HDAO2",
+      "program": "CSFilterX",
+      "bytes": 36863,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/380e834717083abc.wgsl",
+      "sha256": "8e9137ad6a7ab8b281cf5f84abc21beb2b20b4847ad09161fb214b5b8fbb07f7"
+    },
+    {
+      "hash": "3b52bb04d4fa2723",
+      "effect": "MemoryCS",
+      "program": "CS_GpuCopy512",
+      "bytes": 3890,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/3b52bb04d4fa2723.wgsl",
+      "sha256": "5ee7cd86e030d0c2ca8cbdc3e60e68f0ccca11dcdb8fad539e70a6028346c250"
+    },
+    {
+      "hash": "5570894ccdfe1c68",
+      "effect": "BlurCS",
+      "program": "CSVerticalFilter",
+      "bytes": 9768,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/5570894ccdfe1c68.wgsl",
+      "sha256": "1a242cf1cbf7797755262fc55fbca863d7966cdb9f2d5bb460983f9b569f05d4"
+    },
+    {
+      "hash": "5d4cd024ec386150",
+      "effect": "HDAO2",
+      "program": "CSFilterY",
+      "bytes": 36834,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/5d4cd024ec386150.wgsl",
+      "sha256": "485b58599a67b32a0f5afd424a5f3ce98f5925a30205d38e3d8e3c35df7992c5"
+    },
+    {
+      "hash": "609b1c2e5cc09a72",
+      "effect": "HDAO2",
+      "program": "CS_HDAO_Low",
+      "bytes": 21744,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/609b1c2e5cc09a72.wgsl",
+      "sha256": "e56649c0ea0cc791d6e86bbe08583847efb8ae57b727682ae4faf760aa5cc2f6"
+    },
+    {
+      "hash": "7a1e45a48ffaaf08",
+      "effect": "avgLuminanceCompute",
+      "program": "LuminanceDownsampleCS",
+      "bytes": 4922,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/7a1e45a48ffaaf08.wgsl",
+      "sha256": "0351285beba07dce2ee36c7eb20b1149256fa5ecce08d0169bf12a1650bedf4b"
+    },
+    {
+      "hash": "7cfcf15376330bf0",
+      "effect": "dofCompute",
+      "program": "DOF_COCSpread_H_compute",
+      "bytes": 7649,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/7cfcf15376330bf0.wgsl",
+      "sha256": "31e42448e9639b866819524609f904094f0d117f049a680f44aacd06ff69c61e"
+    },
+    {
+      "hash": "95681faec41f53d8",
+      "effect": "dofCompute",
+      "program": "DOF_V_compute",
+      "bytes": 34284,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/95681faec41f53d8.wgsl",
+      "sha256": "7dabbce4a12a85ee7e1fa70c941ca27cdbd93f5f220264c009a3e59ccfa9f63e"
+    },
+    {
+      "hash": "9b8e0c6c85e065da",
+      "effect": "avgLuminanceCompute",
+      "program": "LuminanceDownsampleInitCS",
+      "bytes": 5569,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/9b8e0c6c85e065da.wgsl",
+      "sha256": "d697ba6789dd3b70118e299edfec5176ccb989fdac56678c6caabf7e9b215369"
+    },
+    {
+      "hash": "9e18fafd2f0e903d",
+      "effect": "dofCompute",
+      "program": "DOF_H_compute_Adaptive_LumFilter",
+      "bytes": 37375,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/9e18fafd2f0e903d.wgsl",
+      "sha256": "59f040f2e43fbb7708e764e1f0ec24e26b3e13b65d5dfb32c67977f8d306cf88"
+    },
+    {
+      "hash": "a5852d1567998eef",
+      "effect": "tiled_lightingMS",
+      "program": "DepthDownsampleCS_Default",
+      "bytes": 8234,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/a5852d1567998eef.wgsl",
+      "sha256": "fd1b8ad729826e14b51dc910fce27d4d6d39d99c4035ce2ffedf5d1790e7227a"
+    },
+    {
+      "hash": "a646567b7f0e6b2c",
+      "effect": "dofCompute",
+      "program": "DOF_H_compute",
+      "bytes": 34267,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/a646567b7f0e6b2c.wgsl",
+      "sha256": "4d03d6d7878e3b11961d55a24a16b378851776bb4007fa53889827223bc25904"
+    },
+    {
+      "hash": "b575f2b0820a5e0b",
+      "effect": "postfxMS",
+      "program": "CS_BokehBitonicSortMatrixTranspose",
+      "bytes": 2408,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/b575f2b0820a5e0b.wgsl",
+      "sha256": "95e3f41f5a8812a33024b67a77ac3e07f8d76926919a1c2731d95d76cc4a1122"
+    },
+    {
+      "hash": "d3da7340dfa2238b",
+      "effect": "postfx",
+      "program": "CS_BokehBitonicSortMatrixTranspose",
+      "bytes": 2408,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/d3da7340dfa2238b.wgsl",
+      "sha256": "0e37febbb8d6e597d7fb2fd0c89c0dc6e411bb317aa5e5f2d5553c93c770e0f8"
+    },
+    {
+      "hash": "d7fea2087774239e",
+      "effect": "BlurCS",
+      "program": "CSHorizFilter",
+      "bytes": 9738,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/d7fea2087774239e.wgsl",
+      "sha256": "145ad661892d9c89f6575ba39115544f5eb593a37daf38526ee4b1064ef83066"
+    },
+    {
+      "hash": "d948c97f8a385f40",
+      "effect": "HDAO2",
+      "program": "CS_HDAO_Medium",
+      "bytes": 34808,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/d948c97f8a385f40.wgsl",
+      "sha256": "0de0acc099d663e81de8d68c8a1eb7f320b0f81c774eaeba5d43659321df1dea"
+    },
+    {
+      "hash": "e066a6b7400e23f6",
+      "effect": "postfxMS",
+      "program": "CS_BokehBitonicSort",
+      "bytes": 3799,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/e066a6b7400e23f6.wgsl",
+      "sha256": "27c2b4ea4876620716e5cbbb155138acbe23c7fe159f51b643310e2cd5c54401"
+    },
+    {
+      "hash": "e0d64c11e258852d",
+      "effect": "dofCompute",
+      "program": "DOF_H_compute_LumFilter",
+      "bytes": 37395,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/e0d64c11e258852d.wgsl",
+      "sha256": "be28d13fb0c9b70cfbd2c40271d5a0ed25aee8fccddee4d5715ff39e2c2b09c8"
+    },
+    {
+      "hash": "e7412ad4b418a686",
+      "effect": "grass_batch",
+      "program": "CS_GrassBatchCull",
+      "bytes": 14879,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/e7412ad4b418a686.wgsl",
+      "sha256": "b993537ed11d6f8d236487ef5ec77412a8fbceafead0cb6e1507117c63e0a782"
+    },
+    {
+      "hash": "fb211e975ec2cb16",
+      "effect": "normal_spec_batch",
+      "program": "CS_GrassBatchCull",
+      "bytes": 14868,
+      "sourceURL": "https://gta.deloskiyt.pl/b/8b0b5899ed/shaders/fb211e975ec2cb16.wgsl",
+      "sha256": "31212ec12965415386300d94278598cbebd40f77ba5ed1a77e0f044bde875396"
+    }
+  ],
+  "diagnosticShaders": [
+    {
+      "hash": "ffffffff00000160",
+      "bytes": 412,
+      "sha256": "7d631d0024386c373f447ca37896b1900a6118566c9d960698749e06c22ef555"
+    },
+    {
+      "hash": "ffffffff00000161",
+      "bytes": 268,
+      "sha256": "e64b0778a1c8f8797840cfde22bdcbce600d160c0f4f9bb77bf735e9bca4ac1e"
+    }
+  ],
+  "scope": "Original-module/pipeline compilation is not a game scene. Original fill/copy shaders additionally execute with exact byte checks; diagnostic shaders test counters and format variants."
+}

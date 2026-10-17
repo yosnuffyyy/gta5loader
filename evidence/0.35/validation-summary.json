@@ -1,0 +1,175 @@
+{
+  "result": "PASS",
+  "source": "8047937b21007cea1efad62df2beb7d1c007bb43",
+  "tree": "3c577dc7837d14e6d1cd0a7b0ef04d06a4d09e2a",
+  "run": 39078684670,
+  "job": 117531025199,
+  "CI": "https://github.com/yosnuffyyy/gta5loader/actions/runs/39078684670",
+  "warmRun": 39074669633,
+  "failedLineEndingRun": 39078611386,
+  "conclusion": "success",
+  "artifactSource": "8047937b21007cea1efad62df2beb7d1c007bb43",
+  "version": "0.35.0",
+  "inputEngineChecks": 71,
+  "productionUIKitChecks": 183,
+  "uiHiddenLogAssignmentsAvoided": 200,
+  "uiTextBenchmark": {
+    "UITextViewMs": 337.9690000000153,
+    "approximateBytesPerText": 8196,
+    "samples": 200,
+    "hiddenReportMs": 0.015916666683324365,
+    "scope": "Simulator text-assignment API wall only, no layout forcing or iPhone FPS claim"
+  },
+  "fullRuntimeProcesses": 2,
+  "metalShaderModules": 4808,
+  "metalPipelines": 4808,
+  "clipShaders": 500,
+  "untranslatedRecords": 111,
+  "shadow": {
+    "originalShaders": [
+      "996bb42f448956f2",
+      "6e9619cde3dac275"
+    ],
+    "sourceShaders": 13,
+    "sourceCubeBindings": 76,
+    "ringCases": 20,
+    "ringDraws": 640,
+    "ringPixels": 163840,
+    "multiLightDraws": 24,
+    "multiLightPixels": 6144,
+    "logicalNeutralCubeBytes": 24,
+    "deviceShadowsVerified": false
+  },
+  "pipelineWorkingSet": {
+    "keys": 192,
+    "draws": 576,
+    "capacity": 256,
+    "creates": 192,
+    "hits": 384,
+    "evictions": 0,
+    "processes": 2
+  },
+  "preservedUniformReuse": {
+    "baselinePacks": 192,
+    "optimizedPacks": 18,
+    "baselineGPUBytes": 49152,
+    "optimizedGPUBytes": 4608,
+    "draws": 96,
+    "pixels": 512
+  },
+  "preservedReadbackRetirement": {
+    "pressureWaitsBefore": 6,
+    "pressureWaitsAfter": 0,
+    "explicitCompletionBefore": 7,
+    "explicitCompletionAfter": 1,
+    "draws": 96,
+    "maps": 13,
+    "pixels": 256
+  },
+  "watchdogAssertions": 1374,
+  "sourceEntriesVerified": 228,
+  "previousIPAsPreserved": 34,
+  "IPA": "8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c",
+  "ipaBytes": 102339097,
+  "physicalNewBuildGameplayVerified": false,
+  "newIPhoneFPSMeasured": false,
+  "audioOutputImplemented": false,
+  "allocatorReference": {
+    "result": "PASS",
+    "scope": "Pinned Wasm allocator with test exports, two in-memory segment constants and optional original availability reference replacement. Production engine file unchanged; not a native adaptive/scene test.",
+    "results": [
+      {
+        "segmentCap": 33554432,
+        "request": 37314560,
+        "allocated": false,
+        "heap": 67092480,
+        "used": 0,
+        "available": 536870912,
+        "largest": 16777216
+      },
+      {
+        "segmentCap": 67108864,
+        "request": 37314560,
+        "allocated": false,
+        "heap": 134201344,
+        "used": 0,
+        "available": 536870912,
+        "largest": 33554432
+      },
+      {
+        "segmentCap": 67117056,
+        "request": 37314560,
+        "allocated": true,
+        "heap": 67108864,
+        "used": 67108864,
+        "available": 469762048,
+        "largest": 0
+      },
+      {
+        "segmentCap": 134217728,
+        "request": 37314560,
+        "allocated": true,
+        "heap": 134209536,
+        "used": 67108864,
+        "available": 469762048,
+        "largest": 33554432
+      }
+    ],
+    "slotResults": [
+      {
+        "cap": 33554432,
+        "heldObjects": 96,
+        "objectBytes": 8388608,
+        "slotsBeforeLargeRequest": 32,
+        "largeAllocationSucceeded": false
+      },
+      {
+        "cap": 134217728,
+        "heldObjects": 96,
+        "objectBytes": 8388608,
+        "slotsBeforeLargeRequest": 7,
+        "largeAllocationSucceeded": true
+      }
+    ],
+    "mixedResults": [
+      {
+        "cap": 134217728,
+        "cycles": 64,
+        "heap": 134209536,
+        "segments": 1,
+        "allLiveFreed": true
+      },
+      {
+        "cap": 67117056,
+        "cycles": 64,
+        "heap": 134217728,
+        "segments": 2,
+        "allLiveFreed": true
+      }
+    ],
+    "availability": [
+      {
+        "restoredOriginal": false,
+        "reported": "18446744073659219968",
+        "actualRetainedFree": "67100672",
+        "growthTarget": 16777216,
+        "live": 67108864
+      },
+      {
+        "restoredOriginal": true,
+        "reported": "67100672",
+        "actualRetainedFree": "67100672",
+        "growthTarget": 16777216,
+        "live": 67108864
+      }
+    ]
+  },
+  "submissionFixtureLines": [
+    "PASS: buffer dependency replay legacy0:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 9/14; uniform packs/bytes 22/5632; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 89.713/2.573 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).",
+    "PASS: buffer dependency replay legacy1:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 98/103; uniform packs/bytes 192/49152; independent/dependent uploads 0/95; completions 7; pressure waits 6; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 414.644/48.686 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).",
+    "PASS: buffer dependency replay legacy2:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 7/12; uniform packs/bytes 18/4608; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 2; Handler/upload wall 108.280/2.601 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).",
+    "PASS: buffer dependency replay legacy0:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 9/14; uniform packs/bytes 22/5632; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 111.922/2.613 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).",
+    "PASS: buffer dependency replay legacy1:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 98/103; uniform packs/bytes 192/49152; independent/dependent uploads 0/95; completions 7; pressure waits 6; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 392.027/44.752 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).",
+    "PASS: buffer dependency replay legacy2:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 7/12; uniform packs/bytes 18/4608; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 2; Handler/upload wall 97.490/3.063 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution)."
+  ]
+}

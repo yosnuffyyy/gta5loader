@@ -1,0 +1,1 @@
+PASS: bounded native startup logs retain messages after line 80, first errors, recent tail, repeat counts, truncation and concurrent producers; callbacks execute outside locks; storage below 32 KiB.

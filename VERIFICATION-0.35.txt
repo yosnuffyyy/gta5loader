@@ -1,0 +1,47 @@
+GTA V iOS Native 0.35 — streaming allocation and bounded submissions
+Source: 8047937b21007cea1efad62df2beb7d1c007bb43
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/39078684670
+IPA: GTA-Native-Probe-0.35-unsigned.ipa
+Bytes: 102339097
+SHA256: 8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.35
+
+PASS: original engine/root allocation reproduces old 37,314,560-byte failure,
+then satisfies it with native request-aware growth. Four runs of 64 fragmented
+transitions / 576 allocations, valid power-of-two small requests, byte guards,
+full live cleanup and bounded growable preflight. Long-session reserve uses
+23/32 slots versus exhausted 32/32 in the isolated legacy growth comparison.
+PASS: nonempty NULL archive destinations rejected before file I/O/writes.
+PASS: six dependency/coalescing Metal replay cases, each 96 original-shader
+draws, 512 checked pixels, 96 exact samples/pass-query segments, final buffer
+bytes and clear/counter ordering. Candidate must beat dependency-only
+submissions. See submission-benchmarks.json for exact host measurements.
+PASS: 4,808 shader modules/pipelines, 500 clip shaders, 183 UIKit checks,
+71 production engine-input checks, 1,374 session assertions and full available
+renderer/runtime/input/worker/memory regressions. 111 untranslated shader
+records remain explicitly unavailable.
+PASS: unsigned ARM64 package, 228 source entries and 34 prior IPA hashes.
+NOT VERIFIED: post-funeral scene on iPhone, new sustained FPS, GPU execution
+time, thermals, iPhone memory footprint or audio output.
+PROCESS / POLICY / BATCHES / SUBMISSIONS / UNIFORM BYTES / HANDLER MS / UPLOAD MS
+1 / 0 / 9 / 14 / 5632 / 89.713 / 2.573
+1 / 1 / 98 / 103 / 49152 / 414.644 / 48.686
+1 / 2 / 7 / 12 / 4608 / 108.280 / 2.601
+2 / 0 / 9 / 14 / 5632 / 111.922 / 2.613
+2 / 1 / 98 / 103 / 49152 / 392.027 / 44.752
+2 / 2 / 7 / 12 / 4608 / 97.490 / 3.063
+Mode0: dependency-only; mode1: prior upload/drain flush policy; mode2: new bounded coalescing.
+Timings are CLI O0 Apple Paravirtual Metal, not A18 Pro or GPU execution.
+Handler/upload categories overlap; driver cold-cache and test order affect wall times.
+See ENGINEERING-0.35.txt and evidence/0.35.
+
+Publication verified: exactly one IPA asset; server size/digest and tested tag match.
+Direct IPA: https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.35/GTA-Native-Probe-0.35-unsigned.ipa
+
+Coalescing alone reduced dependency-only submissions 14 -> 12 and uniform
+bytes 5632 -> 4608 in both processes. Its handler wall varied in both directions
+(89.713 -> 108.280 ms; 111.922 -> 97.490 ms); no independent CPU speed gain
+is established. Overall legacy/candidate wall results are synthetic and include
+waits. Actual GPU execution, engine CPU, iPhone RSS and frame times remain
+unmeasured for this build. CPU DRAW-handler quantiles are retained per case
+in submission-benchmarks.json and the raw native-engine-test.txt.

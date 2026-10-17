@@ -1,0 +1,22 @@
+NEXT EVIDENCE-DRIVEN EXPERIMENTS (NOT IMPLEMENTED / NOT CLAIMED)
+1. Capture actual pipeline working-set keys/recreation sequence at the funeral
+and next mission before selecting mission prewarming or replacement policy.
+A hash/index optimization needs a C benchmark against real DrawKey distributions;
+no gain is assumed from fewer lookup comparisons. Persistent Metal cache is not
+implemented by the pinned HAL pipeline-cache wrapper.
+2. Obtain real GPU timestamps/capture before memoryless attachments, aliasing,
+load/store removal, adaptive quality or a GPU-bound diagnosis.
+3. Measure engine O1 CPU versus rendering-service wait after submission changes,
+before compiler changes. Preserve bounds, atomics, ABI and rounding semantics.
+4. The physical allocator snapshots should distinguish necessary live assets,
+retained empty buddy segments, largest block and the linear high-water mark.
+Resource eviction must follow engine ownership; no generic forced cache purge.
+5. If real dependent uploads dominate after this build, first capture buffer
+usage and full/partial update ranges. Bounded physical-buffer versioning could
+remove some true update hazards, but the protocol does not establish DISCARD
+for every upload. Views, indirect args, storage writes, partial old bytes and
+completion-based retirement must be proved together; do not rename blindly.
+6. Measure repeated identical uniform packs across linked pipeline variants
+before adding a cross-program immutable-slice cache. Content/layout equivalence,
+exact comparisons, batch lifetime and lookup cost need a representative replay;
+no assumed hit rate or extra unbounded upload retention.

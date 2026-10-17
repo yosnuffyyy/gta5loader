@@ -1,0 +1,16 @@
+{
+  "scope": "Native C request-side growth adaptation; original Wasm/data unchanged. Constructor starts at 32 MiB; all growth paths retain a bounded segment-slot reserve. Original total budget, locks, allocation/free algorithms and 32 segment slots retained.",
+  "functions": [
+    3036,
+    3038,
+    3042
+  ],
+  "growSHA256": "fd38ff089c5ad845ce9aee7a82656ebd546a07198b049a9705b09ce74263c60d",
+  "trySHA256": "2e2f659008b181bf627f59f26557372269f1017f96b001e052e3f5124f6e25dc",
+  "availableProfileSHA256": "6e9186921f20702b6d3ae619472344217f6f7364ae11119cfd88cb554ad9c024",
+  "availableContract": "Preserve streamer growth-headroom preflight, bounded by remaining slots and original per-segment cap; exact retained free when full/over target. No unsigned underflow or proactive allocation.",
+  "originalSegmentCap": 33554432,
+  "maximumRequestSegment": 268435456,
+  "request37314560PolicySegment": 134217728,
+  "slotReserveMayIncreaseSegment": true
+}

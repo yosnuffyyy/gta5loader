@@ -1,0 +1,1 @@
+PASS: UAV counter flags, raw/structured ranges, invalid offsets and widened arithmetic.

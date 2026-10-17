@@ -1,0 +1,1 @@
+PASS: 73 shared SIMD load/store, splat, extend, zero and lane cases match WebAssembly; unaligned accesses and bounds traps checked.

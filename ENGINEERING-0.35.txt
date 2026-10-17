@@ -1,0 +1,203 @@
+NATIVE 0.35 — POST-FUNERAL ALLOCATION AND DEPENDENCY-AWARE GPU SUBMISSION
+Source: 8047937b21007cea1efad62df2beb7d1c007bb43
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/39078684670
+IPA: GTA-Native-Probe-0.35-unsigned.ipa
+Bytes: 102339097
+SHA256: 8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.35
+
+
+PHYSICAL BASELINE (USER REPORT, NOT NEW BENCHMARK)
+The full Prologue, including Michael's fake funeral, completed on iPhone 16 Pro Max.
+Approximately 19 minutes runtime; gameplay 7–9 FPS, cutscenes 15–20 FPS.
+The next transition failed a 37,314,560-byte resource allocation, then reported
+NULL archive destinations for ch1_instance_placement.rpf. Exact new-build iPhone
+heap ownership/pressure at that instant has not been captured. This report does
+not classify that as iOS jetsam or prove a Prologue resource leak.
+
+CONFIRMED ALLOCATOR DEFECTS
+The pinned v7 reduced-memory profile caps each GrowBuddy segment at 32 MiB.
+An 8 KiB sentinel prevents a full-segment buddy block; its largest initial block
+is 16 MiB. A 37,314,560-byte resource demand rounds to a 64 MiB buddy block,
+which the selected power-of-two growth policy satisfies with a 128 MiB segment.
+Even an empty 32 or 64 MiB segment cannot satisfy it. An isolated 64 MiB + 8 KiB
+segment can satisfy it, but the mixed-allocation experiment retained 134,217,728
+bytes in two segments versus 134,209,536 bytes in one 128 MiB segment. That
+minimum-only policy consumed an extra fixed slot without saving retained memory,
+so it was rejected. This is not a claim that 128 MiB is an absolute minimum.
+The exact fatal string originates in original pgRscBuilder::AllocateMap (f2040),
+which delegates to the resource-class allocator (class 1). The native constructor/root-allocation probe
+identifies a 1 GiB growth target for the actual class-1 allocator. This target is NOT a global
+maximum heap budget. The independent fixed limit is 32 segment slots; the native
+linear-memory address space is still capped at 4 GiB.
+
+The v7 GetMemoryAvailable implementation replaced original actual free accounting
+with growth-target minus live usage. The original profile explicitly requires
+growable headroom for streamer preflight, rather than currently committed free.
+However, this can underflow unsigned arithmetic and ignores exhausted segment
+slots. Restoring actual-free-only accounting would regress that preflight.
+A retained original 279-byte reference function establishes the original contract.
+Original-Wasm experiments reproduce the failure, fixed-slot exhaustion, and the
+bad available value. No original asset or production Wasm byte was modified.
+
+NATIVE FIX
+A checked generated-C adaptation retains the original allocation/free/locking
+algorithms. Request-aware growth selects 32/64/128/256 MiB segment granularity,
+within the original 256 MiB per-segment cap. Slot reserve increases granularity
+as the fixed 32-slot arena fills, including proactive growth paths. It does not
+increase the linear address limit or promise an OS memory budget. Larger chunks
+can retain more virtual/committed memory; device pressure still matters.
+The profile preflight contract is preserved as actual retained free plus logical
+growth headroom, bounded by remaining slots and the original segment cap. Full
+arenas report actual retained free; live usage above target cannot underflow.
+Potential growth is also bounded by the absolute 4 GiB linear address limit.
+The getter does not proactively allocate or promise OS memory.
+
+Native archive service rejects nonempty NULL destinations before file I/O or
+memory writes. Zero-length requests remain valid. A bounded last-eight request
+history and allocator retry/failure snapshots retain owner/request/actual free/
+largest block/segment/linear committed data for the next transition. There is
+no invented buffer, fabricated successful asset read, or whole-archive cache.
+The one 64 KiB reader buffer/eight descriptors remain unchanged.
+
+SUBMISSION / UNIFORM WORK
+Every native GPU-buffer upload previously flushed pending draws, even if those
+commands did not reference that buffer. Per-object encoder epochs now record
+vertex/index/indirect/storage buffer reads and writes, plus non-draw UAV clears
+and counter-copy destinations. Only independent uploads avoid a submission. Existing render-pass usage/barrier
+scopes are preserved rather than accidentally merging storage/vertex hazards.
+Overlapping or unknown hazards retain conservative flushes. Cached binding groups
+still mark the current source owner; resource replacement gets a fresh epoch.
+An explicit 64-bit wrap guard remains conservative. No new staging allocation,
+GPU wait, relaxed ordering, or uniform-data approximation is introduced.
+The service also previously submitted after every 256-command ring drain,
+even when already-published commands remained ready. A separate bounded policy
+retains an encoder only across full drains with ready work, up to four drains
+or a 4 ms clock check. It never waits for more producer work, never sleeps with
+an encoder pending, still polls callbacks/checks cancellation each drain, and
+retains every original pass/query boundary. A long individual driver call is
+not bounded by that 4 ms check. Explicit dependency/fence/readback/PRESENT
+rules remain. Controlled-clock tests cover bounds and producer idle. Separate
+GPU replay modes isolate legacy uploads, dependency-only, and coalescing; the
+candidate must reduce submissions against dependency-only, with identical
+pixels/query counts and final buffer bytes, or it is rejected.
+Longer safe batches can reuse existing exact immutable uniform slices. The
+256-entry pipeline cache, bounded staging, 640x360 baseline and 30 FPS cap remain.
+
+PERFORMANCE PRIORITIES (EVIDENCE RANKING, NOT EXCLUSIVE CPU/GPU PERCENTAGES)
+1. Submission fragmentation: reported 3.35 million submissions / 2.81 million
+   draw batches / 9.51 million draws. The new fixture isolates unnecessary
+   upload-triggered submissions; actual gameplay dependency frequency is unknown.
+2. Upload/uniform traffic: 15 million protocol uploads and about 25 GB cumulative
+   uniform traffic. Counts alone do not prove GPU memory-bandwidth saturation.
+3. Staging and synchronization: 123,319 pressure waits; fewer unnecessarily split
+   batches should reduce related pressure, but aggregate iPhone benefit is unmeasured.
+4. Cold/recreated pipelines: 1,132 creates / 876 evictions in a 256-entry cache;
+   worst creation approximately 593 ms. Latest aggregate evidence cannot identify
+   exact redundant variants or establish a safe mission prewarm sequence.
+5. Render-service backpressure / engine and input scheduling: prior frame profiles
+   show simulation waiting for rendering. No exclusive latest simulation CPU or
+   actual GPU timestamp measurements are available to assign a precise share.
+
+BACKEND / PLATFORM AUDIT
+Pinned Metal HAL pipeline-cache creation is a placeholder; a generic cache object
+would not provide persistent Metal binary archives. No unsupported archive API
+or unbounded pipeline retention was added. Actual game render targets are sampled,
+copied or loaded later; no memoryless/aliasing/store elimination was applied
+without proof of lifetimes. Existing compressed textures, depth proxies, clip
+linking, queries, compute, readbacks and optional shadow compatibility are retained.
+Thermal state is sampled in the existing five-second report; no clock override,
+quality reduction, thermal workaround, independent polling timer or GPU wait.
+No changes to audio, controls, shadow shader semantics or native UI navigation.
+Standalone probe and shader-audit exits now close the host before releasing its
+memory, including the new diagnostics mutex and existing asset/input services.
+
+LIMITS / NEXT VALIDATION
+The CI Metal adapter reports Apple Paravirtual device. Host replay is not a
+physical A18 Pro scene test. No new iPhone FPS, real
+GPU execution time, thermal sustainability, input latency or process-footprint
+improvement is claimed. Post-funeral streaming, later mission resources and the
+4 GiB address ceiling still require device evidence. 30 FPS needs 33.3 ms/frame;
+the reported 7–9 FPS gameplay does not establish that. 16.67 ms processing
+headroom remains research only; compilation, submission, synchronization, engine
+work and unknown sustained GPU costs all remain obstacles.
+
+NEXT DEVICE TEST
+Install the versioned unsigned IPA through the existing signing workflow.
+Keep the existing game folder, 640x360 comparison profile, shadow setting and
+controls. Continue through the funeral into the next scene; retain the entire
+report if loading fails. Record a user-marked actual displayed-frame window
+separately for gameplay, cutscene and transition, along with thermal state,
+process/headroom, allocator history and buffer dependency counters. Confirm
+characters, textures, animation and controls, then run a sustained session and
+Stop normally. A passed compilation or draw count is not this validation.
+
+SOURCE AREAS
+memory/native_memory.h, available_policy.h, diagnostics.inc, patch-generated.mjs:
+request-aware segment growth, bounded logical preflight and allocation snapshots.
+memory/reference-runtime.cjs, test-reference.cjs, test_policy.c,
+allocator_fixture.inc: original-Wasm/native allocation and fragmented lifetime tests.
+asset_io/native_assets.c: NULL destination rejection, guarded native reads and
+bounded final request history. native_host.[ch], native_runtime.c,
+threading/native_threads.c: diagnostics synchronization, lifetime and summary.
+renderer/native_gpu.m, native_draw.inc, native_uav.inc, uav_clear.inc:
+actual pending-buffer dependencies; retains correct counter/clear ordering.
+renderer/drain_policy.h, test_drain_policy.c, submission_fixture.inc:
+bounded ready-work coalescing and independent controlled-clock/pixel comparison.
+renderer/stability_fixture.inc: old staging comparison now mutates the consumed
+vertex buffer, so it exercises a genuine dependency; all old exact data, batch,
+query and pressure assertions remain. renderer/reuse_fixture.inc freezes the old
+drain policy only in that isolated historical uniform/layout comparison.
+compile-native.mjs, ci-convert.sh, generate-probe.mjs, renderer/shader_audit.inc:
+checked source adaptation, sanitizer/tests, dependencies and host cleanup.
+App.m, Info.plist, ui/NativeDashboard.inc, renderer/native_scene.c:
+version 0.35, existing-timer thermal report and accurate prior physical baseline.
+
+VALIDATION HISTORY
+The first combined candidate was rejected by the historical staging fixture:
+it assumed an unused buffer forced a GPU submission. Candidate pixels and query
+samples were correct, but that count assertion was no longer a real dependency.
+The fixture now updates the buffer the shader actually consumes. This retains
+its original assertions rather than weakening data/order tests. The same review
+also retained the streamer's intentionally growable preflight contract instead
+of restoring an actual-free-only getter. Only the final successful source/CI
+identified in VERIFICATION-0.35.txt is deliverable.
+
+A later candidate run stopped before tests because Windows line endings entered
+the POSIX CI entry script. LF bytes were restored and the local source-preparation
+step now rejects CR bytes in shell scripts. No failed build was released.
+
+FINAL RETAINED BENCHMARKS
+PROCESS / POLICY / BATCHES / SUBMISSIONS / UNIFORM BYTES / HANDLER MS / UPLOAD MS
+1 / 0 / 9 / 14 / 5632 / 89.713 / 2.573
+1 / 1 / 98 / 103 / 49152 / 414.644 / 48.686
+1 / 2 / 7 / 12 / 4608 / 108.280 / 2.601
+2 / 0 / 9 / 14 / 5632 / 111.922 / 2.613
+2 / 1 / 98 / 103 / 49152 / 392.027 / 44.752
+2 / 2 / 7 / 12 / 4608 / 97.490 / 3.063
+Mode0: dependency-only; mode1: prior upload/drain flush policy; mode2: new bounded coalescing.
+Timings are CLI O0 Apple Paravirtual Metal, not A18 Pro or GPU execution.
+Handler/upload categories overlap; driver cold-cache and test order affect wall times.
+
+FINAL VERIFICATION
+Two full native runtime processes; four real allocator invocations. Full
+shader audit: 4,808 modules/pipelines, 500 clip shaders, zero failures.
+Production input bridge: 71 checks. UIKit: 183 checks. Session
+watchdog: 1,374 assertions. Existing SRV/shadow, query, compute, readback,
+resource, worker, input, memory and archive regressions passed. New growth
+and preflight policy runs with ASan/UBSan; drain policy has 289 clock cases.
+Package is audited unsigned ARM64 for iPhone, minimum iOS 17; no game web
+archives or CI shader inventory. 34 prior IPAs remain byte-identical.
+Source tree: 228 entries independently matched. See evidence/0.35 for exact
+logs, checksums, generated allocator adaptation, benchmark rows and screenshots.
+No new physical-device gameplay, post-funeral transition, GPU execution or FPS
+is verified. Pipeline cache remains 256; no mission prewarm or binary archive
+was added. Audio remains unchanged and unfinished.
+
+Coalescing alone reduced dependency-only submissions 14 -> 12 and uniform
+bytes 5632 -> 4608 in both processes. Its handler wall varied in both directions
+(89.713 -> 108.280 ms; 111.922 -> 97.490 ms); no independent CPU speed gain
+is established. Overall legacy/candidate wall results are synthetic and include
+waits. Actual GPU execution, engine CPU, iPhone RSS and frame times remain
+unmeasured for this build. CPU DRAW-handler quantiles are retained per case
+in submission-benchmarks.json and the raw native-engine-test.txt.

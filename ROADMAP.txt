@@ -1,3 +1,29 @@
+NATIVE IPHONE ROADMAP — VERIFIED PROLOGUE AND NEXT-SCENE STABILITY
+Updated 2026-10-17. Native 0.35 independently validated; device checks pending.
+
+LATEST — 0.35 POST-FUNERAL MEMORY AND GPU SUBMISSIONS
+User physically completed the full Prologue including Michael's funeral over
+approximately 19 minutes. Reported gameplay 7–9 FPS; cutscenes 15–20 FPS.
+The tested version was not explicitly stated in this latest report. Next-scene
+streaming failed a 37,314,560-byte allocation and NULL archive destinations.
+0.35 corrects reproduced segment-size/slot reserve and availability defects,
+rejects NULL native reads and retains bounded transition/thermal diagnostics.
+Dependency-aware buffer uploads and bounded ready-drain encoder coalescing
+reduce submissions in checked original-shader host replays without merging
+pass scopes. 256 pipeline cache, 640x360, 30 FPS cap, input/shadow/UI preserved.
+No forced asset eviction, new staging capacity, binary archives or quality cut.
+Post-funeral loading and new sustained iPhone FPS remain unverified. Audio
+output remains a separate unfinished Stage 4 task. No stage-count advancement
+is inferred from CI or the new build.
+Source: 8047937b21007cea1efad62df2beb7d1c007bb43
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/39078684670
+IPA: GTA-Native-Probe-0.35-unsigned.ipa
+Bytes: 102339097
+SHA256: 8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.35
+See ENGINEERING-0.35.txt, VERIFICATION-0.35.txt and evidence/0.35.
+
+HISTORICAL EVIDENCE FOLLOWS
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
 Updated 2026-10-16. Native 0.34 independently verified; stages remain open.
 
