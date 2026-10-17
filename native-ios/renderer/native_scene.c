@@ -28,7 +28,7 @@ static int launch(const char *game,const char *saves,void *layer,bool checkpoint
  }
  char summary[4096];bool reached=native_boot_finish(h,summary,sizeof(summary));
  if(checkpoint&&reached){snprintf(report,capacity,"PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.\n%s\nThis is an integration checkpoint, not a game scene.",summary);result=0;}
- else if(!checkpoint&&reached){snprintf(report,capacity,"Native startup stopped by user.\n%s\nA presentation count alone does not verify this run. The user reports prior vault progression with touch; sustained mission completion, audio and physical controller verification remain pending.",summary);result=0;}
+ else if(!checkpoint&&reached){snprintf(report,capacity,"Native startup stopped by user.\n%s\nA presentation count alone does not verify this run. The user reports a prior complete Prologue including the funeral. This report does not verify current-run pixels, post-funeral loading, sustained performance or audio.",summary);result=0;}
  else snprintf(report,capacity,"Native startup stopped (trap %d): %s\n%s\nStage 3 remains in progress; this report describes only the current run. The fatal error above is the current failure; prior-run watchdog or mission results are not appended. Presentation counts alone do not verify scene correctness or mission completion.",trap,h->failure?h->failure:"startup services unavailable",summary);
  native_threads_end(threads);native_assets_end(assets);host_close(h);
  if(instantiated)wasm2c_gta_free(engine);if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}

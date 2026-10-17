@@ -361,6 +361,9 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  if(g->test_legacy_upload_flush)independent_upload=false;
 #endif
  if(g->draw.encoder&&o&&o->buffer){if(independent_upload)g->independent_uploads++;else g->dependent_uploads++;}}
+ /* Preserve the prior pass usage/barrier scopes. An unrelated upload can
+    avoid a queue submission without merging formerly separate render passes. */
+ if(independent_upload)draw_end_pass(g);
  bool fresh_object=(op==3||op==11||op==14||op==15||op==16||op==17||op==37||op==44)&&n&&!object(g,gpu_word(p,0));
 #ifdef NATIVE_PROBE_CLI
  if(g->test_flush_new_objects)fresh_object=false;
