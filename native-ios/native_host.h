@@ -2,6 +2,7 @@
 #define NATIVE_HOST_H
 #include "gta.h"
 #include "probe.h"
+#include "memory/native_memory.h"
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <pthread.h>
@@ -19,6 +20,7 @@ struct w2c_env {
  const char *failure;
  unsigned log_lines;
  _Atomic unsigned memory_growth_logs,memory_failure_logs;
+ pthread_mutex_t memory_report_lock;unsigned memory_history_count;char memory_history[8][512];
 };
 struct w2c_wasi__snapshot__preview1 {struct w2c_env *env;};
 bool host_range(struct w2c_env*,uint64_t,uint64_t);

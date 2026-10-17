@@ -61,11 +61,13 @@ bool host_string(struct w2c_env *h,uint64_t p,char *s,size_t cap) {
 }
 static uint64_t ns(clockid_t clock){struct timespec t;if(clock_gettime(clock,&t))return 0;return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
 void host_init(struct w2c_env *h) {
+ if(pthread_mutex_init(&h->memory_report_lock,NULL))abort();
  for(unsigned i=0;i<HOST_FDS;i++)h->files[i].fd=-1;
  h->game_root=h->save_root=-1;
  h->mono_origin=ns(CLOCK_MONOTONIC);h->wall_origin=ns(CLOCK_REALTIME);
 }
 void host_close(struct w2c_env *h) {
+ if(pthread_mutex_destroy(&h->memory_report_lock))abort();
  for(unsigned i=3;i<HOST_FDS;i++)if(h->files[i].fd>=0)close(h->files[i].fd);
  if(h->game_root>=0)close(h->game_root);
  if(h->save_root>=0)close(h->save_root);

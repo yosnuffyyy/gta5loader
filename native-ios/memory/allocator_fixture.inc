@@ -20,6 +20,11 @@ static void native_allocator_fixture(struct w2c_env *h){
  }
  require(h,host_u64(h,p+488)==budget,"request-aware growth changed original budget");uint64_t heap=w2c_gta_f3041(h->engine,p);memory_test_destroy(h,p);
  p=memory_test_create(h,16777216);require(h,w2c_gta_f3038(h->engine,p,request,4096,0)==0,"insufficient original budget must still fail");require(h,w2c_gta_f3040(h->engine,p,UINT32_MAX)==0,"failed allocation retained live bytes");memory_test_destroy(h,p);
+ for(unsigned legacy=0;legacy<2;legacy++){
+  uint64_t owner=memory_test_create(h,UINT64_C(1073741824)),held[96];for(unsigned i=0;i<96;i++){held[i]=legacy?native_stream_try_legacy(h->engine,owner,8388608,4096,0):w2c_gta_f3038(h->engine,owner,8388608,4096,0);require(h,held[i]!=0,"long-session eight-MiB allocation failed early");}
+  uint32_t segments;host_load(h,&segments,owner+508,4);uint64_t v=legacy?native_stream_try_legacy(h->engine,owner,request,4096,0):w2c_gta_f3038(h->engine,owner,request,4096,0);require(h,legacy?!v:!!v,"fixed-slot long-session large transition differs");if(legacy)require(h,segments==32,"legacy segment-slot failure not reproduced");else require(h,segments<32,"candidate lost slot reserve");
+  if(v)w2c_gta_f3039(h->engine,owner,v);for(unsigned i=0;i<96;i++)w2c_gta_f3039(h->engine,owner,held[i]);require(h,w2c_gta_f3040(h->engine,owner,UINT32_MAX)==0,"long-session cleanup retains live allocations");require(h,host_u64(h,owner+488)==UINT64_C(1073741824),"long-session budget changed");message(h,"PASS: original allocator slot-pressure legacy%u: 96 held eight-MiB objects, segment slots before transition %u/32; funeral allocation %s; original 1 GiB budget and complete cleanup retained.",legacy,segments,v?"succeeded":"safely failed");memory_test_destroy(h,owner);
+ }
  message(h,"PASS: original allocator funeral fixture: request %llu, legacy largest %llu; 64 fragmented transitions / %u allocations, exact head/tail bytes, full live cleanup, same %llu budget; candidate retained heap %llu, peak live %llu; insufficient budget remains failure. No phone-memory or next-scene claim.",(unsigned long long)request,(unsigned long long)old_largest,allocations,(unsigned long long)budget,(unsigned long long)heap,(unsigned long long)peak);
 }
 #endif

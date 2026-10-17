@@ -10,7 +10,7 @@ let clone=grow.text.replace('w2c_gta_f3036(w2c_gta* instance, u64 var_p0)','nati
 assert.notEqual(clone,grow.text,'Growth signature');clone=clone.replace(/33554432(?:ull|u|U|UL|ULL)?/g,'native_segment_limit');
 const prefix='w2c_gta_f3036(instance, ';assert.equal(alloc.text.split(prefix).length,2,'Only request-side GrowHeap changes');const start=alloc.text.indexOf(prefix),end=alloc.text.indexOf(')',start);assert(end>start);const argument=alloc.text.slice(start+prefix.length,end);assert(argument.startsWith('var_')&&!argument.includes(','));assert(alloc.text.includes('u64 var_p1'),'Request parameter');
 let fixed=alloc.text.slice(0,start)+`native_stream_grow(instance, ${argument}, native_stream_growth_context(instance, var_p0, var_p1))`+alloc.text.slice(end+1);
-const ret=fixed.lastIndexOf('return '),semi=fixed.indexOf(';',ret);assert(ret>0&&semi>ret);const value=fixed.slice(ret+7,semi);assert(value.startsWith('var_'));fixed=fixed.slice(0,ret)+`native_stream_allocation_result(instance, var_p0, var_p1, ${value}); `+fixed.slice(ret);
+const ret=fixed.lastIndexOf('return '),semi=fixed.indexOf(';',ret);assert(ret>0&&semi>ret);const value=fixed.slice(ret+7,semi);assert(value.startsWith('var_'));fixed=fixed.slice(0,ret)+`if (!${value}) native_stream_allocation_result(instance, var_p0, var_p1, ${value}); `+fixed.slice(ret);
 const legacy='#ifdef NATIVE_PROBE_CLI\n'+alloc.text.replace('w2c_gta_f3038(','native_stream_try_legacy(')+'\n#endif\n';
 /* Apply descending offsets when both functions share a source partition. */
 const edits=new Map();for(const [f,text] of [[grow,grow.text+'\n'+clone],[alloc,fixed+'\n'+legacy]]){if(!edits.has(f.name))edits.set(f.name,[]);edits.get(f.name).push({...f,text});}
