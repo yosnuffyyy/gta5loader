@@ -31,6 +31,17 @@ static bool submission_fixture(struct w2c_env *h,unsigned legacy,char *report,si
  }
  cmd[0]=11165;cmd[1]=910;EMIT(46,2);memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
  memset(cmd,0,sizeof(cmd));cmd[0]=4000;cmd[9]=(uint32_t)(dst+2048);cmd[10]=(dst+2048)>>32;cmd[13]=1;cmd[14]=32;EMIT(42,17);
+ /* Non-draw writes are dependencies too: a later queue upload must win over
+    an encoded zero-clear or hidden-counter copy. Check exact returned bytes. */
+ cmd[0]=5000;cmd[1]=32;cmd[2]=0x88;cmd[3]=0x40;cmd[4]=4;EMIT(11,5);
+ uint32_t counter_view[]={5001,1,5000,0,1,0,8,0,2};memcpy(cmd,counter_view,sizeof(counter_view));EMIT(37,9);
+ memset(cmd,0,sizeof(cmd));cmd[0]=5001;EMIT(40,6);
+ cmd[0]=5000;cmd[1]=0;cmd[2]=8;cmd[3]=0xaa55aa55;cmd[4]=0x55aa55aa;EMIT(12,5);
+ memset(cmd,0,sizeof(cmd));cmd[0]=5000;cmd[9]=(uint32_t)(dst+2080);cmd[10]=(dst+2080)>>32;cmd[13]=1;cmd[14]=32;EMIT(42,17);
+ cmd[0]=2;cmd[1]=0;cmd[2]=1;cmd[3]=5001;cmd[4]=7;EMIT(38,5);
+ cmd[0]=4000;cmd[1]=0;cmd[2]=5001;EMIT(43,3);
+ cmd[0]=4000;cmd[1]=0;cmd[2]=4;cmd[3]=0xdeadbeef;EMIT(47,4);
+ memset(cmd,0,sizeof(cmd));cmd[0]=4000;cmd[9]=(uint32_t)(dst+2112);cmd[10]=(dst+2112)>>32;cmd[13]=1;cmd[14]=32;EMIT(42,17);
  cmd[0]=(uint32_t)flag;cmd[1]=flag>>32;cmd[2]=911;host_put32(h,flag,0);EMIT(8,3);
  #undef EMIT
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=911&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
@@ -38,10 +49,11 @@ static bool submission_fixture(struct w2c_env *h,unsigned legacy,char *report,si
  uint8_t pixels[2048];char mismatch[180]={0};host_load(h,pixels,dst,sizeof(pixels));
  for(unsigned read=0;read<2&&ok;read++)for(unsigned i=0;i<256&&ok;i++){bool painted=i<(read?48u:96u),zero=i>=80&&i<88;float color=((i/8)&1)?.5f:1,alpha=((i/8)&2)?.5f:1;int rgba[]={painted&&!zero?(int)lroundf(200*color):0,painted&&!zero?(int)lroundf(100*color):0,painted&&!zero?(int)lroundf(50*color):0,painted&&!zero?(int)lroundf(255*alpha):0};for(unsigned c=0;c<4;c++)if(abs((int)pixels[read*1024+i*4+c]-rgba[c])>1){snprintf(mismatch,sizeof(mismatch),"Pixel mismatch: read%u pixel%u channel%u got%u expected%d",read,i,c,pixels[read*1024+i*4+c],rgba[c]);ok=false;break;}}
  uint32_t buffer[8];host_load(h,buffer,dst+2048,sizeof(buffer));for(unsigned j=0;j<8;j++)if(buffer[j]!=0x12340000+95*8+j)ok=false;
- ok=ok&&g->draw.creates==1&&g->draw.hits==95&&g->draw.pipeline_capacity==256&&!g->metrics.pipeline_evictions&&g->dependent_uploads>0;
- if(legacy)ok=ok&&g->draw.batches>=96&&g->draw.uniform_packs==192;else ok=ok&&g->draw.batches<=8&&g->draw.uniform_packs<40&&g->independent_uploads>80;
+ uint32_t hazard[16];host_load(h,hazard,dst+2080,sizeof(hazard));ok=ok&&hazard[0]==0xaa55aa55&&hazard[1]==0x55aa55aa&&hazard[8]==0xdeadbeef;for(unsigned i=2;i<8;i++)if(hazard[i])ok=false;
+ ok=ok&&g->draw.creates==1&&g->draw.hits==95&&g->draw.pipeline_capacity==256&&!g->metrics.pipeline_evictions&&g->dependent_uploads>=3;
+ if(legacy)ok=ok&&g->draw.batches>=96&&g->draw.uniform_packs==192;else ok=ok&&g->draw.batches<=12&&g->draw.uniform_packs<40&&g->independent_uploads>80;
  char timing[440];timing_text(&g->test_draw_times,"DRAW handler CPU wall (CI only; not displayed frame time)",timing,sizeof(timing));
- if(report&&capacity)snprintf(report,capacity,"%s: buffer dependency replay legacy%u:96 original-shader draws,512 checked pixels,96 exact samples,32 final buffer bytes; batches/submissions %llu/%llu; uniform packs/bytes %llu/%llu; independent/dependent uploads %llu/%llu; completions %llu; pressure waits %llu; same resource replacement, no new staging.\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->draw.batches,(unsigned long long)g->submissions,(unsigned long long)g->draw.uniform_packs,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_pressure_waits,timing,native_gpu_error(g)?native_gpu_error(g):mismatch[0]?mismatch:"No device FPS or GPU execution claim.");
+ if(report&&capacity)snprintf(report,capacity,"%s: buffer dependency replay legacy%u:96 original-shader draws,512 checked pixels,96 exact samples,32 final buffer bytes, clear/counter upload ordering; batches/submissions %llu/%llu; uniform packs/bytes %llu/%llu; independent/dependent uploads %llu/%llu; completions %llu; pressure waits %llu; same resource replacement, no new staging.\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->draw.batches,(unsigned long long)g->submissions,(unsigned long long)g->draw.uniform_packs,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_pressure_waits,timing,native_gpu_error(g)?native_gpu_error(g):mismatch[0]?mismatch:"No device FPS or GPU execution claim.");
  native_gpu_end(g);return ok;
 }
 #endif

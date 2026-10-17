@@ -9,7 +9,7 @@ static unsigned uav_pixel(NativeGpu *g,WGPUTextureFormat fmt,bool floating,const
 }
 static bool uav_clear(NativeGpu *g,const uint8_t *p){Object *v=uav_object(g,gpu_word(p,0));if(!v)return false;Object *o=object(g,v->meta[2]);bool floating=gpu_word(p,1)!=0;uint32_t values[4];for(unsigned i=0;i<4;i++)values[i]=gpu_word(p,2+i);bool zero=!(values[0]|values[1]|values[2]|values[3]);
  if(v->meta[1]){uint64_t offset,bytes;if(!storage_range(g,v,o,&offset,&bytes))return false;
-  if(zero){draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return false;wgpuCommandEncoderClearBuffer(g->draw.encoder,o->buffer,offset,bytes);}
+  if(zero){draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return false;draw_buffer_used(g,o);wgpuCommandEncoderClearBuffer(g->draw.encoder,o->buffer,offset,bytes);}
   else {if(!draw_flush(g))return false;uint8_t pattern[16];unsigned step=4;if(v->meta[8]&1||o->stride){if(!check(g,!floating,"Float clear on raw/structured buffer is invalid"))return false;memcpy(pattern,values,4);}else {WGPUTextureFormat fmt=format(v->meta[3],0);step=uav_pixel(g,fmt,floating,values,pattern);if(!step)return false;}
    uint32_t chunk=256*1024;if(bytes<chunk)chunk=(uint32_t)bytes;chunk-=chunk%step;uint8_t *data=malloc(chunk);if(!check(g,data!=NULL&&chunk,"Bounded UAV buffer clear allocation")){free(data);return false;}for(unsigned i=0;i<chunk;i+=step)memcpy(data+i,pattern,step);for(uint64_t done=0;done<bytes;){uint32_t n=bytes-done<chunk?(uint32_t)(bytes-done):chunk;wgpuQueueWriteBuffer(g->queue,o->buffer,offset+done,data,n);done+=n;}free(data);
   }

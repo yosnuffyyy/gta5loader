@@ -493,8 +493,8 @@
     },
     {
       "path": "native-ios/renderer/native_uav.inc",
-      "bytes": 8470,
-      "sha256": "57f67762ab9e69fb600b2202af48ebf6e0ea4d94b30360ebd7118d5e5a9e61db"
+      "bytes": 8494,
+      "sha256": "a0929339e3bcaad13b8673c2732ebd0323ceb4742e25d1f3a822cb5e3ffa7bcc"
     },
     {
       "path": "native-ios/renderer/native_upload.inc",
@@ -773,8 +773,8 @@
     },
     {
       "path": "native-ios/renderer/submission_fixture.inc",
-      "bytes": 5785,
-      "sha256": "be7644ec8b56c21332f78c88f43950f96cdc1a25c9cf78b1cef1018c718fb5bb"
+      "bytes": 6887,
+      "sha256": "08335ff8ec452ffacd1b2bd34b316754007a3d58e09dc8237a3e84542f05eba3"
     },
     {
       "path": "native-ios/renderer/test-inter-stage-source.mjs",
@@ -893,8 +893,8 @@
     },
     {
       "path": "native-ios/renderer/uav_clear.inc",
-      "bytes": 4937,
-      "sha256": "f4b0fb383ddf2118b96bd14b703655a9bca6dafca7e7adb8cf30cf8c1bf1360c"
+      "bytes": 4959,
+      "sha256": "c176abb88f34fd43e4b68a7f9a284aba490b968349168b0b236c6b76626484d2"
     },
     {
       "path": "native-ios/renderer/uav_layout.h",

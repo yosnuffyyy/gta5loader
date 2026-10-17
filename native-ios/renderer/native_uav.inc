@@ -18,7 +18,7 @@ static bool uav_set(NativeGpu *g,const uint8_t *p,uint32_t n){if(!check(g,n>=3,"
  }return !atomic_load(&g->failed);
 }
 static bool uav_copy_counter(NativeGpu *g,const uint8_t *p){Object *dst=object(g,gpu_word(p,0)),*v=uav_object(g,gpu_word(p,2));uint32_t at=gpu_word(p,1);if(!v)return false;
- if(!check(g,dst&&dst->buffer&&at%4==0&&at<=dst->size&&dst->size-at>=4,"Counter copy destination offset/buffer invalid"))return false;WGPUBuffer src=uav_counter(g,v);if(!src)return false;draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return false;wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,src,0,dst->buffer,at,4);g->draw.counter_copies++;return !atomic_load(&g->failed);
+ if(!check(g,dst&&dst->buffer&&at%4==0&&at<=dst->size&&dst->size-at>=4,"Counter copy destination offset/buffer invalid"))return false;WGPUBuffer src=uav_counter(g,v);if(!src)return false;draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return false;draw_buffer_used(g,dst);wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,src,0,dst->buffer,at,4);g->draw.counter_copies++;return !atomic_load(&g->failed);
 }
 static bool storage_range(NativeGpu *g,Object *v,Object *o,uint64_t *offset,uint64_t *bytes){unsigned stride=o->stride?o->stride:4;
  if(!check(g,(v->kind==17||v->kind==37)&&v->words==9&&v->meta[1]==1&&o->buffer,"Storage buffer view descriptor invalid"))return false;
