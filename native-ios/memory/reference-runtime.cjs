@@ -32,10 +32,11 @@ function testModuleBytes() {
   ]);
   return Buffer.concat([wasm.b.subarray(0, section.offset), Buffer.from([7]), uleb(payload.length), payload, wasm.b.subarray(section.end)]);
 }
-async function createRuntime(limit=33554432) {
+async function createRuntime(limit=33554432,restoreAvailable=false) {
   const memory = new WebAssembly.Memory({ initial: 8192, maximum: 65536, shared: true });
   let moduleBytes=testModuleBytes();
   if(limit!==33554432){const before=Buffer.from('428080809000','hex'),after=Buffer.from(limit===134217728?'42808080c000':limit===67108864?'42808080a000':'428080808001','hex');let matches=0;for(const at of [2653489,2653499]){assert(wasm.b.subarray(at,at+6).equals(before));}const section=wasm.sections.find(s=>s.id===7);const delta=moduleBytes.length-wasm.b.length;for(const at of [2653489,2653499]){const pos=at>section.end?at+delta:at;after.copy(moduleBytes,pos);matches++;}assert.equal(matches,2);}
+  if(restoreAvailable){const reference=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'available-reference.json'))),body=Buffer.from(reference.hex,'hex');assert.equal(body.length,279);assert.equal(crypto.createHash('sha256').update(body).digest('hex'),reference.bodySHA256);body.copy(moduleBytes,reference.offset+moduleBytes.length-wasm.b.length);}
   const module = await WebAssembly.compile(moduleBytes);
   const imports = {}, externalCalls = [];
   for (const item of WebAssembly.Module.imports(module)) {

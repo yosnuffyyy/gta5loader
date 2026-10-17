@@ -123,38 +123,43 @@
     },
     {
       "path": "native-ios/memory/allocator_fixture.inc",
-      "bytes": 4546,
-      "sha256": "388ed3c39bdc581b1d3fe50c53efc988ad07de4075e5d233060f7a7569ea9bc9"
+      "bytes": 5775,
+      "sha256": "5cfbf3ec934c0b0d641944649acac77de41a07dbde9f610de59bec75c182d5fd"
+    },
+    {
+      "path": "native-ios/memory/available-reference.json",
+      "bytes": 806,
+      "sha256": "f08b3610214c5fe98f2583671162411536850ccb4fd414d8e0a1ebd45dad78ca"
     },
     {
       "path": "native-ios/memory/diagnostics.inc",
-      "bytes": 3140,
-      "sha256": "41afd5c23c2b32f648302ab44d00102ca7f256e52d0e4e097c05ea8bb1a15ff2"
+      "bytes": 4190,
+      "sha256": "28aa6335ff109bbf209c3e885a897fa1bd4676d5e43827812cbc9f1c163448d4"
     },
     {
       "path": "native-ios/memory/native_memory.h",
-      "bytes": 1466,
-      "sha256": "2a0fb2878dca5405ab0cdd288b47d2bb7bc3e0e3ff6de97c506bb074dfe600fd"
+      "bytes": 1533,
+      "sha256": "4d064a3dd06e8e859a62c4a628a12958e78231647f2503f1fd59b5f528cfe9b4"
     },
     {
       "path": "native-ios/memory/patch-generated.mjs",
-      "bytes": 4258,
-      "sha256": "34bf235087abb03952e15accfd272e644a67a3936062ad02cce71125ac10fb52"
+      "bytes": 5022,
+      "sha256": "cd2eb59da8cf3b62aeb03488558ca3761a8534524b6dc21eb5e1f7e90cafa7bf"
     },
     {
       "path": "native-ios/memory/reference-runtime.cjs",
-      "bytes": 5138,
-      "sha256": "6b3e82e36daa9c12db57033ec80fc981ebf19283ed63bf25aea33ff34ccf5e0f"
+      "bytes": 5526,
+      "sha256": "f0fa25b1e09116eecb9fdf48f8a39b2a06f52a32f5c835b0a8a503e5d570ff2b"
     },
     {
       "path": "native-ios/memory/test-reference.cjs",
-      "bytes": 1930,
-      "sha256": "d7c4fd0bba05ed2e5ebbbeade975fb27c0f0a22357fd50c7974c9e6aaf5be6d4"
+      "bytes": 2598,
+      "sha256": "cde9cd304ab0340dd43cbbdf86219600447fc9796684ae5ffd13f1345d91371a"
     },
     {
       "path": "native-ios/memory/test_policy.c",
-      "bytes": 869,
-      "sha256": "8b355055d4ad1f90613b04bb99f664c0bb554c45af8e716cbdce7111e48975df"
+      "bytes": 876,
+      "sha256": "6d31fb78c399e1189427b2734f4e943ec51afd8f03f10f3f11694e64da3b08ef"
     },
     {
       "path": "native-ios/native_host.c",
