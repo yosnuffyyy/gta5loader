@@ -1,0 +1,1 @@
+PASS: vertex instance stepping: D3D counter semantics, rate0/1/N, nonzero start, mixed divisors, bounds and widened arithmetic.

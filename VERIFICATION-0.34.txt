@@ -1,0 +1,24 @@
+GTA V iOS Native 0.34 — shared shadow compatibility and native UI
+Updated 2026-10-16 (America/Sao_Paulo)
+Source: 3153373e1265ab8a549ef301cb7d732f6e68f970
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38911459355
+IPA: GTA-Native-Probe-0.34-unsigned.ipa
+Bytes: 102325604
+SHA256: d53e49f82cf96866ba2baafed191e0a77ed754ddaf6577543feb2f00ea17f5e3
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.34
+
+PASS: shared semantic optional shadow policy across Four/Eight and related
+source guards; original data and real comparison shadows retained.
+PASS: 664 fixture draws / 169,984 checked shadow pixels, both original full
+pipeline/groups, 4,808 modules/pipelines, 500 clip shaders and full available
+graphics/runtime/input/watchdog regressions.
+PASS: 183 production UIKit checks, asynchronous modal navigation,
+input switching, persistence, fullscreen, large text and seven UI screenshots.
+PASS: unsigned ARM64 package/integrity audit; 216 source entries match the
+tested tree; 33 prior IPAs preserved. No new phone FPS or Stage 3 closure.
+See ENGINEERING-0.34.txt and evidence/0.34 for exact scope and limitations.
+
+Publication verified: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.34
+Direct IPA: https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.34/GTA-Native-Probe-0.34-unsigned.ipa
+Exactly one uploaded release asset; server SHA256 and size match audited IPA.
+Tag resolves to the exact tested source. Native 0.33 release and main preserved.

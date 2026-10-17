@@ -1,0 +1,1 @@
+PASS: inter-stage location plan: exact failing/consumed/unused location15 cases, full 32-slot boundary, impossible/missing interfaces rejected, 20000 randomized masks (10967 fitting); collision-free and value-preserving.

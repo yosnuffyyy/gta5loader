@@ -1,5 +1,21 @@
 NATIVE IPHONE ROADMAP — SHORTEST VERIFIED PATH TO PLAYABLE PROLOGUE
-Updated2026-10-15. Native0.33 independently verified; stages remain open.
+Updated 2026-10-16. Native 0.34 independently verified; stages remain open.
+
+LATEST — 0.34 SHARED SHADOW CONTRACT AND NATIVE UI
+The new physical 0.33 failure used Eight-light PS 6e9619cde3dac275. The old
+optional policy recognized Four only; the bounded parser also missed Eight's
+integer guards. Structural comparison/sampler/resource certificates replace
+shader IDs. Valid real shadows and strict unknown-state errors remain.
+664 Metal fixture draws / 169,984 checked pixels, both original full groups,
+4,808 shader pipelines, 183 UIKit checks and ARM64 package audit PASS.
+Dark dashboard and categorized native settings/files/diagnostics, bookmark
+persistence, focus-safe menus, fullscreen and hidden-log update reduction.
+33 earlier IPAs and the 256-entry cache/640x360 baseline are preserved.
+No new iPhone FPS, crash-free Prologue or Stage 3 completion is claimed.
+Audio output remains a separate unfinished Stage 4 task.
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38911459355
+See ENGINEERING-0.34.txt, VERIFICATION-0.34.txt and evidence/0.34.
+
 
 LATEST —0.33 POST-GUARD SHADOW COUNTS
 New physical0.31 evidence:guard combat progressed, then active count3/selector2

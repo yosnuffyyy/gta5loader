@@ -1,0 +1,1 @@
+PASS: controlled-clock input queue: movement+fire and release need 1 hook instead of 2 after a 1.8s simulated stall; tap edges, handoff neutral, focus release and32 repeated sequences preserved. No input is injected outside the original engine hook; not device latency.

@@ -1,0 +1,223 @@
+GTA V iOS Native 0.34 — shared shadow compatibility and native UI
+Updated 2026-10-16 (America/Sao_Paulo)
+Source: 3153373e1265ab8a549ef301cb7d732f6e68f970
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/38911459355
+IPA: GTA-Native-Probe-0.34-unsigned.ipa
+Bytes: 102325604
+SHA256: d53e49f82cf96866ba2baafed191e0a77ed754ddaf6577543feb2f00ea17f5e3
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.34
+
+RESULT AND LIMITS
+Native compilation, the focused/full available regressions, and the unsigned
+ARM64 package audit passed. This is an experimental candidate for the next
+iPhone test. No new iPhone FPS, crash-free Prologue, visual shadow correctness,
+mission completion or Stage 3 completion is claimed. Audio output is absent.
+
+CONFIRMED SRV ROOT CAUSE
+Native 0.33's optional reference-shadow policy admitted only the Four-light
+PS 996bb42f448956f2. The new failing PS 6e9619cde3dac275 is the Eight-light
+PS_PedTextured_Eight in ped_alpha. Its t14 comparison block, sampler ABI and
+first selector guards match Four, but the hash whitelist rejected it.
+The 32-region guard parser also filled with Eight's float guards before
+collecting its integer light-count guards. Both are compatibility-classifier
+coverage bugs. Source 708's captured creation/upload is genuinely a one-layer
+4x4 BC1 texture, not a six-face texture with omitted uploads.
+
+The actual phone-side forward-light/cache record's intent remains unverified.
+This does not establish an original engine producer bug or prove that the
+resource was intentionally selected as a no-shadow state in the PC engine.
+
+CORRECT OPTIONAL REFERENCE CONTRACT
+The policy now certifies sampling semantics rather than shader/resource IDs:
+one direct textureSampleCompareLevel use of a declared depth cube; the actual
+comparison sampler and ABI slot; paired 0/3 selector guards; current selector
+2.0; and the exact captured descriptor, zero BC1 upload, version and ordinary
+sampler contract. The existing recovered/native sampler-class adapter selects
+comparison Always for that ordinary-to-comparison mismatch. Its result is 1
+independently of valid cube depth values. A cached 1x1x6 Depth32Float cube is
+initialized before dependent draws in the same encoder, preserving that
+reference result. Original 2D data, shader code, material and draw remain.
+
+No hash whitelist, count-one restriction, geometry omission or generic SRV
+validation bypass remains in this policy. Valid real cubemaps use their normal
+path. Changed content/versions, ambiguous selectors, genuine comparison
+samplers and unknown contracts retain strict errors. Strict mode is available
+by leaving the optional setting off. No additional last-resort sample removal
+was needed or added for unknown active bindings.
+
+Reflection is bounded to 64 regions and conservative integer thresholds 0..7.
+Inactive proofs still evaluate fresh packed bytes on every relevant draw.
+Reference flags are synchronized into cached variants by sorted ABI binding,
+including bindings above 63; bind-group identity retains flags and resource
+generations. One cube per GPU service, 24 logical bytes excluding driver
+allocation/residency, as in 0.33. No new per-draw GPU completion wait.
+First activation per program binding reports shader, sampler slot, SRV/source
+and generations; total uses and the bounded transition/fatal context remain.
+Fatal CB captures now use reflected block sizes, capped at 944 + 752 bytes.
+
+NATIVE UI
+Main: dark dashboard, clear Start Game, selected folder/access status, native
+version/runtime status and Settings, Controls, Files and Diagnostics routes.
+Full raw logs and experimental settings live in Advanced.
+Graphics: fullscreen, fixed 640x360, optional displayed-frame diagnostics and
+visible-scene marker. Unsupported graphics controls are not invented.
+Controls: existing DualSense bridge, deadzone, camera sensitivity, touch opacity
+and joystick size. Button remapping is explicitly unavailable.
+Files: native folder picker, persistent bookmark, honest three-prefix sample
+check, visible checking/fatal status and disabled change button while busy.
+Advanced: optional shadow mode, runtime checks, bounded full report, copy/export
+and confirmed restore defaults. Files and folder selection are preserved.
+
+Preferences are persistent. Fullscreen keeps the whole aspect-fit image,
+uses public status-bar/home-indicator preferences and keeps Settings/Stop
+reachable. No rounded mask crops the game viewport. Native pages support
+safe areas, scrolling, labels, minimum action targets and Dynamic Type.
+The test caught and fixed a Files-label ownership bug: attach the strong local
+label to its parent before keeping a weak observation reference.
+
+Controller/touch reduction and engine hook are unchanged. Opening settings
+releases held input. Closing resumes input only after dismissal and while the
+app is active. Drift/reconnect behavior, hidden non-interactive touch art and
+deliberate touch wake are preserved. Backgrounding still stops the session;
+it does not promise background gameplay or seamless engine resumption.
+
+The report has an independent bounded text model. UIKit text is updated only
+while Advanced is visible; opening it synchronizes the real full text.
+The FPS label reuses the existing five-second timer and actual drawable
+timestamps. There is no new display-link timer, controller polling loop,
+per-frame view reconstruction or GPU synchronization for the UI.
+
+VERIFIED TESTS
+PASS: 4,808 native Metal shader modules/pipelines, including 500 clip shaders.
+PASS: source audit of 13 shadow shaders / 76 cube comparison bindings.
+PASS: both original full VS a276344f1111242f + Four/Eight PS pipelines and
+reflected binding groups at counts 1,2,3,4,5,INT32_MAX. This validates original
+shader interfaces/resources; remaining uniforms are synthetic, not scene pixels.
+PASS: 20 production-ring cases across two independent runtime processes,
+640 draws / 163,840 checked pixels from the unchanged original shadow block.
+Active/inactive/ambiguous states, count 0 and positive counts, real shadows,
+partial CB writes/offsets, original BC1 bytes, generations and invalid tails.
+PASS: two mixed-light fixtures, 24 draws / 6,144 checked pixels: two placeholders
+and an independent real LessEqual shadow, below/equal/above comparison depths,
+nonzero cube directions, high binding 65, cached variants and handle replacement.
+Total optional/mixed shadow output: 664 draws / 169,984 checked pixels.
+PASS: 66 descriptor/sampler/content policy checks, 111 f32 guard cases and
+384 conservative signed light-count proofs under the available sanitizers.
+PASS: existing SRV 5633 five-mip/original-pair regression, texture formats,
+depth proxies, compute/UAV, counting occlusion queries, readbacks and lifetime
+regressions. Two full native processes also check persistent saves, engine
+constructors, rooted I/O, workers/mailboxes and bounded archive reads.
+PASS: 1,374 watchdog assertions, controlled live session over 21 virtual
+minutes, production session bridge ASan/UBSan/TSan and input queue tests.
+PASS: 71 checks through original engine input interfaces; engine instructions
+unchanged. PASS: 183 production UIKit/controller checks in the simulator,
+including real asynchronous modal transitions, focus release, switching,
+fullscreen, persistence, folder bookmarks/defaults and large-text layout.
+Seven real UI fixture screenshots are retained. They do not depict gameplay.
+
+Early CI iterations exposed a fixture WGSL directive-order mistake, shell
+line endings, blocking UIKit test-driver waits and the real weak-label bug.
+They were corrected; no failed candidate was published as a validated IPA.
+CI Metal uses the available Apple Paravirtual environment, not the A18 Pro.
+The native runtime fixture uses its established CLI build configuration; the
+device renderer is optimized separately. Fixed fixture ordering and driver
+cache warming can affect CPU timing; golden output and operation counts are
+the deterministic comparison. Timings do not establish phone speedups.
+
+PERFORMANCE EVIDENCE
+No new physical-device performance measurements are available. The supplied
+Native 0.33 evidence identifies three important costs: upload/ordered-flush
+handling (frequently over 60 ms per PRESENT), pipeline compilation spikes,
+and render-queue backpressure delaying simulation/input. Their nested times
+overlap and must not be added as independent CPU/GPU costs.
+
+New UI-only fixture: 200 distinct approximately 8 KiB text assignments took
+470.392 ms through UITextView versus 0.018 ms through hidden report storage.
+The deterministic result is 200/200 UIKit text assignments avoided while
+hidden, with exact final text synchronized when shown. This is one simulator
+API-wall workload with fixed ordering, not GPU time, frame pacing or phone FPS.
+
+Previously implemented optimizations remain independently checked:
+same-batch uniform packs 192 -> 18, uniform GPU bytes 49,152 -> 4,608;
+unused-layout pipeline creates 32 -> 1; ordered-readback pressure waits 6 -> 0
+and explicit completions 7 -> 1 in their isolated golden-output fixtures.
+These are preserved 0.31/0.32 changes, not new 0.34 FPS improvements.
+The 192-key working-set fixture still has 192 creations, 384 hits and zero
+evictions at capacity 256. The pressure mode remains bounded to 128.
+One 64 KiB archive buffer and at most eight descriptors are unchanged.
+No new phone process-memory measurement or true GPU timestamp measurement.
+See evidence/0.34/benchmark-comparison.json for raw comparable rows:
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.018/0.001/0.006/1.282/1.282; lifetime 96 calls 1.772 ms max 1.282
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.032/0.003/0.009/2.098/2.098; lifetime 96 calls 3.053 ms max 2.098
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.066/0.002/0.178/1.096/1.096; lifetime 96 calls 6.357 ms max 1.096
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.003ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 54.106ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 49.448ms, link 18.433ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.036/0.001/0.004/3.233/3.233; lifetime 96 calls 3.463 ms max 3.233
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.001/0.003/1.086/1.086; lifetime 96 calls 1.549 ms max 1.086
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.071/0.005/0.180/1.181/1.181; lifetime 96 calls 6.849 ms max 1.181
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.006ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 55.148ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 40.899ms, link 15.031ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+
+FILES AND DELIVERY
+Changed native source/test files:
+- native-ios/App.m
+- native-ios/Info.plist
+- native-ios/input/ci-test-ui.sh
+- native-ios/input/NativeControls.inc
+- native-ios/input/test_ui.m
+- native-ios/renderer/draw_shader.inc
+- native-ios/renderer/native_gpu.m
+- native-ios/renderer/ped_shadow_audit.inc
+- native-ios/renderer/shader_audit.inc
+- native-ios/renderer/shadow_guard.h
+- native-ios/renderer/shadow_guard.inc
+- native-ios/renderer/shadow_guard_reflect.inc
+- native-ios/renderer/shadow_reference.h
+- native-ios/renderer/shadow_reference.inc
+- native-ios/renderer/shadow_semantic_fixture.inc
+- native-ios/renderer/shadow_trace.inc
+- native-ios/renderer/shadow_transition_fixture.inc
+- native-ios/renderer/test-shadow-source.mjs
+- native-ios/renderer/test_shadow_guard.c
+- native-ios/renderer/test_shadow_reference.c
+- native-ios/ui/NativeDashboard.inc
+source-manifest.json updated; 194 other source files are byte-identical to 0.33.
+All 216 published source entries match the tested tree. All 33 previous IPA
+hashes are preserved, main is unchanged and protected PC folders were not used.
+The IPA audit checks device ARM64, version/build, minimum iOS 17, unsigned
+payload, no writable/executable segments, pinned engine/backend integrity,
+required frameworks and absence of web archives or CI shader packs in the app.
+Publish only this versioned IPA as a manual release asset, with these notes.
+
+REMAINING DEVICE CHECKS
+Install using the existing signing/sideload setup. Select the existing web
+folder once; the new bookmark should restore it on subsequent launches.
+In Settings > Advanced, enable Reference shadow compatibility before Start.
+Strict mode intentionally retains invalid active placeholder failures.
+Use 640x360. Test the new PS pass, characters/materials and real shadow changes
+through the security guard and vault. Look for uninterrupted correct animation
+and camera frames, then test sustained foreground play beyond 180 seconds
+toward 10–20 minutes. Test DualSense/touch handoff, simultaneous actions,
+Settings dismissal, fullscreen/safe areas, cancellation and clean Stop.
+Mark the visible scene for comparable display intervals and export Advanced
+diagnostics, including the first fatal context if any. Counts alone are not
+proof of correct rendering. Unknown future graphics operations, 111 untranslated
+hull/domain/geometry records, metadata/asset diagnostics and audio remain risks.
+Audio output/AVAudioSession/native PCM consumption is a separate Stage 4 task;
+see AUDIO-INVESTIGATION-0.33.txt. No synthetic audio or fabricated assets added.
+Next engineering priority: act on any new actual-device fatal context, then
+measure remaining upload/submission and pipeline working-set costs. Stage 3
+remains open pending sustained visual verification on the physical iPhone.
+
+Publication verified: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.34
+Direct IPA: https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.34/GTA-Native-Probe-0.34-unsigned.ipa
+Exactly one uploaded release asset; server SHA256 and size match audited IPA.
+Tag resolves to the exact tested source. Native 0.33 release and main preserved.

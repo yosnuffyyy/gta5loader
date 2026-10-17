@@ -1,0 +1,2 @@
+PASS: actual-display timeline, dropped/invalid/out-of-order callbacks, 32 FPS synthetic timestamps, bounded rolling windows and consecutive counters. Synthetic arithmetic test, not measured game FPS.
+PASS: user-marked display window excludes pre-marker queued presentations and resets without a cross-loading interval.
