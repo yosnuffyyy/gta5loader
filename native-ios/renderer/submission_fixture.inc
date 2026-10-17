@@ -1,9 +1,11 @@
 #ifdef NATIVE_PROBE_CLI
 /* Original startup shaders through the production shared command ring.
    Legacy mode forces prior upload flushes; candidate checks actual buffer dependencies. */
+static uint64_t submission_fixture_submissions[3];
 static bool submission_fixture(struct w2c_env *h,unsigned legacy,char *report,size_t capacity){
+ if(legacy>=3)return false;
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=base+126000;
- NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_legacy_upload_flush=legacy!=0;g->test_measure_draw=true;
+ NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_legacy_upload_flush=legacy==1;g->test_drain_flush=legacy<2;g->test_measure_draw=true;
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
  bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
@@ -51,9 +53,10 @@ static bool submission_fixture(struct w2c_env *h,unsigned legacy,char *report,si
  uint32_t buffer[8];host_load(h,buffer,dst+2048,sizeof(buffer));for(unsigned j=0;j<8;j++)if(buffer[j]!=0x12340000+95*8+j)ok=false;
  uint32_t hazard[16];host_load(h,hazard,dst+2080,sizeof(hazard));ok=ok&&hazard[0]==0xaa55aa55&&hazard[1]==0x55aa55aa&&hazard[8]==0xdeadbeef;for(unsigned i=2;i<8;i++)if(hazard[i])ok=false;
  ok=ok&&g->draw.creates==1&&g->draw.hits==95&&g->draw.pipeline_capacity==256&&!g->metrics.pipeline_evictions&&g->dependent_uploads>=3&&g->query_segments==96;
- if(legacy)ok=ok&&g->draw.batches>=96&&g->draw.uniform_packs==192;else ok=ok&&g->draw.batches<=12&&g->draw.uniform_packs<40&&g->independent_uploads>80;
+ if(legacy==1)ok=ok&&g->draw.batches>=96&&g->draw.uniform_packs==192;else ok=ok&&g->draw.batches<=12&&g->draw.uniform_packs<40&&g->independent_uploads>80;
+ if(legacy==2)ok=ok&&g->drain_submits_avoided>0&&g->submissions<submission_fixture_submissions[0];submission_fixture_submissions[legacy]=g->submissions;
  char timing[440];timing_text(&g->test_draw_times,"DRAW handler CPU wall (CI only; not displayed frame time)",timing,sizeof(timing));
- if(report&&capacity)snprintf(report,capacity,"%s: buffer dependency replay legacy%u:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions %llu/%llu; uniform packs/bytes %llu/%llu; independent/dependent uploads %llu/%llu; completions %llu; pressure waits %llu; same resource replacement, no new staging. Handler/upload wall %.3f/%.3f ms; protocol upload payload %llu bytes (nested waits included, not GPU execution).\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->draw.batches,(unsigned long long)g->submissions,(unsigned long long)g->draw.uniform_packs,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_pressure_waits,g->metrics.frame_busy/1e6,g->metrics.frame_upload/1e6,(unsigned long long)g->metrics.upload_bytes,timing,native_gpu_error(g)?native_gpu_error(g):mismatch[0]?mismatch:"No device FPS or GPU execution claim.");
+ if(report&&capacity)snprintf(report,capacity,"%s: buffer dependency replay legacy%u:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions %llu/%llu; uniform packs/bytes %llu/%llu; independent/dependent uploads %llu/%llu; completions %llu; pressure waits %llu; same resource replacement, no new staging. ready-drain submits avoided %llu; Handler/upload wall %.3f/%.3f ms; protocol upload payload %llu bytes (nested waits included, not GPU execution).\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->draw.batches,(unsigned long long)g->submissions,(unsigned long long)g->draw.uniform_packs,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_pressure_waits,(unsigned long long)g->drain_submits_avoided,g->metrics.frame_busy/1e6,g->metrics.frame_upload/1e6,(unsigned long long)g->metrics.upload_bytes,timing,native_gpu_error(g)?native_gpu_error(g):mismatch[0]?mismatch:"No device FPS or GPU execution claim.");
  native_gpu_end(g);return ok;
 }
 #endif

@@ -3,7 +3,7 @@
    Modes1/2 isolate the previous uniform/layout behavior independently. */
 static bool reuse_fixture(struct w2c_env *h,unsigned mode,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=base+126000;
- NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_no_uniform_reuse=mode==1;g->test_unused_layout_keys=mode==2;g->test_measure_draw=true;
+ NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_drain_flush=true;g->test_no_uniform_reuse=mode==1;g->test_unused_layout_keys=mode==2;g->test_measure_draw=true;
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
  bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
@@ -34,7 +34,8 @@ static bool reuse_fixture(struct w2c_env *h,unsigned mode,char *report,size_t ca
  for(unsigned read=0;read<2&&ok;read++)for(unsigned i=0;i<256&&ok;i++){bool painted=i<(read?48u:96u),zero=i>=80&&i<88;float color=((i/8)&1)?.5f:1,alpha=((i/8)&2)?.5f:1;int rgba[]={painted&&!zero?(int)lroundf(200*color):0,painted&&!zero?(int)lroundf(100*color):0,painted&&!zero?(int)lroundf(50*color):0,painted&&!zero?(int)lroundf(255*alpha):0};for(unsigned c=0;c<4;c++)if(abs((int)pixels[read*1024+i*4+c]-rgba[c])>1){snprintf(mismatch,sizeof(mismatch),"Pixel mismatch: read%u pixel%u channel%u got%u expected%d",read,i,c,pixels[read*1024+i*4+c],rgba[c]);ok=false;break;}}
  /*753 commands. Production's256-command drain flushes after draws26/62;
     the midway readback splits at48. Four batches require4 VS+14 PS packs.
-    Keep this existing scheduling bound; do not alter it to fit the fixture. */
+    Freeze the prior drain policy here to isolate uniform/layout reuse; the
+    separate dependency replay compares the new bounded-drain policy. */
  uint64_t packs=mode==1?192:18;ok=ok&&g->draw.uniform_packs==packs&&g->draw.uniform_reuses==192-packs&&g->draw.uniform_upload_bytes==packs*g->draw.alignment&&g->draw.creates==(mode==2?32u:1u)&&g->draw.hits==(mode==2?64u:95u)&&g->draw.batches==4&&g->draw.pipeline_capacity==256&&!g->metrics.pipeline_evictions;
  char timing[440];timing_text(&g->test_draw_times,"DRAW handler CPU wall (CI only; not displayed frame time)",timing,sizeof(timing));
  if(report&&capacity)snprintf(report,capacity,"%s: immutable uniform/layout reuse mode%u:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses %llu/%llu, uniform GPU bytes %llu, batches %llu; pipelines creates/hits/evictions %llu/%llu/%llu; submissions %llu, completions %llu, pressure waits %llu, logical resource peak %llu bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.\n%s\n%s",ok?"PASS":"FAIL",mode,(unsigned long long)g->draw.uniform_packs,(unsigned long long)g->draw.uniform_reuses,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->draw.batches,(unsigned long long)g->draw.creates,(unsigned long long)g->draw.hits,(unsigned long long)g->metrics.pipeline_evictions,(unsigned long long)g->submissions,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,(unsigned long long)g->draw.uniform_pressure_waits,(unsigned long long)g->resource_peak,timing,native_gpu_error(g)?native_gpu_error(g):mismatch[0]?mismatch:"No device FPS or GPU execution claim.");
