@@ -36,6 +36,7 @@ void native_stack_probe(struct w2c_env *h,w2c_gta *engine,uint64_t scratch){
   for(unsigned i=0;i<sizeof(after);i++)require(h,after[i]==(i>=8&&i<8+sizes[c]*8?0:0xa5),"real CaptureStackTrace empty-trace bounds/terminator differs");
  }
 }
+#include "memory/allocator_fixture.inc"
 static void putstr(struct w2c_env *h,uint64_t p,const char *s){host_store(h,p,s,strlen(s)+1);}
 static void entropy_probe(struct w2c_env *h,w2c_gta *engine,uint64_t p){
  // Existing engine RNG functions, including their own health test. No RNG
@@ -193,6 +194,9 @@ int native_runtime_probe(const char *game_folder,const char *save_folder,native_
 #endif
   uint64_t stack=w2c_gta_emscripten_stack_get_current(engine);
   uint64_t scratch=w2c_gta_0x5Femscripten_stack_alloc(engine,80*1024);
+  #ifdef NATIVE_PROBE_CLI
+  native_allocator_fixture(h);
+#endif
   saves(h,scratch);abi(h,scratch);native_stack_probe(h,engine,scratch);native_storage_probe(h,engine,scratch);
   message(h,"PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.");
   entropy_probe(h,engine,scratch);

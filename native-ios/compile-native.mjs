@@ -15,6 +15,7 @@ const dependencies=[];
 for(const folder of [root+'/generated',root+'/wabt/wasm2c','native-ios',root]){
  for(const name of fs.readdirSync(folder).filter(n=>/\.(h|inc)$/.test(n)).sort())dependencies.push(folder+'/'+name,hash(fs.readFileSync(folder+'/'+name)));
 }
+dependencies.push('native-ios/memory/native_memory.h',hash(fs.readFileSync('native-ios/memory/native_memory.h')));
 const compiler=execFileSync('clang',['--version'],{encoding:'utf8'});
 const dependencyHash=hash(JSON.stringify({dependencies,compiler,simde:'WABT-ff0ef7e0009402740c805a9744c09b05be063e48'}));
 const cache=root+'/object-cache';fs.mkdirSync(cache,{recursive:true});

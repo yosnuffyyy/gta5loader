@@ -7,6 +7,8 @@ sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-arc -Inative-ios -fsyntax-only native-ios/App.m
 plutil -lint native-ios/Info.plist
 node native-ios/prepare-engine.mjs
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/memory/test_policy.c -o native-build/test-memory-policy
+native-build/test-memory-policy | tee native-build/evidence/native-memory-policy.txt
 bash native-ios/threading/ci-test-session.sh
 bash native-ios/input/ci-test-input.sh
 bash native-ios/input/ci-test-ui.sh
@@ -34,6 +36,7 @@ cp native-build/generated/gta.h native-build/evidence/gta.h
 du -sh native-build/generated
 find native-build/generated -type f | wc -l
 echo 'PASS: complete engine converted to C with native wait/notify calls.'
+node native-ios/memory/patch-generated.mjs native-build/generated native-build/evidence/native-allocator-patch.json
 node native-ios/generate-probe.mjs
 bash native-ios/ci-test-host.sh
 node native-ios/compile-native.mjs

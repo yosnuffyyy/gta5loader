@@ -49,7 +49,7 @@ static int cached_file(NativeAssets *a,uint32_t id){
  a->cache[slot].fd=fd;a->cache[slot].id=id;a->cache[slot].stamp=++a->stamp;return fd;
 }
 static int32_t serve(NativeAssets *a,uint32_t id,uint64_t offset,uint64_t dst,uint32_t length){
- if(id>=a->index.count||length>INT32_MAX||offset>INT64_MAX||!host_range(a->host,dst,length)){a->io_errors++;asset_diagnostic(a,"invalid request",id,offset,length,EINVAL);return -1;}
+ if((length&&!dst)||id>=a->index.count||length>INT32_MAX||offset>INT64_MAX||!host_range(a->host,dst,length)){a->io_errors++;asset_diagnostic(a,"invalid request",id,offset,length,EINVAL);return -1;}
  int fd=cached_file(a,id);if(fd<0){a->io_errors++;asset_diagnostic(a,"open failure",id,offset,length,errno);return -1;}
  struct stat st;if(fstat(fd,&st)||st.st_size<0){a->io_errors++;asset_diagnostic(a,"stat failure",id,offset,length,errno);return -1;}
  if((uint64_t)st.st_size!=a->index.files[id].size){a->size_mismatches++;asset_diagnostic(a,"manifest/physical size mismatch",id,(uint64_t)st.st_size,(uint32_t)(a->index.files[id].size>UINT32_MAX?UINT32_MAX:a->index.files[id].size),0);}
@@ -159,6 +159,9 @@ static void sample(NativeAssets *a,w2c_gta *e,uint64_t scratch,unsigned sample){
  check(a,engine_read(e,UINT32_MAX,0,scratch+512,32)==UINT32_MAX,"invalid asset ID accepted");
  check(a,engine_read(e,(uint32_t)id,UINT64_MAX,scratch+512,32)==UINT32_MAX,"invalid asset offset accepted");
  check(a,engine_read(e,(uint32_t)id,0,UINT64_MAX-8,32)==UINT32_MAX,"invalid asset buffer accepted");
+ unsigned char null_before[64],null_after[64];host_load(a->host,null_before,0,64);
+ check(a,engine_read(e,(uint32_t)id,0,0,32)==UINT32_MAX,"NULL archive destination accepted");
+ host_load(a->host,null_after,0,64);check(a,!memcmp(null_before,null_after,64),"NULL archive destination corrupted engine data");
 }
 void native_assets_probe(NativeAssets *a,uint64_t scratch){
  for(unsigned i=0;i<3;i++)sample(a,a->host->engine,scratch,i);
