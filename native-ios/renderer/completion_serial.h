@@ -16,6 +16,7 @@ typedef struct {
 typedef struct {uint64_t serial;unsigned head,tail,next;bool busy;} CompletionBatch;
 typedef struct {
  CompletionReply replies[COMPLETION_CAPACITY];
+ CompletionReply deferred[COMPLETION_CAPACITY];unsigned deferred_count;
  CompletionBatch batches[COMPLETION_CAPACITY];
  uint64_t serial,completed;
  unsigned free_reply,free_batch,last_batch,pending,peak;
@@ -26,13 +27,22 @@ static inline void completion_init(CompletionSerial *s){
  memset(s,0,sizeof(*s));s->last_batch=COMPLETION_NONE;
  for(unsigned i=0;i<COMPLETION_CAPACITY;i++){s->replies[i].next=i+1;s->batches[i].next=i+1;}
 }
+/* Combined deferred/in-flight budget stays 128. The service must submit on
+   idle, pressure, a true dependency, or the finite between-command deadline. */
+static inline bool completion_defer(CompletionSerial *s,CompletionReply reply){
+ if(s->pending+s->deferred_count>=COMPLETION_CAPACITY)return false;
+ s->deferred[s->deferred_count++]=reply;return true;
+}
+static inline bool completion_due(const CompletionSerial *s,uint64_t now){
+ return s->deferred_count&&(s->deferred_count>=32||now<s->deferred[0].started||now-s->deferred[0].started>=1000000);
+}
 static inline bool completion_advance(CompletionSerial *s){
  if(s->serial==UINT64_MAX)return false;s->serial++;return true;
 }
 static inline CompletionAction completion_add(CompletionSerial *s,CompletionReply reply,unsigned *batch){
  *batch=COMPLETION_NONE;
  if(s->completed_valid&&s->serial<=s->completed)return COMPLETION_READY;
- if(s->free_reply==COMPLETION_NONE)return COMPLETION_FULL;
+ if(s->free_reply==COMPLETION_NONE||s->pending+s->deferred_count>=COMPLETION_CAPACITY)return COMPLETION_FULL;
  unsigned b=s->last_batch;
  bool join=b<COMPLETION_CAPACITY&&s->batches[b].busy&&s->batches[b].serial==s->serial;
  if(!join){

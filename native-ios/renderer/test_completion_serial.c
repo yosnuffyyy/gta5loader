@@ -19,6 +19,17 @@ static void invariant(const CompletionSerial *s){
 }
 int main(void){
  CompletionSerial s;completion_init(&s);unsigned b=0,first=0;
+ CompletionReply deferred={.started=1000,.value=42};
+ assert(!completion_due(&s,10000000));assert(completion_defer(&s,deferred));
+ assert(!completion_due(&s,1000999));assert(completion_due(&s,1001000));assert(completion_due(&s,0));
+ for(unsigned i=1;i<32;i++)assert(completion_defer(&s,deferred));assert(completion_due(&s,1000));
+ for(unsigned i=32;i<128;i++)assert(completion_defer(&s,deferred));assert(!completion_defer(&s,deferred));
+ s.deferred_count=0;completion_init(&s);
+ for(unsigned i=0;i<127;i++)assert(completion_add(&s,deferred,&b)==(i?COMPLETION_JOIN:COMPLETION_REGISTER));
+ assert(completion_defer(&s,deferred));assert(!completion_defer(&s,deferred));assert(completion_add(&s,deferred,&b)==COMPLETION_FULL);
+ s.deferred_count=0;assert(completion_add(&s,deferred,&b)==COMPLETION_JOIN);assert(s.pending==128);assert(completion_finish(&s,b,false));completion_init(&s);
+
+
  CompletionReply r={.id=709,.generation=4,.token=99,.sequence=42,.value=UINT64_C(0x123456789abcdef0)};
  for(unsigned i=0;i<128;i++){CompletionAction a=completion_add(&s,r,&b);assert(a==(i?COMPLETION_JOIN:COMPLETION_REGISTER));if(!i)first=b;assert(b==first);invariant(&s);}
  CompletionSerial before=s;assert(completion_add(&s,r,&b)==COMPLETION_FULL);assert(!memcmp(&s,&before,sizeof(s)));

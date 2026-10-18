@@ -53,8 +53,8 @@ typedef struct {
 } Object;
 struct NativeGpu {
  NativeMetrics metrics;
- CompletionSerial *completion;CompletionContext completion_contexts[COMPLETION_CAPACITY];
- bool queue_writes_pending;uint64_t completion_registers,completion_joins,completion_ready,completion_write_submits,query_types[6];TimingWindow completion_latency;
+ unsigned surface_width,surface_height;CompletionSerial *completion;CompletionContext completion_contexts[COMPLETION_CAPACITY];
+ uint64_t command_started,service_cpu_ns,service_cpu_errors;bool queue_writes_pending;uint64_t completion_registers,completion_joins,completion_ready,completion_write_submits,query_types[6];TimingWindow completion_latency;
  unsigned transfer_ops;uint64_t transfer_submits_avoided;
  WGPUBuffer copy_scratch;uint64_t copy_reinterpretations,copy_tiles;
  WGPUBuffer ordered_buffers[2];uint8_t *ordered_mirror;unsigned ordered_offset,ordered_slot;uint64_t ordered_uploads,ordered_bytes,ordered_capacity_flushes;
@@ -215,7 +215,7 @@ static bool hardware(NativeGpu *g){
  if(g->host->progress){char report[900];snprintf(report,sizeof(report),"Native capabilities: %s; BC %u; BC3D %u; norm16 %u; SNORM rendering %u; sampler border %u; clip distances %u; float32 filter %u; depth32+stencil %u; indirect first instance %u; unclipped depth %u; BGRA storage %u; RG11 render %u; max2D %u; buffer %llu MiB; storage binding %llu MiB; uniform/storage alignment %u/%u; color attachments %u; compute threads %u, shared %u KiB. inter-stage variables %u. Capabilities are negotiated, not proof of gameplay.",g->adapter_name,g->bc_enabled,wgpuDeviceHasFeature(g->device,WGPUFeatureName_TextureCompressionBCSliced3D),g->norm16_enabled,g->format_caps_enabled,g->border_enabled,g->clip_enabled,wgpuDeviceHasFeature(g->device,WGPUFeatureName_Float32Filterable),wgpuDeviceHasFeature(g->device,WGPUFeatureName_Depth32FloatStencil8),wgpuDeviceHasFeature(g->device,WGPUFeatureName_IndirectFirstInstance),wgpuDeviceHasFeature(g->device,WGPUFeatureName_DepthClipControl),wgpuDeviceHasFeature(g->device,WGPUFeatureName_BGRA8UnormStorage),wgpuDeviceHasFeature(g->device,WGPUFeatureName_RG11B10UfloatRenderable),limits.maxTextureDimension2D,(unsigned long long)(limits.maxBufferSize/1048576),(unsigned long long)(limits.maxStorageBufferBindingSize/1048576),limits.minUniformBufferOffsetAlignment,limits.minStorageBufferOffsetAlignment,limits.maxColorAttachments,limits.maxComputeInvocationsPerWorkgroup,limits.maxComputeWorkgroupStorageSize/1024,g->inter_stage_limit);g->host->progress(g->host->progress_context,report);}
  g->storage_alignment=limits.minStorageBufferOffsetAlignment;if(g->test_bc&&g->storage_alignment<256)g->storage_alignment=256;g->compute_limit=limits.maxComputeWorkgroupsPerDimension;
  if(g->host->progress){char qinfo[160];snprintf(qinfo,sizeof(qinfo),"Native query capability: Metal counting %u; exact sample counts and Boolean predicates; bounded asynchronous results",g->counting_queries);g->host->progress(g->host->progress_context,qinfo);}
- if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=640;cfg.height=360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);
+ if(g->surface){WGPUSurfaceConfiguration cfg=WGPU_SURFACE_CONFIGURATION_INIT;cfg.device=g->device;cfg.format=WGPUTextureFormat_BGRA8Unorm;cfg.usage=WGPUTextureUsage_RenderAttachment;cfg.width=g->surface_width?g->surface_width:640;cfg.height=g->surface_height?g->surface_height:360;cfg.presentMode=WGPUPresentMode_Fifo;cfg.alphaMode=WGPUCompositeAlphaMode_Opaque;wgpuSurfaceConfigure(g->surface,&cfg);
   // wgpu-hal 29.0.3 configure disables this timeout. Our diagnostic view can
   // scroll offscreen; never let nextDrawable prevent Stop/join indefinitely.
   CAMetalLayer *layer=(__bridge CAMetalLayer*)g->layer;layer.allowsNextDrawableTimeout=YES;
@@ -431,6 +431,7 @@ static void reset_state(NativeGpu *g){memset(g->shader,0,sizeof(g->shader));g->l
 #include "ordered_upload.inc"
 
 static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;g->op_counts[op]++;g->last_words=n;memset(g->last_payload,0,8*sizeof(*g->last_payload));for(unsigned i=0;i<n&&i<(op==34?14u:8u);i++)g->last_payload[i]=gpu_word(p,i);unsigned crumb=g->breadcrumb_next++%8;g->breadcrumbs[crumb].opcode=op;g->breadcrumbs[crumb].words=n;memcpy(g->breadcrumbs[crumb].shader,g->shader,sizeof(g->shader));memset(g->breadcrumbs[crumb].payload,0,sizeof(g->breadcrumbs[crumb].payload));for(unsigned i=0;i<n&&i<6;i++)g->breadcrumbs[crumb].payload[i]=gpu_word(p,i);atomic_store(&g->live_phase,1);atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
+ if(g->completion&&g->completion->deferred_count&&completion_due(g->completion,g->command_started)&&!completion_progress(g))return false;
  /* Submit pending draws before resource mutations, copies, fences or present.
     State commands can remain in the current pass. Queue writes never overtake
     an earlier draw that reads the same resource. */
@@ -484,7 +485,7 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  default:{char text[320];Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u (%08x%08x) PS %u (%08x%08x), %llu commands executed",gpu_opcode_name(op),g->shader[0],vs&&vs->kind==14?vs->meta[3]:0,vs&&vs->kind==14?vs->meta[2]:0,g->shader[1],ps&&ps->kind==14?ps->meta[3]:0,ps&&ps->kind==14?ps->meta[2]:0,(unsigned long long)g->ring.executed);fail(g,text);return false;}
  }
 }
-static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t profile_cpu=g->profile?native_profile_cpu():0,submits=g->submissions;g->profile_preflushed=false;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;
+static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t profile_cpu=g->profile?native_profile_cpu():0,submits=g->submissions;g->profile_preflushed=false;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;g->command_started=start;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;
 #ifdef NATIVE_PROBE_CLI
  if(g->test_measure_draw&&op==32)timing_add(&g->test_draw_times,elapsed);
 #endif
@@ -504,7 +505,7 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
   /* Driver/poll/progress temporaries must not live for the whole game session.
      Explicit WGPU handles and copied source data retain their normal owners. */
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){@autoreleasepool{
-   uint64_t profile_cpu=g->profile?native_profile_cpu():0,profile_wall_before=g->profile?g->profile->command_wall:0,profile_cpu_before=g->profile?g->profile->command_cpu:0;uint64_t drain_start=now_ns();int drained=gpu_ring_drain(&g->ring,256);if(g->profile)native_profile_residual(g->profile,now_ns()-drain_start,profile_cpu,profile_wall_before,profile_cpu_before);
+   uint64_t profile_cpu=g->profile?native_profile_cpu():0,profile_wall_before=g->profile?g->profile->command_wall:0,profile_cpu_before=g->profile?g->profile->command_cpu:0;uint64_t loop_cpu=profile_cpu;uint64_t drain_start=now_ns();int drained=gpu_ring_drain(&g->ring,256);if(g->profile)native_profile_residual(g->profile,now_ns()-drain_start,profile_cpu,profile_wall_before,profile_cpu_before);
    if(drained<0){if(!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,g->ring.error);break;}
    uint32_t ready_head=atomic_load_explicit(heap_word(g,g->ring.base),memory_order_acquire);
    if(g->draw.encoder){if(!retained_drains)retained_since=drain_start;retained_drains++;}else retained_drains=0;
@@ -519,9 +520,10 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
    /* Keep every original pass usage/barrier/query boundary. Only the command
       encoder submission is coalesced, at most four full drains / 4 ms between
       checks; any blocking command retains its own earlier submission rules. */
-   bool flushed=true;if(keep){draw_end_pass(g);g->drain_submits_avoided++;}else{if(g->draw.encoder&&retained_drains>=4)g->drain_bound_flushes++;flushed=draw_flush(g);retained_drains=0;}
+   bool flushed=true;if(keep){draw_end_pass(g);g->drain_submits_avoided++;}else{if(g->draw.encoder&&retained_drains>=4)g->drain_bound_flushes++;flushed=completion_progress(g);retained_drains=0;}
    g->metrics.drain_flush_ns+=now_ns()-flush_start;if(g->profile&&!keep)native_profile_stage(g->profile,NP_DRAIN_FLUSH,now_ns()-flush_start,flush_cpu);if(!flushed)break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
-   if(head==g->ring.tail){/* Never sleep with an unsubmitted encoder. */if(g->draw.encoder){uint64_t at=now_ns();bool done=draw_flush(g);g->metrics.drain_flush_ns+=now_ns()-at;retained_drains=0;if(!done)break;}atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head){uint64_t idle_start=now_ns();native_wait32(&g->host->memory,g->ring.base,head,(g->query_pending_pages||g->event_pending)?2000000:100000000);g->metrics.idle_wait_ns+=now_ns()-idle_start;}atomic_store(heap_word(g,g->ring.base+20),0);}
+   if(head==g->ring.tail){/* Never sleep with an unsubmitted encoder. */if(g->draw.encoder||(g->completion&&g->completion->deferred_count)){uint64_t at=now_ns();bool done=completion_progress(g);g->metrics.drain_flush_ns+=now_ns()-at;retained_drains=0;if(!done)break;}atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head){uint64_t idle_start=now_ns();native_wait32(&g->host->memory,g->ring.base,head,(g->query_pending_pages||g->event_pending)?2000000:100000000);g->metrics.idle_wait_ns+=now_ns()-idle_start;}atomic_store(heap_word(g,g->ring.base+20),0);}
+   if(g->profile){uint64_t end_cpu=native_profile_cpu();if(loop_cpu&&end_cpu>=loop_cpu)g->service_cpu_ns+=end_cpu-loop_cpu;else g->service_cpu_errors++;}
   }}
  }
  if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");atomic_store(&g->live_phase,8);release_hardware(g);wasm_rt_free_thread();}return NULL;}
@@ -530,6 +532,9 @@ NativeGpu *native_gpu_create(struct w2c_env *h,void *layer,void(*cancel)(void*),
  const char *execution=getenv("NATIVE_RENDERER_V2_TEST");if(execution&&strcmp(execution,"1")==0)native_gpu_execution_option(g,true);
 #endif
  return g;}
+void native_gpu_surface_size(NativeGpu *g,unsigned width,unsigned height){
+ if(!g||!check(g,!g->started&&((width==640&&height==360)||(width==480&&height==270)||(width==320&&height==180)),"Invalid or late surface size"))return;g->surface_width=width;g->surface_height=height;
+}
 void native_gpu_execution_option(NativeGpu *g,bool enabled){if(!g||!check(g,!g->started,"Renderer selection must be frozen before GPU start"))return;if(enabled&&!g->completion){g->completion=calloc(1,sizeof(*g->completion));if(!check(g,g->completion!=NULL,"Renderer V2 completion allocation failed"))return;completion_init(g->completion);}else if(!enabled){free(g->completion);g->completion=NULL;}}
 void native_gpu_reference_shadow_option(NativeGpu *g,bool enabled){if(g&&check(g,!g->started,"Reference shadow option must be frozen before GPU start"))g->reference_shadow_compat=enabled;}
 void native_gpu_start(NativeGpu *g,uint64_t ring,uint64_t size,uint64_t dbg){(void)dbg;if(!g)return;if(!check(g,!g->started&&size<=UINT32_MAX,"Duplicate/invalid GPU service start"))return;if(!gpu_ring_init(&g->ring,(void*)g->host->memory.data,&g->host->memory.size,ring,(uint32_t)size,g,execute,wake)){fail(g,g->ring.error);return;}g->ring_valid=true;if(!check(g,pthread_create(&g->thread,NULL,loop,g)==0,"GPU service pthread creation"))return;g->started=true;}
@@ -687,6 +692,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result&&!event_callback_fixture(h))result=1;
  if(!result&&!completion_callback_fixture(h))result=1;
  if(!result&&!completion_write_fixture(h))result=1;
+ if(!result&&!completion_idle_fixture(h))result=1;
  for(unsigned profile=0;profile<2&&!result;profile++)for(unsigned pair=0;pair<4&&!result;pair++)for(unsigned order=0;order<2&&!result;order++){
   if(!completion_replay(h,((pair+order)&1)!=0,profile!=0,pair,order))result=1;
  }

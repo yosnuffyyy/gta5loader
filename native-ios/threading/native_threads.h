@@ -1,6 +1,7 @@
 #ifndef NATIVE_THREADS_H
 #define NATIVE_THREADS_H
 #include "native_host.h"
+#include "launch/options.h"
 #include "asset_io/native_assets.h"
 typedef struct NativeThreads NativeThreads;
 NativeThreads *native_threads_begin(struct w2c_env*);
@@ -22,6 +23,7 @@ void native_set_assets(NativeAssets*);
 NativeAssets *native_current_assets(void);
 uint32_t native_language(struct w2c_env*,uint64_t,uint64_t,uint64_t);
 void native_boot_prepare(struct w2c_env*,void*,bool);
+void native_boot_launch_options(struct w2c_env*,NativeLaunchOptions);
 void native_boot_prepare_execution(struct w2c_env*,void*,bool,bool,bool);
 void native_boot_prepare_options(struct w2c_env*,void*,bool,bool);
 void native_graphics_start(struct w2c_env*,uint64_t,uint64_t,uint64_t);

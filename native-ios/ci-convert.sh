@@ -10,7 +10,10 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-texture-copy | tee native-build/evidence/texture-copy-plan.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_completion_serial.c -o native-build/test-completion-serial
 native-build/test-completion-serial | tee native-build/evidence/completion-serial.txt
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/launch/test_options.c -o native-build/test-launch-options
+native-build/test-launch-options | tee native-build/evidence/launch-options.txt
 node native-ios/prepare-engine.mjs
+NATIVE_MODE_ENGINE=native-build/engine-original.wasm node native-ios/launch/test_engine_mode.cjs native-build/evidence/launch-mode-engine.json
 NATIVE_MEMORY_ENGINE=native-build/engine-original.wasm node native-ios/memory/test-reference.cjs native-build/evidence/native-memory-reference.json
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/memory/test_policy.c -o native-build/test-memory-policy
 native-build/test-memory-policy | tee native-build/evidence/native-memory-policy.txt

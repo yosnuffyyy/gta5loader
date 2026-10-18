@@ -4,6 +4,7 @@
 #include "native_log.h"
 #include "native_session.h"
 #include "native_wait.h"
+#include "diagnostics/native_trap.h"
 #include "platform/native_paths.h"
 #include "renderer/native_gpu.h"
 #include "renderer/native_launch.h"
@@ -44,7 +45,7 @@ typedef struct NativeWorker {
 } NativeWorker;
 #include "timing/native_time_trace.h"
 struct NativeThreads {
- NativeTimeTrace time_trace;
+ NativeTimeTrace time_trace;NativeLaunchOptions launch;
  struct w2c_env *host;
  pthread_t owner;
  pthread_mutex_t mutex;
@@ -127,8 +128,8 @@ void native_thread_tick(struct w2c_env *h){
  (void)h;if(!current)return;
  // Full deadline/IO checks are amortized on clock-heavy engine loops.
  if(atomic_load_explicit(&current->stopping,memory_order_relaxed)||
-    (current->boot_mode&&atomic_load_explicit(&scene_stop,memory_order_relaxed)))wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
- if((++clock_ticks&255)==0&&native_wait_cancelled())wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
+    (current->boot_mode&&atomic_load_explicit(&scene_stop,memory_order_relaxed)))native_trap_cancel();
+ if((++clock_ticks&255)==0&&native_wait_cancelled())native_trap_cancel();
  native_wait_service();
 }
 w2c_gta *native_current_engine(struct w2c_env *h){return worker?worker->engine:h->engine;}
@@ -237,10 +238,10 @@ static void *run_worker(void *arg){
   check(h,w->routine<table->size,"invalid worker entry index");wasm_rt_funcref_t entry=table->data[w->routine];
   check(h,entry.func&&entry.func_type&&!memcmp(entry.func_type,wasm2c_gta_get_func_type(1,1,WASM_RT_I64,WASM_RT_I64),32),"invalid worker entry signature");
   if(r->main_mode)atomic_fetch_add(&r->game_started,1);
-  uint64_t result=((uint64_t(*)(w2c_gta*,uint64_t))entry.func)(entry.module_instance,w->arg);
+  w->phase="engine entry";native_trap_reset();uint64_t result=((uint64_t(*)(w2c_gta*,uint64_t))entry.func)(entry.module_instance,w->arg);
   w2c_gta_0x5Femscripten_thread_exit(w->engine,result);
- }else if(!w->failure){if(atomic_load(&r->stopping))w->cancelled=true;else w->failure="worker engine trap";}
- if(trap&&w->failure){char line[256];snprintf(line,sizeof(line),"Worker trap %d, entry %llu, phase %s: %s",trap,(unsigned long long)w->routine,w->phase?w->phase:"startup",w->failure);report(h,line);}
+ }else if(!w->failure){if(native_trap_was_cancelled())w->cancelled=true;else w->failure="worker engine trap";}
+ if(trap&&w->failure){char line[256];snprintf(line,sizeof(line),"Worker trap %d, entry %llu, phase %s: %s",trap,(unsigned long long)w->routine,w->phase?w->phase:"startup",w->failure);report(h,line);char trace[2048];native_trap_text(trace,sizeof(trace));report(h,trace);}
  if(w->failure)atomic_store(&r->stopping,true);
  if(instantiated)wasm2c_gta_free(w->engine);free(w->engine);w->engine=NULL;
  wasm_rt_free_thread();atomic_store(&w->finished,true);signal_change(r);worker=NULL;current=NULL;return NULL;
@@ -367,8 +368,8 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
  }
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");
  if(audio){check(h,address%8==0&&capacity>=256&&!(capacity&(capacity-1))&&host_range(h,address,64+capacity*8),"Invalid stereo audio ring extent");current->audio=address;current->audio_capacity=capacity;if(current->boot_mode&&current->display&&!current->gpu_checkpoint){char error[320];if(!native_audio_start(h->memory.data,atomic_load(&h->memory.size),address,capacity,error,sizeof(error))){host_log(h,"Error: native audio output unavailable; real playback is not established.");host_log(h,error);}else host_log(h,"Native audio connected to original 48 kHz stereo PCM ring; actual PCM/nonzero output statistics follow.");}}else current->input=address;
- if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,1);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,640);host_put32(h,address+436,360);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
- // Geometry/start-mode stays fixed at 640x360; pad delivery uses synchronous hooks.
+ if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,current->launch.mode);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,current->launch.width);host_put32(h,address+436,current->launch.height);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
+ // Mode and geometry were frozen before main; pad delivery remains synchronous.
 }
 
 void native_set_assets(NativeAssets *a){if(!current)abort();check(current->host,!worker,"asset service owner");current->assets=a;}
@@ -408,11 +409,18 @@ bool native_main_reached(struct w2c_env *h){
 }
 static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
 uint32_t native_has_display(void){return current&&current->display?1:0;}
-void native_boot_prepare_execution(struct w2c_env *h,void *layer,bool checkpoint,bool compatibility,bool v2){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->watch_enabled=!checkpoint&&r->display;session_begin(&r->session,now_ns());session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");native_gpu_reference_shadow_option(r->gpu,compatibility);native_gpu_execution_option(r->gpu,v2);checked(pthread_mutex_lock(&scene_status_mutex));checked(pthread_mutex_lock(&r->watch_mutex));session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));checked(pthread_mutex_unlock(&r->watch_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
+void native_boot_prepare_execution(struct w2c_env *h,void *layer,bool checkpoint,bool compatibility,bool v2){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");native_launch_options(1,0,&r->launch);r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->watch_enabled=!checkpoint&&r->display;session_begin(&r->session,now_ns());session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");native_gpu_reference_shadow_option(r->gpu,compatibility);native_gpu_execution_option(r->gpu,v2);checked(pthread_mutex_lock(&scene_status_mutex));checked(pthread_mutex_lock(&r->watch_mutex));session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));checked(pthread_mutex_unlock(&r->watch_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
+void native_boot_launch_options(struct w2c_env *h,NativeLaunchOptions options){
+ NativeThreads *r=current;NativeLaunchOptions checkedOptions;
+ check(h,r&&!worker&&!r->main_mode&&native_launch_options(options.mode,options.quality,&checkedOptions),"invalid or late native launch options");
+ r->launch=checkedOptions;native_gpu_surface_size(r->gpu,checkedOptions.width,checkedOptions.height);
+ char text[200];snprintf(text,sizeof(text),"Frozen launch: %s; %s %ux%u; separate sandbox save root; 30 FPS cap unchanged.",options.mode==2?"Sandbox (original engine mode2)":"Story",native_quality_name(options.quality),checkedOptions.width,checkedOptions.height);report(h,text);
+}
 void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
- const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu","-width=640","-height=360","-forceResolution","-noautoload","-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
+ char width[32],height[32];snprintf(width,sizeof(width),"-width=%u",r->launch.width);snprintf(height,sizeof(height),"-height=%u",r->launch.height);
+ const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu",width,height,"-forceResolution","-noautoload","-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
  uint64_t p=w2c_gta_0x5Femscripten_stack_alloc(h->engine,4096),cursor=p+512;unsigned count=sizeof(args)/sizeof(args[0]);
  for(unsigned i=0;i<count;i++){host_put64(h,p+8*i,cursor);size_t bytes=strlen(args[i])+1;host_store(h,cursor,args[i],bytes);cursor+=bytes;}
  host_put64(h,p+8*count,0);w2c_gta_0x5F_main_argc_argv(h->engine,count,p);host_unavailable(h,"native main returned before a game scene");

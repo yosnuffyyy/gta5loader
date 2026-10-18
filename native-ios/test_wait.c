@@ -1,5 +1,6 @@
 #include "wait.h"
 #include "native_wait.h"
+#include "diagnostics/native_trap.h"
 #include "wasm-rt-impl.h"
 #include "wasm-rt-exceptions.h"
 #include <assert.h>
@@ -8,6 +9,7 @@
 #include <stdatomic.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct w2c_env { wasm_rt_shared_memory_t memory; };
 wasm_rt_shared_memory_t *w2c_env_memory(struct w2c_env *env) { return &env->memory; }
@@ -35,7 +37,7 @@ static void *run_cancelled_wait(void *arg){
  Task *t=arg;wasm_rt_init_thread();
  wasm_rt_trap_t trap=wasm_rt_impl_try();
  if(!trap){native_wait32(&t->env->memory,t->address,0,-1);abort();}
- assert(trap==WASM_RT_TRAP_UNREACHABLE);atomic_store(&t->result,123);
+ assert(trap==WASM_RT_TRAP_UNREACHABLE&&native_trap_was_cancelled());atomic_store(&t->result,123);
  wasm_rt_free_thread();return NULL;
 }
 static void *read_during_growth(void *arg) {
@@ -45,6 +47,14 @@ static void *read_during_growth(void *arg) {
 }
 int main(void) {
   wasm_rt_init();
+  native_trap_reset();wasm_rt_trap_t cancellation=wasm_rt_impl_try();
+  if(!cancellation){native_trap_cancel();abort();}
+  assert(cancellation==WASM_RT_TRAP_UNREACHABLE&&native_trap_was_cancelled());
+  native_trap_reset();wasm_rt_trap_t genuine=wasm_rt_impl_try();
+  if(!genuine){wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);abort();}
+  assert(genuine==WASM_RT_TRAP_UNREACHABLE&&!native_trap_was_cancelled());
+  char trace[2048];native_trap_text(trace,sizeof(trace));assert(strstr(trace,"Pre-unwind native trap frames"));native_trap_reset();
+  puts("PASS: cancellation trap marker distinguishes intentional stop from genuine unreachable; pre-unwind trace retained.");
   struct w2c_env env={0},other={0};
   wasm_rt_allocate_memory_shared(&env.memory,1,64,false,65536);
   wasm_rt_allocate_memory_shared(&other.memory,1,64,false,65536);

@@ -1,3 +1,10 @@
+#include "diagnostics/native_trap.h"
+#include <stdio.h>
+#include <string.h>
+#ifdef __APPLE__
+#include <execinfo.h>
+#include <dlfcn.h>
+#endif
 #include "native_wait.h"
 #include "threading/native_pump.h"
 #include "wasm-rt-impl.h"
@@ -30,7 +37,27 @@ typedef struct PollGuard {
   wasm_rt_jmp_buf checkpoint;
 } PollGuard;
 static _Thread_local PollGuard *poll_guard;
+static _Thread_local void *native_trap_frames[16];
+static _Thread_local bool native_trap_cancelled;
+static _Thread_local unsigned native_trap_count;static _Thread_local bool native_trap_captured;
+void native_trap_reset(void){native_trap_count=0;native_trap_captured=false;native_trap_cancelled=false;}
+void native_trap_cancel(void){native_trap_cancelled=true;wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);}
+bool native_trap_was_cancelled(void){return native_trap_cancelled;}
+void native_trap_text(char *text,size_t capacity){
+ size_t used=0;int n=snprintf(text,capacity,"Pre-unwind native trap frames %u (image-relative offsets; match IPA UUID/symbol map):",native_trap_count);if(n<0)return;used=(size_t)n;
+#ifdef __APPLE__
+ for(unsigned i=0;i<native_trap_count&&used<capacity;i++){Dl_info image={0};bool known=dladdr(native_trap_frames[i],&image)!=0&&image.dli_fbase;uintptr_t pc=(uintptr_t)native_trap_frames[i],base=known?(uintptr_t)image.dli_fbase:0;n=snprintf(text+used,capacity-used," %u:%s+0x%llx",i,known&&image.dli_fname?strrchr(image.dli_fname,'/')?strrchr(image.dli_fname,'/')+1:image.dli_fname:"unknown",(unsigned long long)(pc-base));if(n<0)break;used+=(size_t)n;}
+#endif
+}
 void native_wait_trap_redirect(wasm_rt_trap_t code){
+ /* Capture before either wait-local or engine LONGJMP unwinds the faulting
+    AOT frames. Only the first propagation is retained. No signal handler IO. */
+ if(!native_trap_captured){native_trap_captured=true;
+#ifdef __APPLE__
+  int count=backtrace(native_trap_frames,16);if(count>0)native_trap_count=(unsigned)count;
+#endif
+ }
+
   // WABT's LONGJMP expands to several statements, not a do/while macro.
   if(poll_guard){WASM_RT_LONGJMP(poll_guard->checkpoint,code);}
 }
@@ -54,7 +81,7 @@ static wasm_rt_trap_t poll_services(bool *cancelled){
 static void propagate(wasm_rt_trap_t trap,bool cancelled){
   if(trap==WASM_RT_TRAP_UNCAUGHT_EXCEPTION)wasm_rt_throw();
   if(trap)wasm_rt_trap(trap);
-  if(cancelled)wasm_rt_trap(WASM_RT_TRAP_UNREACHABLE);
+  if(cancelled)native_trap_cancel();
 }
 static pthread_once_t initialized=PTHREAD_ONCE_INIT;
 static void checked(int status) { if(status) abort(); }

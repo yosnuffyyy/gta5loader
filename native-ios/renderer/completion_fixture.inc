@@ -54,8 +54,8 @@ static bool completion_replay(struct w2c_env *h,bool v2,bool profile,unsigned pa
  ok=ok&&g->draw.draws==64&&g->event_pending==0&&g->event_requests==513&&g->event_peak<=EVENT_REPLIES;
  TimingSummary latency=timing_summary(&g->completion_latency);
  ok=ok&&(!profile||g->profile)&&(!v2||g->completion_registers<256);
- printf("V2_BENCH {\"ok\":%s,\"backend\":\"%s\",\"profile\":%s,\"pair\":%u,\"order\":%u,\"wall_ms\":%.6f,\"command_cpu_ms\":%.6f,\"end_cpu_ms\":%.6f,\"submissions\":%llu,\"draws\":%llu,\"registrations\":%llu,\"joined\":%llu,\"known_complete\":%llu,\"query_p50_ms\":%.6f,\"query_p95_ms\":%.6f,\"query_max_ms\":%.6f,\"pending_peak\":%u,\"state_bytes\":%zu}\n",
- ok?"true":"false",v2?"v2":"existing",profile?"true":"false",pair,order,elapsed/1e6,g->profile?g->profile->command_cpu/1e6:-1,g->profile?g->profile->op[46].cpu/1e6:-1,(unsigned long long)g->submissions,(unsigned long long)g->draw.draws,(unsigned long long)(v2?g->completion_registers:g->event_requests),(unsigned long long)g->completion_joins,(unsigned long long)g->completion_ready,latency.median_ms,latency.p95_ms,g->completion_latency.worst/1e6,g->event_peak,v2?sizeof(*g->completion):0);
+ printf("V2_BENCH {\"ok\":%s,\"backend\":\"%s\",\"profile\":%s,\"pair\":%u,\"order\":%u,\"wall_ms\":%.6f,\"command_cpu_ms\":%.6f,\"end_cpu_ms\":%.6f,\"service_cpu_ms\":%.6f,\"service_cpu_errors\":%llu,\"submissions\":%llu,\"draws\":%llu,\"registrations\":%llu,\"joined\":%llu,\"known_complete\":%llu,\"query_p50_ms\":%.6f,\"query_p95_ms\":%.6f,\"query_max_ms\":%.6f,\"pending_peak\":%u,\"state_bytes\":%zu}\n",
+ ok?"true":"false",v2?"v2":"existing",profile?"true":"false",pair,order,elapsed/1e6,g->profile?g->profile->command_cpu/1e6:-1,g->profile?g->profile->op[46].cpu/1e6:-1,g->profile?g->service_cpu_ns/1e6:-1,(unsigned long long)g->service_cpu_errors,(unsigned long long)g->submissions,(unsigned long long)g->draw.draws,(unsigned long long)(v2?g->completion_registers:g->event_requests),(unsigned long long)g->completion_joins,(unsigned long long)g->completion_ready,latency.median_ms,latency.p95_ms,g->completion_latency.worst/1e6,g->event_peak,v2?sizeof(*g->completion):0);
  if(!ok)printf("FAIL: V2 event replay %s\n",native_gpu_error(g)?native_gpu_error(g):"pixel/result/ownership assertion");native_gpu_end(g);return ok;
 }
 /* Queue writes without a DRAW must be submitted before their event completes.
@@ -86,5 +86,37 @@ static bool completion_write_fixture(struct w2c_env *h){
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(atomic_load_explicit(heap_word(g,result+32),memory_order_acquire)!=77&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&atomic_load(heap_word(g,result+32))==77&&host_u64(h,dst)==UINT64_C(0x12345678abcdef04)&&g->completion_write_submits==3&&g->completion_ready==1&&g->completion_registers==2&&g->event_pending==0;
  printf("%s: V2 isolated upload/event progress: two writes submitted before event replies and a third before plain FENCE, completed fence reused once, later mutation invalidates completion, exact 64-bit readback; no DRAW/PRESENT required. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+}
+/* Producer waits immediately after DRAW/END, with no PRESENT or later
+   command available to rescue progress. Three texture generations are read
+   back exactly before the next phase, testing real draw-visible bytes. */
+static bool completion_idle_fixture(struct w2c_env *h){
+ uint64_t base=atomic_load(&h->memory.size)-262144,result=base+132000,dst=base+140000;
+ NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;native_gpu_execution_option(g,true);g->draw.fixture=true;
+ host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+20000000000ull;
+ while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
+ bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
+ #define EMIT(op,n) do{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(n));host_store(h,base+tail+8,cmd,(n)*4);tail+=8+(n)*4;}while(0)
+ #include "query_setup.inc"
+ depth_words[0]=130;depth_words[3]=0;depth_words[4]=8;memcpy(cmd,depth_words,sizeof(depth_words));EMIT(16,15);cmd[0]=130;cmd[1]=0;EMIT(28,2);memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[32]=117;EMIT(26,37);
+ cmd[0]=901;cmd[1]=0;cmd[2]=(uint32_t)result;cmd[3]=result>>32;EMIT(44,4);
+ const uint32_t colors[]={0xff3264c8,0xffc84b32,0xff14b45a};
+ for(unsigned phase=0;phase<3&&ok;phase++){
+  memset(cmd,0,sizeof(cmd));cmd[0]=114;cmd[6]=cmd[7]=cmd[8]=1;cmd[9]=4;cmd[10]=1;cmd[11]=4;cmd[12]=colors[phase];EMIT(13,13);
+  memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);cmd[0]=901;cmd[1]=phase+1;EMIT(46,2);host_put32(h,result,0);
+  atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);
+  while(atomic_load_explicit(heap_word(g,result),memory_order_acquire)!=phase+1&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
+  ok=!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,result),memory_order_acquire)==phase+1&&host_u64(h,result+8)==1;
+  if(!ok)break;
+  memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
+  cmd[0]=(uint32_t)(result+32);cmd[1]=(result+32)>>32;cmd[2]=phase+10;host_put32(h,result+32,0);EMIT(8,3);
+  atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);
+  while(atomic_load_explicit(heap_word(g,result+32),memory_order_acquire)!=phase+10&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
+  uint8_t pixels[1024];host_load(h,pixels,dst,sizeof(pixels));ok=ok&&!native_gpu_error(g)&&atomic_load(heap_word(g,result+32))==phase+10;
+  for(unsigned i=0;i<256&&ok;i++)for(unsigned c=0;c<4;c++)if(abs((int)pixels[i*4+c]-(int)((colors[phase]>>(c*8))&255))>1)ok=false;
+ }
+ #undef EMIT
+ native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&g->event_pending==0&&g->draw.draws==3;
+ printf("%s: V2 immediate consumer: 3 DRAW/END waits progress without PRESENT or subsequent commands; 768 pixels across changing texture bytes checked; pending replies zero. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
 }
 #endif
