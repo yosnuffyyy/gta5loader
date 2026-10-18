@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.38 candidate: ordered immutable upload staging, original PCM ring to native audio, reproduced original timer clamp with diagnostics (scheduler fix unresolved), user artwork and app display name. Verification pending. No engine compiler/heap/asset/quality/frame-cap changes.",
+  "scope": "Native 0.39 candidate: strict bit-preserving texture reinterpretation and bounded ordered clear/copy batching; all previous optimizations retained. Verification pending. No engine compiler/heap/asset/quality/frame-cap changes.",
   "files": [
     {
       "path": "native-ios/App.m",
       "bytes": 37088,
-      "sha256": "b93fc306bab1df1ad0ef66c6d10ba665a9949a77f96df4babacb33fc68299d36"
+      "sha256": "48eee2479e50cf2941a8ca27d15265bcd14a7047d77f1f22fb9f47762af28f1e"
     },
     {
       "path": "native-ios/artwork/icon-0.base64",
@@ -128,8 +128,8 @@
     },
     {
       "path": "native-ios/ci-convert.sh",
-      "bytes": 3439,
-      "sha256": "b147649e3ebf27cc43c5e5f26de5819b9aca3b57cdbc5a2ffc0e0755bfd16273"
+      "bytes": 3669,
+      "sha256": "568c989e96765b0615d6bf1b04297c37d75ebf78a2ae0e8bac37ee932a5ad39a"
     },
     {
       "path": "native-ios/ci-test-host.sh",
@@ -209,7 +209,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1715,
-      "sha256": "4d18d454fe8468170e8dda0290e85f4ca3345e99c6f1c3157b636c0c6f2d1475"
+      "sha256": "cd9f27c6dd433845f43d5b9edb1ab4177f9a469179af0eee632ad324e9f62312"
     },
     {
       "path": "native-ios/input/ci-test-input.sh",
@@ -442,6 +442,11 @@
       "sha256": "2b5e5787939131fac2889ca1c7650d954b48b2e18c7a18b2971e92a85cf4db60"
     },
     {
+      "path": "native-ios/renderer/copy_cast_fixture.inc",
+      "bytes": 3293,
+      "sha256": "0ef48deab4650e28b4b51413eba210388eedcf92eaf2b5d08dc2a1f02af8fd8e"
+    },
+    {
       "path": "native-ios/renderer/depth_proxy_layout.h",
       "bytes": 1458,
       "sha256": "d5e00c668d19c787f640968312f3b6c662c9f3022684b7a8289b75ccfff03d09"
@@ -593,8 +598,8 @@
     },
     {
       "path": "native-ios/renderer/native_draw.inc",
-      "bytes": 23745,
-      "sha256": "a3b3e9ca40efb986ad06f59f85aca3c8d7ade93f795792c60c917a3b2ba41b0c"
+      "bytes": 23763,
+      "sha256": "a0520d89133f33227ff27a465de10ff04935e71b8e46c43b163fdcd1378c31bf"
     },
     {
       "path": "native-ios/renderer/native_gpu.h",
@@ -603,8 +608,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 86631,
-      "sha256": "985a7a1252e924b8b80c6dba59796d6f3160ad26cda7e09ec6455a9ce0b30df8"
+      "bytes": 90667,
+      "sha256": "a7baed414d27d972a8037efd4bbaa5f1e6260d889848fd2ed6a89440b0046c46"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -1062,6 +1067,11 @@
       "sha256": "284793a70be86eac7bbff06cca5e9b9b1f4444db5ce374a742e57a98d61af02b"
     },
     {
+      "path": "native-ios/renderer/test_texture_copy.c",
+      "bytes": 1149,
+      "sha256": "b7d53d4c0f51cba706e66bdeac447f16fa49efa66b4ee9cdbcc81c41849212fb"
+    },
+    {
       "path": "native-ios/renderer/test_timing_window.c",
       "bytes": 1121,
       "sha256": "d451633995eac7517f37704fc3f901ea5f709109b64e00995f1e2ff5b11a13b7"
@@ -1077,9 +1087,19 @@
       "sha256": "3776ef46829274e38443b6acfec26b9d0447a339b5da38fc89511cfc2bdec496"
     },
     {
+      "path": "native-ios/renderer/texture_copy.h",
+      "bytes": 2555,
+      "sha256": "1aa14f80145e1aff29cee9ca2b080a61c56c435b359d29ffdfeede71af322feb"
+    },
+    {
       "path": "native-ios/renderer/timing_window.h",
       "bytes": 2370,
       "sha256": "e5f3da1748372c9f5c5a87cb357b258b658696cf9a634d7065ce4d2abb22f04e"
+    },
+    {
+      "path": "native-ios/renderer/transfer_fixture.inc",
+      "bytes": 3107,
+      "sha256": "a3baffa4a2dfe060dbe4e09ce322ca7880ef74d762ffa7ec4c584c45066a8b7b"
     },
     {
       "path": "native-ios/renderer/uav_clear.inc",
@@ -1309,7 +1329,7 @@
     {
       "path": "native-ios/ui/NativeDashboard.inc",
       "bytes": 27828,
-      "sha256": "8aa9fed7954a95af734fd3b7efd26945ff27c1c9262841b5a751f8a76361cf72"
+      "sha256": "384b4dff9133922674b51baa1d2ade7ff1206d246c311c23a95f71e14820df0d"
     },
     {
       "path": "native-ios/wait-fixture.wat",
