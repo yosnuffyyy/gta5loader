@@ -1,0 +1,37 @@
+NATIVE 0.39 — TEXTURE COPY AND ORDERED TRANSFERS
+
+Source: 68c1394b3d067e73aacb17bd3d7fe39091708315
+CI: 39152842578 / job 117749975884 PASS
+IPA: GTA-Native-Probe-0.39-unsigned.ipa
+Version 0.39.0 / build 39; 104978601 bytes
+SHA256: 99b1f41e8f3a76d81e06aa844c813baf9793ffe667484b6af16a85b2455f4571
+Evidence artifact 12146760680: sha256:e461eba8ad7bb9b570e21bed35018b6c409228d854581a39b0f95c0c019d34b8
+IPA ZIP artifact 12146606164: sha256:af7f1ae751691e64d88d6b45832a44a537048679388afa1b3e3af3dcd19f6560
+
+Unsigned ARM64 iOS17+, GTA V (Test Build), existing bundle identity and icon.
+272 source/workflow/manifest hashes verified. 38 previous IPAs hash-preserved.
+Protected main unchanged. Release contains the IPA only, no game/web files.
+
+PASS: two full native Metal runtime processes and original engine startup.
+PASS: 16 copy format pairs / 66 copies / 49 byte-readbacks per process;
+      small mips, layers, resource reuse/destruction, 2MiB tiled round trip.
+PASS: 128-draw paired clear/copy replay, 256 pixels and pending buffer hazards.
+Submissions 388 / 388 → 9 / 9; batches 128 / 128 → 4 / 4.
+Uniform bytes 65536 / 65536 → 2048 / 2048; fixture wall ms 180.134 / 212.243 → 151.198 / 154.071.
+Inclusive handler wall ms 172.398 / 206.719 → 144.585 / 146.634.
+Host fixed-order paired runs; no physical FPS or GPU-time claim.
+
+PASS: 4808 original shader modules/Metal pipelines, 500 clip shaders.
+PASS: original SRV/shadow, compute, occlusion, depth, uploads and readbacks.
+PASS: 71 engine-input, 197 UIKit, 1374 watchdog checks; worker/mailbox,
+      allocator/archive, recovery/journal and targeted ASan/UBSan/TSan.
+PASS: original PCM ABI/ring, 1024 offline stereo frames, mixer sampling.
+PASS: original timer/pause reproduction and population scalar contracts.
+No full physics/animation/cutscene or mission population test is implied.
+
+UNFINISHED: actual pause-menu verification, time-loss scheduler fix, audio
+starvation and missing bank resolution, mission-safe population presets.
+No new compiler, quality, frame-cap or cache-limit change. 111 untranslated
+shader records remain. A18/A18Pro sustained FPS, memory/thermals and sound
+quality need physical testing. No 30FPS claim or roadmap stage advancement.
+See NATIVE-0.39-RESULTS.md and COLLECT-0.39-PERFORMANCE.txt.

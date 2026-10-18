@@ -1,0 +1,36 @@
+NATIVE 0.39 — PHYSICAL TEST AND COMPARISON
+
+Install over the existing GTA V (Test Build), preserving the bundle identity,
+game folder and saves. Keep 640x360/30 FPS and the same shadow option as 0.38.
+No new density preset is shipped; mission-safe placement is still unverified.
+
+1. Pause-menu regression first:
+   Open Options, navigate pages, close, reopen; repeat after a transition.
+   Verify menu images and restored gameplay, not just absence of a trap.
+   A failure now records both resource formats/sizes/mips/sample counts and
+   all 14 COPY_REGION words. Share Full Log (.txt), not only the last six words.
+
+2. Comparable performance:
+   Enable the existing display measurements; mark a visible scene.
+   Walk/drive the same route for 60 seconds, then repeat after 10-15 minutes.
+   Record actual display p50/p95/p99, input hook latency, thermal state,
+   memory/headroom and new Ordered transfers summary. Loading-screen FPS,
+   queue submissions and host fixture speed are not gameplay FPS.
+   If enabling service CPU profiling, use the same setting for both builds.
+
+3. Timing/audio:
+   Time an identifiable dialogue/animation segment against a wall clock.
+   Note whether sound has gaps, altered pitch, or consistent slowdown.
+   Share Engine timer windows and Mixer calls/sampled wall/thread CPU.
+   Include PCM consumed/underrun frames, maximum queued frames and output errors.
+   Check speakers/headphones plus an interruption and return to gameplay.
+   Native 0.39 does not claim the simulation-clamp or audio-starvation fix.
+
+4. Preservation:
+   Verify controller/touch switching, held-button releases, combat, mission
+   progression, shadows, reflections, fullscreen and clean manual stop.
+   Report A18 base and A18 Pro results separately, including thermal state.
+
+Use Advanced/Diagnostics -> Share Full Log (.txt). Save the exported file.
+The optional service profiler measures native CPU/wall, not GPU execution.
+No screenshot or short FPS sample alone establishes sustained 30 FPS.

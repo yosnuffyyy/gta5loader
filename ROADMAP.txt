@@ -1,3 +1,17 @@
+NATIVE0.39 — TEXTURE COPY COMPATIBILITY AND ORDERED TRANSFERS
+Validated source 68c1394b3d067e73aacb17bd3d7fe39091708315; CI 39152842578 PASS.
+Physical0.38: pause-menu COPY_REGION fatal after mixed Story Mode runtime.
+New strict D3D-compatible bit-preserving copies, bounded1MiB GPU tile;
+clear/region-copy batching preserves draw pixels and buffer dependencies.
+Host submissions 388 -> 9 for128 original draws, not iPhone FPS.
+All4808 shader/pipeline and applicable runtime/sanitizer checks pass.
+Time loss below15updates/s reproduced; safe scheduler fix unfinished.
+Audio producer sampling added; starvation and safe population presets pending.
+A18/A18Pro pause-menu, sustainedFPS, audio and thermal checks still required.
+All38 prior IPAs preserved; no stage-count advancement or30FPS success claim.
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.39
+See NATIVE-0.39-RESULTS.md, VERIFICATION-0.39.txt, COLLECT-0.39-PERFORMANCE.txt.
+
 NATIVE0.38 — ORDERED UPLOADS, NATIVE PCM AUDIO AND TIMER DIAGNOSTICS
 Validated source360bb27d7c3e3750611bebcfdc6adf00c98303e8; CI39141219526 PASS.
 Two host Metal replays: submissions262->13, uniform bytes131072->2560,
