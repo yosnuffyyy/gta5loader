@@ -11,6 +11,7 @@
 
 /* File size has no application quota. Fixed memory, one writer, no per-line
    NSData/block allocation on the engine path. Backpressure is explicit. */
+_Static_assert(sizeof(off_t)>=8,"Session logs require 64-bit file offsets");
 enum { JOURNAL_CAPACITY=2*1024*1024,JOURNAL_CHUNK=64*1024 };
 static uint64_t journal_ns(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
 static void jc(int e){if(e)abort();}

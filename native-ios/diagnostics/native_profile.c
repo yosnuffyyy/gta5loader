@@ -6,6 +6,7 @@
 #include <string.h>
 static _Atomic bool enabled;
 void native_profile_set_enabled(bool value){atomic_store_explicit(&enabled,value,memory_order_release);}
+bool native_profile_enabled(void){return atomic_load_explicit(&enabled,memory_order_acquire);}
 NativeProfile *native_profile_create(void){return atomic_load_explicit(&enabled,memory_order_acquire)?calloc(1,sizeof(NativeProfile)):NULL;}
 uint64_t native_profile_cpu(void){
 #if defined(CLOCK_THREAD_CPUTIME_ID)

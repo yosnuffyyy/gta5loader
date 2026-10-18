@@ -58,23 +58,23 @@
     },
     {
       "path": "native-ios/diagnostics/native_journal.m",
-      "bytes": 10740,
-      "sha256": "c08671df9f4a36ccbb1e5cb371f971348f4a1146eba87f995578cabf372c05ce"
+      "bytes": 10817,
+      "sha256": "c2910c39a69cddbfa57c059bb1a8c7e14409130952855cd435b55dccda82b29a"
     },
     {
       "path": "native-ios/diagnostics/native_profile.c",
-      "bytes": 4650,
-      "sha256": "9e2f01a1deebb4f5d7ef77ca49f56258127e65119d0c602f445099fc4c48b350"
+      "bytes": 4745,
+      "sha256": "a92d6aee27b87fe85a28cf136326086e3aff7a943961e39b50b57f3ed8c28601"
     },
     {
       "path": "native-ios/diagnostics/native_profile.h",
-      "bytes": 1490,
-      "sha256": "4a8c914bb3cbd0700ad290cf1ea285becb2cffb908b5a99cf8af7b6a875444ac"
+      "bytes": 1525,
+      "sha256": "37897e8cd6faf68d46e5951974ad1d6c8c114b1b9359dbd521a306d532bd1155"
     },
     {
       "path": "native-ios/diagnostics/test_journal.m",
-      "bytes": 4133,
-      "sha256": "67853b48b76f2bba1da03040f3590cb3ccf11b533b774d0fa4b414cffaa9101c"
+      "bytes": 4400,
+      "sha256": "a5df31f629584db698e11d015dc6e8da842aea9e71b0c166de86933b216d5861"
     },
     {
       "path": "native-ios/diagnostics/test_profile.c",
@@ -143,8 +143,8 @@
     },
     {
       "path": "native-ios/input/test_ui.m",
-      "bytes": 20835,
-      "sha256": "de540f15d283601301967286aed99a6e256d942a2e92e045a861f11733975710"
+      "bytes": 21045,
+      "sha256": "4df3f66f0ca9af8294b3ab846233d1f4d07816391334adecd167b635566eff6e"
     },
     {
       "path": "native-ios/input/touch_layout.h",
@@ -483,8 +483,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 84062,
-      "sha256": "56ab21f7e19dda25262543d8899cd0f66d4c670524c0003d071357620c19fa02"
+      "bytes": 84246,
+      "sha256": "4252c05cf000b25078c04bc9d9fa3ded57cf9fe26f490f8d9ef55305a40c3d65"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -1158,8 +1158,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 26532,
-      "sha256": "2c111180eb5113af62ef21a80d6101b67e6a97600679f58bdccda1bdacaec3f2"
+      "bytes": 26743,
+      "sha256": "d0eed48f9995ef0abf07730ecad27a31ce984e4fec1311394f704215aa087793"
     },
     {
       "path": "native-ios/wait-fixture.wat",
