@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <sched.h>
-static _Atomic unsigned char memory[64+16384*8];static NativePCM p;
+static _Alignas(8) _Atomic unsigned char memory[64+16384*8];static NativePCM p;
 static void put(unsigned at,float f){unsigned char b[4];memcpy(b,&f,4);for(unsigned i=0;i<4;i++)atomic_store_explicit(memory+at+i,b[i],memory_order_relaxed);}
 static void *producer(void *unused){(void)unused;for(unsigned k=0;k<20000;k++){uint32_t w=atomic_load(na_word(&p,0));while(w-atomic_load_explicit(na_word(&p,1),memory_order_acquire)>=p.capacity)sched_yield();unsigned at=64+(w&(p.capacity-1))*8;put(at,(float)k/32768);put(at+4,-(float)k/32768);atomic_store_explicit(na_word(&p,0),w+1,memory_order_release);}return NULL;}
 int main(void){

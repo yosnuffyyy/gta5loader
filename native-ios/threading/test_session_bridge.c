@@ -20,6 +20,8 @@ static void native_gpu_progress(NativeGpu *g,uint64_t *commands,uint64_t *frames
 static uint64_t native_assets_progress(NativeAssets *a){return atomic_load(&a->delivered);}
 static void native_gpu_snapshot(NativeGpu *g,char *out,size_t n){snprintf(out,n,"test atomic GPU snapshot: %llu",(unsigned long long)atomic_load(&g->commands));}
 static void native_log_push(NativeLog *log,const char *text){assert(text&&strlen(text)<768);atomic_fetch_add(&log->lines,1);}
+static bool audio_suspended;static unsigned audio_transitions;
+static void native_audio_suspend(bool value){audio_suspended=value;audio_transitions++;}
 #include "native_session_bridge.inc"
 #define NS(n) ((uint64_t)(n)*SESSION_SECOND)
 static void *hooks(void *r){for(unsigned i=0;i<100000;i++)scene_watch_hook(r);return NULL;}
@@ -27,7 +29,7 @@ static void *polls(void *r){for(unsigned i=0;i<100000;i++)scene_watch_poll(r);re
 int main(void){NativeGpu gpu={0};NativeAssets assets={0};NativeThreads r={.watch_enabled=true,.gpu=&gpu,.assets=&assets};checked(pthread_mutex_init(&r.watch_mutex,NULL));scene_runtime=&r;atomic_store(&clock_ns,NS(100));session_begin(&r.session,now_ns());
  scene_watch_hook(&r);session_log(&r.session,"Animated camera intial frame");atomic_store(&clock_ns,NS(101));scene_watch_hook(&r);atomic_store(&gpu.frames,1);assert(!scene_watch_poll(&r)&&r.session.phase==SESSION_LIVE);assert(atomic_load(&r.log.lines)==1);char summary[512];scene_watch_summary(&r,summary,sizeof(summary));assert(strstr(summary,"Session live"));
  pthread_t a,b,c;checked(pthread_create(&a,NULL,hooks,&r));checked(pthread_create(&b,NULL,polls,&r));checked(pthread_create(&c,NULL,polls,&r));checked(pthread_join(a,NULL));checked(pthread_join(b,NULL));checked(pthread_join(c,NULL));assert(r.session.hooks==100002&&!r.session.fault);
- native_scene_suspend(true);atomic_store(&clock_ns,NS(5000));assert(!scene_watch_poll(&r));native_scene_suspend(false);scene_watch_hook(&r);atomic_store(&gpu.frames,2);assert(!scene_watch_poll(&r));
+ native_scene_suspend(true);assert(audio_suspended&&audio_transitions==1);atomic_store(&clock_ns,NS(5000));assert(!scene_watch_poll(&r));native_scene_suspend(false);assert(!audio_suspended&&audio_transitions==2);scene_watch_hook(&r);atomic_store(&gpu.frames,2);assert(!scene_watch_poll(&r));
  atomic_store(&assets.requests,999999);atomic_store(&clock_ns,NS(5060));assert(scene_watch_poll(&r));assert(atomic_load(&r.stopping)&&r.session.fault==SESSION_ENGINE_STALL&&r.watch_reported);unsigned lines=atomic_load(&r.log.lines);assert(!scene_watch_poll(&r)&&atomic_load(&r.log.lines)==lines); /* failed/EOF requests cannot manufacture progress; diagnostic once */
  atomic_store(&r.stopping,false);atomic_store(&r.watch_check_at,0);session_begin(&r.session,now_ns());r.watch_reported=false;atomic_store(&scene_stop,false);atomic_store(&clock_ns,NS(9999));checked(pthread_mutex_lock(&r.watch_mutex));checked(pthread_create(&a,NULL,polls,&r));unsigned attempts=0;while(!atomic_load(&r.watch_check_at)&&attempts++<1000){struct timespec delay={0,1000000};nanosleep(&delay,NULL);}assert(attempts<1000);atomic_store(&scene_stop,true);checked(pthread_mutex_unlock(&r.watch_mutex));checked(pthread_join(a,NULL));assert(!r.session.fault&&!atomic_load(&r.stopping));assert(!scene_watch_poll(&r));session_stop(&r.session);assert(!scene_watch_poll(&r));
  checked(pthread_mutex_lock(&scene_status_mutex));scene_runtime=NULL;checked(pthread_mutex_unlock(&scene_status_mutex));native_scene_suspend(true);native_scene_suspend(false);checked(pthread_mutex_destroy(&r.watch_mutex));

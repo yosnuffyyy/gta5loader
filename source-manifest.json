@@ -108,13 +108,13 @@
     },
     {
       "path": "native-ios/audio/test_output.m",
-      "bytes": 1930,
-      "sha256": "3d90457d371bd0de2d98de857b0a908e7c8a09e7b037230ddc5d8d36a9257ebe"
+      "bytes": 1942,
+      "sha256": "0d95a5f2863cabbf1414c5a43b95949f5b0dda5c94f2db3018725111dfb335c6"
     },
     {
       "path": "native-ios/audio/test_pcm.c",
-      "bytes": 2786,
-      "sha256": "942afe30d1a81887e80a0d8f16529a412dd67d92dc9d6b01463daab090fb13b9"
+      "bytes": 2798,
+      "sha256": "9144ef3344ba324debbbf7ed9d0e62453c754139fa7498c77f9fc4a8765dab52"
     },
     {
       "path": "native-ios/ci-convert.sh",
@@ -663,8 +663,8 @@
     },
     {
       "path": "native-ios/renderer/ordered_fixture.inc",
-      "bytes": 4070,
-      "sha256": "2a86629a1c7fa33e3f84197c1504dba320ca8de349c292a51d90a0f52a113469"
+      "bytes": 5270,
+      "sha256": "9cad648824a1927aaad5f853b8f155f3904485c46304ff5c39fdfa9f99f5f627"
     },
     {
       "path": "native-ios/renderer/ordered_upload.inc",
@@ -1283,8 +1283,8 @@
     },
     {
       "path": "native-ios/threading/test_session_bridge.c",
-      "bytes": 4548,
-      "sha256": "64b7ab9022ec0e13b982abee0ab2c484f124946d803f7ca2d2a37380f448ab49"
+      "bytes": 4793,
+      "sha256": "a94bab8f9b9dc4421d52e6e007844d3725da6b25a7597bd986e72b81d021a28e"
     },
     {
       "path": "native-ios/timing/native_time_trace.h",

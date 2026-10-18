@@ -3,7 +3,7 @@
 /* Offline AVAudioEngine executes the production source callback and mixer.
    Samples are fixture PCM, not a claim that asset decoding or speakers work. */
 int main(void){@autoreleasepool{
- static _Atomic unsigned char data[64+16384*8];atomic_store((_Atomic uint32_t*)(data+8),16384);
+ static _Alignas(8) _Atomic unsigned char data[64+16384*8];atomic_store((_Atomic uint32_t*)(data+8),16384);
  for(unsigned i=0;i<2048;i++){float values[2]={.125f,-.25f};for(unsigned c=0;c<2;c++){unsigned char *b=(unsigned char*)&values[c];for(unsigned j=0;j<4;j++)atomic_store(data+64+i*8+c*4+j,b[j]);}}atomic_store((_Atomic uint32_t*)data,2048);
  setup();__block bool ok=true;dispatch_sync(control,^{
   assert(na_attach(&pcm,data,sizeof(data),0,16384));make_graph();NSError *error=nil;
