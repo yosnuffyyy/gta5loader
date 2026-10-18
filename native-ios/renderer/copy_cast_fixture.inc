@@ -1,4 +1,19 @@
 #ifdef NATIVE_PROBE_CLI
+static bool copy_error_fixture(struct w2c_env *h){
+ uint64_t base=atomic_load(&h->memory.size)-65536;NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;
+ host_put32(h,base,64);native_gpu_start(g,base,32768,0);uint64_t deadline=now_ns()+60000000000ull;
+ while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
+ bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[14]={0};
+ for(unsigned i=0;i<2;i++){cmd[0]=i?35378:10933;cmd[1]=2;cmd[2]=cmd[3]=cmd[4]=cmd[5]=cmd[6]=cmd[9]=1;cmd[7]=61;cmd[8]=8;host_put32(h,base+tail,3);host_put32(h,base+tail+4,10);host_store(h,base+tail+8,cmd,40);tail+=48;}
+ memset(cmd,0,sizeof(cmd));cmd[0]=35378;cmd[5]=10933;cmd[7]=1;cmd[11]=2;cmd[12]=cmd[13]=1;
+ host_put32(h,base+tail,34);host_put32(h,base+tail+4,14);host_store(h,base+tail+8,cmd,sizeof(cmd));tail+=64;
+ if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);}
+ const char *error=NULL;while(ok&&!(error=native_gpu_error(g))&&now_ns()<deadline){struct timespec t={0,100000};nanosleep(&t,NULL);}
+ char first[1600]={0};if(error)snprintf(first,sizeof(first),"%s",error);else ok=false;
+ ok=ok&&strstr(first,"Copy source box outside subresource")&&strstr(first,"source 10933 DXGI 61")&&strstr(first,"destination 35378 DXGI 61")&&strstr(first,"raw[35378,0,0,0,0,10933,0,1,0,0,0,2,1,1]");
+ native_gpu_stop(g);ok=ok&&native_gpu_error(g)&&!strcmp(first,native_gpu_error(g));
+ printf("%s: copy failure publication: invalid source box, both live descriptors and all14 words present on first acquire-read; immutable through stop/join.\n",ok?"PASS":"FAIL");native_gpu_end(g);return ok;
+}
 static bool copy_cast_fixture(struct w2c_env *h){
  if(atomic_load(&h->memory.size)<8*1024*1024){puts("FAIL: copy-cast fixture needs 8 MiB shared memory");return false;}
  const uint32_t ring_size=4*1024*1024;

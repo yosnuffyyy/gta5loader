@@ -69,7 +69,7 @@ struct NativeGpu {
  struct {uint32_t opcode,words,shader[3],payload[6];} breadcrumbs[8];unsigned breadcrumb_next;
  WGPUComputePipeline upload_pipeline;WGPUBindGroup upload_group;WGPUBuffer upload_edges,upload_parameters;
  uint64_t upload_edge_dispatches,upload_edge_words,whole_copy_subresources,whole_copy_submissions,submissions;unsigned resource_cases,inter_stage_cases;
- uint64_t op_counts[48];uint32_t last_words,last_payload[8];
+ uint64_t op_counts[48];uint32_t last_words,last_payload[14];
  WGPURenderPipeline pixel_pipeline;WGPUTexture pixel_texture;unsigned pixel_samples,pixel_min,pixel_max,pixel_varying;uint64_t pixel_hash,pixel_first_hash,pixel_last_present;
  WGPUSurface surface;WGPURenderPipeline blit;WGPUShaderModule blit_shader;
  CFMutableDictionaryRef objects;uint64_t object_generation;uint64_t presents,surface_frames,uploads,readbacks;
@@ -109,9 +109,10 @@ static void sample_memory(NativeGpu *g){uint64_t now=now_ns();if(now-g->last_sam
 static _Atomic uint32_t *heap_word(NativeGpu *g,uint64_t address){return (_Atomic uint32_t*)(g->host->memory.data+address);}
 static void wake(void *context,uint64_t address){NativeGpu *g=context;native_notify(&g->host->memory,address,UINT32_MAX);}
 static Object *object(NativeGpu *,uint32_t);
+static void copy_diagnostic_locked(NativeGpu *,const uint8_t *);
 static void fail(NativeGpu *g,const char *message){
  pthread_mutex_lock(&g->error_lock);bool first=!atomic_load_explicit(&g->failed,memory_order_relaxed);
- if(first){Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]),*cs=object(g,g->shader[2]);snprintf(g->error,sizeof(g->error),"%s %s [%s, opcode %u] VS %u %08x%08x; PS %u %08x%08x; CS %u %08x%08x; payload(%u) %u,%u,%u,%u,%u,%u",message,g->srv_guard,gpu_opcode_name(g->last_op),g->last_op,g->shader[0],vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,3):0,vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,2):0,g->shader[1],ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,3):0,ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,2):0,g->shader[2],cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,3):0,cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,2):0,g->last_words,g->last_payload[0],g->last_payload[1],g->last_payload[2],g->last_payload[3],g->last_payload[4],g->last_payload[5]);atomic_store_explicit(&g->failed,true,memory_order_release);}
+ if(first){Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]),*cs=object(g,g->shader[2]);snprintf(g->error,sizeof(g->error),"%s %s [%s, opcode %u] VS %u %08x%08x; PS %u %08x%08x; CS %u %08x%08x; payload(%u) %u,%u,%u,%u,%u,%u",message,g->srv_guard,gpu_opcode_name(g->last_op),g->last_op,g->shader[0],vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,3):0,vs?shader_diagnostic_word(vs->kind,vs->words,vs->meta,2):0,g->shader[1],ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,3):0,ps?shader_diagnostic_word(ps->kind,ps->words,ps->meta,2):0,g->shader[2],cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,3):0,cs?shader_diagnostic_word(cs->kind,cs->words,cs->meta,2):0,g->last_words,g->last_payload[0],g->last_payload[1],g->last_payload[2],g->last_payload[3],g->last_payload[4],g->last_payload[5]);if(g->last_op==34&&g->last_words==14)copy_diagnostic_locked(g,(const uint8_t*)g->last_payload);atomic_store_explicit(&g->failed,true,memory_order_release);}
  pthread_mutex_unlock(&g->error_lock);
  if(first){if(g->host->progress){char line[400];snprintf(line,sizeof(line),"Native fatal bindings: layout %u; RT0/depth %u/%u; VB0/index %u/%u; VS/PS/CS %u/%u/%u; PS SRV0-3 %u,%u,%u,%u; PS sampler0-3 %u,%u,%u,%u; CS UAV0-3 %u,%u,%u,%u",g->layout,g->targets[0],g->targets[32],g->vb[0][0],g->ib[0],g->shader[0],g->shader[1],g->shader[2],g->srv[1][0],g->srv[1][1],g->srv[1][2],g->srv[1][3],g->smp[1][0],g->smp[1][1],g->smp[1][2],g->smp[1][3],g->uav[2][0],g->uav[2][1],g->uav[2][2],g->uav[2][3]);g->host->progress(g->host->progress_context,line);unsigned count=g->breadcrumb_next<8?g->breadcrumb_next:8;for(unsigned j=0;j<count;j++){unsigned i=(g->breadcrumb_next-count+j)%8;snprintf(line,sizeof(line),"Native GPU breadcrumb %u/%u: %s words %u; VS/PS/CS %u/%u/%u; payload %u,%u,%u,%u,%u,%u",j+1,count,gpu_opcode_name(g->breadcrumbs[i].opcode),g->breadcrumbs[i].words,g->breadcrumbs[i].shader[0],g->breadcrumbs[i].shader[1],g->breadcrumbs[i].shader[2],g->breadcrumbs[i].payload[0],g->breadcrumbs[i].payload[1],g->breadcrumbs[i].payload[2],g->breadcrumbs[i].payload[3],g->breadcrumbs[i].payload[4],g->breadcrumbs[i].payload[5]);g->host->progress(g->host->progress_context,line);}}if(g->ring_valid)gpu_ring_failed(&g->ring);if(g->cancel)g->cancel(g->context);}
 }
@@ -348,10 +349,12 @@ static bool copy_region(NativeGpu *g,const uint8_t *p){
  }
  proxy_dirty(d);return transfer_finish(g,e);
 }
-static void copy_diagnostic(NativeGpu *g,const uint8_t *p){
+/* Called under error_lock before failed is release-published. The returned
+   error string is immutable for all acquire-readers until GPU teardown. */
+static void copy_diagnostic_locked(NativeGpu *g,const uint8_t *p){
  char extra[1000];Object *d=object(g,gpu_word(p,0)),*s=object(g,gpu_word(p,5));
  snprintf(extra,sizeof(extra)," Copy descriptors: source %u DXGI %u native %u size %ux%ux%u mips %u samples %u gen %llu; destination %u DXGI %u native %u size %ux%ux%u mips %u samples %u gen %llu; raw[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u]",s?s->id:0,s?s->dxgi:0,s?(unsigned)s->td.format:0,s?s->td.size.width:0,s?s->td.size.height:0,s?s->td.size.depthOrArrayLayers:0,s?s->td.mipLevelCount:0,s?s->td.sampleCount:0,s?(unsigned long long)s->generation:0,d?d->id:0,d?d->dxgi:0,d?(unsigned)d->td.format:0,d?d->td.size.width:0,d?d->td.size.height:0,d?d->td.size.depthOrArrayLayers:0,d?d->td.mipLevelCount:0,d?d->td.sampleCount:0,d?(unsigned long long)d->generation:0,gpu_word(p,0),gpu_word(p,1),gpu_word(p,2),gpu_word(p,3),gpu_word(p,4),gpu_word(p,5),gpu_word(p,6),gpu_word(p,7),gpu_word(p,8),gpu_word(p,9),gpu_word(p,10),gpu_word(p,11),gpu_word(p,12),gpu_word(p,13));
- pthread_mutex_lock(&g->error_lock);size_t used=strlen(g->error);if(used<sizeof(g->error))snprintf(g->error+used,sizeof(g->error)-used,"%s",extra);pthread_mutex_unlock(&g->error_lock);
+ size_t used=strlen(g->error);if(used<sizeof(g->error))snprintf(g->error+used,sizeof(g->error)-used,"%s",extra);
 }
 
 static bool copy_resource(NativeGpu *g,const uint8_t *p){Object *s=object(g,gpu_word(p,1)),*d=object(g,gpu_word(p,0));
@@ -412,7 +415,7 @@ static void reset_state(NativeGpu *g){memset(g->shader,0,sizeof(g->shader));g->l
 #include "native_upload.inc"
 #include "ordered_upload.inc"
 
-static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;g->op_counts[op]++;g->last_words=n;memset(g->last_payload,0,sizeof(g->last_payload));for(unsigned i=0;i<n&&i<8;i++)g->last_payload[i]=gpu_word(p,i);unsigned crumb=g->breadcrumb_next++%8;g->breadcrumbs[crumb].opcode=op;g->breadcrumbs[crumb].words=n;memcpy(g->breadcrumbs[crumb].shader,g->shader,sizeof(g->shader));memset(g->breadcrumbs[crumb].payload,0,sizeof(g->breadcrumbs[crumb].payload));for(unsigned i=0;i<n&&i<6;i++)g->breadcrumbs[crumb].payload[i]=gpu_word(p,i);atomic_store(&g->live_phase,1);atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
+static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;g->last_op=op;g->op_counts[op]++;g->last_words=n;memset(g->last_payload,0,8*sizeof(*g->last_payload));for(unsigned i=0;i<n&&i<(op==34?14u:8u);i++)g->last_payload[i]=gpu_word(p,i);unsigned crumb=g->breadcrumb_next++%8;g->breadcrumbs[crumb].opcode=op;g->breadcrumbs[crumb].words=n;memcpy(g->breadcrumbs[crumb].shader,g->shader,sizeof(g->shader));memset(g->breadcrumbs[crumb].payload,0,sizeof(g->breadcrumbs[crumb].payload));for(unsigned i=0;i<n&&i<6;i++)g->breadcrumbs[crumb].payload[i]=gpu_word(p,i);atomic_store(&g->live_phase,1);atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);if(atomic_load(&g->failed)||atomic_load(&g->stop))return false;
  /* Submit pending draws before resource mutations, copies, fences or present.
     State commands can remain in the current pass. Queue writes never overtake
     an earlier draw that reads the same resource. */
@@ -457,7 +460,7 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  Object *o=create(g,gpu_word(p,0),op);if(!o)return false;o->meta=malloc(n*4);if(!check(g,o->meta!=NULL,"GPU metadata allocation"))return false;memcpy(o->meta,p,n*4);o->words=n;if(op==17||op==37){Object *source=object(g,o->meta[2]);if(!check(g,n==9&&o->meta[1]<=1&&source&&(o->meta[1]?source->buffer!=NULL:source->texture!=NULL),"SRV/UAV creation requires an existing resource and exact descriptor"))return false;o->source_generation=source->generation;}if(op==44)o->query.type=o->meta[1];return true;}
  case 18:case 19:case 20:case 21:case 22:case 23:case 24:case 25:case 26:case 27:case 28:case 29:case 30:case 31:case 38:if(!check(g,n>0,"Empty GPU state command"))return false;return state(g,op,p,n);
  case 33:if(!check(g,n==0,"Invalid clear-state command"))return false;reset_state(g);return true;
- case 34:{if(!check(g,n==14,"Invalid copy-region command"))return false;bool ok=copy_region(g,p);if(!ok)copy_diagnostic(g,p);return ok;}
+ case 34:{if(!check(g,n==14,"Invalid copy-region command"))return false;return copy_region(g,p);}
  case 35:return check(g,n==2,"Invalid copy-resource command")&&copy_resource(g,p);
  case 36:return check(g,n==4,"Invalid resolve command")&&resolve_resource(g,p);
  case 45:return check(g,n==1,"Invalid begin-query command")&&begin_query(g,p);
@@ -658,6 +661,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result){bool valid=query_stop_fixture(h);for(unsigned i=0;i<8&&valid;i++)valid=query_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.",valid?"PASS":"FAIL");if(!valid)result=1;}
 #ifdef NATIVE_PROBE_CLI
  if(!result&&!copy_cast_fixture(h))result=1;
+ if(!result&&!copy_error_fixture(h))result=1;
  for(unsigned mode=0;mode<2&&!result;mode++)if(!transfer_fixture(h,mode==0))result=1;
  if(!result&&!event_callback_fixture(h))result=1;
  for(unsigned legacy=0;legacy<2&&!result;legacy++){char text[1800];bool valid=event_query_fixture(h,legacy!=0,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
