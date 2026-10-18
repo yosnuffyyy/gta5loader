@@ -43,8 +43,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 8299,
-      "sha256": "f3a9a1834e8ebca16dfbf48d62323bdf8c994cfe442b48193510cc4e6f19a67a"
+      "bytes": 8465,
+      "sha256": "e582fce21c83e3626a7ca5ae4b3005fcd8ef885c38b8729827fbd51df6dab1ad"
     },
     {
       "path": "native-ios/diagnostics/ci-test-diagnostics.sh",
@@ -503,8 +503,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 86116,
-      "sha256": "32d7e45c50fe0ab7f3c02af96d82dab7995a6b29a1fb81b1d25975817f045dca"
+      "bytes": 86447,
+      "sha256": "5192ed0afb6acb9cb75e1494e02ff405b6bb03806fdfb5d5a776b9a08a5ad501"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -843,8 +843,8 @@
     },
     {
       "path": "native-ios/renderer/submission_fixture.inc",
-      "bytes": 8214,
-      "sha256": "51c7510d1e33f2f5c46206cf04896f2f492a70d1026a6e0cca8ecaa9ef399db8"
+      "bytes": 8336,
+      "sha256": "38a92ab9ca06219766fa8988ec4c0aea92acbc23c450d4c4fb229a19c27f6c4a"
     },
     {
       "path": "native-ios/renderer/test-inter-stage-source.mjs",
@@ -898,8 +898,8 @@
     },
     {
       "path": "native-ios/renderer/test_pipeline_policy.c",
-      "bytes": 1478,
-      "sha256": "f3fdec2f4a12f638c3f0505c7ed1d9f7607f2b1c10b47edcd322db2c6657cc90"
+      "bytes": 1792,
+      "sha256": "7f91f35b16e47ce2e8dbf604ed68b30e1889e37a30922d76caf4df992134fcc0"
     },
     {
       "path": "native-ios/renderer/test_query_state.c",

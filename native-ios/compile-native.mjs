@@ -49,7 +49,7 @@ const key=hash(JSON.stringify(item));
   await run('clang',['-isysroot',sdk,...objects,root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',folder+'/native-probe']);
   let result='';
   for(let pass=1;pass<=2;pass++){
-   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed; full stdout preserved in evidence');}
+   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);fs.writeFileSync(root+'/evidence/native-engine-test-failed-stderr.txt',String(error.stderr||''));console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed: status='+error.status+' signal='+error.signal+' code='+error.code+'; full output preserved in evidence');}
    if(pass===2&&!output.includes('probe save from the previous run is intact'))throw Error('Persistent save was not verified in the second process');
    result+='PROCESS '+pass+'\n'+output;console.log(output);
   }

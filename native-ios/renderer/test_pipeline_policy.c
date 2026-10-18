@@ -9,6 +9,10 @@ int main(void){
  assert(!pipeline_cold(9999999999,0,60,0));assert(!pipeline_cold(10000000000,0,59,0));assert(pipeline_cold(10000000000,0,60,0));assert(!pipeline_cold(0,1,60,0));assert(!pipeline_cold(UINT64_MAX,0,0,1));
  for(unsigned i=0;i<256;i++){keys[i].shader[0]=17;keys[i].raster[3]=i;hashes[i]=pipeline_fingerprint(keys+i,sizeof(DrawKey));for(unsigned j=0;j<i;j++)assert(hashes[j]!=hashes[i]);}
  DrawKey collision=keys[0];collision.raster[3]=99;assert(memcmp(&collision,keys,sizeof(collision))); /* even a supplied colliding fingerprint cannot pass exact equality */
- double ms[2];for(unsigned mode=0;mode<2;mode++){uint64_t start=ns();for(unsigned j=0;j<100000;j++){DrawKey k=keys[j%256];uint64_t h=mode?pipeline_fingerprint(&k,sizeof(k)):0;for(unsigned i=0;i<256;i++)if((!mode||hashes[i]==h)&&!memcmp(keys+i,&k,sizeof(k))){matches++;break;}}ms[mode]=(ns()-start)/1e6;}
- assert(matches==200000);printf("PASS: pressure cold-boundaries and exact-key collision safety;100000 same-shader/raster-distinct lookup workload linear %.3fms fingerprint+exact %.3fms;256 keys/%zu bytes each. Synthetic CPU only.\n",ms[0],ms[1],sizeof(DrawKey));return 0;
+ for(unsigned workload=0;workload<4;workload++){
+  for(unsigned i=0;i<256;i++){keys[i].shader[0]=workload==3?17+i:17;hashes[i]=pipeline_fingerprint(keys+i,sizeof(DrawKey));}
+  double ms[2];for(unsigned mode=0;mode<2;mode++){uint64_t start=ns();for(unsigned j=0;j<100000;j++){unsigned index=workload==1?0:workload==2?255:j%256;DrawKey k=keys[index];uint64_t h=mode?pipeline_fingerprint(&k,sizeof(k)):0;for(unsigned i=0;i<256;i++)if((!mode||hashes[i]==h)&&!memcmp(keys+i,&k,sizeof(k))){matches++;break;}}ms[mode]=(ns()-start)/1e6;}
+  printf("PASS: lookup benchmark workload%u (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear %.3fms fingerprint+exact %.3fms;256 keys/%zu bytes each. Synthetic CPU only.\n",workload,ms[0],ms[1],sizeof(DrawKey));
+ }
+ assert(matches==800000);puts("PASS: pressure cold-boundaries and exact-key collision safety");return 0;
 }

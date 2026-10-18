@@ -78,7 +78,7 @@ struct NativeGpu {
  bool counting_queries,query_pass;QueryPage query_pages[QUERY_PAGES];unsigned query_current,query_active_count,query_pending_pages,query_pages_allocated,query_cases;
  uint32_t query_active[QUERY_SCOPES];uint64_t query_token,query_begins,query_ends,query_segments,query_publications,query_empty,query_stale,query_map_requests,query_maps_completed,query_pressure_waits,query_pressure_ns,query_gpu_bytes,query_gpu_peak;
 #ifdef NATIVE_PROBE_CLI
- unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement,test_legacy_upload_flush,test_drain_flush;unsigned test_pipeline_capacity;bool test_sync_events;
+ unsigned test_inter_stage_limit;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement,test_legacy_upload_flush,test_drain_flush,test_drain_controlled_clock;unsigned test_pipeline_capacity;bool test_sync_events;
  void *test_scope_context;
  bool test_unused_layout_keys,test_no_uniform_reuse,test_measure_draw;TimingWindow test_draw_times;
 #endif
@@ -440,6 +440,10 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
    if(g->draw.encoder){if(!retained_drains)retained_since=drain_start;retained_drains++;}else retained_drains=0;
    uint64_t flush_cpu=g->profile?native_profile_cpu():0;uint64_t flush_start=now_ns();bool keep=g->draw.encoder&&native_drain_keep(retained_drains,flush_start>=retained_since?flush_start-retained_since:UINT64_MAX,drained==256,ready_head!=g->ring.tail);
 #ifdef NATIVE_PROBE_CLI
+   /* Hardware replay controls only the policy clock; actual command timings,
+      pixels and completion ordering remain measured. The real 4 ms threshold
+      is covered independently by controlled-clock policy boundary tests. */
+   if(g->test_drain_controlled_clock)keep=g->draw.encoder&&native_drain_keep(retained_drains,0,drained==256,ready_head!=g->ring.tail);
    if(g->test_drain_flush)keep=false;
 #endif
    /* Keep every original pass usage/barrier/query boundary. Only the command
@@ -585,7 +589,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
 #ifdef NATIVE_PROBE_CLI
  if(valid){valid=uniform_order_fixture(h,true,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
  for(unsigned legacy=0;legacy<2&&valid;legacy++){valid=uniform_map_fixture(h,legacy!=0,text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
- const unsigned policies[]={128,256,1,2};for(unsigned i=0;i<4&&valid;i++){valid=pipeline_working_set_fixture(h,policies[i],text,sizeof(text));used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s",text);}
+ const unsigned policies[]={128,256,1,2};for(unsigned i=0;i<4&&valid;i++){valid=pipeline_working_set_fixture(h,policies[i],text,sizeof(text));printf("%s\n",text);}
 #endif
  if(!valid)result=1;}
  if(!result){bool valid=srv_pixel_fixture(h);for(unsigned i=0;i<10&&valid;i++)valid=srv_invalid_fixture(h,i);size_t used=strlen(report);if(used<capacity)snprintf(report+used,capacity-used,"\n%s: SRV contract GPU suite: 30 cases / 480 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; single-layer 2D/array float/uint/sint bindings; ten controlled descriptor/lifetime failures.",valid?"PASS":"FAIL");if(!valid)result=1;}
