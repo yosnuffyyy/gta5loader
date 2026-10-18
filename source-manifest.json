@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 36904,
-      "sha256": "091a19bfa3217f91fc5cc8424f0d990c147c09369837d237d763a0c677082fa2"
+      "bytes": 37003,
+      "sha256": "b81367616faae6468b6c29f4b0468c9d9765039c2196bae22adfac4acdb99ca1"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -58,8 +58,8 @@
     },
     {
       "path": "native-ios/diagnostics/native_journal.m",
-      "bytes": 10817,
-      "sha256": "c2910c39a69cddbfa57c059bb1a8c7e14409130952855cd435b55dccda82b29a"
+      "bytes": 10883,
+      "sha256": "134ab89f6e2f0132625c2ffe15154c15f9faf4245b705834799e4de294ec8286"
     },
     {
       "path": "native-ios/diagnostics/native_profile.c",
@@ -73,8 +73,8 @@
     },
     {
       "path": "native-ios/diagnostics/test_journal.m",
-      "bytes": 4400,
-      "sha256": "a5df31f629584db698e11d015dc6e8da842aea9e71b0c166de86933b216d5861"
+      "bytes": 4622,
+      "sha256": "7267240d8614928aa62a878417e30b8f728157783480e1c05b066d961a541cdb"
     },
     {
       "path": "native-ios/diagnostics/test_profile.c",
@@ -1158,8 +1158,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 26743,
-      "sha256": "d0eed48f9995ef0abf07730ecad27a31ce984e4fec1311394f704215aa087793"
+      "bytes": 27086,
+      "sha256": "ac5abd8c183b2e756598af46195ba0452c3eac4b8c7ce702f62b1aef690062a5"
     },
     {
       "path": "native-ios/wait-fixture.wat",
