@@ -1,0 +1,12 @@
+#include "native_profile.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+static unsigned lines;static void output(void *ctx,const char *text){(void)ctx;assert(strlen(text)<1000);lines++;}
+static uint64_t ns(void){struct timespec t;assert(!clock_gettime(CLOCK_MONOTONIC,&t));return (uint64_t)t.tv_sec*1000000000ull+t.tv_nsec;}
+int main(void){assert(!native_profile_create());native_profile_set_enabled(true);NativeProfile *p=native_profile_create();assert(p);native_profile_set_enabled(false);assert(!native_profile_create());for(unsigned i=0;i<1000;i++)native_profile_operation(p,32,i,native_profile_cpu(),16,2,i%2);assert(p->op[32].count==1000&&p->op[32].bytes==16000&&p->op[32].submissions==2000&&p->op[32].flushes==500&&p->op[32].max_wall==999);for(unsigned i=0;i<300;i++)native_profile_stage(p,NP_LINK,i,native_profile_cpu());assert(p->stage[NP_LINK].used==256&&p->stage[NP_LINK].count==300);native_profile_operation(p,7,1,native_profile_cpu(),0,1,false);assert(p->stage[NP_FRAME_HANDLERS].count==1&&p->frame_wall==0);native_profile_operation(p,49,1,0,0,0,false);assert(p->op[32].count==1000);native_profile_residual(p,5,native_profile_cpu(),p->command_wall,p->command_cpu);assert(p->stage[NP_RING_RESIDUAL].wall[0]==5);native_profile_stage(p,NP_SUBMIT,3,UINT64_MAX);assert(p->clock_failures==1);native_profile_report(p,output,NULL);assert(lines>=7);free(p);
+ /* Clock+aggregation cost of the actual optional per-command CPU path.
+    Baseline and enabled execute the same volatile arithmetic; no GPU/FPS inference. */
+ const unsigned n=500000;volatile uint64_t checksum=0;uint64_t t=ns();for(unsigned i=0;i<n;i++)checksum+=i;double baseline=(ns()-t)/1e6;native_profile_set_enabled(true);p=native_profile_create();assert(p);t=ns();for(unsigned i=0;i<n;i++){uint64_t start=native_profile_cpu();checksum+=i;native_profile_operation(p,32,1,start,0,0,false);}double enabled=(ns()-t)/1e6;assert(p->op[32].count==n);printf("PASS: optional profiler deterministic aggregation, fixed windows, frozen instance option, CPU clock errors, protocol PRESENT reset, opcode bounds and residual accounting; %zu bytes.\n",sizeof(*p));printf("Profiler host microbenchmark %u operations: baseline %.3f ms, enabled %.3f ms, incremental %.3f us/operation; checksum %llu. Synthetic CPU/sanitizer costs, not iPhone performance.\n",n,baseline,enabled,(enabled-baseline)*1000/n,(unsigned long long)checksum);free(p);return 0;}

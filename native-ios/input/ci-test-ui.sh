@@ -12,7 +12,7 @@ sdk=$(xcrun --sdk iphonesimulator --show-sdk-path)
 arch=$(uname -m)
 app=native-build/input-ui/InputUITest.app
 mkdir -p "$app"
-clang -target "$arch-apple-ios17.0-simulator" -isysroot "$sdk" -fobjc-arc -O1 -Inative-ios native-ios/input/test_ui.m native-ios/input/native_input.c -framework UIKit -framework Foundation -framework Metal -framework GameController -framework UniformTypeIdentifiers -framework QuartzCore -framework CoreGraphics -o "$app/InputUITest"
+clang -target "$arch-apple-ios17.0-simulator" -isysroot "$sdk" -fobjc-arc -O1 -Inative-ios native-ios/input/test_ui.m native-ios/input/native_input.c native-ios/diagnostics/native_journal.m native-ios/diagnostics/native_profile.c -framework UIKit -framework Foundation -framework Metal -framework GameController -framework UniformTypeIdentifiers -framework QuartzCore -framework CoreGraphics -o "$app/InputUITest"
 cat > "$app/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>io.github.yosnuffyyy.inputuitest</string><key>CFBundleExecutable</key><string>InputUITest</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleName</key><string>Input UI Test</string><key>CFBundleVersion</key><string>1</string><key>CFBundleShortVersionString</key><string>1.0</string><key>MinimumOSVersion</key><string>17.0</string><key>LSRequiresIPhoneOS</key><true/><key>UIDeviceFamily</key><array><integer>1</integer></array><key>UILaunchScreen</key><dict/></dict></plist>
 PLIST

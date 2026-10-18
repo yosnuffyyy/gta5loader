@@ -24,7 +24,7 @@ for(const target of ['macos','ios']){
  const sdk=execFileSync('xcrun',['--sdk',target==='ios'?'iphoneos':'macosx','--show-sdk-path'],{encoding:'utf8'}).trim();
  const arch=target==='ios'?['-target','arm64-apple-ios17.0']:[];
  const flags=[...common,'-isysroot',sdk,...arch,target==='ios'?'-O1':'-O0'];
- const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c','native-ios/input/native_input.c','native-ios/asset_io/native_asset_index.m','native-ios/asset_io/native_assets.c','native-ios/renderer/gpu_ring.c','native-ios/renderer/native_gpu.m','native-ios/renderer/native_scene.c',root+'/generated/probe.c'];
+ const sources=[...generated,...runtime,'native-ios/native_wait.c','native-ios/native_host.c','native-ios/diagnostics/native_journal.m','native-ios/diagnostics/native_profile.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c','native-ios/input/native_input.c','native-ios/asset_io/native_asset_index.m','native-ios/asset_io/native_assets.c','native-ios/renderer/gpu_ring.c','native-ios/renderer/native_gpu.m','native-ios/renderer/native_scene.c',root+'/generated/probe.c'];
  let next=0,finished=0,reused=0;
  // Bound concurrent compiler memory; each partition contains hundreds of functions.
  await Promise.all(Array.from({length:2},async()=>{
@@ -34,7 +34,7 @@ for(const target of ['macos','ios']){
    const item={dependencyHash,args,sourceHash:hash(fs.readFileSync(source))};
 // Extra header applies only to host consumers. Engine cache keys stay unchanged.
 if(!generated.includes(source)&&!runtime.includes(source)){
- item.hostHeaders=[...fs.readdirSync('native-ios/memory').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/memory/'+n),'native-ios/input/native_input.h','native-ios/threading/native_session.h','native-ios/threading/native_session_bridge.inc','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
+ item.hostHeaders=['native-ios/diagnostics/native_journal.h','native-ios/diagnostics/native_profile.h',...fs.readdirSync('native-ios/memory').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/memory/'+n),'native-ios/input/native_input.h','native-ios/threading/native_session.h','native-ios/threading/native_session_bridge.inc','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
 }
 const key=hash(JSON.stringify(item));
    const cached=cache+'/'+key+'.o',record=cache+'/'+key+'.sha256';

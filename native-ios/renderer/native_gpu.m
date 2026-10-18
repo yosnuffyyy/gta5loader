@@ -29,6 +29,7 @@
 #include "resource_bytes.h"
 #include "query_types.inc"
 #include "native_metrics.h"
+#include "../diagnostics/native_profile.h"
 #include "shadow_trace.h"
 #include "shadow_reference.h"
 
@@ -47,6 +48,7 @@ typedef struct {
 } Object;
 struct NativeGpu {
  NativeMetrics metrics;
+ NativeProfile *profile;bool profile_preflushed;
  ShadowTrace shadow_trace;
  bool reference_shadow_compat;
  WGPUTexture reference_shadow_cube;uint64_t reference_shadow_uses,reference_shadow_allocations;
@@ -94,7 +96,7 @@ static void sample_memory(NativeGpu *g){uint64_t now=now_ns();if(now-g->last_sam
  if(g->host->progress&&now-g->last_report>=5000000000ull){char line[190];snprintf(line,sizeof(line),"Native memory headroom: %.1f MiB available to this app right now; changes with OS pressure, not a guaranteed budget",(double)os_proc_available_memory()/1048576.0);g->host->progress(g->host->progress_context,line);}
 #endif
  if(footprint>g->highest_footprint)g->highest_footprint=footprint;
- if(g->host->progress&&now-g->last_report>=5000000000ull){g->last_report=now;char line[320];snprintf(line,sizeof(line),"Native startup: process %.1f MiB (highest 1-second sample %.1f MiB); heap committed %.1f MiB; GPU commands %llu, surface frames %llu, last %s",footprint,g->highest_footprint,(double)atomic_load(&g->host->memory.size)/1048576.0,(unsigned long long)g->ring.executed,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));g->host->progress(g->host->progress_context,line);if(g->metrics.last_present)metrics_report(g);}
+ if(g->host->progress&&now-g->last_report>=5000000000ull){g->last_report=now;char line[320];snprintf(line,sizeof(line),"Native startup: process %.1f MiB (highest 1-second sample %.1f MiB); heap committed %.1f MiB; GPU commands %llu, surface frames %llu, last %s",footprint,g->highest_footprint,(double)atomic_load(&g->host->memory.size)/1048576.0,(unsigned long long)g->ring.executed,(unsigned long long)g->surface_frames,gpu_opcode_name(g->last_op));g->host->progress(g->host->progress_context,line);if(g->metrics.last_present)metrics_report(g);native_profile_report(g->profile,g->host->progress,g->host->progress_context);}
 }
 static _Atomic uint32_t *heap_word(NativeGpu *g,uint64_t address){return (_Atomic uint32_t*)(g->host->memory.data+address);}
 static void wake(void *context,uint64_t address){NativeGpu *g=context;native_notify(&g->host->memory,address,UINT32_MAX);}
@@ -129,7 +131,7 @@ static void uniform_retired(NativeGpu *g,bool mapped_readback){
  if(mapped_readback)g->draw.uniform_map_retired+=g->draw.queued_uniform_batches;
  g->draw.queued_uniform_batches=0;g->draw.queued_uniform_bytes=0;
 }
-static bool completed(NativeGpu *g){uint64_t start=now_ns();uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);if(ok)uniform_retired(g,false);timing_add(&g->metrics.windows[METRIC_COMPLETION],now_ns()-start);atomic_store(&g->live_phase,previous);return ok;}
+static bool completed(NativeGpu *g){uint64_t profile_cpu=g->profile?native_profile_cpu():0;uint64_t start=now_ns();uint32_t previous=atomic_exchange(&g->live_phase,6);atomic_store(&g->callback_done,false);WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=work_done;c.userdata1=g;wgpuQueueOnSubmittedWorkDone(g->queue,c);bool ok=wait_callback(g);if(ok)uniform_retired(g,false);timing_add(&g->metrics.windows[METRIC_COMPLETION],now_ns()-start);if(g->profile)native_profile_stage(g->profile,NP_COMPLETION,now_ns()-start,profile_cpu);atomic_store(&g->live_phase,previous);return ok;}
 static Object *object(NativeGpu *g,uint32_t id){return id?(Object*)CFDictionaryGetValue(g->objects,(const void*)(uintptr_t)id):NULL;}
 static Object *create(NativeGpu *g,uint32_t id,uint32_t kind){if(!check(g,id&&!object(g,id),"Zero or duplicate GPU object ID"))return NULL;Object *o=calloc(1,sizeof(*o));if(!check(g,o!=NULL,"GPU object metadata allocation"))return NULL;if(!check(g,g->object_generation<UINT64_MAX,"GPU object generation exhausted")){free(o);return NULL;}o->generation=++g->object_generation;o->id=id;o->kind=kind;o->version=1;o->owner=g;o->created_command=g->ring.executed;CFDictionarySetValue(g->objects,(const void*)(uintptr_t)id,o);return o;}
 static void draw_program_free(DrawProgram *);
@@ -199,7 +201,7 @@ static bool hardware(NativeGpu *g){
  return !atomic_load(&g->failed);
 }
 static WGPUCommandEncoder encoder(NativeGpu *g){WGPUCommandEncoderDescriptor d=WGPU_COMMAND_ENCODER_DESCRIPTOR_INIT;return wgpuDeviceCreateCommandEncoder(g->device,&d);}
-static bool submit(NativeGpu *g,WGPUCommandEncoder e){if(!e)return check(g,false,"GPU encoder creation");WGPUCommandBufferDescriptor d=WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;WGPUCommandBuffer c=wgpuCommandEncoderFinish(e,&d);wgpuCommandEncoderRelease(e);if(!c)return check(g,false,"GPU command buffer creation");wgpuQueueSubmit(g->queue,1,&c);g->submissions++;wgpuCommandBufferRelease(c);return !atomic_load(&g->failed);}
+static bool submit(NativeGpu *g,WGPUCommandEncoder e){if(!e)return check(g,false,"GPU encoder creation");WGPUCommandBufferDescriptor d=WGPU_COMMAND_BUFFER_DESCRIPTOR_INIT;WGPUCommandBuffer c=wgpuCommandEncoderFinish(e,&d);wgpuCommandEncoderRelease(e);if(!c)return check(g,false,"GPU command buffer creation");uint64_t profile_cpu=g->profile?native_profile_cpu():0,profile_wall=g->profile?now_ns():0;wgpuQueueSubmit(g->queue,1,&c);if(g->profile)native_profile_stage(g->profile,NP_SUBMIT,now_ns()-profile_wall,profile_cpu);g->submissions++;wgpuCommandBufferRelease(c);return !atomic_load(&g->failed);}
 #include "bc_fixture.inc"
 static WGPUTextureView view(Object *o,uint32_t mip,uint32_t slice){WGPUTextureViewDescriptor d=WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;d.dimension=WGPUTextureViewDimension_2D;d.baseMipLevel=mip;d.mipLevelCount=1;d.baseArrayLayer=slice;d.arrayLayerCount=1;return wgpuTextureCreateView(o->texture,&d);}
 static bool readback_format(WGPUTextureFormat,uint32_t*,uint32_t*,uint32_t*);
@@ -370,7 +372,7 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  if(g->test_flush_new_objects)fresh_object=false;
 #endif
  if(fresh_object&&g->draw.encoder)g->fresh_flushes_avoided++;
- if(!shadow_upload&&!independent_upload&&!fresh_object&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t started=now_ns();bool valid=draw_flush(g);g->metrics.command_flush_ns+=now_ns()-started;if(!valid)return false;}
+ if(!shadow_upload&&!independent_upload&&!fresh_object&&op!=32&&!(op>=18&&op<=31)&&op!=38&&op!=39&&op!=40&&op!=41&&op!=43&&op!=45&&op!=46&&op!=0&&op!=2){uint64_t profile_cpu=g->profile?native_profile_cpu():0;bool pending=g->draw.encoder!=NULL;uint64_t started=now_ns();bool valid=draw_flush(g);uint64_t wall=now_ns()-started;g->metrics.command_flush_ns+=wall;if(pending&&g->profile){g->profile_preflushed=true;native_profile_stage(g->profile,NP_PREFLUSH,wall,profile_cpu);}if(!valid)return false;}
  switch(op){
  case 0:case 2:return true; /* Reference protocol treats both as no-ops. */
  case 3:return check(g,n==10,"Invalid texture command")&&create_texture(g,p);
@@ -401,13 +403,14 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  default:{char text[320];Object *vs=object(g,g->shader[0]),*ps=object(g,g->shader[1]);snprintf(text,sizeof(text),"Graphics operation not yet ported: %s; VS %u (%08x%08x) PS %u (%08x%08x), %llu commands executed",gpu_opcode_name(op),g->shader[0],vs&&vs->kind==14?vs->meta[3]:0,vs&&vs->kind==14?vs->meta[2]:0,g->shader[1],ps&&ps->kind==14?ps->meta[3]:0,ps&&ps->kind==14?ps->meta[2]:0,(unsigned long long)g->ring.executed);fail(g,text);return false;}
  }
 }
-static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;
+static bool execute(void *context,uint32_t op,const uint8_t *p,uint32_t n){NativeGpu *g=context;uint64_t profile_cpu=g->profile?native_profile_cpu():0,submits=g->submissions;g->profile_preflushed=false;uint64_t start=now_ns(),frames=g->presents;g->metrics.command_flush_ns=0;bool ok=execute_impl(context,op,p,n);uint64_t end=now_ns(),elapsed=end-start;
 #ifdef NATIVE_PROBE_CLI
  if(g->test_measure_draw&&op==32)timing_add(&g->test_draw_times,elapsed);
 #endif
+ if(g->profile){uint64_t bytes=op==13&&n>=12?gpu_word(p,11):((op==12||op==47)&&n>=3?gpu_word(p,2):0);native_profile_operation(g->profile,op,elapsed,profile_cpu,bytes,g->submissions-submits,g->profile_preflushed);}
  g->metrics.frame_busy+=elapsed;if(op==12||op==13||op==47)g->metrics.frame_upload+=elapsed;if(op==3||op==4||op==11||op==14||op==15||op==16||op==17||op==37||op==44)g->metrics.frame_alloc+=elapsed;if(op==13&&n>=12)g->metrics.upload_bytes+=gpu_word(p,11);else if((op==12||op==47)&&n>=3)g->metrics.upload_bytes+=gpu_word(p,2);slow_command_observe(g,op,p,n,end,elapsed);if(ok&&op==7&&g->presents>frames)metrics_present(g,end);return ok;}
 #include "frame_costs.inc"
-static void release_hardware(NativeGpu *g){if(g->host->progress){char line[400];snprintf(line,sizeof(line),"Buffer mutation dependencies: independent uploads %llu; required pending-draw flushes %llu; 8 metadata bytes per live object; no new staging. Ready-drain submissions avoided %llu; four-drain bound flushes %llu (4 ms checked between drains, never waits for more work).",(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->drain_submits_avoided,(unsigned long long)g->drain_bound_flushes);g->host->progress(g->host->progress_context,line);}metrics_report(g);frame_cost_report(g);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->reference_shadow_cube){wgpuTextureDestroy(g->reference_shadow_cube);wgpuTextureRelease(g->reference_shadow_cube);g->reference_shadow_cube=NULL;}if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
+static void release_hardware(NativeGpu *g){if(g->host->progress){char line[400];snprintf(line,sizeof(line),"Buffer mutation dependencies: independent uploads %llu; required pending-draw flushes %llu; 8 metadata bytes per live object; no new staging. Ready-drain submissions avoided %llu; four-drain bound flushes %llu (4 ms checked between drains, never waits for more work).",(unsigned long long)g->independent_uploads,(unsigned long long)g->dependent_uploads,(unsigned long long)g->drain_submits_avoided,(unsigned long long)g->drain_bound_flushes);g->host->progress(g->host->progress_context,line);}metrics_report(g);frame_cost_report(g);native_profile_report(g->profile,g->host->progress,g->host->progress_context);atomic_store(&g->closing,true);draw_cleanup(g);query_cleanup(g);if(g->upload_group)wgpuBindGroupRelease(g->upload_group);if(g->upload_pipeline)wgpuComputePipelineRelease(g->upload_pipeline);if(g->upload_edges){wgpuBufferDestroy(g->upload_edges);wgpuBufferRelease(g->upload_edges);}if(g->upload_parameters){wgpuBufferDestroy(g->upload_parameters);wgpuBufferRelease(g->upload_parameters);}if(g->pixel_pipeline)wgpuRenderPipelineRelease(g->pixel_pipeline);if(g->pixel_texture){wgpuTextureDestroy(g->pixel_texture);wgpuTextureRelease(g->pixel_texture);}if(g->counter_source){wgpuBufferDestroy(g->counter_source);wgpuBufferRelease(g->counter_source);}if(g->zero_source){wgpuBufferDestroy(g->zero_source);wgpuBufferRelease(g->zero_source);}if(g->readback_buffer){readback_unmap(g);wgpuBufferDestroy(g->readback_buffer);wgpuBufferRelease(g->readback_buffer);g->readback_buffer=NULL;}CFDictionaryApplyFunction(g->objects,destroy_entry,NULL);CFDictionaryRemoveAllValues(g->objects);if(g->reference_shadow_cube){wgpuTextureDestroy(g->reference_shadow_cube);wgpuTextureRelease(g->reference_shadow_cube);g->reference_shadow_cube=NULL;}if(g->blit)wgpuRenderPipelineRelease(g->blit);if(g->blit_shader)wgpuShaderModuleRelease(g->blit_shader);if(g->surface){wgpuSurfaceUnconfigure(g->surface);wgpuSurfaceRelease(g->surface);}if(g->queue)wgpuQueueRelease(g->queue);if(g->device){wgpuDeviceDestroy(g->device);wgpuDeviceRelease(g->device);}if(g->adapter)wgpuAdapterRelease(g->adapter);if(g->instance)wgpuInstanceRelease(g->instance);
 #ifdef NATIVE_PROBE_CLI
  free(g->test_scope_context);g->test_scope_context=NULL;
 #endif
@@ -418,11 +421,11 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
  else if(hardware(g)&&(!g->test_bc||(clip_sample_test(g)&&snorm_sample_test(g)&&norm16_sample_test(g)&&border_sample_test(g)&&bc_sample_test(g)&&draw_loader_test(g)))){atomic_store(&g->ready,true);atomic_store_explicit(heap_word(g,g->ring.base+8),1,memory_order_release);wake(g,g->ring.base+8);
   unsigned retained_drains=0;uint64_t retained_since=0;
   while(!atomic_load(&g->stop)&&!atomic_load(&g->failed)){
-   uint64_t drain_start=now_ns();int drained=gpu_ring_drain(&g->ring,256);
+   uint64_t profile_cpu=g->profile?native_profile_cpu():0,profile_wall_before=g->profile?g->profile->command_wall:0,profile_cpu_before=g->profile?g->profile->command_cpu:0;uint64_t drain_start=now_ns();int drained=gpu_ring_drain(&g->ring,256);if(g->profile)native_profile_residual(g->profile,now_ns()-drain_start,profile_cpu,profile_wall_before,profile_cpu_before);
    if(drained<0){if(!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,g->ring.error);break;}
    uint32_t ready_head=atomic_load_explicit(heap_word(g,g->ring.base),memory_order_acquire);
    if(g->draw.encoder){if(!retained_drains)retained_since=drain_start;retained_drains++;}else retained_drains=0;
-   uint64_t flush_start=now_ns();bool keep=g->draw.encoder&&native_drain_keep(retained_drains,flush_start>=retained_since?flush_start-retained_since:UINT64_MAX,drained==256,ready_head!=g->ring.tail);
+   uint64_t flush_cpu=g->profile?native_profile_cpu():0;uint64_t flush_start=now_ns();bool keep=g->draw.encoder&&native_drain_keep(retained_drains,flush_start>=retained_since?flush_start-retained_since:UINT64_MAX,drained==256,ready_head!=g->ring.tail);
 #ifdef NATIVE_PROBE_CLI
    if(g->test_drain_flush)keep=false;
 #endif
@@ -430,16 +433,16 @@ static void *loop(void *context){NativeGpu *g=context;@autoreleasepool{
       encoder submission is coalesced, at most four full drains / 4 ms between
       checks; any blocking command retains its own earlier submission rules. */
    bool flushed=true;if(keep){draw_end_pass(g);g->drain_submits_avoided++;}else{if(g->draw.encoder&&retained_drains>=4)g->drain_bound_flushes++;flushed=draw_flush(g);retained_drains=0;}
-   g->metrics.drain_flush_ns+=now_ns()-flush_start;if(!flushed)break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
+   g->metrics.drain_flush_ns+=now_ns()-flush_start;if(g->profile&&!keep)native_profile_stage(g->profile,NP_DRAIN_FLUSH,now_ns()-flush_start,flush_cpu);if(!flushed)break;atomic_store(&g->live_commands,g->ring.executed);atomic_store(&g->live_frames,g->surface_frames);atomic_store(&g->live_draws,g->draw.draws);atomic_store(&g->live_phase,7);sample_memory(g);wgpuDevicePoll(g->device,false,NULL);uint32_t head=atomic_load(heap_word(g,g->ring.base));
    if(head==g->ring.tail){/* Never sleep with an unsubmitted encoder. */if(g->draw.encoder){uint64_t at=now_ns();bool done=draw_flush(g);g->metrics.drain_flush_ns+=now_ns()-at;retained_drains=0;if(!done)break;}atomic_store(heap_word(g,g->ring.base+20),1);if(atomic_load(heap_word(g,g->ring.base))==head){uint64_t idle_start=now_ns();native_wait32(&g->host->memory,g->ring.base,head,g->query_pending_pages?2000000:100000000);g->metrics.idle_wait_ns+=now_ns()-idle_start;}atomic_store(heap_word(g,g->ring.base+20),0);}
   }
  }
  if(!atomic_load(&g->ready)&&!atomic_load(&g->failed)&&!atomic_load(&g->stop))fail(g,"Native BC/Metal initialization fixture did not complete");atomic_store(&g->live_phase,8);release_hardware(g);wasm_rt_free_thread();}return NULL;}
-NativeGpu *native_gpu_create(struct w2c_env *h,void *layer,void(*cancel)(void*),void *context){NativeGpu *g=calloc(1,sizeof(*g));if(!g)return NULL;reset_state(g);g->host=h;g->cancel=cancel;g->context=context;g->objects=CFDictionaryCreateMutable(NULL,0,NULL,NULL);if(!g->objects){free(g);return NULL;}pthread_mutex_init(&g->error_lock,NULL);if(layer)g->layer=(__bridge_retained void*)(__bridge id)layer;return g;}
+NativeGpu *native_gpu_create(struct w2c_env *h,void *layer,void(*cancel)(void*),void *context){NativeGpu *g=calloc(1,sizeof(*g));if(!g)return NULL;reset_state(g);g->profile=native_profile_create();g->host=h;g->cancel=cancel;g->context=context;g->objects=CFDictionaryCreateMutable(NULL,0,NULL,NULL);if(!g->objects){free(g->profile);free(g);return NULL;}pthread_mutex_init(&g->error_lock,NULL);if(layer)g->layer=(__bridge_retained void*)(__bridge id)layer;return g;}
 void native_gpu_reference_shadow_option(NativeGpu *g,bool enabled){if(g&&check(g,!g->started,"Reference shadow option must be frozen before GPU start"))g->reference_shadow_compat=enabled;}
 void native_gpu_start(NativeGpu *g,uint64_t ring,uint64_t size,uint64_t dbg){(void)dbg;if(!g)return;if(!check(g,!g->started&&size<=UINT32_MAX,"Duplicate/invalid GPU service start"))return;if(!gpu_ring_init(&g->ring,(void*)g->host->memory.data,&g->host->memory.size,ring,(uint32_t)size,g,execute,wake)){fail(g,g->ring.error);return;}g->ring_valid=true;if(!check(g,pthread_create(&g->thread,NULL,loop,g)==0,"GPU service pthread creation"))return;g->started=true;}
 void native_gpu_stop(NativeGpu *g){if(!g)return;atomic_store(&g->stop,true);if(g->started){wake(g,g->ring.base);pthread_join(g->thread,NULL);g->started=false;}}
-void native_gpu_end(NativeGpu *g){if(!g)return;native_gpu_stop(g);if(g->layer){id held=CFBridgingRelease(g->layer);(void)held;}CFRelease(g->objects);pthread_mutex_destroy(&g->error_lock);free(g);}
+void native_gpu_end(NativeGpu *g){if(!g)return;native_gpu_stop(g);if(g->layer){id held=CFBridgingRelease(g->layer);(void)held;}CFRelease(g->objects);pthread_mutex_destroy(&g->error_lock);free(g->profile);free(g);}
 const char *native_gpu_error(NativeGpu *g){return g&&atomic_load_explicit(&g->failed,memory_order_acquire)?g->error:NULL;}
 bool native_gpu_ready(NativeGpu *g){return g&&atomic_load(&g->ready);}
 void native_gpu_progress(NativeGpu *g,uint64_t *commands,uint64_t *frames){*commands=g?atomic_load(&g->live_commands):0;*frames=g?atomic_load(&g->live_frames):0;}

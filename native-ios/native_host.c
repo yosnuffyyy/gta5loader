@@ -1,4 +1,7 @@
 #include "native_host.h"
+#ifndef NATIVE_HOST_UNIT
+#include "diagnostics/native_journal.h"
+#endif
 #include "platform/native_paths.h"
 #include "wasm-rt-impl.h"
 #include <errno.h>
@@ -72,12 +75,18 @@ void host_close(struct w2c_env *h) {
  if(h->game_root>=0)close(h->game_root);
  if(h->save_root>=0)close(h->save_root);
 }
-void host_log(struct w2c_env *h,const char *line) {
+static void host_log_preview(struct w2c_env *h,const char *line) {
 #ifndef NATIVE_HOST_UNIT
  if(native_thread_log(h,line))return;
 #endif
  // Constructor/checkpoint output is brief; real startup uses the bounded tail.
  lock(&log_mutex); if(h->progress)h->progress(h->progress_context,line); unlock(&log_mutex);
+}
+void host_log(struct w2c_env *h,const char *line) {
+#ifndef NATIVE_HOST_UNIT
+ native_journal_capture("engine",line,strlen(line));
+#endif
+ host_log_preview(h,line);
 }
 _Noreturn void host_unavailable(struct w2c_env *h,const char *name) {
  #ifdef NATIVE_HOST_UNIT
@@ -172,7 +181,11 @@ static uint32_t unlocked_io(struct w2c_env *h,uint32_t fd,uint64_t iov,uint64_t 
    if(positional&&(total>INT64_MAX-offset||n>(uint64_t)INT64_MAX-offset-total)){error=28;goto done;}
    if(write_op)host_load(h,scratch,p,n);
    ssize_t got;
-   if(log){char line[513];size_t take=n<512?n:512;memcpy(line,scratch,take);line[take]=0;host_log(h,line);got=(ssize_t)n;}
+   if(log){
+#ifndef NATIVE_HOST_UNIT
+    native_journal_capture(NULL,scratch,n); /* Preserve every original stdout byte. */
+#endif
+    char line[513];size_t take=n<512?n:512;memcpy(line,scratch,take);line[take]=0;host_log_preview(h,line);got=(ssize_t)n;}
    else do{
     got=write_op?(positional?pwrite(f->fd,scratch,n,(off_t)(offset+total)):write(f->fd,scratch,n)):
                   (positional?pread(f->fd,scratch,n,(off_t)(offset+total)):read(f->fd,scratch,n));

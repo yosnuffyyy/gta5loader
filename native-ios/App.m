@@ -1,3 +1,5 @@
+#import "diagnostics/native_journal.h"
+#include "diagnostics/native_profile.h"
 #import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
 #import <GameController/GameController.h>
@@ -47,6 +49,9 @@ static NSString *Digest(NSData *bytes) {
 @class NativeReportView;
 @interface ProbeController : UIViewController <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 @property(nonatomic,strong) NativeReportView *report;
+@property(nonatomic,strong) NativeSessionLog *sessionLog;
+@property(nonatomic,strong) NSURL *lastLogURL;
+@property(nonatomic,assign) BOOL sharingLog;
 @property(nonatomic,strong) UIButton *runButton;
 @property(nonatomic,strong) UIButton *filesButton;
 @property(nonatomic,strong) UIButton *runtimeButton;
@@ -73,6 +78,7 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) NSTimer *startupTimer;
 @property(nonatomic,strong) UILabel *performanceLabel;
 @property(nonatomic,strong) UISwitch *timingSwitch;
+@property(nonatomic,strong) UISwitch *profileSwitch;
 @property(nonatomic,strong) UISwitch *shadowCompatibilitySwitch;
 @property(nonatomic,strong) NSURL *gameFolder;
 @property(nonatomic,strong) UILabel *controllerLabel;
@@ -93,6 +99,7 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,assign) BOOL hasFatal;
 @property(nonatomic,strong) UINavigationController *settingsNavigation;
 @property(nonatomic,strong) UIButton *defaultsButton;
+- (void)beginReport:(NSString *)text;
 - (void)inputResumed:(NSNotification *)note;
 - (void)runScene;
 - (UIButton *)button:(NSString *)title action:(SEL)action;
@@ -118,6 +125,7 @@ static NSString *Digest(NSData *bytes) {
 static void RuntimeProgress(void *context,const char *line) {
     ProbeController *controller=(__bridge ProbeController *)context;
     NSString *text=[NSString stringWithUTF8String:line]?:@"Invalid runtime log";
+    native_journal_capture("report",line,strlen(line));
     [controller queueProgress:text];
 }
 @implementation ProbeController
@@ -128,7 +136,15 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)viewDidLoad {[super viewDidLoad];[self buildDashboard];}
 - (void)dealloc {self.activeController.extendedGamepad.valueChangedHandler=nil;[NSNotificationCenter.defaultCenter removeObserver:self];ni_end();}
-- (void)setWorking:(BOOL)working {if(working){self.hasFatal=NO;self.sessionLive=NO;self.runtimeStatus=self.sceneRunning?@"Preparing engine…":@"Checking…";[self.logLock lock];self.shadowFailureLog=nil;[self.logLock unlock];}else if(!self.hasFatal)self.runtimeStatus=@"Ready";if(!working&&!self.sceneRunning){ni_end();self.gameControls.playing=NO;[self applyFullscreen];}self.busy=working;self.shadowCompatibilitySwitch.enabled=!working;self.timingSwitch.enabled=!working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working)[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[self refreshDashboard];}
+- (void)setWorking:(BOOL)working {if(working){native_profile_set_enabled(false);self.hasFatal=NO;self.sessionLive=NO;self.runtimeStatus=self.sceneRunning?@"Preparing engine…":@"Checking…";[self.logLock lock];self.shadowFailureLog=nil;[self.logLock unlock];}else if(!self.hasFatal)self.runtimeStatus=@"Ready";if(!working&&!self.sceneRunning){ni_end();self.gameControls.playing=NO;[self applyFullscreen];}self.busy=working;self.shadowCompatibilitySwitch.enabled=!working;self.timingSwitch.enabled=!working;self.profileSwitch.enabled=!working;self.runButton.enabled=!working;self.filesButton.enabled=!working;self.runtimeButton.enabled=!working;self.rendererButton.enabled=!working;self.integrationButton.enabled=!working;self.sceneButton.enabled=!working;self.stopButton.enabled=working&&self.sceneRunning;self.sceneTimingButton.enabled=working&&self.sceneRunning&&self.timingSwitch.isOn;if(!working){[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];if(self.sessionLog){NativeSessionLog *log=self.sessionLog;NativeJournalActivate(nil);dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY,0),^{[log finish];});}}[self refreshDashboard];}
+- (void)beginReport:(NSString *)text {
+    NativeJournalActivate(nil);NativeSessionLog *old=self.sessionLog;if(old)dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY,0),^{[old finish];});self.sessionLog=nil;
+    NSURL *documents=[NSFileManager.defaultManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject;NSURL *directory=[documents URLByAppendingPathComponent:@"NativeLogs" isDirectory:YES];NSError *error=nil;
+    if([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:@{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication} error:&error]){
+        [directory setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];NSString *name=[NSString stringWithFormat:@"GTA-Native-0.36-%@.txt",NSUUID.UUID.UUIDString];NSURL *URL=[directory URLByAppendingPathComponent:name];self.sessionLog=[[NativeSessionLog alloc]initWithURL:URL error:&error];if(self.sessionLog){self.lastLogURL=URL;[NSUserDefaults.standardUserDefaults setObject:name forKey:@"lastSessionLogFile"];NativeJournalActivate(self.sessionLog);[self.sessionLog appendText:text category:"session"];}
+    }
+    self.report.storedText=error?[text stringByAppendingFormat:@"\nLog storage unavailable: %@. The preview is incomplete.",error.localizedDescription]:text;
+}
 - (void)flushProgress {
     [self.logLock lock];NSString *text=[self.pendingLog copy];[self.pendingLog setString:@""];self.logScheduled=NO;[self.logLock unlock];if(text.length)[self append:text];
 }
@@ -140,9 +156,10 @@ static void RuntimeProgress(void *context,const char *line) {
     [self.logLock lock];NSString *text=NativeShadowFailureReport(self.shadowFailureLog);self.shadowFailureLog=nil;[self.logLock unlock];if(text.length)[self append:text];
 }
 - (void)append:(NSString *)text {
+    const char *logBytes=text.UTF8String;if(logBytes)native_journal_capture("preview/status",logBytes,strlen(logBytes));
     if(!self.hasFatal){NSRange fatal=[text rangeOfString:@"Native startup stopped (trap"];NSRange fail=[text rangeOfString:@"FAIL:"];NSRange range=fatal.location!=NSNotFound?fatal:fail;if(range.location!=NSNotFound){self.hasFatal=YES;NSString *reason=[[text substringFromIndex:range.location] componentsSeparatedByCharactersInSet:NSCharacterSet.newlineCharacterSet].firstObject;self.runtimeStatus=[NSString stringWithFormat:@"%@ · See Diagnostics",[reason substringToIndex:MIN((NSUInteger)220,reason.length)]];[self refreshDashboard];}}
     if(self.sceneRunning&&!self.hasFatal){NSString *status=nil;if([text containsString:@"Session transition: camera scene event"]){self.sessionLive=YES;status=@"Engine session active";}else if(!self.sessionLive&&[text containsString:@"Entering actual graphics-enabled main"])status=@"Starting game systems…";else if(!self.sessionLive&&[text containsString:@"Local asset index:"])status=@"Reading game files…";if(status&&![status isEqualToString:self.runtimeStatus]){self.runtimeStatus=status;[self refreshDashboard];}}
-    NSString *joined=[self.report.storedText stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Earlier startup messages omitted to bound log memory.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.storedText=joined;
+    NSString *joined=[self.report.storedText stringByAppendingFormat:@"\n%@",text];if(joined.length>32768)joined=[@"Recent preview only. Share Full Log saves the complete file.\n" stringByAppendingString:[joined substringFromIndex:joined.length-24576]];self.report.storedText=joined;
     NSTimeInterval now=NSProcessInfo.processInfo.systemUptime;if(now-self.lastPersist>=1){[NSUserDefaults.standardUserDefaults setObject:joined forKey:@"lastReport"];self.lastPersist=now;}
 }
 - (void)controllerChanged:(NSNotification *)notification {
@@ -190,10 +207,10 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)gameSettings {if(self.sceneRunning)[self showOptionsPage:0];}
 - (void)markSceneTiming {NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(self.sceneRunning&&metrics){[metrics markScene];[self append:@"User marked visible 3D scene: displayed-frame window restarted. Loading is excluded only by this user marker; correctness and controls still need observation."];}}
-- (void)copyReport {UIPasteboard.generalPasteboard.string=self.report.storedText;}
+
 - (void)runProbe {
     if(self.busy)return;[self setWorking:YES];
-    self.report.storedText=[NSString stringWithFormat:@"Native prototype 0.4 — basic test\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
+    [self beginReport:[NSString stringWithFormat:@"Native prototype 0.4 — basic test\niOS %@ / %@\n%@\nStarting actual engine instance…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
@@ -208,14 +225,14 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)startupStatus {
     if(!self.sceneRunning)return;NSProcessInfoThermalState thermal=NSProcessInfo.processInfo.thermalState;NSString *thermalName=thermal==NSProcessInfoThermalStateNominal?@"nominal":thermal==NSProcessInfoThermalStateFair?@"fair":thermal==NSProcessInfoThermalStateSerious?@"serious":thermal==NSProcessInfoThermalStateCritical?@"critical":@"unknown";[self append:[NSString stringWithFormat:@"Thermal state: %@; diagnostic only, no quality or clock override. Production frame cap remains 30 FPS.",thermalName]];NIMetrics input;ni_metrics(&input);[self append:[NSString stringWithFormat:@"Input: %@; events %llu, engine updates %llu, switches %llu, queued %u, overflows %llu; oldest-coalesced event-to-hook mean/max %.3f/%.3f ms (%llu samples; excludes Bluetooth/UI latency).",input.source==NI_CONTROLLER?@"controller":@"touch",(unsigned long long)input.events,(unsigned long long)input.consumed,(unsigned long long)input.switches,input.queued,(unsigned long long)input.overflows,input.mean_ms,input.max_ms,(unsigned long long)input.samples]];[self append:[NSString stringWithFormat:@"Input queue: %llu obsolete analog-only snapshots folded into later states; digital press/release edges retained. Render/simulation stalls still delay the engine hook.",(unsigned long long)input.analog_skipped]];char status[1100]={0};native_scene_status(status,sizeof(status));
-    [self append:[NSString stringWithFormat:@"%s; %@",status,Footprint()]];NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(metrics){self.performanceLabel.text=[metrics overlay];[self append:[metrics summary]];}
+    [self append:[NSString stringWithFormat:@"%s; %@",status,Footprint()]];if(self.sessionLog)[self append:[self.sessionLog summary]];NativeDisplayMetrics *metrics=((NativeMeasuredLayer *)self.surfaceView.layer).displayMetrics;if(metrics){self.performanceLabel.text=[metrics overlay];[self append:[metrics summary]];}
 }
 - (void)stopScene {if(self.sceneRunning){self.runtimeStatus=@"Stopping…";[self refreshDashboard];ni_end();self.gameControls.playing=NO;native_scene_request_stop();self.stopButton.enabled=NO;[self startupStatus];[self append:@"Stopping native startup and joining workers…"];}}
 - (void)runIntegration {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:@"FAIL: integration save folder unavailable"];return;}
-    [self setWorking:YES];self.report.storedText=[NSString stringWithFormat:@"Native integration 0.35 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
+    [self setWorking:YES];[self beginReport:[NSString stringWithFormat:@"Native integration 0.36 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent]];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         char report[16384]={0};int code=native_gpu_replay_probe(report,sizeof(report));RuntimeProgress((__bridge void*)self,report);
         if(code==0){BOOL scoped=[folder startAccessingSecurityScopedResource];code=native_graphics_checkpoint(folder.fileSystemRepresentation,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];}
@@ -225,12 +242,12 @@ static void RuntimeProgress(void *context,const char *line) {
 - (void)runScene {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     BOOL shadowCompatibility=self.shadowCompatibilitySwitch.isOn;
-    native_scene_reset_stop();self.sceneRunning=YES;ni_begin();if(self.activeController)ni_controller(NativeControllerState(self.activeController.extendedGamepad));self.gameControls.playing=YES;[self setWorking:YES];self.gameControls.hidden=NO;[self applyFullscreen];[self.view layoutIfNeeded];if(!self.immersive)[self.mainScroll scrollRectToVisible:[self.gameControls convertRect:self.gameControls.bounds toView:self.mainScroll] animated:NO];
+    native_scene_reset_stop();self.sceneRunning=YES;ni_begin();if(self.activeController)ni_controller(NativeControllerState(self.activeController.extendedGamepad));self.gameControls.playing=YES;[self setWorking:YES];native_profile_set_enabled(self.profileSwitch.isOn);self.gameControls.hidden=NO;[self applyFullscreen];[self.view layoutIfNeeded];if(!self.immersive)[self.mainScroll scrollRectToVisible:[self.gameControls convertRect:self.gameControls.bounds toView:self.mainScroll] animated:NO];
     self.startupTimer=[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(startupStatus) userInfo:nil repeats:YES];
     NativeMeasuredLayer *layer=(NativeMeasuredLayer *)self.surfaceView.layer;layer.displayMetrics=self.timingSwitch.isOn?[[NativeDisplayMetrics alloc]init]:nil;self.timingSwitch.enabled=NO;self.performanceLabel.text=self.timingSwitch.isOn?@"Waiting for actual displayed drawables…":@"Displayed-frame diagnostics disabled.";layer.pixelFormat=MTLPixelFormatBGRA8Unorm;layer.framebufferOnly=YES;layer.drawableSize=CGSizeMake(640,360);layer.contentsGravity=kCAGravityResizeAspect;
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){self.sceneRunning=NO;self.timingSwitch.enabled=YES;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];[self append:@"FAIL: native save folder unavailable"];return;}
-    self.report.storedText=[NSString stringWithFormat:@"Native integration 0.35 — stage 3 in progress\niOS %@ / %@\n%@\nGame folder: %@\nStarting real engine, archive reader and native graphics…\nOptional reference empty-shadow compatibility: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent,shadowCompatibility?@"ON (producer intent and iPhone shadows unverified)":@"OFF (strict)"];
+    [self beginReport:[NSString stringWithFormat:@"Native integration 0.36 — stage 3 in progress\niOS %@ / %@\n%@\nGame folder: %@\nStarting real engine, archive reader and native graphics…\nOptional reference empty-shadow compatibility: %@\nOptional service CPU profiling: %@ (no GPU timestamps or simulation CPU hook)",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent,shadowCompatibility?@"ON (producer intent and iPhone shadows unverified)":@"OFF (strict)",self.profileSwitch.isOn?@"ON":@"OFF"]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe_options(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,shadowCompatibility,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];
@@ -240,7 +257,7 @@ static void RuntimeProgress(void *context,const char *line) {
 }
 - (void)runRenderer {
     if(self.busy)return;[self setWorking:YES];
-    self.report.storedText=[NSString stringWithFormat:@"Native renderer feasibility 0.5\niOS %@ / %@\n%@\nCompiling actual game shaders and checking offscreen draws…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()];
+    [self beginReport:[NSString stringWithFormat:@"Native renderer feasibility 0.5\niOS %@ / %@\n%@\nCompiling actual game shaders and checking offscreen draws…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint()]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^{@autoreleasepool{
@@ -257,7 +274,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self flushProgress];[self append:[NSString stringWithFormat:@"FAIL: app save folder — %@",error.localizedDescription]];return;}
     [self setWorking:YES];
-    self.report.storedText=[NSString stringWithFormat:@"Native prototype 0.4 — asset/worker checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"];
+    [self beginReport:[NSString stringWithFormat:@"Native prototype 0.4 — asset/worker checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
     NSURL *folder=self.gameFolder;
