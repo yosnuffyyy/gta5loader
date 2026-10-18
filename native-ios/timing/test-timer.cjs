@@ -14,7 +14,7 @@ mod.exports.createRuntime().then(r=>{
  // GetTicks converts monotonic milliseconds to nanoseconds. Timer's platform
  // conversion scalar is initialized by the native engine constructor to 1e-9.
  r.f32(9779848,1e-9);let clock=1000;r.setClock(clock);r.instance.exports.testTimer();const rows=[];
- for(const fps of [5,10,15,30]){let before=r.readI32(12321248),sum=0;for(let i=0;i<fps*10;i++){clock+=1000/fps;r.setClock(clock);r.instance.exports.testTimer();sum+=r.readF32(12321260);}const expected=10*Math.min(1,fps/15);assert(Math.abs(sum-expected)<1e-4);rows.push({renderCadenceFPS:fps,realSeconds:10,engineDeltaSum:sum,engineIntegerMilliseconds:r.readI32(12321248)-before});}
+ for(const profile of [{name:"original defaults",minimum:min},{name:"device-observed minimum (rounded report)",minimum:.000333}])for(const fps of [5,10,15,20,30]){r.f32(6632100,profile.minimum);let before=r.readI32(12321248),sum=0;for(let i=0;i<fps*10;i++){clock+=1000/fps;r.setClock(clock);r.instance.exports.testTimer();sum+=r.readF32(12321260);}const expected=10*Math.min(1,fps/15);assert(Math.abs(sum-expected)<1e-4);rows.push({profile:profile.name,minimumDelta:profile.minimum,renderCadenceFPS:fps,realSeconds:10,engineDeltaSum:sum,engineIntegerMilliseconds:r.readI32(12321248)-before});}
  // Script-pause flag: timer is still called, but gameplay time must stop.
  r.u8(12321461,1);let paused=r.readI32(12321248);for(let i=0;i<30;i++){clock+=1000/30;r.setClock(clock);r.instance.exports.testTimer();}assert.equal(r.readI32(12321248),paused);
  r.u8(12321461,0);clock+=1000/30;r.setClock(clock);r.instance.exports.testTimer();assert(r.readI32(12321248)>paused);

@@ -14,4 +14,8 @@ int main(void){@autoreleasepool{
   for(unsigned i=0;i<8;i++){assert([engine renderOffline:128 toBuffer:buffer error:&error]==AVAudioEngineManualRenderingStatusSuccess);assert(buffer.frameLength==128);for(unsigned j=0;j<128;j++){assert(fabsf(buffer.floatChannelData[0][j]-.125f)<1e-6f);assert(fabsf(buffer.floatChannelData[1][j]+.25f)<1e-6f);}}
   disable();assert(!atomic_load(&pcm.readers));engine=nil;source=nil;pcm.base=NULL;
  });assert(ok);printf("PASS: native AVAudioEngine production source node, 48-kHz stereo connection, 1024 exact output frames, L/R mapping and stopped graph teardown. Offline fixture PCM; physical game sound pending.\n");
+uint64_t before=mix_clock(CLOCK_MONOTONIC);for(unsigned i=0;i<100000;i++){native_audio_mix_begin();native_audio_mix_end();}uint64_t elapsed=mix_clock(CLOCK_MONOTONIC)-before;
+ assert(atomic_load(&mix_calls)==100000&&atomic_load(&mix_samples)==1562&&!atomic_load(&mix_clock_errors));
+ assert(atomic_load(&mix_wall)>=atomic_load(&mix_max));
+ printf("PASS: mixer sampling exact100000 calls/1562 samples; finite clocks; empty sampled-pair overhead %.3f ns/call (host O2, includes atomics and clocks, not game mixing).\n",elapsed/100000.0);
 }return 0;}

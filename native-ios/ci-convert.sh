@@ -16,6 +16,7 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-drain-policy | tee native-build/evidence/native-drain-policy.txt
 bash native-ios/audio/ci-test-audio.sh
 NATIVE_TIMING_ENGINE=native-build/engine-original.wasm node native-ios/timing/test-timer.cjs native-build/evidence/native-timer.json
+NATIVE_TIMING_ENGINE=native-build/engine-original.wasm node native-ios/timing/test-population.cjs native-build/evidence/native-population-contract.json
 bash native-ios/diagnostics/ci-test-diagnostics.sh
 bash native-ios/threading/ci-test-session.sh
 bash native-ios/input/ci-test-input.sh
@@ -45,6 +46,7 @@ du -sh native-build/generated
 find native-build/generated -type f | wc -l
 echo 'PASS: complete engine converted to C with native wait/notify calls.'
 node native-ios/memory/patch-generated.mjs native-build/generated native-build/evidence/native-allocator-patch.json
+node native-ios/audio/patch-mixer.mjs native-build/generated native-build/evidence/mixer-hook.json
 node native-ios/generate-probe.mjs
 bash native-ios/ci-test-host.sh
 node native-ios/compile-native.mjs

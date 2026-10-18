@@ -12,14 +12,15 @@ static bool copy_cast_fixture(struct w2c_env *h){
   unsigned raw=bc?(block==8?17:3):(t==14?41:28);
   /* Retained fatal opcode and IDs; descriptors are reference-semantic fixtures,
      because the phone report did not capture the two original descriptors. */
-  for(unsigned side=0;side<2;side++){memset(cmd,0,sizeof(cmd));cmd[0]=side?35378:10933;cmd[1]=2;cmd[2]=cmd[3]=side&&bc?4:1;cmd[4]=cmd[5]=1;cmd[6]=2;cmd[7]=side?formats[t]:raw;cmd[8]=8;cmd[9]=1;EMIT(3,10);}
+  for(unsigned side=0;side<2;side++){memset(cmd,0,sizeof(cmd));cmd[0]=side?35378:10933;cmd[1]=2;cmd[2]=cmd[3]=side&&bc?16:4;cmd[4]=1;cmd[5]=side&&bc?5:3;cmd[6]=2;cmd[7]=side?formats[t]:raw;cmd[8]=8;cmd[9]=1;EMIT(3,10);}
   for(unsigned iteration=0;iteration<2;iteration++){
-   memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[2]=iteration;cmd[6]=cmd[7]=cmd[8]=1;cmd[9]=cmd[11]=block;cmd[10]=1;for(unsigned i=0;i<block;i++)((uint8_t*)(cmd+12))[i]=(uint8_t)(t*19+iteration*37+i*7);EMIT(13,12+block/4);
-   memset(cmd,0,sizeof(cmd));cmd[0]=35378;cmd[1]=iteration;cmd[5]=10933;cmd[6]=iteration;EMIT(34,14);
-   memset(cmd,0,sizeof(cmd));cmd[0]=35378;cmd[1]=iteration;cmd[9]=(uint32_t)(dst+t*64+iteration*32);cmd[10]=(dst+t*64+iteration*32)>>32;cmd[11]=cmd[12]=cmd[14]=block;EMIT(42,17);
-   memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[1]=iteration;cmd[5]=35378;cmd[6]=iteration;EMIT(34,14);
+   unsigned raw_sub=2+iteration*3,encoded_sub=bc?4+iteration*5:raw_sub;
+   memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[1]=2;cmd[2]=iteration;cmd[6]=cmd[7]=cmd[8]=1;cmd[9]=cmd[11]=block;cmd[10]=1;for(unsigned i=0;i<block;i++)((uint8_t*)(cmd+12))[i]=(uint8_t)(t*19+iteration*37+i*7);EMIT(13,12+block/4);
+   memset(cmd,0,sizeof(cmd));cmd[0]=35378;cmd[1]=encoded_sub;cmd[5]=10933;cmd[6]=raw_sub;EMIT(34,14);
+   memset(cmd,0,sizeof(cmd));cmd[0]=35378;cmd[1]=encoded_sub;cmd[9]=(uint32_t)(dst+t*64+iteration*32);cmd[10]=(dst+t*64+iteration*32)>>32;cmd[11]=cmd[12]=cmd[14]=block;EMIT(42,17);
+   memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[1]=raw_sub;cmd[5]=35378;cmd[6]=encoded_sub;EMIT(34,14);
   }
-  cmd[0]=35378;EMIT(4,1);memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[1]=1;cmd[9]=(uint32_t)(dst+2048+t*32);cmd[10]=(dst+2048+t*32)>>32;cmd[11]=cmd[12]=cmd[14]=block;EMIT(42,17);cmd[0]=10933;EMIT(4,1);
+  cmd[0]=35378;EMIT(4,1);memset(cmd,0,sizeof(cmd));cmd[0]=10933;cmd[1]=5;cmd[9]=(uint32_t)(dst+2048+t*32);cmd[10]=(dst+2048+t*32)>>32;cmd[11]=cmd[12]=cmd[14]=block;EMIT(42,17);cmd[0]=10933;EMIT(4,1);
  }
  cmd[0]=(uint32_t)flag;cmd[1]=flag>>32;cmd[2]=919;host_put32(h,flag,0);EMIT(8,3);
  #undef EMIT
