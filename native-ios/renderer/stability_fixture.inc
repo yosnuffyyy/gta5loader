@@ -13,16 +13,18 @@ static bool uniform_order_mode(struct w2c_env *h,bool old,bool maps,bool legacy,
  bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];
  #define EMIT(op,count) do{if(tail>127488-8-(count)*4){ok=false;fail(g,"Uniform ordering fixture overflow");}else{host_put32(h,base+tail,(op));host_put32(h,base+tail+4,(count));host_store(h,base+tail+8,cmd,(count)*4);tail+=8+(count)*4;}}while(0)
  #include "query_setup.inc"
- cmd[0]=118;cmd[1]=4;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);
+ cmd[0]=118;cmd[1]=288;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);
  cmd[0]=105;EMIT(29,1);cmd[0]=11165;cmd[1]=1;cmd[2]=(uint32_t)address;cmd[3]=address>>32;EMIT(44,4);cmd[0]=11165;EMIT(45,1);
  for(unsigned i=0;i<96;i++){
   query_color[63]=(i&1)?.5f:1;query_color[60]=(i&2)?.5f:1;
   memset(cmd,0,sizeof(cmd));cmd[0]=112;cmd[2]=256;memcpy(cmd+3,query_color,sizeof(query_color));EMIT(12,67);
   cmd[0]=1;cmd[1]=i%16;cmd[2]=i/16;cmd[3]=cmd[1]+1;cmd[4]=cmd[2]+1;EMIT(31,5);
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
-  /* Updating a genuinely consumed vertex buffer ends each batch. Preserve
-     all original batch/pressure/wrap assertions without a CPU readback. */
-  cmd[0]=109;cmd[1]=0;cmd[2]=4;cmd[3]=0xbf800000;EMIT(12,4);
+  /* An explicit whole-resource GPU copy ends each batch. Aligned vertex
+     updates may now be encoded in order without submitting; they no longer
+     force the 96 batches this independent slot-wrap test needs. Preserve
+     every pixel, sample, pressure, completion and retirement assertion. */
+  cmd[0]=118;cmd[1]=109;EMIT(35,2);
   if(maps&&(i%8)==7){memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);}
  }
  cmd[0]=11165;cmd[1]=901;EMIT(46,2);

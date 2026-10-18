@@ -20,7 +20,13 @@ static bool ordered_fixture(struct w2c_env *h,bool legacy,char *report,size_t ca
  }
  /* More than two arena rotations, then an unaligned mutation. The readback
     must see both the final encoded copy and its later exact byte edges. */
+ cmd[0]=120;cmd[1]=16;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);
+ cmd[0]=120;cmd[1]=0;cmd[2]=4;cmd[3]=0xa5a5a5a5;EMIT(12,4);
  cmd[0]=119;cmd[1]=65536;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);
+ /* A real pending vertex read makes this resource dependent. The zero-filled
+    positions form a degenerate triangle, adding no samples to the query. */
+ cmd[0]=0;cmd[1]=1;cmd[2]=119;cmd[3]=24;cmd[4]=0;EMIT(21,5);
+ memset(cmd,0,6*4);cmd[1]=6;cmd[2]=1;EMIT(32,6);
  for(unsigned j=0;j<20;j++){cmd[0]=119;cmd[1]=0;cmd[2]=65536;for(unsigned k=0;k<16384;k++)cmd[k+3]=0x10000000+j*0x10000+k;EMIT(12,16387);}
  cmd[0]=119;cmd[1]=1;cmd[2]=3;cmd[3]=0x00ccbbaa;EMIT(12,4);
  cmd[0]=11165;cmd[1]=123;EMIT(46,2);
@@ -28,6 +34,7 @@ static bool ordered_fixture(struct w2c_env *h,bool legacy,char *report,size_t ca
  cmd[0]=119;EMIT(4,1);cmd[0]=119;cmd[1]=16;cmd[2]=1;cmd[3]=cmd[4]=0;EMIT(11,5);
  cmd[0]=119;cmd[1]=0;cmd[2]=16;for(unsigned k=0;k<4;k++)cmd[k+3]=0x12340000+k;EMIT(12,7);
  memset(cmd,0,17*4);cmd[0]=119;cmd[9]=(uint32_t)(dst+2048+65536);cmd[10]=(dst+2048+65536)>>32;cmd[13]=1;cmd[14]=16;EMIT(42,17);
+ memset(cmd,0,17*4);cmd[0]=120;cmd[9]=(uint32_t)(dst+68000);cmd[10]=(dst+68000)>>32;cmd[13]=1;cmd[14]=4;EMIT(42,17);
  memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
  memset(cmd,0,sizeof(cmd));cmd[0]=109;cmd[9]=(uint32_t)(dst+1024);cmd[10]=(dst+1024)>>32;cmd[13]=1;cmd[14]=288;EMIT(42,17);
  cmd[0]=(uint32_t)flag;cmd[1]=flag>>32;cmd[2]=234;host_put32(h,flag,0);EMIT(8,3);
@@ -40,9 +47,11 @@ static bool ordered_fixture(struct w2c_env *h,bool legacy,char *report,size_t ca
  for(unsigned v=0;v<6;v++){uint32_t color;memcpy(&color,buffer+v*24+12,4);if(color!=0xffff00ff)ok=false;}
  for(unsigned k=0;k<16384;k++){uint32_t value;host_load(h,&value,dst+2048+k*4,4);if(value!=(k?0x10130000+k:0xccbbaa00))ok=false;}
  for(unsigned k=0;k<4;k++){uint32_t value;host_load(h,&value,dst+2048+65536+k*4,4);if(value!=0x12340000+k)ok=false;}
+ uint32_t independent_value;host_load(h,&independent_value,dst+68000,4);if(independent_value!=0xa5a5a5a5||!g->independent_uploads)ok=false;
  if(!legacy&&g->ordered_capacity_flushes<2)ok=false;
+ if(g->profile->clock_failures||g->profile->residual_underflows)ok=false;
  if(legacy){ordered_baseline_submits=g->submissions;ordered_baseline_bytes=g->draw.uniform_upload_bytes;}else ok=ok&&g->submissions<ordered_baseline_submits&&g->draw.uniform_upload_bytes<ordered_baseline_bytes&&g->ordered_uploads>1400;
  char timing[600];timing_text(&g->test_draw_times,"Original-shader DRAW wall (host only)",timing,sizeof(timing));size_t used=strlen(timing);snprintf(timing+used,sizeof(timing)-used,"\nInstrumented handler active CPU %.3f ms; drain residual CPU %.3f ms; completion wait wall %.3f ms. CPU categories exclude driver worker threads/GPU time.",g->profile->command_cpu/1e6,g->profile->stage[NP_RING_RESIDUAL].total_cpu/1e6,g->metrics.windows[METRIC_COMPLETION].total_ns/1e6);
- snprintf(report,capacity,"%s: ordered upload legacy %u: 256 original-shader draws/pixels and occlusion samples; exact VB and 64-KiB bytes, arena rotation, unaligned ordering and resource ID reuse; submissions/batches %llu/%llu, uniform bytes %llu; ordered copies/bytes %llu/%llu; arena bound 512 KiB CPU + 1 MiB GPU, existing 16-batch/4-MiB queue pressure preserved; wall %.3f ms, handler/upload %.3f/%.3f ms, completions %llu.\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->submissions,(unsigned long long)g->draw.batches,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->ordered_uploads,(unsigned long long)g->ordered_bytes,elapsed/1e6,g->metrics.frame_busy/1e6,g->metrics.frame_upload/1e6,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,timing,native_gpu_error(g)?native_gpu_error(g):"Host Metal pixel/byte test, not iPhone FPS.");native_gpu_end(g);return ok;
+ snprintf(report,capacity,"%s: ordered upload legacy %u: 257 original-shader draws / 256 checked pixels and occlusion samples; exact VB and 64-KiB bytes, arena rotation, independent direct update, unaligned ordering and resource ID reuse; submissions/batches %llu/%llu, uniform bytes %llu; ordered copies/bytes %llu/%llu; arena bound 512 KiB CPU + 1 MiB GPU, existing 16-batch/4-MiB queue pressure preserved; wall %.3f ms, handler/upload %.3f/%.3f ms, completions %llu.\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->submissions,(unsigned long long)g->draw.batches,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->ordered_uploads,(unsigned long long)g->ordered_bytes,elapsed/1e6,g->metrics.frame_busy/1e6,g->metrics.frame_upload/1e6,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,timing,native_gpu_error(g)?native_gpu_error(g):"Host Metal pixel/byte test, not iPhone FPS.");native_gpu_end(g);return ok;
 }
 #endif

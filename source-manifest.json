@@ -673,13 +673,13 @@
     },
     {
       "path": "native-ios/renderer/ordered_fixture.inc",
-      "bytes": 5732,
-      "sha256": "c30d944f2876338049232fcee9ddbea0765a075aa00a1d72e1c51377f2a84a48"
+      "bytes": 6488,
+      "sha256": "6a5cf81e46b96a7d1369c86404e9c4fda93de477e32f6cd05a46460cc119c8ec"
     },
     {
       "path": "native-ios/renderer/ordered_upload.inc",
-      "bytes": 2203,
-      "sha256": "16e7418a7afcb93414227919525f3d283efd3e94d6494217fa328f6a823986e3"
+      "bytes": 2430,
+      "sha256": "176dcf826606f713b74d32bc0ab68c6a776206cab662f91ccea767db54271ced"
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
@@ -943,8 +943,8 @@
     },
     {
       "path": "native-ios/renderer/stability_fixture.inc",
-      "bytes": 8355,
-      "sha256": "7b470d182683575cb098a1bb39a47a57da397349823b3a1792f13e3f2b399be5"
+      "bytes": 8480,
+      "sha256": "cab2f8eef73e71be0616edca421e05a6ec0a5736e47f9a6e2054f4a6f58b1aaa"
     },
     {
       "path": "native-ios/renderer/storage_formats.inc",

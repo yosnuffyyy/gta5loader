@@ -9,7 +9,9 @@ static bool ordered_upload_eligible(NativeGpu *g,const uint8_t *p,uint32_t n){
 #endif
  if(n<3||!g->draw.encoder)return false;
  Object *o=object(g,gpu_word(p,0));uint32_t at=gpu_word(p,1),bytes=gpu_word(p,2);
- return o&&o->kind==11&&o->buffer&&bytes&&bytes<=ORDERED_UPLOAD_BYTES&&!(at&3)&&!(bytes&3)&&at<=o->size&&bytes<=o->size-at&&((uint64_t)bytes+3)/4<=n-3;
+ /* Keep 0.35's direct queue-write path for independent destinations. Only a
+    buffer already referenced by this pending encoder needs an ordered copy. */
+ return o&&o->kind==11&&o->buffer&&g->draw.batches!=UINT64_MAX&&o->draw_buffer_epoch==g->draw.batches+1&&bytes&&bytes<=ORDERED_UPLOAD_BYTES&&!(at&3)&&!(bytes&3)&&at<=o->size&&bytes<=o->size-at&&((uint64_t)bytes+3)/4<=n-3;
 }
 static bool ordered_upload(NativeGpu *g,const uint8_t *p){
  Object *o=object(g,gpu_word(p,0));unsigned at=gpu_word(p,1),bytes=gpu_word(p,2);
