@@ -74,7 +74,7 @@ static bool end_occlusion(NativeGpu *g,Object *q,uint32_t sequence){
  g->query_active[at]=g->query_active[--g->query_active_count];if(!query_end_state(&q->query,sequence))return check(g,false,"Occlusion End state invalid");g->query_ends++;if(!q->query.pending)g->query_empty++;query_publish(g,q);return !atomic_load(&g->failed);
 }
 static void query_destroy_scope(NativeGpu *g,Object *q){
- if(q->kind!=44)return;q->query.token=0;q->query.active=q->query.ended=false;for(unsigned i=0;i<g->query_active_count;i++)if(g->query_active[i]==q->id){g->query_active[i]=g->query_active[--g->query_active_count];break;}
+ if(q->kind!=44)return;q->event_token=0;q->query.token=0;q->query.active=q->query.ended=false;for(unsigned i=0;i<g->query_active_count;i++)if(g->query_active[i]==q->id){g->query_active[i]=g->query_active[--g->query_active_count];break;}
  /* Pending jobs retain IDs/tokens, never Object pointers or result addresses. */
 }
 static void query_cleanup(NativeGpu *g){

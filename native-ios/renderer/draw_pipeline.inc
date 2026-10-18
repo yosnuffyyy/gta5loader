@@ -22,13 +22,17 @@ static bool draw_state_words(NativeGpu *g,uint32_t id,uint32_t kind,uint32_t *ds
 /* Releasing a cache reference preserves references held by encoded/submitted
    commands. No GPU wait is required for LRU eviction. */
 static void pipeline_evict(NativeGpu *g,DrawPipeline *p,bool pressure){DrawState *s=&g->draw;if(!p->pipeline)return;s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;if(pressure)s->pipeline_pressure_evictions++;wgpuRenderPipelineRelease(p->pipeline);p->pipeline=NULL;s->pipeline_live--;}
+static void pipeline_prune_cold(NativeGpu *g,uint64_t now,uint64_t frame){DrawState *s=&g->draw;
+ for(unsigned i=0;i<DRAW_PIPELINES&&s->pipeline_live>PIPELINE_PRESSURE_CAPACITY;i++){DrawPipeline *p=s->pipelines+i;if(p->pipeline&&pipeline_cold(now,p->last_ns,frame,p->last_present))pipeline_evict(g,p,true);}
+}
 static unsigned pipeline_capacity(NativeGpu *g){DrawState *s=&g->draw;
  if(!s->pipeline_capacity)s->pipeline_capacity=PIPELINE_NORMAL_CAPACITY;
 #ifdef NATIVE_PROBE_CLI
- if(g->test_pipeline_capacity)s->pipeline_capacity=g->test_pipeline_capacity==1?(s->draws>=192&&s->draws<384?128:256):g->test_pipeline_capacity;
+ if(g->test_pipeline_capacity==2)pipeline_prune_cold(g,now_ns(),g->presents);
+ if(g->test_pipeline_capacity)s->pipeline_capacity=g->test_pipeline_capacity==1?(s->draws>=192&&s->draws<384?128:256):g->test_pipeline_capacity==2?256:g->test_pipeline_capacity;
 #endif
 #if TARGET_OS_IOS
- uint64_t now=now_ns();if(now-s->pipeline_budget_check>=1000000000ull){s->pipeline_budget_check=now;s->pipeline_capacity=pipeline_budget(s->pipeline_capacity,os_proc_available_memory());}
+ uint64_t now=now_ns();if(now-s->pipeline_budget_check>=1000000000ull){s->pipeline_budget_check=now;if(os_proc_available_memory()<UINT64_C(256)*1024*1024){pipeline_prune_cold(g,now,g->presents);}}
 #endif
  while(s->pipeline_live>s->pipeline_capacity){unsigned oldest=DRAW_PIPELINES;for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline&&(oldest==DRAW_PIPELINES||s->pipelines[i].age<s->pipelines[oldest].age))oldest=i;if(oldest==DRAW_PIPELINES)break;pipeline_evict(g,s->pipelines+oldest,true);}
  return s->pipeline_capacity;}
@@ -63,11 +67,11 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
- DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
- for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
+ uint64_t fingerprint=pipeline_fingerprint(&key,sizeof(key));DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
+ for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(q->fingerprint==fingerprint&&!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;q->last_ns=now_ns();q->last_present=g->presents;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
  unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
  bool recreated=false;DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;recreated=true;break;}
- if(p->pipeline)pipeline_evict(g,p,false);memset(p,0,sizeof(*p));p->key=key;p->age=++s->age;
+ if(p->pipeline)pipeline_evict(g,p,false);memset(p,0,sizeof(*p));p->key=key;p->fingerprint=fingerprint;p->last_ns=now_ns();p->last_present=g->presents;p->age=++s->age;
  WGPUVertexAttribute attributes[16][32];WGPUVertexBufferLayout buffers[16];for(unsigned i=0;i<16;i++){buffers[i]=(WGPUVertexBufferLayout)WGPU_VERTEX_BUFFER_LAYOUT_INIT;buffers[i].attributes=attributes[i];buffers[i].arrayStride=key.strides[i];buffers[i].stepMode=WGPUVertexStepMode_Vertex;}
  for(unsigned i=0;i<layout->meta[1];i++){const uint32_t *e=layout->meta+2+i*7;const uint32_t *sig=NULL;for(unsigned j=0;j<vs->meta[4];j++){const uint32_t *v=vs->meta+5+j*4;if(v[0]==e[0]&&v[1]==e[1]){sig=v;break;}}if(!sig)continue;
   unsigned slot=e[3],bytes=0;if(slot>=16||e[5]>1||(!e[5]&&e[6])||sig[2]>=32){char why[360];snprintf(why,sizeof(why),"Invalid vertex layout: VS %s layout %u element %u slot %u location %u class %u rate %u DXGI %u offset %u",vp->hash,g->layout,i,slot,sig[2],e[5],e[6],e[2],e[4]);fail(g,why);return NULL;}

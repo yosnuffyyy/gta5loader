@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 #define NI_QUEUE 64
-typedef struct {NIState state;uint64_t at;} NIEvent;
+typedef struct {NIState state;uint64_t at;bool neutral_barrier;} NIEvent;
 static struct {
  pthread_mutex_t lock;
  NIState physical,output;NIEvent queue[NI_QUEUE];unsigned head,count;uint32_t delivered_buttons;
@@ -27,14 +27,14 @@ static NIState clean(NIState s){s.buttons&=65535;stick(&s.lx,&s.ly);stick(&s.rx,
 static void enqueue(NIState s){
  if(!memcmp(&s,&input.output,sizeof(s)))return;
  /* Coalesce analog motion only; never erase a queued digital edge. */
- if(input.count&&input.queue[(input.head+input.count-1)%NI_QUEUE].state.buttons==s.buttons){uint64_t first=input.queue[(input.head+input.count-1)%NI_QUEUE].at;input.queue[(input.head+input.count-1)%NI_QUEUE]=(NIEvent){s,first?first:ns()};}
+ if(input.count&&!input.queue[(input.head+input.count-1)%NI_QUEUE].neutral_barrier&&input.queue[(input.head+input.count-1)%NI_QUEUE].state.buttons==s.buttons){uint64_t first=input.queue[(input.head+input.count-1)%NI_QUEUE].at;input.queue[(input.head+input.count-1)%NI_QUEUE]=(NIEvent){.state=s,.at=first?first:ns()};}
  else {
-  if(input.count==NI_QUEUE){/* Fail safe on overload: release before latest state, report lost history. */input.head=0;input.count=1;input.queue[0]=(NIEvent){.at=ns()};input.metrics.overflows++;}
-  input.queue[(input.head+input.count++)%NI_QUEUE]=(NIEvent){s,ns()};
+  if(input.count==NI_QUEUE){/* Fail safe on overload: release before latest state, report lost history. */input.head=0;input.count=1;input.queue[0]=(NIEvent){.at=ns(),.neutral_barrier=true};input.metrics.overflows++;}
+  input.queue[(input.head+input.count++)%NI_QUEUE]=(NIEvent){.state=s,.at=ns()};
  }
  input.output=s;
 }
-static void neutral(void){input.head=input.count=0;input.output=(NIState){0};input.queue[input.count++]=(NIEvent){0};}
+static void neutral(void){input.head=input.count=0;input.output=(NIState){0};input.queue[input.count++]=(NIEvent){.neutral_barrier=true};}
 static void rearm(void){input.blocked=input.physical.buttons;float m[2]={hypotf(input.physical.lx,input.physical.ly),hypotf(input.physical.rx,input.physical.ry)};for(unsigned i=0;i<2;i++){input.stick_blocked[i]=m[i]>=input.deadzone;input.stick_ready[i]=!input.stick_blocked[i];}input.trigger_ready[0]=input.physical.lt<.03f;input.trigger_ready[1]=input.physical.rt<.03f;}
 static void switch_to(NISource s){if(s==input.source)return;neutral();input.source=s;input.metrics.switches++;if(s==NI_TOUCH)rearm();}
 void ni_begin(void){lock();input.running=true;input.focused=true;input.baseline=input.connected;input.source=NI_TOUCH;input.metrics=(NIMetrics){0};input.pad_saved=false;rearm();neutral();unlock();}
@@ -65,8 +65,8 @@ void ni_consume(uint8_t pad[56]){
  /* A leading analog-only snapshot has no button edge if its buttons already
     match the last engine delivery. Fold it into the next queued snapshot;
     never skip a press/release, including neutral during source takeover. */
- while(input.count>1&&input.queue[input.head].state.buttons==input.delivered_buttons){input.head=(input.head+1)%NI_QUEUE;input.count--;input.metrics.analog_skipped++;}
- NIState s=input.output;if(input.count){NIEvent e=input.queue[input.head];input.head=(input.head+1)%NI_QUEUE;input.count--;s=e.state;if(e.at){double ms=(ns()-e.at)/1e6;input.metrics.samples++;input.metrics.mean_ms+=(ms-input.metrics.mean_ms)/(double)input.metrics.samples;if(ms>input.metrics.max_ms)input.metrics.max_ms=ms;}}
+ while(input.count>1&&!input.queue[input.head].neutral_barrier&&input.queue[input.head].state.buttons==input.delivered_buttons){input.head=(input.head+1)%NI_QUEUE;input.count--;input.metrics.analog_skipped++;}
+ NIState s=input.output;if(input.count){NIEvent e=input.queue[input.head];input.head=(input.head+1)%NI_QUEUE;input.count--;s=e.state;if(!e.neutral_barrier){s.lx=input.output.lx;s.ly=input.output.ly;s.rx=input.output.rx;s.ry=input.output.ry;}if(e.at){double ms=(ns()-e.at)/1e6;input.metrics.samples++;input.metrics.mean_ms+=(ms-input.metrics.mean_ms)/(double)input.metrics.samples;if(ms>input.metrics.max_ms)input.metrics.max_ms=ms;}}
  if(!input.running||!input.focused)s=(NIState){0};
  input.delivered_buttons=s.buttons;
  if(!input.pad_saved){input.saved50=pad[50];input.saved55=pad[55];input.pad_saved=true;}

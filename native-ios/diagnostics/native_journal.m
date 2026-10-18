@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdatomic.h>
+#include "native_recovery.h"
 
 /* File size has no application quota. Fixed memory, one writer, no per-line
    NSData/block allocation on the engine path. Backpressure is explicit. */
@@ -18,6 +19,7 @@ static void jc(int e){if(e)abort();}
 static BOOL journal_error(NSError **out,int code,NSString *operation){if(out)*out=[NSError errorWithDomain:NSPOSIXErrorDomain code:code userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"%@: %s. The original log is retained.",operation,strerror(code)]}];return NO;}
 @interface NativeSessionLog () {
  pthread_mutex_t _producer,_mutex;pthread_cond_t _changed;pthread_t _thread;
+ NativeRecovery _recovery;char *_recoveryPath;uint64_t _recoveryAt;int _recoveryError;
  unsigned char *_ring;size_t _head,_count;int _fd,_error;
  BOOL _started,_stopping,_joined;uint64_t _accepted,_written,_lost,_waits,_wait_ns,_flush_mark;
 #if defined(NATIVE_JOURNAL_TEST)
@@ -25,18 +27,22 @@ static BOOL journal_error(NSError **out,int code,NSString *operation){if(out)*ou
 #endif
 }
 - (void)writer;
+- (void)checkpoint;
 @end
 static void *journal_writer(void *context){@autoreleasepool{NativeSessionLog *log=(__bridge_transfer NativeSessionLog *)context;[log writer];}return NULL;}
 @implementation NativeSessionLog
 - (instancetype)initWithURL:(NSURL *)URL error:(NSError **)error {
- if(!(self=[super init]))return nil;_fd=-1;_URL=[URL copy];
+ if(!(self=[super init]))return nil;_fd=-1;_URL=[URL copy];_recoveryPath=strdup([[URL.path stringByAppendingString:@".recovery.txt"] fileSystemRepresentation]);
  jc(pthread_mutex_init(&_producer,NULL));jc(pthread_mutex_init(&_mutex,NULL));jc(pthread_cond_init(&_changed,NULL));
  _ring=malloc(JOURNAL_CAPACITY);if(!_ring){journal_error(error,ENOMEM,@"Log buffer allocation");return nil;}
  _fd=open(URL.fileSystemRepresentation,O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC|O_NOFOLLOW,0600);if(_fd<0){journal_error(error,errno,@"Create session log");return nil;}
  void *retained=(__bridge_retained void *)self;int rc=pthread_create(&_thread,NULL,journal_writer,retained);
  if(rc){id released=CFBridgingRelease(retained);(void)released;close(_fd);_fd=-1;journal_error(error,rc,@"Start log writer");return nil;}_started=YES;return self;
 }
-- (void)dealloc {if(_started&&!_joined)abort();if(_fd>=0)close(_fd);free(_ring);jc(pthread_cond_destroy(&_changed));jc(pthread_mutex_destroy(&_mutex));jc(pthread_mutex_destroy(&_producer));}
+- (void)dealloc {if(_started&&!_joined)abort();if(_fd>=0)close(_fd);free(_ring);free(_recoveryPath);jc(pthread_cond_destroy(&_changed));jc(pthread_mutex_destroy(&_mutex));jc(pthread_mutex_destroy(&_producer));}
+- (void)checkpoint {
+ NativeRecovery copy;jc(pthread_mutex_lock(&_mutex));copy=_recovery;uint64_t written=_written;jc(pthread_mutex_unlock(&_mutex));int error=_recoveryPath?recovery_save(&copy,_recoveryPath,written,journal_ns()):ENOMEM;jc(pthread_mutex_lock(&_mutex));_recoveryError=error;jc(pthread_mutex_unlock(&_mutex));
+}
 - (void)writer {
  unsigned char block[JOURNAL_CHUNK];
  for(;;){jc(pthread_mutex_lock(&_mutex));while(!_count&&!_stopping&&!_error)jc(pthread_cond_wait(&_changed,&_mutex));if(_error||(!_count&&_stopping)){jc(pthread_mutex_unlock(&_mutex));break;}
@@ -51,13 +57,15 @@ static void *journal_writer(void *context){@autoreleasepool{NativeSessionLog *lo
 #endif
    ssize_t got=write(_fd,block+done,take);if(got<0&&errno==EINTR)continue;if(got<=0){failure=got<0?errno:EIO;break;}done+=(size_t)got;
   }
-  jc(pthread_mutex_lock(&_mutex));_written+=done;if(failure){_error=failure;_lost+=_count+n-done;_count=0;}jc(pthread_cond_broadcast(&_changed));jc(pthread_mutex_unlock(&_mutex));if(failure)break;
+  jc(pthread_mutex_lock(&_mutex));_written+=done;if(failure){_error=failure;_lost+=_count+n-done;_count=0;}jc(pthread_cond_broadcast(&_changed));jc(pthread_mutex_unlock(&_mutex));if(failure)break;uint64_t now=journal_ns();if(now-_recoveryAt>=5000000000ull){_recoveryAt=now;[self checkpoint];}
  }
+ [self checkpoint];
 }
 - (void)appendBytes:(const void *)bytes length:(size_t)length category:(const char *)category {
  if(!bytes&&length)return;const char *prefix=category?:"";size_t plen=strlen(prefix);if(plen>32)plen=32;
  const void *parts[]={"[",prefix,"] ",bytes,"\n"};size_t sizes[]={category?1:0,plen,category?2:0,length,category?1:0};
  jc(pthread_mutex_lock(&_producer));jc(pthread_mutex_lock(&_mutex));
+ if(bytes&&length)recovery_add(&_recovery,bytes,length);
  for(unsigned p=0;p<5;p++){const unsigned char *from=parts[p];size_t left=sizes[p];while(left){if(_error||_stopping){_lost+=left;for(unsigned q=p+1;q<5;q++)_lost+=sizes[q];goto done;}
    if(_count==JOURNAL_CAPACITY){uint64_t at=journal_ns();_waits++;jc(pthread_cond_wait(&_changed,&_mutex));_wait_ns+=journal_ns()-at;continue;}
    size_t at=(_head+_count)%JOURNAL_CAPACITY,n=JOURNAL_CAPACITY-at;if(n>JOURNAL_CAPACITY-_count)n=JOURNAL_CAPACITY-_count;if(n>left)n=left;memcpy(_ring+at,from,n);_count+=n;_accepted+=n;from+=n;left-=n;jc(pthread_cond_signal(&_changed));
@@ -83,7 +91,7 @@ static void *journal_writer(void *context){@autoreleasepool{NativeSessionLog *lo
  NSString *footer=[NSString stringWithFormat:@"\n[export] Snapshot prefix %llu bytes. %@\n%@\n",(unsigned long long)prefix,failure?@"INCOMPLETE: logging encountered an I/O failure.":@"Later session messages are outside this snapshot.",[self summary]];
  int fd=open(URL.fileSystemRepresentation,O_WRONLY|O_APPEND|O_CLOEXEC|O_NOFOLLOW);if(fd<0)return journal_error(error,errno,@"Open log export footer");const char *b=footer.UTF8String;size_t left=strlen(b);while(left){ssize_t n=write(fd,b,left);if(n<0&&errno==EINTR)continue;if(n<=0){int e=n<0?errno:EIO;close(fd);return journal_error(error,e,@"Write export footer");}b+=n;left-=n;}if(fsync(fd)){int e=errno;close(fd);return journal_error(error,e,@"Flush log export");}close(fd);return YES;
 }
-- (NSString *)summary {jc(pthread_mutex_lock(&_mutex));uint64_t a=_accepted,w=_written,l=_lost,waits=_waits,ns=_wait_ns;int e=_error;size_t queued=_count;jc(pthread_mutex_unlock(&_mutex));return [NSString stringWithFormat:@"Session log: accepted/written %llu/%llu bytes; pending %zu; producer waits %llu (%.3f ms); unrecorded %llu bytes; %@. Fixed 2 MiB queue, no file-size quota; storage availability applies.",(unsigned long long)a,(unsigned long long)w,queued,(unsigned long long)waits,ns/1e6,(unsigned long long)l,e?[NSString stringWithFormat:@"I/O ERROR %d (%s)",e,strerror(e)]:@"I/O OK"];}
+- (NSString *)summary {jc(pthread_mutex_lock(&_mutex));uint64_t a=_accepted,w=_written,l=_lost,waits=_waits,ns=_wait_ns;int e=_error,recoveryError=_recoveryError;size_t queued=_count;jc(pthread_mutex_unlock(&_mutex));return [NSString stringWithFormat:@"Session log: accepted/written %llu/%llu bytes; pending %zu; producer waits %llu (%.3f ms); unrecorded %llu bytes; %@. Fixed 2 MiB queue, no file-size quota; storage availability applies. Recovery snapshot I/O errno %d (0 OK).",(unsigned long long)a,(unsigned long long)w,queued,(unsigned long long)waits,ns/1e6,(unsigned long long)l,e?[NSString stringWithFormat:@"I/O ERROR %d (%s)",e,strerror(e)]:@"I/O OK",recoveryError];}
 #if defined(NATIVE_JOURNAL_TEST)
 - (void)testFailAfter:(uint64_t)bytes {jc(pthread_mutex_lock(&_mutex));_failAfter=bytes;jc(pthread_mutex_unlock(&_mutex));}
 #endif

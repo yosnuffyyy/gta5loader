@@ -1,6 +1,7 @@
 /* GPU-thread-owned draw state. All caches and uniform storage are bounded. */
 #include "shadow_guard.h"
 #include "cache_budget.h"
+#include "pipeline_policy.h"
 enum { DRAW_BINDINGS=64, DRAW_MEMBERS=16, DRAW_PIPELINES=PIPELINE_NORMAL_CAPACITY,
        DRAW_UBO_BYTES=512*1024, DRAW_UBO_SLOTS=3 };
 typedef struct DrawProgram DrawProgram;
@@ -35,7 +36,7 @@ struct DrawProgram {
 };
 #include "pipeline_key.h"
 typedef struct {
- DrawKey key; WGPURenderPipeline pipeline; uint64_t age;
+ DrawKey key; WGPURenderPipeline pipeline; uint64_t age,fingerprint,last_ns,last_present;
  unsigned slots; uint32_t last[16],stride[16],rate[16]; bool instance[16],manual_instances;uint8_t gpu_slot[16];
 } DrawPipeline;
 typedef struct {

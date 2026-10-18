@@ -113,6 +113,8 @@ static NSString *Digest(NSData *bytes) {
 - (void)appendShadowFailure;
 @end
 @interface ProbeController (NativeDashboard)
+- (void)exportLogRecovery:(BOOL)recovery;
+- (void)exportRecovery;
 - (void)buildDashboard;
 - (void)refreshDashboard;
 - (void)populateOptions:(NSUInteger)page stack:(UIStackView *)stack;
@@ -122,12 +124,12 @@ static NSString *Digest(NSData *bytes) {
 - (void)preferenceSwitchChanged:(UISwitch *)sender;
 @end
 #include "ui/NativeDashboard.inc"
-static void RuntimeProgress(void *context,const char *line) {
+static void RuntimeProgress(void *context,const char *line) {@autoreleasepool {
     ProbeController *controller=(__bridge ProbeController *)context;
     NSString *text=[NSString stringWithUTF8String:line]?:@"Invalid runtime log";
     native_journal_capture("report",line,strlen(line));
     [controller queueProgress:text];
-}
+}}
 @implementation ProbeController
 - (UIButton *)button:(NSString *)title action:(SEL)action {
     UIButton *button=[UIButton buttonWithType:UIButtonTypeSystem];
@@ -141,7 +143,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NativeJournalActivate(nil);NativeSessionLog *old=self.sessionLog;if(old)dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY,0),^{[old finish];});self.sessionLog=nil;self.lastLogURL=nil;[NSUserDefaults.standardUserDefaults removeObjectForKey:@"lastSessionLogFile"];
     NSURL *documents=[NSFileManager.defaultManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject;NSURL *directory=[documents URLByAppendingPathComponent:@"NativeLogs" isDirectory:YES];NSError *error=nil;
     if([NSFileManager.defaultManager createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:@{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication} error:&error]){
-        [directory setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];NSString *name=[NSString stringWithFormat:@"GTA-Native-0.36-%@.txt",NSUUID.UUID.UUIDString];NSURL *URL=[directory URLByAppendingPathComponent:name];self.sessionLog=[[NativeSessionLog alloc]initWithURL:URL error:&error];if(self.sessionLog){self.lastLogURL=URL;[NSUserDefaults.standardUserDefaults setObject:name forKey:@"lastSessionLogFile"];NativeJournalActivate(self.sessionLog);[self.sessionLog appendText:text category:"session"];}
+        [directory setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];NSString *name=[NSString stringWithFormat:@"GTA-Native-0.37-%@.txt",NSUUID.UUID.UUIDString];NSURL *URL=[directory URLByAppendingPathComponent:name];self.sessionLog=[[NativeSessionLog alloc]initWithURL:URL error:&error];if(self.sessionLog){self.lastLogURL=URL;[NSUserDefaults.standardUserDefaults setObject:name forKey:@"lastSessionLogFile"];NativeJournalActivate(self.sessionLog);[self.sessionLog appendText:text category:"session"];}
     }
     self.report.storedText=error?[text stringByAppendingFormat:@"\nLog storage unavailable: %@. The preview is incomplete.",error.localizedDescription]:text;
 }
@@ -232,7 +234,7 @@ static void RuntimeProgress(void *context,const char *line) {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:@"FAIL: integration save folder unavailable"];return;}
-    [self setWorking:YES];[self beginReport:[NSString stringWithFormat:@"Native integration 0.36 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent]];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
+    [self setWorking:YES];[self beginReport:[NSString stringWithFormat:@"Native integration 0.37 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent]];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         char report[16384]={0};int code=native_gpu_replay_probe(report,sizeof(report));RuntimeProgress((__bridge void*)self,report);
         if(code==0){BOOL scoped=[folder startAccessingSecurityScopedResource];code=native_graphics_checkpoint(folder.fileSystemRepresentation,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];}
@@ -247,7 +249,7 @@ static void RuntimeProgress(void *context,const char *line) {
     NativeMeasuredLayer *layer=(NativeMeasuredLayer *)self.surfaceView.layer;layer.displayMetrics=self.timingSwitch.isOn?[[NativeDisplayMetrics alloc]init]:nil;self.timingSwitch.enabled=NO;self.performanceLabel.text=self.timingSwitch.isOn?@"Waiting for actual displayed drawables…":@"Displayed-frame diagnostics disabled.";layer.pixelFormat=MTLPixelFormatBGRA8Unorm;layer.framebufferOnly=YES;layer.drawableSize=CGSizeMake(640,360);layer.contentsGravity=kCAGravityResizeAspect;
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){self.sceneRunning=NO;self.timingSwitch.enabled=YES;[self.startupTimer invalidate];self.startupTimer=nil;[self setWorking:NO];[self append:@"FAIL: native save folder unavailable"];return;}
-    [self beginReport:[NSString stringWithFormat:@"Native integration 0.36 — stage 3 in progress\niOS %@ / %@\n%@\nGame folder: %@\nStarting real engine, archive reader and native graphics…\nOptional reference empty-shadow compatibility: %@\nOptional service CPU profiling: %@ (no GPU timestamps or simulation CPU hook)",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent,shadowCompatibility?@"ON (producer intent and iPhone shadows unverified)":@"OFF (strict)",self.profileSwitch.isOn?@"ON":@"OFF"]];
+    [self beginReport:[NSString stringWithFormat:@"Native integration 0.37 — stage 3 in progress\niOS %@ / %@\n%@\nGame folder: %@\nStarting real engine, archive reader and native graphics…\nOptional reference empty-shadow compatibility: %@\nOptional service CPU profiling: %@ (no GPU timestamps or simulation CPU hook)",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent,shadowCompatibility?@"ON (producer intent and iPhone shadows unverified)":@"OFF (strict)",self.profileSwitch.isOn?@"ON":@"OFF"]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=[folder startAccessingSecurityScopedResource];char report[4096]={0};int code=native_scene_probe_options(folder.fileSystemRepresentation,saves.fileSystemRepresentation,(__bridge void*)layer,shadowCompatibility,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];

@@ -1,10 +1,10 @@
 {
-  "scope": "Native 0.36: file-backed full-session text logging, Share-only file export and optional bounded service-thread CPU profiling. No renderer policy, 256-pipeline cache, uniform/data ordering, 640x360, 30 FPS cap, engine ABI, asset-reader or memory-budget changes. Verification pending.",
+  "scope": "Native 0.37 candidate: asynchronous event replies, bounded hot pipeline retention, latest analog input with ordered button edges, scoped autorelease pools and bounded persistent recovery snapshots. Verification pending. No engine compiler/heap/asset/quality changes.",
   "files": [
     {
       "path": "native-ios/App.m",
-      "bytes": 37003,
-      "sha256": "b81367616faae6468b6c29f4b0468c9d9765039c2196bae22adfac4acdb99ca1"
+      "bytes": 37088,
+      "sha256": "f4dc0bbcfa2bbb1cf1cc2b5b8b275c3bbd866c6f3f8e3fc5621678df1fc113c8"
     },
     {
       "path": "native-ios/asset_io/native_assets.c",
@@ -43,13 +43,13 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 8256,
-      "sha256": "0f63a245719524eb3aca86537edf57de6f612e83885930a19fc30e5087b4ab49"
+      "bytes": 8299,
+      "sha256": "f3a9a1834e8ebca16dfbf48d62323bdf8c994cfe442b48193510cc4e6f19a67a"
     },
     {
       "path": "native-ios/diagnostics/ci-test-diagnostics.sh",
-      "bytes": 962,
-      "sha256": "71e7f21dbf6d4453027c182d2e3f998dea8bf97a29a63cee77aaafe0b820133b"
+      "bytes": 1186,
+      "sha256": "6debf7e66f456ca0bf5e60154beb675e3f57b069066b5bcbd9eacd3641e3ef71"
     },
     {
       "path": "native-ios/diagnostics/native_journal.h",
@@ -58,8 +58,8 @@
     },
     {
       "path": "native-ios/diagnostics/native_journal.m",
-      "bytes": 10883,
-      "sha256": "134ab89f6e2f0132625c2ffe15154c15f9faf4245b705834799e4de294ec8286"
+      "bytes": 11721,
+      "sha256": "e708173839b0f077554e1cc18ee8e80a378dcd793693fe3261fa32f7d94ca6be"
     },
     {
       "path": "native-ios/diagnostics/native_profile.c",
@@ -72,14 +72,24 @@
       "sha256": "37897e8cd6faf68d46e5951974ad1d6c8c114b1b9359dbd521a306d532bd1155"
     },
     {
+      "path": "native-ios/diagnostics/native_recovery.h",
+      "bytes": 3129,
+      "sha256": "7264adce96b95297f145f374b736e71fbb0ecdc15211f471e01572c0dd6af848"
+    },
+    {
       "path": "native-ios/diagnostics/test_journal.m",
-      "bytes": 4622,
-      "sha256": "7267240d8614928aa62a878417e30b8f728157783480e1c05b066d961a541cdb"
+      "bytes": 4993,
+      "sha256": "af1bde9dca874637a92363721937fa0ad10373baa955eb0fc3605c2d73c1fab6"
     },
     {
       "path": "native-ios/diagnostics/test_profile.c",
       "bytes": 2456,
       "sha256": "9f818d8c0877449f288ae9bb3949e9c718a4b8b462f3440fb400c8b0cd32db31"
+    },
+    {
+      "path": "native-ios/diagnostics/test_recovery.c",
+      "bytes": 1628,
+      "sha256": "843ba586818cef08a216c5ff4fe161cb52d5f7d98c896d8b9bb94304e3d68748"
     },
     {
       "path": "native-ios/file-probes.json",
@@ -99,7 +109,7 @@
     {
       "path": "native-ios/Info.plist",
       "bytes": 1713,
-      "sha256": "8110b6ceb580f9754534a4d2d6c1ddafc8a4e42739e58667c5f69a7146381714"
+      "sha256": "083005ddff666e0f6190c3600256ed601ce5a27580bcda519f720aacc369f7d7"
     },
     {
       "path": "native-ios/input/ci-test-input.sh",
@@ -118,8 +128,8 @@
     },
     {
       "path": "native-ios/input/native_input.c",
-      "bytes": 7393,
-      "sha256": "261f713edf75e351b64dabbe7dfc3fb00671d219ff5f64be5458a2a3d8e1ae6d"
+      "bytes": 7695,
+      "sha256": "85004930f6e9f9e58fc4f5eca5e3098a9200a4289f2cc61910b3586c00f50e87"
     },
     {
       "path": "native-ios/input/native_input.h",
@@ -138,8 +148,8 @@
     },
     {
       "path": "native-ios/input/test_input_queue.c",
-      "bytes": 1896,
-      "sha256": "04d25e4dc76957a37982ff274e8ff3f8d546f53fbdd52a16f48188eaa5bde698"
+      "bytes": 2596,
+      "sha256": "a1a5456acd8ca22f64945fdc34e82d089152b55162e9edd3d6ebadc4d3cc6e5b"
     },
     {
       "path": "native-ios/input/test_ui.m",
@@ -308,8 +318,8 @@
     },
     {
       "path": "native-ios/renderer/build-renderer.sh",
-      "bytes": 6624,
-      "sha256": "b096d61030670ba587604b516f803ae24d4f1cf4677bee739c9cf55d2eebd848"
+      "bytes": 7097,
+      "sha256": "5361f691176b07c1d4388ef392dc1460a2b88f1d12c5a4cdd789f88bdd3dc680"
     },
     {
       "path": "native-ios/renderer/cache_budget.h",
@@ -383,8 +393,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 15513,
-      "sha256": "326b5aabb8648878cb87887c57ae7b87b40290abd1331913eb2ccb869221d6cc"
+      "bytes": 16155,
+      "sha256": "c9ec6939fec1337ccd8009a575f110138f4e097852681365055e91551a31a657"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -398,8 +408,18 @@
     },
     {
       "path": "native-ios/renderer/draw_types.inc",
-      "bytes": 3387,
-      "sha256": "03dfdf3e2db8d5877e7561e0da7c99707705e36dbbc4fd8e0f8967e94ec1189a"
+      "bytes": 3449,
+      "sha256": "daec7920d561445d86cf62c2897423a4f89925487c02e1d8d6a1f3026a226786"
+    },
+    {
+      "path": "native-ios/renderer/event_fixture.inc",
+      "bytes": 5941,
+      "sha256": "9c1ad21ac405b5832bd9860b6eb5ef24256a9450033361753cdd39bd06912b13"
+    },
+    {
+      "path": "native-ios/renderer/event_queries.inc",
+      "bytes": 2763,
+      "sha256": "cb89cbc754e1ee7d54f1f166324cc6496d8db647b7af61dc78365443c9f21591"
     },
     {
       "path": "native-ios/renderer/frame_costs.h",
@@ -483,8 +503,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 84246,
-      "sha256": "4252c05cf000b25078c04bc9d9fa3ded57cf9fe26f490f8d9ef55305a40c3d65"
+      "bytes": 86116,
+      "sha256": "32d7e45c50fe0ab7f3c02af96d82dab7995a6b29a1fb81b1d25975817f045dca"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -498,8 +518,8 @@
     },
     {
       "path": "native-ios/renderer/native_metrics.inc",
-      "bytes": 7330,
-      "sha256": "18c55cacd2fa1157ea16f5d1d4830d93fdbce02c6cf2634264918bc19be9fa43"
+      "bytes": 8827,
+      "sha256": "e18130370fe308059ad107e9b6cbbf724545fd53c6062309aed0aa38474ead75"
     },
     {
       "path": "native-ios/renderer/native_mips.inc",
@@ -508,8 +528,8 @@
     },
     {
       "path": "native-ios/renderer/native_queries.inc",
-      "bytes": 8846,
-      "sha256": "48f44401b0bd16d843e1dad33433e95ba68b8a312acc7d278e45214df463e137"
+      "bytes": 8863,
+      "sha256": "0e55da2d4984be5288cb03048d1d96560abd405820495cc4dbd5b6a69fff6007"
     },
     {
       "path": "native-ios/renderer/native_readback.inc",
@@ -575,6 +595,11 @@
       "path": "native-ios/renderer/pipeline_key.h",
       "bytes": 2255,
       "sha256": "00ad5c2cf9cbc3843552b0c34dfd1c66aa67ba094636ba76b66d720c36809ce3"
+    },
+    {
+      "path": "native-ios/renderer/pipeline_policy.h",
+      "bytes": 1045,
+      "sha256": "83f1f64080ceedc74b21ff8b91ddca10471faebefdf387a5f976f3ff4f986a3b"
     },
     {
       "path": "native-ios/renderer/prepare-renderer.mjs",
@@ -808,8 +833,8 @@
     },
     {
       "path": "native-ios/renderer/stability_fixture.inc",
-      "bytes": 8296,
-      "sha256": "851e98f0892fdf75d44613e0a760b73ca22e6f733be4eda4dfae7db2f8a1f8f4"
+      "bytes": 8355,
+      "sha256": "7b470d182683575cb098a1bb39a47a57da397349823b3a1792f13e3f2b399be5"
     },
     {
       "path": "native-ios/renderer/storage_formats.inc",
@@ -870,6 +895,11 @@
       "path": "native-ios/renderer/test_pipeline_key.c",
       "bytes": 3177,
       "sha256": "614928bea77c1b1688727b0dc5a8d170e8936cc6e689854c9a578c3910908eeb"
+    },
+    {
+      "path": "native-ios/renderer/test_pipeline_policy.c",
+      "bytes": 1478,
+      "sha256": "f3fdec2f4a12f638c3f0505c7ed1d9f7607f2b1c10b47edcd322db2c6657cc90"
     },
     {
       "path": "native-ios/renderer/test_query_state.c",
@@ -1158,8 +1188,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 27086,
-      "sha256": "ac5abd8c183b2e756598af46195ba0452c3eac4b8c7ce702f62b1aef690062a5"
+      "bytes": 27828,
+      "sha256": "1a163471168cf91afd62f01d4f9af3a60d64f7592493e581734fb060af42ffe4"
     },
     {
       "path": "native-ios/wait-fixture.wat",
