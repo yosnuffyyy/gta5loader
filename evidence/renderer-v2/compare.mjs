@@ -1,5 +1,5 @@
 // Parse only explicit machine records, never repeated diagnostic summaries.
-// Usage: node native-ios/renderer/compare-v2.mjs evidence/native-engine-test.txt output.json
+// Usage: node evidence/renderer-v2/compare.mjs evidence/native-engine-test.txt output.json
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const [input,output]=process.argv.slice(2);

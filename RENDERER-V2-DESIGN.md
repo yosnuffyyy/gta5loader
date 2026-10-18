@@ -29,7 +29,7 @@ The existing core retains immutable uniforms, ordered uploads, pass/query segmen
 
 ## Backend decision and constraints
 
-Keep wgpu-native v29.0.1.1 (`6aed50955d934ac36049ba8d002034841633ae02`), patched HAL29.0.3, Rust1.93.1 and WABT1.0.42. Its C completion API allocates one closure per registration and delegates to core. The pinned `wgpuQueueGetNativeMetalCommandQueue` returns null because the HAL accessor is unavailable. No private interop or parallel direct-Metal queue is justified for this completion fan-out defect. A separate direct-Metal comparative prototype remains deferred until residual backend cost is demonstrated.
+Keep wgpu-native v29.0.1.1 (`6aed50955d934ac36049ba8d002034841633ae02`), patched HAL 29.0.3, Rust 1.93.1 and WABT 1.0.42. Its C completion API allocates one closure per registration and delegates to core. The pinned `wgpuQueueGetNativeMetalCommandQueue` returns null because the HAL accessor is unavailable. No private interop or parallel direct-Metal queue is justified for this completion fan-out defect. A separate direct-Metal comparative prototype remains deferred until residual backend cost is demonstrated.
 
 Source: [pinned queue API](https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/src/lib.rs). Queue writes and submission identity must not be conflated; completion never certifies a later unsubmitted write.
 
@@ -39,10 +39,18 @@ The existing CPU profiler samples its thread clock before the wall clock and end
 
 ## Validation and promotion
 
-Exact bytes for copies/uniforms/query payloads; existing shader fixture tolerance of one UNORM unit remains fixed before comparison. Alternate existing/V2 order, repeat separate processes, record profile-on/off and warm/cold status. Test saturation, delayed/reordered callbacks, ID generation/token reuse, cancellation, error, pending writes and clean shutdown. Run inherited pixel/shader/runtime/input suites. Synthetic gains do not promote V2; device median/p95 regressions over5% require review and matching phase/thermal controls.
+Exact bytes for copies/uniforms/query payloads; existing shader fixture tolerance of one UNORM unit remains fixed before comparison. Alternate existing/V2 order, repeat separate processes, record profile-on/off and warm/cold status. Test saturation, delayed/reordered callbacks, ID generation/token reuse, cancellation, error, pending writes and clean shutdown. Run inherited pixel/shader/runtime/input suites. Synthetic gains do not promote V2; device median/p95 regressions over 5% require review and matching phase/thermal controls.
 
 ## Explicitly deferred work
 
-No complete execution-core replacement is claimed. iPhone13 capability fallback remains a separate milestone: native BC is detected at runtime; missing BC currently fails explicitly, no decoder/conversion cache is invented. Dynamic texture conversion must preserve mips, colorspace, copy/readback and bounded residency before that target is supported.
+No complete execution-core replacement is claimed. iPhone 13 capability fallback remains a separate milestone: native BC is detected at runtime; missing BC currently fails explicitly, no decoder/conversion cache is invented. Dynamic texture conversion must preserve mips, colorspace, copy/readback and bounded residency before that target is supported.
 
-Timing clamp (10real seconds at10Hz advances6.667engine seconds), audio underruns, production population presets and broader simulation scheduling remain open. No global time multiplier, clamp removal, extra physics updates, density reduction or quality change is included in renderer comparisons. Standard640×360 and30FPS cap remain unchanged.
+Timing clamp (10 real seconds at 10 Hz advances 6.667 engine seconds), audio underruns, production population presets and broader simulation scheduling remain open. No global time multiplier, clamp removal, extra physics updates, density reduction or quality change is included in renderer comparisons. Standard 640×360 and 30 FPS cap remain unchanged.
+
+## Decision after the first matched run
+
+Run 39158844413 passed 32 synthetic correctness comparisons and reduced callback registrations 513→64, but did not demonstrate a 25% END CPU reduction. Profiling-off paired median wall improved 8.155%; profiled command CPU changed +2.462% and END CPU -2.322%, with large individual regressions. Separate-set profiled wall medians increased 83.129→91.244 ms. These are hosted Apple Paravirtual results, not phone evidence. Keep V2 off by default; repeated-run and device review are required.
+
+The next scheduling experiment should first attribute END's draw finalization, queue submission and registration separately. A later bounded logical-fence design may associate immutable replies with a retained encoder and register them at its actual submission, but must prove progress without PRESENT, enforce the 128-reply budget and a finite feed deadline, preserve queued-write coverage and stale-generation rejection, and measure readiness latency. It cannot certify unsent writes or defer a blocking consumer until a future frame. This design is not implemented by 0.40. The current source retains the old submission boundaries as a controlled baseline.
+
+The successful release-candidate repeat (39161149752) confirms the caution: profiled paired wall +17.891%, command CPU +1.626%, END CPU +2.300%; unprofiled paired wall -1.888% but separate-set wall median increases. See both complete benchmark files. The greater-than-5% repeated profiled wall regression blocks promotion; no default switch. The optional test build preserves the existing path.

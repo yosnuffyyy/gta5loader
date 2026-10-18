@@ -1,3 +1,14 @@
+NATIVE0.40 — EXPERIMENTAL COMPLETION-SERVICE VERTICAL SLICE
+Executable e14b5884feee5dc5d39f550899e4c797f168953d; CI39161149752 PASS.
+Existing renderer default; optional V2 startup selection, bounded128 replies.
+Matched host callbacks513->64 with unchanged65 submissions/64 draws.
+Timing results mixed: no25% dominant-cost or iPhone FPS gain established.
+All4808 shader pipelines and relevant runtime/input/sanitizer checks pass.
+Previous39 IPAs preserved. No stage advancement or Renderer V2 promotion.
+Broader scheduling, phone13 BC conversion, timer/audio defects remain open.
+See RENDERER-V2-RESULTS.md, RENDERER-V2-DESIGN.md and regression ledger.
+Release https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.40
+
 NATIVE0.39 — TEXTURE COPY COMPATIBILITY AND ORDERED TRANSFERS
 Validated source 68c1394b3d067e73aacb17bd3d7fe39091708315; CI 39152842578 PASS.
 Physical0.38: pause-menu COPY_REGION fatal after mixed Story Mode runtime.

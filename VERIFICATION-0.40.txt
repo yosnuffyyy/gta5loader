@@ -1,0 +1,19 @@
+NATIVE0.40 — EXPERIMENTAL COMPLETION-SERVICE VERTICAL SLICE
+Executable e14b5884feee5dc5d39f550899e4c797f168953d; CI39161149752 PASS.
+Existing renderer default; optional V2 startup selection, bounded128 replies.
+Matched host callbacks513->64 with unchanged65 submissions/64 draws.
+Timing results mixed: no25% dominant-cost or iPhone FPS gain established.
+All4808 shader pipelines and relevant runtime/input/sanitizer checks pass.
+Previous39 IPAs preserved. No stage advancement or Renderer V2 promotion.
+Broader scheduling, phone13 BC conversion, timer/audio defects remain open.
+See RENDERER-V2-RESULTS.md, RENDERER-V2-DESIGN.md and regression ledger.
+Release https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.40
+
+IPA 104973130 bytes
+SHA256 fd19c2f7078e7e10cac07066d223774633e93215cfeffad9f260266629d9b860
+UUID 0ae8b0f255963266a2e0f23b36462d74
+275 source entries verified. Existing app identity retained. ARM64 unsigned.
+64 total matched correctness replays across two workflows; final build successful.
+Only final run is a completed release build; initial same-source run cancelled during cold iOS compilation.
+See complete reports and benchmark JSON for gains, regressions and limitations.
+Physical V2 gameplay, audio, sustained performance and thermal effects unverified.

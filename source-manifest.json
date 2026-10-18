@@ -1,5 +1,5 @@
 {
-  "scope": "Native 0.40 Renderer V2 experimental completion-service vertical slice; existing renderer remains default. Identical-fence fan-out, queued-write fencing, differential validation and frozen startup selection. No shader, asset, heap, frame cap, engine clock or audio behavior changes. Validation pending.",
+  "scope": "Native 0.40 Renderer V2 experimental completion-service vertical slice; existing renderer remains default. Identical-fence fan-out, queued-write fencing, differential validation and frozen startup selection. No shader, asset, heap, frame cap, engine clock or audio behavior changes. Executable source e14b5884feee5dc5d39f550899e4c797f168953d validated by CI39161149752; experimental test release, physical promotion pending.",
   "files": [
     {
       "path": ".github/workflows/native-ios.yml",
