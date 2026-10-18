@@ -1388,8 +1388,8 @@
     },
     {
       "path": "native-ios/ui/NativeDashboard.inc",
-      "bytes": 30438,
-      "sha256": "0556b051004bf6514c7dfdbb915b64cae800cddafe20264641a84bdc1d3302e9"
+      "bytes": 30536,
+      "sha256": "12a9b4ef8dfde5c1d30fb1331a7e1870564365c2b6096e82519a7a8aaff6d4c3"
     },
     {
       "path": "native-ios/wait-fixture.wat",
