@@ -1,3 +1,17 @@
+NATIVE0.38 — ORDERED UPLOADS, NATIVE PCM AUDIO AND TIMER DIAGNOSTICS
+Validated source360bb27d7c3e3750611bebcfdc6adf00c98303e8; CI39141219526 PASS.
+Two host Metal replays: submissions262->13, uniform bytes131072->2560,
+exact buffer data and checked pixels/queries preserved. Not iPhone FPS.
+Native AVAudioEngine consumes original48kHz stereo ring; component tests pass,
+physical game sound/bank coverage and route/interruption checks still pending.
+Original timer clamp reproduced; safe slow-motion scheduler fix UNFINISHED.
+New GTA V (Test Build) name/icon; install identity,640x360/30cap,256cache,
+input/shadow/UI and37previousIPAs preserved. No stage-count advancement.
+Physical0.37 log confirms normal user stop, serious thermal state, unclassified
+last-window12.3intervalFPS; no0.38 device results exist yet.
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.38
+See NATIVE-0.38-RESULTS.md,VERIFICATION-0.38.txt,COLLECT-0.38-PERFORMANCE.txt.
+
 NATIVE0.37 — BOUNDED ASYNC QUERIES, HOT PIPELINE RETENTION AND RECOVERY
 Validated source 61f2bfa21812bfd4b50b64342b57a9a6397f71ec; CI39091280279 PASS.
 New host Metal comparisons and exact limitations: EXTREME-OPTIMIZATION-RESULTS.md.

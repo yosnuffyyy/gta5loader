@@ -1,0 +1,34 @@
+NATIVE 0.38 — DEVICE CHECKS
+
+Install the unsigned 0.38.0/build38 IPA over the same application identity.
+Keep 640x360, the 30 FPS cap, and the same reference-shadow setting used in
+0.37. Retain 0.37 for rollback. Existing game files are not part of this IPA.
+
+1. Check GTA V (Test Build), the supplied V/TEST icon, folder access, saves,
+   touch controls, DualSense switching and fullscreen. Do not change quality
+   settings during the primary comparison.
+2. Start a comparable Story Mode section. Mark visible gameplay only when
+   real 3D is visible. Record gameplay, cutscenes and loading separately.
+   Check actors, textures, shadows, weapons, driving and scene transitions.
+3. Listen for original dialogue, gunshots, footsteps, vehicle engines and
+   ambience. Test speakers and headphones. Background/resume and interrupt
+   playback. Report which categories are audible, silent or distorted.
+4. Share Full Log (.txt). Look for Native PCM output: running, nonzero PCM,
+   maximum queued frames, underruns and explicit output API errors. Consumed
+   PCM does not prove audibility; missing banks remain explicit errors.
+5. During a cutscene, compare a 10-second real-time interval with animation
+   and the new Engine timer at pad boundary observations. Do not equate a
+   displayed frame with a simulation update. The scheduler fix is unfinished.
+6. Compare the same visible workload with 0.37 after equivalent warm-up.
+   Record actual display p50/p95/p99, input event-to-hook latency, ordered
+   copies, pending mutation flushes, submissions, staging waits, uniform
+   bytes, process footprint, OS headroom and thermal state. Overlapping CPU
+   and wall categories must not be added together; GPU time remains unknown.
+7. Continue 10-20 minutes, including an area transition when practical.
+   Stop normally and export the complete log. If the app exits unexpectedly,
+   export Share Recovery Snapshot on next launch and retain the matching
+   iOS crash/jetsam diagnostic. Do not infer termination cause from CPU logs.
+
+0.38 host validation does not establish iPhone FPS, audible game assets,
+correct cutscene speed, sustained memory stability or mission completion.
+The primary comparison remains 640x360 with a 30 FPS cap.

@@ -1,0 +1,55 @@
+NATIVE 0.38 — ORDERED UPLOADS, NATIVE PCM OUTPUT, TIMER EVIDENCE
+
+Source: 360bb27d7c3e3750611bebcfdc6adf00c98303e8
+CI: 39141219526 / job 117715877470 PASS
+https://github.com/yosnuffyyy/gta5loader/actions/runs/39141219526
+Evidence artifact: 12142645751, 1,969,806 bytes
+Evidence ZIP SHA256: a0a0e80990f13c93842accdce026eed21b8d8f5c09cb15929666b1b8b798a292
+IPA artifact: 12142640834, ZIP 92,658,498 bytes
+IPA ZIP SHA256: 55c691ff2c2aa9f144ecec04ca7e3ed5e78313cf78a1f6d06a0f3a87ed5b3cca
+
+IPA: GTA-Native-Probe-0.38-unsigned.ipa
+104,980,739 bytes; version 0.38.0 / build 38
+SHA256: fe019a129b4ad68459347a6744d14fd78f8d1acc5c2f7e22309dbbba7356ea04
+Unsigned ARM64 iPhone executable; no WebKit or writable-executable segment.
+AVFoundation/AudioToolbox linked. Compiled AppIcon catalog and supplied icon
+verified. GTA V (Test Build); original bundle ID, saves and folder access kept.
+All 37 previous local IPAs hash-preserved. No game/web files in release assets.
+
+PASS: 265 native/workflow/manifest blob hashes equal the exact remote tree.
+PASS: two full native runtime processes, persistent save and startup checkpoint.
+PASS: 4808 original translated modules/native Metal pipelines,500 clip shaders.
+PASS: prior SRV/shadow/depth/query/compute/resource-lifetime pixel/byte checks.
+PASS: 71 production engine-input checks,197 UIKit checks,1374 watchdog asserts.
+PASS: worker/mailbox, memory allocator, archive-reader and recovery regressions.
+PASS: targeted ASan/UBSan and TSan suites. Not the entire engine/Metal driver.
+PASS: original PCM publication ABI; 20000 concurrent ring frames; full extent,
+      wrap, invalid occupancy, channels, underrun, disable and teardown tests.
+PASS: production AVAudioEngine source callback:1024 exact offline stereo frames.
+PASS: original fwTimer controlled-clock behavior and pause/resume reproduction.
+
+NEW GRAPHICS REPLAY, two macOS Metal runtime processes, same workload:
+257 original-shader draws;256 checked pixels and counted occlusion samples;
+exact vertex/64-KiB bytes, >2 arena rotations, independent update, unaligned
+ordering and destruction/reuse. Maximum pixel tolerance one 8-bit channel unit.
+Submissions262->13; batches256->7; uniform bytes131072->2560; completions17->1.
+Wall1051.813/1035.198 ->238.193/203.961ms.
+Handler active CPU112.877/108.661 ->18.393/19.849ms.
+Upload wall208.663/196.971 ->19.422/16.513ms (overlaps handler wall).
+New staging bound512KiB CPU+1MiB GPU;1540 copies/1316800 bytes.
+Existing16-batch/4MiB queued staging-pressure cap includes new bytes.
+HostO0/iOSO1; fixed before/after order, CI/cache noise; not iPhone FPS.
+
+Original timer clamp loses time below15updates/s: over10s real, engine delta
+sum is3.333/6.667/10/10s at5/10/15/30updates/s. This is NOT a scheduler fix.
+Clip/physics/cutscene catch-up must be validated before changing simulation.
+
+Earlier candidates failed isolated audio-suspend linkage, volatile qualifier
+preservation, and an old forced-batch test assumption. Each was corrected;
+no correctness assertion was removed. Final CI passes all applicable checks.
+
+UNVERIFIED: physical audible game sound, route/interruption behavior, missing
+LOW_LATENCY bank contents, lip-sync, corrected animation speed, actual GPU
+time, input-to-display latency, sustainable iPhone FPS and memory/thermals.
+111 untranslated shader records remain. No stage-count or30FPS success claim.
+See NATIVE-0.38-RESULTS.md and COLLECT-0.38-PERFORMANCE.txt.
