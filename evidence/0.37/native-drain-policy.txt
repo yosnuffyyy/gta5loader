@@ -1,0 +1,1 @@
+PASS: bounded ready-drain policy: 289 controlled-clock cases; full/partial budgets, producer idle, four-drain / 4 ms bounds and overflow; no producer wait.

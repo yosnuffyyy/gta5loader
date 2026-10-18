@@ -1,3 +1,15 @@
+NATIVE0.37 — BOUNDED ASYNC QUERIES, HOT PIPELINE RETENTION AND RECOVERY
+Validated source 61f2bfa21812bfd4b50b64342b57a9a6397f71ec; CI39091280279 PASS.
+New host Metal comparisons and exact limitations: EXTREME-OPTIMIZATION-RESULTS.md.
+Physical0.36 now confirmed by user through Prologue/funeral/Los Santos and
+Franklin/Lamar driving. Later app closure at severe memory pressure remains
+unresolved; CPU diagnostic action:none is not proof of jetsam.
+0.37 iPhone FPS, memory stability and input responsiveness remain pending.
+640x360/30FPS,256-entry limit, input/shadow/UI and36 prior IPAs preserved.
+No stage-count advancement from CI. Audio output remains unfinished.
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.37
+See VERIFICATION-0.37.txt and COLLECT-0.37-PERFORMANCE.txt.
+
 NATIVE0.36 — FULL SESSION LOGS AND OPTIONAL CPU PROFILE
 Validated source f30f83723017f2452dbe5660243906dedb425e13; CI39083899358 PASS.
 Share-only text-file export; no application file-size quota, bounded2MiB queue.

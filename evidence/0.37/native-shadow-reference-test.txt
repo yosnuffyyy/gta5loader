@@ -1,0 +1,1 @@
+PASS: structural reference empty-shadow contract: 66 checks; descriptor/upload mutations, sampler class, selector ambiguity, handle-independent identity relationships, missing comparison certificate, version/content changes.

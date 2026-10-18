@@ -1,0 +1,5 @@
+PASS: lookup benchmark workload0 (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear 734.497ms fingerprint+exact 54.983ms; first-entry+fingerprint 58.269ms;256 keys/1468 bytes each. Synthetic CPU only.
+PASS: lookup benchmark workload1 (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear 6.470ms fingerprint+exact 45.792ms; first-entry+fingerprint 6.274ms;256 keys/1468 bytes each. Synthetic CPU only.
+PASS: lookup benchmark workload2 (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear 1156.480ms fingerprint+exact 59.413ms; first-entry+fingerprint 64.436ms;256 keys/1468 bytes each. Synthetic CPU only.
+PASS: lookup benchmark workload3 (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear 64.714ms fingerprint+exact 60.896ms; first-entry+fingerprint 54.177ms;256 keys/1468 bytes each. Synthetic CPU only.
+PASS: pressure cold-boundaries and exact-key collision safety

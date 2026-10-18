@@ -1,0 +1,3 @@
+PASS: SRV protocol contracts, captured 708/709 mismatch, cube arrays starting at any face, 3D/MS, sentinels and uint32 overflow boundaries.
+Exhaustive range cases: 73216
+PASS: captured 5632/5633 five-mip single-layer array contract; 972 dimension/layer/MS combinations; old enum-equality rejection reproduced.

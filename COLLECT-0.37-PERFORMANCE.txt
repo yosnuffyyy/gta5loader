@@ -1,0 +1,14 @@
+Native0.37 device collection
+Source 61f2bfa21812bfd4b50b64342b57a9a6397f71ec
+IPA GTA-Native-Probe-0.37-unsigned.ipa
+SHA256 cc58cc617a3d143fe88305bc0d482015aa64d6f51b7d32605425f019331559b4
+
+Install over0.36 and keep the existing web folder. Use640x360,30FPS cap, same reference-shadow setting. Leave optional detailed CPU profiling off for the first comparable run; enable it only for a separate matched capture.
+
+Mark visible gameplay. Compare the vault and Franklin/Lamar driving sections, separating loading/cutscenes. Check movement, aim, fire/release, taps, controller/touch switching and focus recovery. Watch for incorrect shadows, characters, occlusion or scene transitions.
+
+Run10-20minutes if practical. Stop normally and Advanced > Share Full Log (.txt). Capture actual-display percentiles, cache creates/hits/evictions, event pending/peak/pressure, completion waits, upload time, resource census, footprint/headroom and thermal state. Do not add engine heap and logical GPU payload to footprint.
+
+If the app closes: reopen and use Advanced > Share Recovery Snapshot (.txt) before starting another run. Also export the previous full log. In iOS Analytics Data, retain any matching JetsamEvent or NativeProbe native crash report; a CPU resource report with Action taken:none does not prove termination cause.
+
+No device result is assumed by the host tests. Report gameplay progression and visual correctness alongside timings. Memory-pressure stability is still an open issue.

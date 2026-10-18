@@ -1,0 +1,1 @@
+PASS: recovery ring10000 updates; independent categories; fixed 24640 bytes memory; atomic complete replacement and orphan-temp preservation; bounded text,fsync and file errors retained. No simulated jetsam claim.

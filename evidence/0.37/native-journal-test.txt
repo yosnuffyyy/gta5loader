@@ -1,0 +1,3 @@
+PASS: file journal:80000 concurrent records, UTF-8, >3MiB full export, live concurrent snapshot, stable prefix, post-close export, repeated stop, duplicate-path protection, seven-byte partial writes and injected ENOSPC with explicit incomplete status. Fixed2MiB queue; no file-size quota.
+Journal host throughput:80000 enabled records 501.544ms;80000 inactive calls 0.118ms. Includes storage/sanitizer/scheduling, not iPhone FPS or latency.
+Session log: accepted/written 4435652/4435652 bytes; pending 0; producer waits 0 (0.000 ms); unrecorded 0 bytes; I/O OK. Fixed 2 MiB queue, no file-size quota; storage availability applies. Recovery snapshot I/O errno 0 (0 OK).
