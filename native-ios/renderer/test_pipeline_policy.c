@@ -11,8 +11,8 @@ int main(void){
  DrawKey collision=keys[0];collision.raster[3]=99;assert(memcmp(&collision,keys,sizeof(collision))); /* even a supplied colliding fingerprint cannot pass exact equality */
  for(unsigned workload=0;workload<4;workload++){
   for(unsigned i=0;i<256;i++){keys[i].shader[0]=workload==3?17+i:17;hashes[i]=pipeline_fingerprint(keys+i,sizeof(DrawKey));}
-  double ms[2];for(unsigned mode=0;mode<2;mode++){uint64_t start=ns();for(unsigned j=0;j<100000;j++){unsigned index=workload==1?0:workload==2?255:j%256;DrawKey k=keys[index];uint64_t h=mode?pipeline_fingerprint(&k,sizeof(k)):0;for(unsigned i=0;i<256;i++)if((!mode||hashes[i]==h)&&!memcmp(keys+i,&k,sizeof(k))){matches++;break;}}ms[mode]=(ns()-start)/1e6;}
-  printf("PASS: lookup benchmark workload%u (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear %.3fms fingerprint+exact %.3fms;256 keys/%zu bytes each. Synthetic CPU only.\n",workload,ms[0],ms[1],sizeof(DrawKey));
+  double ms[3];for(unsigned mode=0;mode<3;mode++){uint64_t start=ns();for(unsigned j=0;j<100000;j++){unsigned index=workload==1?0:workload==2?255:j%256;DrawKey k=keys[index];if(mode==2&&!memcmp(keys,&k,sizeof(k))){matches++;continue;}uint64_t h=mode?pipeline_fingerprint(&k,sizeof(k)):0;for(unsigned i=0;i<256;i++)if((!mode||hashes[i]==h)&&!memcmp(keys+i,&k,sizeof(k))){matches++;break;}}ms[mode]=(ns()-start)/1e6;}
+  printf("PASS: lookup benchmark workload%u (0 rotating same-shader,1 first-key,2 last-key,3 distinct shaders);100000 lookups linear %.3fms fingerprint+exact %.3fms; first-entry+fingerprint %.3fms;256 keys/%zu bytes each. Synthetic CPU only.\n",workload,ms[0],ms[1],ms[2],sizeof(DrawKey));
  }
- assert(matches==800000);puts("PASS: pressure cold-boundaries and exact-key collision safety");return 0;
+ assert(matches==1200000);puts("PASS: pressure cold-boundaries and exact-key collision safety");return 0;
 }

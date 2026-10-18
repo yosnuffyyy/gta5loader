@@ -393,8 +393,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 16155,
-      "sha256": "c9ec6939fec1337ccd8009a575f110138f4e097852681365055e91551a31a657"
+      "bytes": 16502,
+      "sha256": "da321b1e6309cd6570f0bc4b4efda9ab02b46647693e8d88baa9f8e06a228687"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -898,8 +898,8 @@
     },
     {
       "path": "native-ios/renderer/test_pipeline_policy.c",
-      "bytes": 1792,
-      "sha256": "7f91f35b16e47ce2e8dbf604ed68b30e1889e37a30922d76caf4df992134fcc0"
+      "bytes": 1909,
+      "sha256": "1360efb493259f470e57e2b670ee562244ec8f80574a3e73772ee4de982a474f"
     },
     {
       "path": "native-ios/renderer/test_query_state.c",

@@ -67,7 +67,11 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  if(!g->test_raw_pipeline_keys)
 #endif
  pipeline_key_normalize(&key,used_slots,pp?pp->outputs:0,ds&&draw_stencil(ds->td.format));
- uint64_t fingerprint=pipeline_fingerprint(&key,sizeof(key));DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
+ DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);
+ /* Preserve the cheap first-entry hit before hashing the full key. Equality
+    remains exact, including specializations and all normalized state. */
+ DrawPipeline *first=s->pipelines;if(first->pipeline&&!memcmp(&first->key,&key,sizeof(key))){first->age=++s->age;first->last_ns=now_ns();first->last_present=g->presents;s->hits++;return first;}
+ uint64_t fingerprint=pipeline_fingerprint(&key,sizeof(key));unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
  for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(q->fingerprint==fingerprint&&!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;q->last_ns=now_ns();q->last_present=g->presents;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
  unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
  bool recreated=false;DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;recreated=true;break;}
