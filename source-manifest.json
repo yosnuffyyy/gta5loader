@@ -87,24 +87,34 @@
       "sha256": "dd70221ca656f268d055bb0672db976d058d7d1ac21e9c7c6e42dabee90c3706"
     },
     {
+      "path": "native-ios/audio/bench_pcm.c",
+      "bytes": 949,
+      "sha256": "85114d776857d417a1abafb69bd32ef55bfa5eb4869b22dc80f879035ab3c93d"
+    },
+    {
       "path": "native-ios/audio/ci-test-audio.sh",
-      "bytes": 889,
-      "sha256": "d884ab32783be9296094b73b4ca481dfbfd42cd548fdf274613a9897a0c3b2a0"
+      "bytes": 1205,
+      "sha256": "3c5bdc604ec5183b2fbd74dd8b5eaafc29a04cbbfe53142595b5c7e9d5125247"
     },
     {
       "path": "native-ios/audio/native_audio.h",
-      "bytes": 330,
-      "sha256": "b2247f86e9a4a701402699bfebf36d38d672386f754adf8237937e0f5f1d9074"
+      "bytes": 339,
+      "sha256": "436b8cada9cfc8258a79320e0577e036d709ad33de44d5d9c097b56434f47538"
     },
     {
       "path": "native-ios/audio/native_audio.m",
-      "bytes": 5892,
-      "sha256": "66697d977e87bb29a23c235dd8089a37c90b5fa896af5b1736a64b19d13d0709"
+      "bytes": 5901,
+      "sha256": "353b8ae359a7075363abc514335b5015a5e6819baeb7114a5042d6866a2c592c"
     },
     {
       "path": "native-ios/audio/native_pcm.h",
-      "bytes": 3289,
-      "sha256": "b9f9170a941f4f47d4d35afbd4fd386719b828c2ef91177d472d63e9062a637e"
+      "bytes": 3334,
+      "sha256": "2c898b1090593c47dc05bdb41f2d68a14da2aab02a8198aa33f9a1c14b183a39"
+    },
+    {
+      "path": "native-ios/audio/test-publish.cjs",
+      "bytes": 1550,
+      "sha256": "58aaca99ddb5820b0bf49b222158d52a562cf71d26a378b8975279a9821828ad"
     },
     {
       "path": "native-ios/audio/test_output.m",
@@ -113,8 +123,8 @@
     },
     {
       "path": "native-ios/audio/test_pcm.c",
-      "bytes": 2798,
-      "sha256": "9144ef3344ba324debbbf7ed9d0e62453c754139fa7498c77f9fc4a8765dab52"
+      "bytes": 2978,
+      "sha256": "13aa079e02f614f88b33a4601b2725781b4f1969f63b55fc4e237b0fb68df1be"
     },
     {
       "path": "native-ios/ci-convert.sh",
@@ -663,8 +673,8 @@
     },
     {
       "path": "native-ios/renderer/ordered_fixture.inc",
-      "bytes": 5270,
-      "sha256": "9cad648824a1927aaad5f853b8f155f3904485c46304ff5c39fdfa9f99f5f627"
+      "bytes": 5732,
+      "sha256": "c30d944f2876338049232fcee9ddbea0765a075aa00a1d72e1c51377f2a84a48"
     },
     {
       "path": "native-ios/renderer/ordered_upload.inc",

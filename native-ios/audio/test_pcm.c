@@ -16,6 +16,7 @@ int main(void){
  for(unsigned i=0;i<5;i++){unsigned at=64+((read+i)&16383)*8;put(at,.25f*(i+1));put(at+4,-.125f*(i+1));}atomic_store(na_word(&p,0),read+5);
  assert(na_read(&p,l,r,8)==5);for(unsigned i=0;i<5;i++){assert(l[i]==.25f*(i+1));assert(r[i]==-.125f*(i+1));}for(unsigned i=5;i<8;i++)assert(l[i]==0&&r[i]==0);assert(atomic_load(na_word(&p,1))==read+5);
  read=atomic_load(na_word(&p,1));atomic_store(na_word(&p,0),read+16385);assert(!na_read(&p,l,r,2));assert(atomic_load(na_word(&p,1))==read&&atomic_load(&p.invalid)==1);atomic_store(na_word(&p,0),read);
+ put(64+(read&16383)*8,NAN);put(68+(read&16383)*8,INFINITY);atomic_store(na_word(&p,0),read+1);assert(na_read(&p,l,r,1)==1&&l[0]==0&&r[0]==0&&atomic_load(&p.nonfinite)==2);read++;
  atomic_store(&p.enabled,false);assert(!na_read(&p,l,r,8));assert(atomic_load(na_word(&p,1))==read);assert(!atomic_load(&p.readers));
  atomic_store(na_word(&p,0),UINT32_MAX-500);atomic_store(na_word(&p,1),UINT32_MAX-500);atomic_store(&p.enabled,true);
  pthread_t t;assert(!pthread_create(&t,NULL,producer,NULL));unsigned total=0;

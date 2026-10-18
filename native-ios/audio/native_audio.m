@@ -63,7 +63,7 @@ static void setup(void){static dispatch_once_t once;dispatch_once(&once,^{
  [center addObserverForName:AVAudioSessionMediaServicesWereResetNotification object:nil queue:nil usingBlock:^(NSNotification *n){(void)n;dispatch_async(control,^{disable();engine=nil;source=nil;activate();});}];
 #endif
  });}
-bool native_audio_start(_Atomic unsigned char *base,uint64_t size,uint64_t address,uint64_t capacity,char *error,size_t n){
+bool native_audio_start(volatile _Atomic unsigned char *base,uint64_t size,uint64_t address,uint64_t capacity,char *error,size_t n){
  setup();__block bool ok=false;dispatch_sync(control,^{
   disable();engine=nil;source=nil;wanted=false;memset(&pcm,0,sizeof(pcm));failure[0]=0;restarts=0;
   if(!na_attach(&pcm,base,size,address,capacity)){snprintf(failure,sizeof(failure),"Invalid original stereo PCM ring extent/header");}

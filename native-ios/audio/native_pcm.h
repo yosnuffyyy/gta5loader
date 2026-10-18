@@ -10,19 +10,19 @@
    One producer, one callback consumer. Attach/detach only while quiescent.
    Memory reservation must outlive detach and every callback. */
 typedef struct {
- _Atomic unsigned char *base;uint32_t capacity;uint64_t address;
+ volatile _Atomic unsigned char *base;uint32_t capacity;uint64_t address;
  _Atomic bool enabled;_Atomic unsigned readers;
  _Atomic uint64_t calls,frames,underrun_frames,invalid,nonfinite,nonzero;
  _Atomic uint32_t peak,available_max;
 } NativePCM;
-static inline _Atomic uint32_t *na_word(NativePCM *p,unsigned n){return (_Atomic uint32_t*)(p->base+p->address+4*n);}
-static inline bool na_attach(NativePCM *p,_Atomic unsigned char *base,uint64_t size,uint64_t address,uint64_t capacity){
+static inline volatile _Atomic uint32_t *na_word(NativePCM *p,unsigned n){return (volatile _Atomic uint32_t*)(p->base+p->address+4*n);}
+static inline bool na_attach(NativePCM *p,volatile _Atomic unsigned char *base,uint64_t size,uint64_t address,uint64_t capacity){
  if(!base||address%8||capacity<256||capacity>1048576||(capacity&(capacity-1))||address>size||64+capacity*8>size-address||atomic_load(&p->enabled)||atomic_load(&p->readers))return false;
  p->base=base;p->address=address;p->capacity=(uint32_t)capacity;
  if(atomic_load_explicit(na_word(p,2),memory_order_acquire)!=capacity){p->base=NULL;return false;}
  return true;
 }
-static inline void na_max(_Atomic uint32_t *p,uint32_t v){uint32_t old=atomic_load_explicit(p,memory_order_relaxed);if(v>old)atomic_store_explicit(p,v,memory_order_relaxed);}
+static inline void na_max(volatile _Atomic uint32_t *p,uint32_t v){uint32_t old=atomic_load_explicit(p,memory_order_relaxed);if(v>old)atomic_store_explicit(p,v,memory_order_relaxed);}
 static inline float na_sample(NativePCM *p,uint64_t at){uint32_t u=0;unsigned char *b=(unsigned char*)&u;for(unsigned i=0;i<4;i++)b[i]=atomic_load_explicit(p->base+at+i,memory_order_relaxed);float f;memcpy(&f,&u,4);return f;}
 static inline uint32_t na_read(NativePCM *p,float *left,float *right,uint32_t n){
  /* No allocation, locks, logging, syscalls, waits, or archive access. */

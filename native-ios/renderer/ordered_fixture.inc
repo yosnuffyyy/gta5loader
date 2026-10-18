@@ -3,6 +3,7 @@ static uint64_t ordered_baseline_submits,ordered_baseline_bytes;
 static bool ordered_fixture(struct w2c_env *h,bool legacy,char *report,size_t capacity){
  uint64_t base=atomic_load(&h->memory.size)-4194304,dst=base+3145728,flag=base+3144000,qaddr=base+3143000;
  NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);if(!g)return false;g->draw.fixture=true;g->test_legacy_ordered_upload=legacy;g->test_drain_controlled_clock=true;g->test_measure_draw=true;
+ if(!g->profile)g->profile=calloc(1,sizeof(*g->profile));if(!g->profile){native_gpu_end(g);return false;}
  host_put32(h,base,64);native_gpu_start(g,base,2097152,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
  bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[16387];
@@ -41,7 +42,7 @@ static bool ordered_fixture(struct w2c_env *h,bool legacy,char *report,size_t ca
  for(unsigned k=0;k<4;k++){uint32_t value;host_load(h,&value,dst+2048+65536+k*4,4);if(value!=0x12340000+k)ok=false;}
  if(!legacy&&g->ordered_capacity_flushes<2)ok=false;
  if(legacy){ordered_baseline_submits=g->submissions;ordered_baseline_bytes=g->draw.uniform_upload_bytes;}else ok=ok&&g->submissions<ordered_baseline_submits&&g->draw.uniform_upload_bytes<ordered_baseline_bytes&&g->ordered_uploads>1400;
- char timing[400];timing_text(&g->test_draw_times,"Original-shader DRAW wall (host only)",timing,sizeof(timing));
+ char timing[600];timing_text(&g->test_draw_times,"Original-shader DRAW wall (host only)",timing,sizeof(timing));size_t used=strlen(timing);snprintf(timing+used,sizeof(timing)-used,"\nInstrumented handler active CPU %.3f ms; drain residual CPU %.3f ms; completion wait wall %.3f ms. CPU categories exclude driver worker threads/GPU time.",g->profile->command_cpu/1e6,g->profile->stage[NP_RING_RESIDUAL].total_cpu/1e6,g->metrics.windows[METRIC_COMPLETION].total_ns/1e6);
  snprintf(report,capacity,"%s: ordered upload legacy %u: 256 original-shader draws/pixels and occlusion samples; exact VB and 64-KiB bytes, arena rotation, unaligned ordering and resource ID reuse; submissions/batches %llu/%llu, uniform bytes %llu; ordered copies/bytes %llu/%llu; arena bound 512 KiB CPU + 1 MiB GPU, existing 16-batch/4-MiB queue pressure preserved; wall %.3f ms, handler/upload %.3f/%.3f ms, completions %llu.\n%s\n%s",ok?"PASS":"FAIL",legacy,(unsigned long long)g->submissions,(unsigned long long)g->draw.batches,(unsigned long long)g->draw.uniform_upload_bytes,(unsigned long long)g->ordered_uploads,(unsigned long long)g->ordered_bytes,elapsed/1e6,g->metrics.frame_busy/1e6,g->metrics.frame_upload/1e6,(unsigned long long)g->metrics.windows[METRIC_COMPLETION].count,timing,native_gpu_error(g)?native_gpu_error(g):"Host Metal pixel/byte test, not iPhone FPS.");native_gpu_end(g);return ok;
 }
 #endif
