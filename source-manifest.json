@@ -163,8 +163,8 @@
     },
     {
       "path": "native-ios/compile-native.mjs",
-      "bytes": 9127,
-      "sha256": "7fa1ddc2a3725b733c495dcdff56797d5ecb02f2dc95002562b4252bd1b14c41"
+      "bytes": 9390,
+      "sha256": "70e187f0ec676b228e3c879dc7af79ed8197f0cb5235641220b4daf323f9f345"
     },
     {
       "path": "native-ios/diagnostics/ci-test-diagnostics.sh",

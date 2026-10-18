@@ -24,6 +24,8 @@ for(const target of ['macos','ios']){
  const sdk=execFileSync('xcrun',['--sdk',target==='ios'?'iphoneos':'macosx','--show-sdk-path'],{encoding:'utf8'}).trim();
  const arch=target==='ios'?['-target','arm64-apple-ios17.0']:[];
  const flags=[...common,'-isysroot',sdk,...arch,target==='ios'?'-O1':'-O0'];
+ // Fail a native-adapter interface error before compiling 128 engine partitions.
+ await run('clang',[...flags,'-fobjc-arc','-I'+root+'/wgpu/'+target+'/include',...(target==='macos'?['-DNATIVE_PROBE_CLI']:[]),'-fsyntax-only','native-ios/renderer/native_gpu.m']);
  const sources=[...generated,...runtime,'native-ios/audio/native_audio.m','native-ios/native_wait.c','native-ios/native_host.c','native-ios/diagnostics/native_journal.m','native-ios/diagnostics/native_profile.c','native-ios/native_runtime.c','native-ios/threading/native_threads.c','native-ios/input/native_input.c','native-ios/asset_io/native_asset_index.m','native-ios/asset_io/native_assets.c','native-ios/renderer/gpu_ring.c','native-ios/renderer/native_gpu.m','native-ios/renderer/native_scene.c',root+'/generated/probe.c'];
  let next=0,finished=0,reused=0;
  // Bound concurrent compiler memory; each partition contains hundreds of functions.
