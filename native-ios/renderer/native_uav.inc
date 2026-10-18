@@ -14,7 +14,7 @@ static bool uav_set(NativeGpu *g,const uint8_t *p,uint32_t n){if(!check(g,n>=3,"
      value of a preceding pending dispatch. Queue order permits reuse only
      after that encoder has been submitted, without a GPU completion wait. */
   if(g->counter_slot==1024&&!draw_flush(g))return false;draw_end_pass(g);if(!g->draw.encoder)g->draw.encoder=encoder(g);if(!g->draw.encoder)return false;
-  unsigned at=g->counter_slot++*4;wgpuQueueWriteBuffer(g->queue,g->counter_source,at,&value,4);wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,g->counter_source,at,counter,0,4);g->draw.counter_resets++;
+  unsigned at=g->counter_slot++*4;queue_write_buffer(g,g->counter_source,at,&value,4);wgpuCommandEncoderCopyBufferToBuffer(g->draw.encoder,g->counter_source,at,counter,0,4);g->draw.counter_resets++;
  }return !atomic_load(&g->failed);
 }
 static bool uav_copy_counter(NativeGpu *g,const uint8_t *p){Object *dst=object(g,gpu_word(p,0)),*v=uav_object(g,gpu_word(p,2));uint32_t at=gpu_word(p,1);if(!v)return false;

@@ -1,7 +1,7 @@
 name: Native iPhone prototype
 on:
   push:
-    branches: [native-ios-prototype]
+    branches: [native-ios-prototype, renderer-v2-experimental]
     paths: ['native-ios/**', '.github/workflows/native-ios.yml']
   workflow_dispatch:
 permissions:

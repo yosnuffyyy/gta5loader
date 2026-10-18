@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int launch(const char *game,const char *saves,void *layer,bool checkpoint,bool reference_shadow_compat,native_progress progress,void *context,char *report,size_t capacity){
+static int launch(const char *game,const char *saves,void *layer,bool checkpoint,bool reference_shadow_compat,bool v2,native_progress progress,void *context,char *report,size_t capacity){
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));w2c_gta *engine=calloc(1,sizeof(*engine));
  if(!h||!engine){free(h);free(engine);snprintf(report,capacity,"FAIL: native launch allocation");return 1;}
  host_init(h);h->engine=engine;h->progress=progress;h->progress_context=context;struct w2c_wasi__snapshot__preview1 wasi={.env=h};
@@ -22,7 +22,7 @@ static int launch(const char *game,const char *saves,void *layer,bool checkpoint
   threads=native_threads_begin(h);wasm_rt_allocate_memory_shared(&h->memory,8192,65536,false,65536);allocated=true;wasm2c_gta_instantiate(engine,h,&wasi);instantiated=true;
   if(progress)progress(context,"Starting actual engine constructors for native graphics startup…");
   w2c_gta_0x5F_wasm_call_ctors(engine);
-  assets=native_assets_begin(h);native_set_assets(assets);native_boot_prepare_options(h,layer,checkpoint,reference_shadow_compat);
+  assets=native_assets_begin(h);native_set_assets(assets);native_boot_prepare_execution(h,layer,checkpoint,reference_shadow_compat,v2);
   if(progress)progress(context,checkpoint?"Entering actual graphics-enabled main; native GPU backend and first archive boundary…":"Entering actual graphics-enabled main; reading real archives. Scene integration is experimental.");
   native_main_scene(h);
  }
@@ -34,6 +34,8 @@ static int launch(const char *game,const char *saves,void *layer,bool checkpoint
  if(instantiated)wasm2c_gta_free(engine);if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}
  free(engine);free(h);wasm_rt_free_thread();return result;
 }
-int native_scene_probe_options(const char *game,const char *saves,void *layer,bool compatibility,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,progress,context,report,capacity);}
-int native_scene_probe(const char *game,const char *saves,void *layer,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,false,progress,context,report,capacity);}
-int native_graphics_checkpoint(const char *game,const char *saves,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,NULL,true,false,progress,context,report,capacity);}
+int native_scene_probe_options(const char *game,const char *saves,void *layer,bool compatibility,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,false,progress,context,report,capacity);}
+int native_scene_probe(const char *game,const char *saves,void *layer,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,false,false,progress,context,report,capacity);}
+int native_graphics_checkpoint(const char *game,const char *saves,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,NULL,true,false,false,progress,context,report,capacity);}
+
+int native_scene_probe_execution(const char *game,const char *saves,void *layer,bool compatibility,bool v2,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,progress,context,report,capacity);}

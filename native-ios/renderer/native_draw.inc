@@ -15,8 +15,8 @@ static void draw_end_pass(NativeGpu *g){query_end_pass(g);if(g->draw.pass){wgpuR
 static bool draw_flush(NativeGpu *g){DrawState *s=&g->draw;draw_end_pass(g);if(!s->encoder)return !atomic_load(&g->failed);
  unsigned uniform_bytes=s->offset+g->ordered_offset;
  if(uniform_would_overflow(s->queued_uniform_bytes,uniform_bytes)){s->uniform_pressure_waits++;if(!completed(g))return false;}
- if(s->offset){wgpuQueueWriteBuffer(g->queue,s->uniforms[s->slot],0,s->mirror,s->offset);s->uniform_upload_bytes+=s->offset;}
- if(g->ordered_offset)wgpuQueueWriteBuffer(g->queue,g->ordered_buffers[g->ordered_slot],0,g->ordered_mirror,g->ordered_offset);
+ if(s->offset){queue_write_buffer(g,s->uniforms[s->slot],0,s->mirror,s->offset);s->uniform_upload_bytes+=s->offset;}
+ if(g->ordered_offset)queue_write_buffer(g,g->ordered_buffers[g->ordered_slot],0,g->ordered_mirror,g->ordered_offset);
  WGPUCommandEncoder e=s->encoder;s->encoder=NULL;if(!submit(g,e)||!query_submitted(g))return false;g->ordered_offset=0;g->ordered_slot=(g->ordered_slot+1)%2;g->counter_slot=0;g->transfer_ops=0;s->batches++;s->slot=(s->slot+1)%DRAW_UBO_SLOTS;s->offset=0;
  /* QueueWriteBuffer copies CPU bytes immediately and schedules the transfer
     before the next submission, after earlier submissions using this slot.

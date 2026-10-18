@@ -50,9 +50,9 @@ const key=hash(JSON.stringify(item));
   await run('clang',['-isysroot',sdk,...objects,root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','AVFoundation','-framework','AudioToolbox','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',folder+'/native-probe']);
   let result='';
   for(let pass=1;pass<=2;pass++){
-   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:120000});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);fs.writeFileSync(root+'/evidence/native-engine-test-failed-stderr.txt',String(error.stderr||''));console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed: status='+error.status+' signal='+error.signal+' code='+error.code+'; full output preserved in evidence');}
+   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:240000,env:{...process.env,NATIVE_RENDERER_V2_TEST:pass===2?'1':'0'}});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);fs.writeFileSync(root+'/evidence/native-engine-test-failed-stderr.txt',String(error.stderr||''));console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed: status='+error.status+' signal='+error.signal+' code='+error.code+'; full output preserved in evidence');}
    if(pass===2&&!output.includes('probe save from the previous run is intact'))throw Error('Persistent save was not verified in the second process');
-   result+='PROCESS '+pass+'\n'+output;console.log(output);
+   result+='PROCESS '+pass+' EXECUTION '+(pass===2?'V2':'EXISTING')+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
   // Independent compiler processes, bounded to the runner's three cores.

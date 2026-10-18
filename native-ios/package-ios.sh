@@ -44,6 +44,11 @@ xcrun vtool -show-build "$app/NativeProbe" | tee -a native-build/evidence/ios-bi
 otool -L "$app/NativeProbe" | tee -a native-build/evidence/ios-binary.txt
 if otool -L "$app/NativeProbe" | grep -q WebKit; then echo 'Unexpected WebKit dependency';exit 1;fi
 if codesign --verify "$app" 2>/dev/null; then echo 'Expected an unsigned app';exit 1;fi
+mkdir -p native-build/evidence/symbols
+xcrun nm -n "$app/NativeProbe" | gzip -c > native-build/evidence/symbols/NativeProbe.nm.txt.gz
+xcrun dwarfdump --uuid "$app/NativeProbe" > native-build/evidence/symbols/uuid.txt
+git rev-parse HEAD > native-build/evidence/symbols/source-revision.txt
+cp native-ios/compile-native.mjs native-build/evidence/symbols/compiler-settings.mjs
 cd native-build
 ditto -c -k --keepParent Payload GTA-Native-Probe-unsigned.ipa
 shasum -a 256 GTA-Native-Probe-unsigned.ipa | tee evidence/ipa-sha256.txt

@@ -1,8 +1,8 @@
 /* Event/timestamp compatibility replies use the existing protocol values,
    but publish only after actual queue completion. They are not GPU timers.
    Fixed callback storage belongs to NativeGpu until instance destruction. */
-static void event_done(WGPUQueueWorkDoneStatus status,WGPUStringView message,void *context,void *unused){
- (void)message;(void)unused;EventReply *r=context;NativeGpu *g=r->owner;
+static void event_publish(WGPUQueueWorkDoneStatus status,WGPUStringView message,EventReply *r){
+ (void)message;NativeGpu *g=r->owner;
  bool cancel=atomic_load(&g->stop)||atomic_load(&g->closing)||atomic_load(&g->failed);
  if(!cancel&&status!=WGPUQueueWorkDoneStatus_Success)fail(g,"Event query GPU completion failed");
  if(!cancel&&status==WGPUQueueWorkDoneStatus_Success){Object *q=object(g,r->id);
@@ -15,11 +15,15 @@ static void event_done(WGPUQueueWorkDoneStatus status,WGPUStringView message,voi
    }
   }else g->event_stale++;
  }
+}
+static void event_done(WGPUQueueWorkDoneStatus status,WGPUStringView message,void *context,void *unused){
+ (void)unused;EventReply *r=context;NativeGpu *g=r->owner;event_publish(status,message,r);
+ if(r->started)timing_add(&g->completion_latency,now_ns()-r->started);
  r->busy=false;if(g->event_pending)g->event_pending--;
 }
 static bool event_end(NativeGpu *g,Object *q,uint32_t sequence,uint64_t value){
  if(!check(g,g->event_token<UINT64_MAX,"Event query token exhausted"))return false;
- uint64_t deadline=now_ns()+15000000000ull;bool pressure=false;EventReply *r=NULL;
+ uint64_t started=now_ns(),deadline=started+15000000000ull;bool pressure=false;EventReply *r=NULL;
  while(!r){for(unsigned i=0;i<EVENT_REPLIES;i++)if(!g->events[i].busy){r=g->events+i;break;}
   if(r)break;if(!pressure){g->event_pressure++;pressure=true;}wgpuDevicePoll(g->device,false,NULL);
   if(atomic_load(&g->stop)||atomic_load(&g->failed))return false;
@@ -31,7 +35,7 @@ static bool event_end(NativeGpu *g,Object *q,uint32_t sequence,uint64_t value){
     reuse, future-batch retirement or asynchronous engine-state mutation. */
  if(!draw_flush(g))return false;
  q->event_token=++g->event_token;
- *r=(EventReply){.owner=g,.id=q->id,.generation=q->generation,.token=q->event_token,.sequence=sequence,.value=value,.busy=true};
+ *r=(EventReply){.owner=g,.id=q->id,.generation=q->generation,.token=q->event_token,.sequence=sequence,.value=value,.started=started,.busy=true};
  g->event_pending++;g->event_requests++;
  if(g->event_pending>g->event_peak)g->event_peak=g->event_pending;
  WGPUQueueWorkDoneCallbackInfo c=WGPU_QUEUE_WORK_DONE_CALLBACK_INFO_INIT;c.mode=WGPUCallbackMode_AllowProcessEvents;c.callback=event_done;c.userdata1=r;
