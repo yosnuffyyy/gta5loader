@@ -503,8 +503,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 86447,
-      "sha256": "5192ed0afb6acb9cb75e1494e02ff405b6bb03806fdfb5d5a776b9a08a5ad501"
+      "bytes": 86115,
+      "sha256": "860b0a07574eac53fea0e71335c797053f842968c8d9284dba7ecef3de049d09"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
