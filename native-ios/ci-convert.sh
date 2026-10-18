@@ -12,6 +12,8 @@ clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined nativ
 native-build/test-memory-policy | tee native-build/evidence/native-memory-policy.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_drain_policy.c -o native-build/test-drain-policy
 native-build/test-drain-policy | tee native-build/evidence/native-drain-policy.txt
+bash native-ios/audio/ci-test-audio.sh
+NATIVE_TIMING_ENGINE=native-build/engine-original.wasm node native-ios/timing/test-timer.cjs native-build/evidence/native-timer.json
 bash native-ios/diagnostics/ci-test-diagnostics.sh
 bash native-ios/threading/ci-test-session.sh
 bash native-ios/input/ci-test-input.sh

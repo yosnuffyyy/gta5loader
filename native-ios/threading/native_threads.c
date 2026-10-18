@@ -1,4 +1,5 @@
 #include "native_threads.h"
+#include "audio/native_audio.h"
 #include "native_pump.h"
 #include "native_log.h"
 #include "native_session.h"
@@ -41,7 +42,9 @@ typedef struct NativeWorker {
  const char *phase;
  char failure_text[256];
 } NativeWorker;
+#include "timing/native_time_trace.h"
 struct NativeThreads {
+ NativeTimeTrace time_trace;
  struct w2c_env *host;
  pthread_t owner;
  pthread_mutex_t mutex;
@@ -77,9 +80,10 @@ void native_scene_status(char *text,size_t size){
  if(!r)snprintf(text,size,"Native startup has no active runtime.");
  else {scene_watch_poll(r);native_log_flush(&r->log,r->host->progress,r->host->progress_context);char gpu[320];native_gpu_snapshot(r->gpu,gpu,sizeof(gpu));snprintf(text,size,"Live startup: %s; workers %u; proxies %u; owner mailbox %u; stop %u",gpu,atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)(atomic_load(&r->stopping)||atomic_load(&scene_stop)));size_t used=strlen(text);if(used<size){char session[400];scene_watch_summary(r,session,sizeof(session));snprintf(text+used,size-used,"\n%s",session);}}
  pthread_mutex_unlock(&scene_status_mutex);
+ size_t used=strlen(text);if(used<size){char audio[768];native_audio_summary(audio,sizeof(audio));snprintf(text+used,size-used,"\n%s",audio);}
 }
 void native_scene_request_stop(void){atomic_store(&scene_stop,true);}
-void native_scene_reset_stop(void){atomic_store(&scene_stop,false);atomic_store(&scene_suspended,false);}
+void native_scene_reset_stop(void){atomic_store(&scene_stop,false);atomic_store(&scene_suspended,false);native_audio_suspend(false);}
 static void check(struct w2c_env *h,bool yes,const char *why){if(!yes)host_unavailable(h,why);}
 static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
@@ -331,6 +335,7 @@ void native_threads_end(NativeThreads *r){
  if(!r)return;atomic_store(&r->stopping,true);signal_change(r);
  // The reader callback refers to r. Join it before freeing this context,
  // including unexpected engine failures with a queued request outstanding.
+ native_audio_stop();
  native_gpu_stop(r->gpu);
  native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++)if(r->workers[i].occupied&&!r->workers[i].joined)checked(pthread_join(r->workers[i].thread,NULL));
@@ -354,14 +359,14 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
   uint64_t pointer=~address;
   check(h,current&&current->main_mode,"input hook outside engine main");
   if(!current->boot_mode||!current->display)return;
-  if(pointer==12840656){scene_watch_hook(current);uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
+  if(pointer==12840656){native_time_observe(h,&current->time_trace,now_ns());scene_watch_hook(current);uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
   else if(ni_is_control(pointer)){uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
   /* As in the pinned browser bridge, other CControl instances retain their
      engine-owned source field. Never write an unverified object layout. */
   return;
  }
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");
- if(audio){current->audio=address;current->audio_capacity=capacity;}else current->input=address;
+ if(audio){check(h,address%8==0&&capacity>=256&&!(capacity&(capacity-1))&&host_range(h,address,64+capacity*8),"Invalid stereo audio ring extent");current->audio=address;current->audio_capacity=capacity;if(current->boot_mode&&current->display&&!current->gpu_checkpoint){char error[320];if(!native_audio_start(h->memory.data,atomic_load(&h->memory.size),address,capacity,error,sizeof(error))){host_log(h,"Error: native audio output unavailable; real playback is not established.");host_log(h,error);}else host_log(h,"Native audio connected to original 48 kHz stereo PCM ring; actual PCM/nonzero output statistics follow.");}}else current->input=address;
  if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,1);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,640);host_put32(h,address+436,360);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
  // Geometry/start-mode stays fixed at 640x360; pad delivery uses synchronous hooks.
 }
@@ -413,11 +418,11 @@ void native_main_scene(struct w2c_env *h){
  host_put64(h,p+8*count,0);w2c_gta_0x5F_main_argc_argv(h->engine,count,p);host_unavailable(h,"native main returned before a game scene");
 }
 bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
- NativeThreads *r=current;if(!r){snprintf(summary,capacity,"Native GPU service was not started.");return false;}atomic_store(&r->stopping,true);signal_change(r);native_gpu_stop(r->gpu);native_assets_stop(r->assets);
+ NativeThreads *r=current;if(!r){snprintf(summary,capacity,"Native GPU service was not started.");return false;}atomic_store(&r->stopping,true);signal_change(r);native_audio_stop();native_gpu_stop(r->gpu);native_assets_stop(r->assets);
  for(unsigned i=0;i<MAX_WORKERS;i++){NativeWorker *w=&r->workers[i];if(w->occupied&&!w->joined){checked(pthread_join(w->thread,NULL));w->joined=true;}if(w->failure&&!h->failure)h->failure=w->failure;}
  const char *gpu_failure=native_gpu_error(r->gpu),*io_failure=native_assets_failure(r->assets);if(gpu_failure&&!h->failure)h->failure=gpu_failure;if(io_failure&&!h->failure)h->failure=io_failure;native_gpu_summary(r->gpu,summary,capacity);
  native_log_flush(&r->log,h->progress,h->progress_context);native_log_diagnostics(&r->log,h->progress,h->progress_context);
- if(h->progress){char assets[384];native_memory_summary(h);native_assets_summary(r->assets,assets,sizeof(assets));h->progress(h->progress_context,assets);}
+ if(h->progress){char audio[768];native_audio_summary(audio,sizeof(audio));report(h,audio);char assets[384];native_memory_summary(h);native_assets_summary(r->assets,assets,sizeof(assets));h->progress(h->progress_context,assets);}
  if(r->gpu_checkpoint){const char *path=native_assets_boundary(r->assets);bool reached=atomic_load(&r->archive_boundary)&&native_gpu_ready(r->gpu)&&r->input&&r->audio&&path&&!strcmp(path,"x64/audio/audio.rpf")&&!h->failure;return reached;}
  if(r->watch_enabled){char session[512];scene_watch_summary(r,session,sizeof(session));report(h,session);}
  checked(pthread_mutex_lock(&r->watch_mutex));unsigned fault=r->session.fault;session_stop(&r->session);checked(pthread_mutex_unlock(&r->watch_mutex));

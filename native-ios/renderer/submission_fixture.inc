@@ -6,7 +6,7 @@ static void submission_profile_output(void *unused,const char *line){(void)unuse
 static bool submission_fixture(struct w2c_env *h,unsigned legacy,char *report,size_t capacity){
  if(legacy>=3)return false;
  uint64_t base=atomic_load(&h->memory.size)-262144,dst=base+131072,flag=base+128000,address=base+126000;
- native_profile_set_enabled(legacy==2);NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);native_profile_set_enabled(false);if(!g)return false;if(legacy==2&&!g->profile){native_gpu_end(g);return false;}g->draw.fixture=true;g->test_legacy_upload_flush=legacy==1;g->test_drain_flush=legacy<2;g->test_drain_controlled_clock=true;g->test_measure_draw=true;
+ native_profile_set_enabled(legacy==2);NativeGpu *g=native_gpu_create(h,NULL,NULL,NULL);native_profile_set_enabled(false);if(!g)return false;if(legacy==2&&!g->profile){native_gpu_end(g);return false;}g->draw.fixture=true;g->test_legacy_ordered_upload=true;g->test_legacy_upload_flush=legacy==1;g->test_drain_flush=legacy<2;g->test_drain_controlled_clock=true;g->test_measure_draw=true;
  host_put32(h,base,64);native_gpu_start(g,base,131072,0);uint64_t deadline=now_ns()+60000000000ull;
  while(!native_gpu_ready(g)&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
  bool ok=native_gpu_ready(g);uint32_t tail=64,cmd[128];

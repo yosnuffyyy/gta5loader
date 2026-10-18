@@ -5,7 +5,7 @@ mkdir -p "$app"
 sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 link=(xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" \
   -fobjc-arc -O1 -Inative-ios -framework UIKit -framework Foundation \
-  -framework Metal -framework GameController -framework UniformTypeIdentifiers \
+  -framework AVFoundation -framework AudioToolbox -framework Metal -framework GameController -framework UniformTypeIdentifiers \
   -framework QuartzCore -framework CoreGraphics -framework IOSurface -lc++ \
   -Wl,-no_adhoc_codesign -Wl,-dead_strip native-ios/App.m @native-build/ios/objects.txt native-build/ios/native_renderer.o native-build/wgpu/ios/lib/libwgpu_native.a -o "$app/NativeProbe")
 if ! "${link[@]}" > native-build/evidence/ios-link.txt 2>&1; then
@@ -24,6 +24,9 @@ else
 fi
 cat native-build/evidence/ios-link.txt
 cp native-ios/Info.plist "$app/Info.plist"
+node native-ios/artwork/prepare-icons.mjs
+xcrun actool native-build/Assets.xcassets --compile "$app" --platform iphoneos --minimum-deployment-target 17.0 --target-device iphone --target-device ipad --app-icon AppIcon --output-partial-info-plist native-build/icon-info.plist --output-format human-readable-text > native-build/evidence/icon-build.txt
+/usr/libexec/PlistBuddy -c "Merge native-build/icon-info.plist" "$app/Info.plist"
 cp native-ios/file-probes.json "$app/file-probes.json"
 cp native-build/wabt/LICENSE "$app/WABT-LICENSE.txt"
 cp native-build/wabt/third_party/simde/COPYING "$app/SIMDe-LICENSE.txt"

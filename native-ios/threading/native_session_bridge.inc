@@ -24,7 +24,7 @@ static void scene_watch_summary(NativeThreads *r,char *text,size_t size){
  checked(pthread_mutex_lock(&r->watch_mutex));session_summary(&r->session,now_ns(),text,size);checked(pthread_mutex_unlock(&r->watch_mutex));
 }
 void native_scene_suspend(bool suspended){
- atomic_store(&scene_suspended,suspended);checked(pthread_mutex_lock(&scene_status_mutex));NativeThreads *r=scene_runtime;
+ native_audio_suspend(suspended);atomic_store(&scene_suspended,suspended);checked(pthread_mutex_lock(&scene_status_mutex));NativeThreads *r=scene_runtime;
  if(r&&r->watch_enabled){checked(pthread_mutex_lock(&r->watch_mutex));session_suspend(&r->session,now_ns(),suspended);checked(pthread_mutex_unlock(&r->watch_mutex));}
  checked(pthread_mutex_unlock(&scene_status_mutex));
 }
