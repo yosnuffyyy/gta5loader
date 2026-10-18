@@ -1,0 +1,14 @@
+NATIVE 0.42 — SANDBOX REQUESTED-MODE BRIDGE REPAIR
+Executable ab51b47752066092280136f8327a8543b8a612ad; CI 39171815837 PASS.
+Correct +440 mode / +280 focus; original Sandbox scripts, isolated saves.
+Story argv/save behavior retained; complete Sandbox gameplay requires iPhone verification.
+169 original startup/script checks; production C publication bytes verified.
+Existing/V2 renderers, presets, audio/input/graphics unchanged; 41 prior IPAs preserved.
+See NATIVE-0.42-RESULTS.md.
+Release https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.42
+
+IPA 104977964 bytes
+SHA256 3db37e432c515f17892272633843f0cee70adf5d0d1daa7fbb85348086f8f13d
+UUID 4b57b6d55e4f3762a366429679890693
+280 source entries; UIKit 205; input71; watchdog1374; shaders4808.
+No physical Sandbox movement, mission suppression or new FPS claim.

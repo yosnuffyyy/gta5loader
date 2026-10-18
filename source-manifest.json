@@ -1,5 +1,5 @@
 {
-  "scope": "Native 0.42 targeted Sandbox launch repair. Original engine instructions, Story argv/save root, renderers/cache/quality/audio/input retained. Correct WasmInputBlock requested-mode publication, startup/script-native integration tests and explicit mismatch errors. Validation pending.",
+  "scope": "Native 0.42 targeted Sandbox launch repair. Original engine instructions, Story argv/save root, renderers/cache/quality/audio/input retained. Correct WasmInputBlock requested-mode publication, startup/script-native integration tests and explicit mismatch errors. Executable ab51b47752066092280136f8327a8543b8a612ad validated by CI 39171815837; physical Sandbox gameplay pending.",
   "files": [
     {
       "path": ".github/workflows/native-ios.yml",
