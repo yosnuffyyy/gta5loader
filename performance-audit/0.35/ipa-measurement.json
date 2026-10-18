@@ -1,0 +1,63 @@
+{
+  "result": "PASS",
+  "origin": "Static on-disk v35 ARM64 artifact, not execution/residency",
+  "ipa": "GTA-Native-Probe-0.35-unsigned.ipa",
+  "ipaBytes": 102339097,
+  "ipaSHA256": "8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c",
+  "binaryBytes": 411568952,
+  "UUID": "54C10F1A-5313-37AD-BC46-2EE7BDA32930",
+  "dSYMBundled": false,
+  "symbols": 4048948,
+  "stringTableBytes": 106701096,
+  "symbolTableBytes": 64783168,
+  "metadataFileBytes": 171484264,
+  "symbolTypes": {
+    "0xe": 3944042,
+    "0x1e": 4745,
+    "0x64": 19,
+    "0x66": 6,
+    "0x2e": 596,
+    "0x24": 1192,
+    "0x4e": 596,
+    "0x26": 34,
+    "0x20": 7,
+    "0xf": 97353,
+    "0x1": 358
+  },
+  "generatedNameSymbolTypes": {
+    "0xe": 3813640,
+    "0xf": 90873
+  },
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmBytes": 4294967296,
+      "fileBytes": 0,
+      "fileOffset": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmBytes": 230866944,
+      "fileBytes": 230866944,
+      "fileOffset": 0
+    },
+    {
+      "name": "__DATA_CONST",
+      "vmBytes": 3784704,
+      "fileBytes": 3784704,
+      "fileOffset": 230866944
+    },
+    {
+      "name": "__DATA",
+      "vmBytes": 49152,
+      "fileBytes": 32768,
+      "fileOffset": 234651648
+    },
+    {
+      "name": "__LINKEDIT",
+      "vmBytes": 176898048,
+      "fileBytes": 176884536,
+      "fileOffset": 234684416
+    }
+  ]
+}

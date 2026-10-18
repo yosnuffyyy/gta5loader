@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "olderIPAsHashed": 34,
+  "releasedV35Hashed": true,
+  "pinnedEngineUnchanged": true,
+  "nativeFilesUnchanged": 226,
+  "runtimeChanges": 0,
+  "scope": "Read-only native prototype and approved minimal-engine only; protected Desktop/offline paths not accessed."
+}

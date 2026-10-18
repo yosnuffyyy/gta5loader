@@ -1,0 +1,159 @@
+{
+  "result": "PASS",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "namedFunctions": 91111,
+  "scope": "Original Wasm name-section static mapping, not CPU sampling; optimized C may inline names.",
+  "matches": {
+    "simulation": [],
+    "visibility": [
+      {
+        "index": 43492,
+        "generated": "w2c_gta_f43492",
+        "name": "COcclusion::WaitForAllRasterizersToFinish()"
+      },
+      {
+        "index": 47953,
+        "generated": "w2c_gta_f47953",
+        "name": "CGameScan::KickVisibilityJobs()"
+      }
+    ],
+    "animation": [
+      {
+        "index": 46429,
+        "generated": "w2c_gta_f46429",
+        "name": "CDynamicEntity::UpdateSkeleton()"
+      },
+      {
+        "index": 46430,
+        "generated": "w2c_gta_f46430",
+        "name": "CDynamicEntity::InverseUpdateSkeleton()"
+      },
+      {
+        "index": 67872,
+        "generated": "w2c_gta_f67872",
+        "name": "CTaskAmbientClips::UpdateAnimationVFX(CClipHelper const*)"
+      },
+      {
+        "index": 82167,
+        "generated": "w2c_gta_f82167",
+        "name": "CWeapon::UpdateAnimationAfterFiring(CEntity*, float)"
+      }
+    ],
+    "physics": [
+      {
+        "index": 16020,
+        "generated": "w2c_gta_f16020",
+        "name": "rage::phSimulator::Update(float, bool)"
+      },
+      {
+        "index": 16027,
+        "generated": "w2c_gta_f16027",
+        "name": "rage::wasm_cb::S<void (*)(), &rage::phSimulator::UpdateMinConcaveThickness(), 0>::thunk(void*, void*, void*)"
+      },
+      {
+        "index": 82095,
+        "generated": "w2c_gta_f82095",
+        "name": "phInstBehaviorExplosionGta::ProcessCollisionsForOneFrame(std::__2::pair<phInstBehaviorExplosionGta*, rage::phInst*>*, int, WorldProbe::CShapeTestResults&)"
+      }
+    ],
+    "scripts": [
+      {
+        "index": 16953,
+        "generated": "w2c_gta_f16953",
+        "name": "rage::scrThread::Run(int)"
+      },
+      {
+        "index": 16959,
+        "generated": "w2c_gta_f16959",
+        "name": "rage::scrThread::Update(int)"
+      }
+    ],
+    "streaming": [
+      {
+        "index": 2040,
+        "generated": "w2c_gta_f2040",
+        "name": "rage::pgRscBuilder::AllocateMap(rage::datResourceMap&)"
+      },
+      {
+        "index": 6211,
+        "generated": "w2c_gta_f6211",
+        "name": "rage::strStreamingLoaderManager::Flush()"
+      }
+    ],
+    "pad": [
+      {
+        "index": 10454,
+        "generated": "w2c_gta_f10454",
+        "name": "rage::ioPad::Update(bool)"
+      },
+      {
+        "index": 10456,
+        "generated": "w2c_gta_f10456",
+        "name": "rage::ioPad::UpdateDebug()"
+      }
+    ],
+    "timebar": [
+      {
+        "index": 2701,
+        "generated": "w2c_gta_f2701",
+        "name": "rage::pfTimebarFuncs::StartCb_NoOp(unsigned long, char const*, char const*, unsigned int, bool, float, ProfileZoneType)"
+      },
+      {
+        "index": 4890,
+        "generated": "w2c_gta_f4890",
+        "name": "rage::dlCmdPushTimebar::ExecuteStatic(rage::dlCmdBase&)"
+      },
+      {
+        "index": 4891,
+        "generated": "w2c_gta_f4891",
+        "name": "rage::dlCmdPopTimebar::ExecuteStatic(rage::dlCmdBase&)"
+      },
+      {
+        "index": 4892,
+        "generated": "w2c_gta_f4892",
+        "name": "rage::dlCmdPushGPUTimebar::ExecuteStatic(rage::dlCmdBase&)"
+      },
+      {
+        "index": 4893,
+        "generated": "w2c_gta_f4893",
+        "name": "rage::dlCmdPopGPUTimebar::ExecuteStatic(rage::dlCmdBase&)"
+      },
+      {
+        "index": 4963,
+        "generated": "w2c_gta_f4963",
+        "name": "rage::dlCmdPushTimebar::dlCmdPushTimebar(char const*, float)"
+      },
+      {
+        "index": 4964,
+        "generated": "w2c_gta_f4964",
+        "name": "rage::dlCmdPopTimebar::dlCmdPopTimebar()"
+      },
+      {
+        "index": 4966,
+        "generated": "w2c_gta_f4966",
+        "name": "rage::dlCmdPushGPUTimebar::dlCmdPushGPUTimebar(int, char const*, float)"
+      },
+      {
+        "index": 7801,
+        "generated": "w2c_gta_f7801",
+        "name": "rage::netTimeBarWrapper::StartTimer(char const*, bool)"
+      },
+      {
+        "index": 8002,
+        "generated": "w2c_gta_f8002",
+        "name": "rage::netTimeBarWrapper::netTimeBarWrapper(bool)"
+      },
+      {
+        "index": 8003,
+        "generated": "w2c_gta_f8003",
+        "name": "rage::netTimeBarWrapper::PushTimer(char const*, bool)"
+      },
+      {
+        "index": 8004,
+        "generated": "w2c_gta_f8004",
+        "name": "rage::netTimeBarWrapper::PopTimer(bool)"
+      }
+    ],
+    "submission": []
+  }
+}

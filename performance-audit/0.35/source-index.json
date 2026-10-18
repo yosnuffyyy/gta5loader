@@ -1,0 +1,152 @@
+{
+  "source": "8047937b21007cea1efad62df2beb7d1c007bb43",
+  "files": [
+    {
+      "path": "native-ios/renderer/native_gpu.m",
+      "sha256": "ef10464b1bed0104f51c241a594a3c99621cc26cfda6ad5d622505510973a6eb",
+      "lines": {
+        "static bool completed": [
+          132
+        ],
+        "static bool present": [
+          253
+        ],
+        "static bool upload_texture": [
+          323
+        ],
+        "static bool end_query": [
+          338
+        ],
+        "static bool execute(": [
+          404
+        ],
+        "static void *loop": [
+          415
+        ]
+      }
+    },
+    {
+      "path": "native-ios/renderer/native_draw.inc",
+      "sha256": "dc5331ddd7bbb1d5c6f01f2a2a85bbda0e65b7daeb994cb3f3d00752001d05cf",
+      "lines": {
+        "static bool draw_uniforms": [
+          10
+        ],
+        "static bool draw_flush": [
+          15
+        ],
+        "static WGPUBindGroup draw_group": [
+          69
+        ],
+        "static bool draw_pass": [
+          98
+        ],
+        "static bool draw_execute": [
+          106
+        ]
+      }
+    },
+    {
+      "path": "native-ios/renderer/native_metrics.inc",
+      "sha256": "18c55cacd2fa1157ea16f5d1d4830d93fdbce02c6cf2634264918bc19be9fa43",
+      "lines": {
+        "static uint64_t thread_cpu_ns": [
+          3
+        ],
+        "static void metrics_report": [
+          10
+        ],
+        "static void metrics_present": [
+          19
+        ]
+      }
+    },
+    {
+      "path": "native-ios/renderer/draw_pipeline.inc",
+      "sha256": "1f413b084822f7ab50038b5343bc69381081bb048133aa55d38791076322ec49",
+      "lines": {
+        "static unsigned pipeline_capacity": [
+          25
+        ],
+        "static DrawPipeline *draw_pipeline": [
+          35
+        ]
+      }
+    },
+    {
+      "path": "native-ios/renderer/native_readback.inc",
+      "sha256": "2ba50a97971842622bfe732f597ddc9582ec41fdedfb30e3a8b5c2add2220555",
+      "lines": {
+        "static const uint8_t *readback_map": [
+          27
+        ],
+        "static bool readback(": [
+          35
+        ]
+      }
+    },
+    {
+      "path": "native-ios/asset_io/native_assets.c",
+      "sha256": "a9bbca71c0e8fb91c3514fee67669f20a7ee4d478aaaa18bc50917a1d5370efd",
+      "lines": {
+        "static int32_t serve": [
+          52
+        ],
+        "static void *read_loop": [
+          68
+        ]
+      }
+    },
+    {
+      "path": "native-ios/native_host.c",
+      "sha256": "f18df55f859a13f0a1d369783f716ec9eb56dfacf7f3872c5d9c8acac421e5b2",
+      "lines": {
+        "void host_load": [
+          41
+        ],
+        "void host_store": [
+          46
+        ]
+      }
+    },
+    {
+      "path": "native-ios/input/native_input.c",
+      "sha256": "261f713edf75e351b64dabbe7dfc3fb00671d219ff5f64be5458a2a3d8e1ae6d",
+      "lines": {
+        "static void enqueue": [
+          27
+        ],
+        "void ni_consume": [
+          63
+        ]
+      }
+    },
+    {
+      "path": "native-ios/threading/native_threads.c",
+      "sha256": "04208f7f1479b3f01b1d8f4baae0e6b349118070ca759a18a8fe3166bc78027b",
+      "lines": {
+        "void native_thread_tick": [
+          122
+        ],
+        "uint32_t native_language": [
+          372
+        ],
+        "void native_boot_prepare_options": [
+          406
+        ]
+      }
+    },
+    {
+      "path": "native-ios/memory/diagnostics.inc",
+      "sha256": "ded97509d1daeeb819fdca8e3ff8892d1f364537d075e0868c12406b780605e0",
+      "lines": {
+        "uint64_t native_stream_growth_context": [
+          5
+        ],
+        "uint64_t native_stream_available": [
+          25
+        ]
+      }
+    }
+  ]
+}

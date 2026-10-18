@@ -1,0 +1,90 @@
+{
+  "result": "PASS",
+  "scope": "Pinned Wasm allocator with test exports, two in-memory segment constants and optional original availability reference replacement. Production engine file unchanged; not a native adaptive/scene test.",
+  "results": [
+    {
+      "segmentCap": 33554432,
+      "request": 37314560,
+      "allocated": false,
+      "heap": 67092480,
+      "used": 0,
+      "available": 536870912,
+      "largest": 16777216
+    },
+    {
+      "segmentCap": 67108864,
+      "request": 37314560,
+      "allocated": false,
+      "heap": 134201344,
+      "used": 0,
+      "available": 536870912,
+      "largest": 33554432
+    },
+    {
+      "segmentCap": 67117056,
+      "request": 37314560,
+      "allocated": true,
+      "heap": 67108864,
+      "used": 67108864,
+      "available": 469762048,
+      "largest": 0
+    },
+    {
+      "segmentCap": 134217728,
+      "request": 37314560,
+      "allocated": true,
+      "heap": 134209536,
+      "used": 67108864,
+      "available": 469762048,
+      "largest": 33554432
+    }
+  ],
+  "slotResults": [
+    {
+      "cap": 33554432,
+      "heldObjects": 96,
+      "objectBytes": 8388608,
+      "slotsBeforeLargeRequest": 32,
+      "largeAllocationSucceeded": false
+    },
+    {
+      "cap": 134217728,
+      "heldObjects": 96,
+      "objectBytes": 8388608,
+      "slotsBeforeLargeRequest": 7,
+      "largeAllocationSucceeded": true
+    }
+  ],
+  "mixedResults": [
+    {
+      "cap": 134217728,
+      "cycles": 64,
+      "heap": 134209536,
+      "segments": 1,
+      "allLiveFreed": true
+    },
+    {
+      "cap": 67117056,
+      "cycles": 64,
+      "heap": 134217728,
+      "segments": 2,
+      "allLiveFreed": true
+    }
+  ],
+  "availability": [
+    {
+      "restoredOriginal": false,
+      "reported": "18446744073659219968",
+      "actualRetainedFree": "67100672",
+      "growthTarget": 16777216,
+      "live": 67108864
+    },
+    {
+      "restoredOriginal": true,
+      "reported": "67100672",
+      "actualRetainedFree": "67100672",
+      "growthTarget": 16777216,
+      "live": 67108864
+    }
+  ]
+}

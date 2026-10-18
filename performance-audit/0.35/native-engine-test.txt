@@ -1,0 +1,2071 @@
+PROCESS 1
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.2 MiB (sample, not peak).
+Streaming allocation retry: owner 0x7abcd0 request 67108864, segment cap 134217728; growth target 1073741824; live 0, retained heap 33546240, actual free 33546240, largest 16777216, segments 1/32; linear committed 591462400/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x23600000 +128 MB (cleared 0 MB, heap end before 0x23401000)
+
+PASS: actual engine resource allocator class1 at 0x7abcd0: 37,314,560-byte resource-map demand rounds to 64 MiB; real root Allocate/child Free and original live accounting verified.
+[wasm] region 0x2b800000 +32 MB (cleared 0 MB, heap end before 0x2b601000)
+
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+Warning: 
+Warning: 
+[wasm] region 0x2da00000 +32 MB (cleared 0 MB, heap end before 0x2d801000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 536870912; live 163840, retained heap 33546240, actual free 33382400, largest 16777216, segments 1/32; linear committed 799080448/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2da00000 +128 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 16777216; live 0, retained heap 16769024, actual free 16769024, largest 8388608, segments 1/32; linear committed 899743744/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2ca00000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Streaming allocation FAILED: owner 0x20577a8 request 37314560; returned NULL; linear committed 899743744/4294967296. No archive destination is fabricated.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x34000000 +32 MB (cleared 26 MB, heap end before 0x35a01000)
+
+[wasm] region 0x36200000 +32 MB (cleared 0 MB, heap end before 0x36001000)
+
+[wasm] region 0x38400000 +32 MB (cleared 0 MB, heap end before 0x38201000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 0 MB, heap end before 0x3a401000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 0 MB, heap end before 0x3c601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 0 MB, heap end before 0x3e801000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 0 MB, heap end before 0x40a01000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 0 MB, heap end before 0x42c01000)
+
+[wasm] region 0x45000000 +32 MB (cleared 0 MB, heap end before 0x44e01000)
+
+[wasm] region 0x47200000 +32 MB (cleared 0 MB, heap end before 0x47001000)
+
+[wasm] region 0x49400000 +32 MB (cleared 0 MB, heap end before 0x49201000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 0 MB, heap end before 0x4b401000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 402653184, retained heap 536739840, actual free 134086656, largest 4194304, segments 16/32; linear committed 1298202624/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x4d800000 +64 MB (cleared 0 MB, heap end before 0x4d601000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 461373440, retained heap 603840512, actual free 142467072, largest 4194304, segments 17/32; linear committed 1367408640/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x51a00000 +64 MB (cleared 0 MB, heap end before 0x51801000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 520093696, retained heap 670941184, actual free 150847488, largest 4194304, segments 18/32; linear committed 1436614656/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x55c00000 +64 MB (cleared 0 MB, heap end before 0x55a01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 578813952, retained heap 738041856, actual free 159227904, largest 4194304, segments 19/32; linear committed 1505820672/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x59e00000 +64 MB (cleared 0 MB, heap end before 0x59c01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 637534208, retained heap 805142528, actual free 167608320, largest 4194304, segments 20/32; linear committed 1575026688/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x5e000000 +64 MB (cleared 0 MB, heap end before 0x5de01000)
+
+[wasm] region 0x62200000 +64 MB (cleared 0 MB, heap end before 0x62001000)
+
+[wasm] region 0x66400000 +64 MB (cleared 0 MB, heap end before 0x66201000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x6a600000 +128 MB (cleared 0 MB, heap end before 0x6a401000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy0: 96 held eight-MiB objects, segment slots before transition 23/32; funeral allocation succeeded; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x34000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x36200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x38400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x45000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x47200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x49400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4d800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4fa00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x51c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x53e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x56000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x58200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5a400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5c600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5e800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x60a00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x62c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x64e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x67000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x69200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6b400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6d600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy1: 96 held eight-MiB objects, segment slots before transition 32/32; funeral allocation safely failed; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+PASS: original allocator funeral fixture: request 37314560, legacy largest 16777216; 64 fragmented transitions / 576 allocations, exact head/tail bytes, growable-capacity preflight / saturated accounting / full-slot limits, full live cleanup, same 536870912 growth target; candidate retained heap 167755776, peak live 67272704; insufficient segment growth remains failure. No phone-memory or next-scene claim.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.
+PASS: real engine wc_InitRng health test, 128-byte generation and wc_FreeRng using the native OS entropy device; output/state guards intact.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 1067.4 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 1066.9 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 64 synchronous main-thread proxies including filesystem capacity and signed errors while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 6186.80 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.6 MiB (sample, not peak).
+Streaming allocation retry: owner 0x7abcd0 request 67108864, segment cap 134217728; growth target 1073741824; live 0, retained heap 33546240, actual free 33546240, largest 16777216, segments 1/32; linear committed 591462400/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x23600000 +128 MB (cleared 0 MB, heap end before 0x23401000)
+
+PASS: actual engine resource allocator class1 at 0x7abcd0: 37,314,560-byte resource-map demand rounds to 64 MiB; real root Allocate/child Free and original live accounting verified.
+[wasm] region 0x2b800000 +32 MB (cleared 0 MB, heap end before 0x2b601000)
+
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+Warning: 
+Warning: 
+[wasm] region 0x2da00000 +32 MB (cleared 0 MB, heap end before 0x2d801000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 536870912; live 163840, retained heap 33546240, actual free 33382400, largest 16777216, segments 1/32; linear committed 799080448/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2da00000 +128 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 16777216; live 0, retained heap 16769024, actual free 16769024, largest 8388608, segments 1/32; linear committed 899743744/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2ca00000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Streaming allocation FAILED: owner 0x20577a8 request 37314560; returned NULL; linear committed 899743744/4294967296. No archive destination is fabricated.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x34000000 +32 MB (cleared 26 MB, heap end before 0x35a01000)
+
+[wasm] region 0x36200000 +32 MB (cleared 0 MB, heap end before 0x36001000)
+
+[wasm] region 0x38400000 +32 MB (cleared 0 MB, heap end before 0x38201000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 0 MB, heap end before 0x3a401000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 0 MB, heap end before 0x3c601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 0 MB, heap end before 0x3e801000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 0 MB, heap end before 0x40a01000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 0 MB, heap end before 0x42c01000)
+
+[wasm] region 0x45000000 +32 MB (cleared 0 MB, heap end before 0x44e01000)
+
+[wasm] region 0x47200000 +32 MB (cleared 0 MB, heap end before 0x47001000)
+
+[wasm] region 0x49400000 +32 MB (cleared 0 MB, heap end before 0x49201000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 0 MB, heap end before 0x4b401000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 402653184, retained heap 536739840, actual free 134086656, largest 4194304, segments 16/32; linear committed 1298202624/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x4d800000 +64 MB (cleared 0 MB, heap end before 0x4d601000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 461373440, retained heap 603840512, actual free 142467072, largest 4194304, segments 17/32; linear committed 1367408640/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x51a00000 +64 MB (cleared 0 MB, heap end before 0x51801000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 520093696, retained heap 670941184, actual free 150847488, largest 4194304, segments 18/32; linear committed 1436614656/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x55c00000 +64 MB (cleared 0 MB, heap end before 0x55a01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 578813952, retained heap 738041856, actual free 159227904, largest 4194304, segments 19/32; linear committed 1505820672/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x59e00000 +64 MB (cleared 0 MB, heap end before 0x59c01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 637534208, retained heap 805142528, actual free 167608320, largest 4194304, segments 20/32; linear committed 1575026688/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x5e000000 +64 MB (cleared 0 MB, heap end before 0x5de01000)
+
+[wasm] region 0x62200000 +64 MB (cleared 0 MB, heap end before 0x62001000)
+
+[wasm] region 0x66400000 +64 MB (cleared 0 MB, heap end before 0x66201000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x6a600000 +128 MB (cleared 0 MB, heap end before 0x6a401000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy0: 96 held eight-MiB objects, segment slots before transition 23/32; funeral allocation succeeded; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x34000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x36200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x38400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x45000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x47200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x49400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4d800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4fa00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x51c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x53e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x56000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x58200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5a400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5c600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5e800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x60a00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x62c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x64e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x67000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x69200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6b400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6d600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy1: 96 held eight-MiB objects, segment slots before transition 32/32; funeral allocation safely failed; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+PASS: original allocator funeral fixture: request 37314560, legacy largest 16777216; 64 fragmented transitions / 576 allocations, exact head/tail bytes, growable-capacity preflight / saturated accounting / full-slot limits, full live cleanup, same 536870912 growth target; candidate retained heap 167755776, peak live 67272704; insufficient segment growth remains failure. No phone-memory or next-scene claim.
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.
+PASS: real engine wc_InitRng health test, 128-byte generation and wc_FreeRng using the native OS entropy device; output/state guards intact.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 1066.9 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 1067.0 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 64 synchronous main-thread proxies including filesystem capacity and signed errors while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 6037.61 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final valid changing light states. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final real-comparison invalid709 rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final ambiguous selector rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final changed source version rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final invalid mip range rejected. Original BC1 bytes retained.
+PASS: semantic multi-shadow:12 draws/3072 checked pixels; two placeholders, independent real LessEqual shadow, binding65/linked variants, handle replacement, one cube,14 reference uses,4 pipelines/8 hits. No scene-pixel or phone FPS claim.
+PASS: buffer dependency replay legacy0:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 9/14; uniform packs/bytes 22/5632; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 104.832/5.129 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.024/0.005/0.060/1.047/1.047; lifetime 96 calls 2.313 ms max 1.047
+No device FPS or GPU execution claim.
+PASS: buffer dependency replay legacy1:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 98/103; uniform packs/bytes 192/49152; independent/dependent uploads 0/95; completions 7; pressure waits 6; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 422.975/50.945 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 3.269/0.008/18.331/40.235/40.235; lifetime 96 calls 313.835 ms max 40.235
+No device FPS or GPU execution claim.
+PASS: buffer dependency replay legacy2:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 7/12; uniform packs/bytes 18/4608; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 2; Handler/upload wall 117.696/2.731 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.016/0.003/0.011/1.047/1.047; lifetime 96 calls 1.503 ms max 1.047
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.015/0.001/0.009/1.087/1.087; lifetime 96 calls 1.468 ms max 1.087
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.027/0.002/0.047/1.689/1.689; lifetime 96 calls 2.600 ms max 1.689
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.230/0.008/0.910/3.392/3.392; lifetime 96 calls 22.110 ms max 3.392
+No device FPS or GPU execution claim.
+PASS: inter-stage output/input relabeling: 3 cases, all 256 pixels checked; consumed location15, flat provoking-vertex colors, unused location15 and preserved clip distances. Native CI limit 15; original vertex inputs and fragment color outputs retained.
+PASS: native resource transitions: 44 cases; GPU-only upload neighbors, scratch reuse, array/3D copy bytes, source-destroyed copies and retained MSAA resolve. Bounded 40-byte upload scratch; no CPU readback or completion wait.
+PASS: native format compatibility: 18 normalized16 output cases across six formats; exact upload/readback and signed sampling; 18 border sampler cases through production descriptors; all 16 pixels per case checked.
+PASS: UAV/compute: 16 output cases; ordered reset/preserve/copy across staging reuse, independent per-view counters, raw/structured clears, original fill/copy with exact ranges, typed storage variants, original draw pixels, mip chains and presented-pixel sampling. 29 original compute pipelines compiled; compilation alone is not scene rendering.
+PASS: depth proxy: 14 cases, all 256 pixels checked; depth/stencil float and integer sampling, float comparison, mip/layer ranges, draw/clear/upload/copy invalidation, unchanged-source reuse and cleanup.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: instance input: 10 cases, all 256 pixels checked; rate0/1/2/3, zero stride, mixed rates, nonzero starts, instance IDs, indexed/indirect and bounded counts; no vertex expansion.
+PASS: raw readback: 36 cases across 30 formats, mip/array/3D boxes, compressed edges, A8, buffer boxes, guards and transfers above 1 MiB; one staging buffer capped at 1 MiB.
+PASS: signed 8-bit R8/RG8/RGBA8 render targets: 9 cases; clear, additive draw, upload, copy, raw signed readback and sampling; all 16 pixels per case verified.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws; equivalent state reuses cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; native format caps 1; SNORM cases 9; commands 1137; uploads 117; readbacks 141; surface frames 0; draws 41; pipelines 16 (hits 25); last opcode FENCE; readback staging peak 1024 KiB (4 allocations); readback cases 36; instance cases 10; stepped draws/batches 9/17; indirect decodes 2; depth proxy cases 14; proxy allocations/refreshes/reuses 5/11/2; proxy peak 7 KiB; live proxy bytes/passes 0/0; UAV cases 16; compute pipelines/dispatches 32/8; counter reset/initial-count-unused/copy 1122/4/10; UAV clears 6; view proxy peak 0 KiB (7 copies), live 0; mips 4 (live passes 0); presented pixel samples 2, RGB 64/143; normalized16 cases 18; border cases 18; clip cases 12; byte-edge dispatches/words 12/16; whole-copy subresources/submissions 58/34; resource cases 44; queue submissions 417; logical engine GPU payload live/peak 0/1035 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 15/3; varying pixel cases 3; occlusion count cap 1; query cases 0; scope begins/ends 0/0; segments/maps 0/0; results/empty/stale 0/0/0; query pages 0/4; query GPU live/peak 0/0 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+Offscreen fixtures; no game scene is claimed.
+PASS: native counting occlusion/predicate queries: 180 cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.
+Query queue policy bounded queue reuse: 11/11 map completions, 2 bounded-pool waits (30.367ms); every query result checked.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 812; uploads 13; readbacks 0; surface frames 0; draws 185; pipelines 6 (hits 179); last opcode FENCE; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 16; logical engine GPU payload live/peak 0/12 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 180; scope begins/ends 182/181; segments/maps 183/11; results/empty/stale 179/1/3; query pages 4/4; query GPU live/peak 0/68 KiB; pool waits 2 (30367 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+
+PASS: native counting occlusion/predicate queries: 180 cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.
+Query queue policy 0.23 reference: 11/11 map completions, 0 bounded-pool waits (0.000ms); every query result checked.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 812; uploads 13; readbacks 0; surface frames 0; draws 185; pipelines 6 (hits 179); last opcode FENCE; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 16; logical engine GPU payload live/peak 0/12 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 180; scope begins/ends 182/181; segments/maps 183/11; results/empty/stale 179/1/3; query pages 3/4; query GPU live/peak 0/51 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+
+PASS: SRV/proxy remaining ranges: 9 GPU pixel cases (2304 pixels), mip/array suffixes, source writes, source ID reuse, actual six-face cube, direct depth view; invalid boundary 0. Generic descriptor fixture; captured 709/708 replay is tested separately.
+Fixture CPU submit/map 9 calls: mean/max 9.148/24.237 ms; post-completion sleeps avoided 10; proxy payload peak 7680 bytes. Offscreen Mac/fixture timings are not iPhone frame times or GPU execution time.
+PASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.
+PASS: captured 709/708 SRV shadow replay: 20 cases, 5120 pixels; original uniform-controlled cube/spot code, valid six-face float/BC1 cubes and two mips, disabled/spot fallback equivalence, cache reuse and source ID reuse. Invalid case 0. Synthetic upload/uniform/geometry inputs; no game scene claimed.
+PASS: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.
+PASS: signed light-count captured SRV replay (corrected): 20 cases/5120 pixels; no-light stale cube selector, signed count boundaries, active six-face cube and spot paths retained.
+PASS: signed light-count captured SRV replay (0.22 proof reference): SRV range outside texture: source 708 DXGI 71 native 50, dimension 2 size 4x4x1 mips 1 samples 1 version 2; SRV 709 raw[709,0,708,71,4,0,1,0,0]; shader binding 46 slot 14 dimension 4 sample 4 MS 0; requested layers 6. Explicit invalid ranges are not clamped; SRV/shader dimension or multisample mismatch  guard(6:63 p0 arm1 literal0 raw3f800000) guard(6:63 p0 arm1 literal3 raw3f800000) guard(3:8 p1 arm0 literal0 raw00000000) [DRAW, opcode 32] VS 101 028921879df627f5; PS 901 ffffffff00000223; CS 0 0000000000000000; payload(6) 0,6,1,0,0,0
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final valid transitions. Original2D bytes/layers retained.
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final active2D rejected. Original2D bytes/layers retained.
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final ambiguous2D rejected. Original2D bytes/layers retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final valid changing light states. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final real-comparison invalid709 rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final ambiguous selector rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final changed source version rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final invalid mip range rejected. Original BC1 bytes retained.
+PASS: pending-draw shadow eviction: six stripes, 256 pixels, exact 192 occlusion samples; 6 variants, 2 evictions/submits, cached pipeline recreation and final cleanup. No per-draw completion wait.
+PASS: equivalent vertex-layout identity semantic key: six draws/1536 pixels; creates/hits 2/4; changed color offset remains a distinct pipeline and changes pixels. Pipeline API CPU wall 18.997 ms; driver cache/order dependent, not iPhone FPS.
+PASS: equivalent vertex-layout identity 0.21 reference: six draws/1536 pixels; creates/hits 3/3; changed color offset remains a distinct pipeline and changes pixels. Pipeline API CPU wall 1.498 ms; driver cache/order dependent, not iPhone FPS.
+PASS: pipeline state equivalence semantic key: 64 draws/16384 checked pixels; creates/hits 1/63, evictions 0; pipeline API wall 0.346ms. Cache bounded at 256 (128 under pressure); retained native pipelines 1 (driver bytes unknown), no iPhone FPS claim. 
+PASS: fresh-object ordering corrected: 8 draws, 256 pixels, exact 2048 occlusion samples; batches 1, fresh flushes avoided 8. Existing-resource uploads/destruction still flush. 
+PASS: pipeline state equivalence 0.22 raw key: 64 draws/16384 checked pixels; creates/hits 32/32, evictions 0; pipeline API wall 10.445ms. Cache bounded at 256 (128 under pressure); retained native pipelines 32 (driver bytes unknown), no iPhone FPS claim. 
+PASS: fresh-object ordering 0.22 reference: 8 draws, 256 pixels, exact 2048 occlusion samples; batches 8, fresh flushes avoided 0. Existing-resource uploads/destruction still flush. 
+PASS: uniform queue ordering bounded queue reuse: 96 changing-constant batches, 32 slot wraps, all 256 pixels and exact 96 samples; completion waits 7, CPU wait 52.747ms, pressure waits 6; no stale uniform data. 
+PASS: uniform queue ordering 0.23 reference: 96 changing-constant batches, 32 slot wraps, all 256 pixels and exact 96 samples; completion waits 33, CPU wait 281.961ms, pressure waits 0; no stale uniform data. 
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.001ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 49.032ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 128: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 576/0/448; live peak 128, pressure evictions 0; pipeline API 66.036ms, link 30.417ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 26.613ms, link 11.538ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: pipeline working set policy 1: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 448/128/256; live peak 192, pressure evictions 64; pipeline API 81.390ms, link 35.643ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: SRV contract GPU suite: 30 cases / 480 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; single-layer 2D/array float/uint/sint bindings; ten controlled descriptor/lifetime failures.
+PASS: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native capabilities: Apple Paravirtual device; BC 1; BC3D 1; norm16 1; SNORM rendering 1; sampler border 1; clip distances 1; float32 filter 1; depth32+stencil 1; indirect first instance 1; unclipped depth 1; BGRA storage 1; RG11 render 1; max2D 16384; buffer 3584 MiB; storage binding 3584 MiB; uniform/storage alignment 256/256; color attachments 8; compute threads 1024, shared 32 KiB. inter-stage variables 31. Capabilities are negotiated, not proof of gameplay.
+Native query capability: Metal counting 1; exact sample counts and Boolean predicates; bounded asynchronous results
+Native startup: process 119.4 MiB (highest 1-second sample 119.4 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 118.5 MiB (highest 1-second sample 119.4 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Buffer mutation dependencies: independent uploads 0; required pending-draw flushes 0; 8 metadata bytes per live object; no new staging. Ready-drain submissions avoided 0; four-drain bound flushes 0 (4 ms checked between drains, never waits for more work).
+Certified inactive-shadow variants: creates/hits/evictions 0/0/0; at most 4 per live source shader. Active mismatches remain errors.
+Inactive-shadow eviction submits with pending work: 0 (no added per-draw completion wait).
+Game pipeline cache: capacity 256; creates/hits/evictions 0/0/0; unfinished frame handler/upload/allocation wall 0.000/0.000/0.000 ms. Subcategories overlap handler wall; do not sum them.
+Pipeline recreation window: 0 exact key matches among last 0 evicted keys (maximum 64, incomplete history); key bytes 1468, cache metadata 534272 bytes excluding driver allocations. Fresh-object pending flushes avoided 0.
+Pipeline live/peak 0/0, pressure evictions 0; maximum 256 handles, pressure capacity 128, driver bytes unknown. Uniform slot-wrap waits avoided 0; bounded staging pressure waits 0 (16 batches or 4 MiB).
+Uniform batches already retired by ordered readback maps: 0; staging caps remain16 batches/4MiB. This prevents redundant later completion waits, not the required readback itself.
+PRESENT submission intervals (not displayed FPS): no samples
+GPU-service CPU between PRESENTs (not engine CPU): no samples
+Command handler wall time per PRESENT (nested waits included): no samples
+Original WGSL module CPU wall (excludes linked variants): no samples
+Game DRAW pipeline API CPU wall: no samples
+Readback submit/map CPU wall (not GPU execution): no samples
+Queue completion CPU wait: no samples
+Upload handler wall per PRESENT: no samples
+Resource create/destroy wall per PRESENT: no samples
+Varying-link CPU wall (reflection and module creation): no samples
+Proven-inactive shadow variant module CPU wall: no samples
+Immutable per-batch uniforms: packs/reuses 0/0; GPU uniform upload bytes 0. Exact bytes/zero fill checked; no cross-batch reuse or extra GPU memory.
+Submission context: queue submits 0, draw batches 0; protocol buffer/texture uploads 0/0; byte-edge submits 0, whole-copy submits 0. Counts overlap and include preceding draw flushes; uniform uploads reported separately. No GPU timing inference.
+First 64 PRESENT intervals (startup, includes loading): no samples
+Intervals after first compute (not a scene detector): no samples
+Timing limits: no true GPU timestamps or engine-frame CPU hook; no sustained-gameplay classification. Readbacks 0; callback post-completion sleeps avoided 0; timing storage 29552 bytes, latest 256 samples per series.
+Bounded CPU cost records: up to eight worst PRESENT intervals and commands >=8ms. Includes loading. Nested categories overlap; idle is time waiting for the producer. These are not displayed frames or GPU execution times.
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 6258.12 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+Recent/category diagnostics and initialization progress (may be recoverable):
+Initialization diagnostics: 0 error/assert messages; scene-sphere requests 0; animated camera starts 0. Last camera: none
+Allocator retry/failure history: latest 0 of 0 bounded events; 4 GiB linear limit retained. Engine Available is bounded logical streaming headroom; actual free and OS headroom are separate.
+Asset read service wall (excludes queued wait): no samples
+Asset descriptor cache hits/misses 0/0; one 64 KiB buffer and at most eight descriptors preserved.
+Asset stop snapshot: 1 pending/in-flight slots, 0 nonempty NULL destinations; reader joined. Cancellations do not imply successful reads.
+Asset reads: 0 requests, 0 MiB delivered; I/O errors 0; size mismatches 0; unexpected short reads 0. Expected EOF/range clipping is not an error.
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 0; logical engine GPU payload live/peak 0/0 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 0; scope begins/ends 0/0; segments/maps 0/0; results/empty/stale 0/0/0; query pages 0/4; query GPU live/peak 0/0 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+This is an integration checkpoint, not a game scene.
+PROCESS 2
+PASS: native engine instantiation, strings, memory comparison, math, byte order and shared-memory growth.
+91,026 engine functions compiled.
+This is a diagnostic prototype; Use the runtime test for constructor and file-host validation. Gameplay remains pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 35.9 MiB (sample, not peak).
+Streaming allocation retry: owner 0x7abcd0 request 67108864, segment cap 134217728; growth target 1073741824; live 0, retained heap 33546240, actual free 33546240, largest 16777216, segments 1/32; linear committed 591462400/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x23600000 +128 MB (cleared 0 MB, heap end before 0x23401000)
+
+PASS: actual engine resource allocator class1 at 0x7abcd0: 37,314,560-byte resource-map demand rounds to 64 MiB; real root Allocate/child Free and original live accounting verified.
+[wasm] region 0x2b800000 +32 MB (cleared 0 MB, heap end before 0x2b601000)
+
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+Warning: 
+Warning: 
+[wasm] region 0x2da00000 +32 MB (cleared 0 MB, heap end before 0x2d801000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 536870912; live 163840, retained heap 33546240, actual free 33382400, largest 16777216, segments 1/32; linear committed 799080448/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2da00000 +128 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 16777216; live 0, retained heap 16769024, actual free 16769024, largest 8388608, segments 1/32; linear committed 899743744/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2ca00000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Streaming allocation FAILED: owner 0x20577a8 request 37314560; returned NULL; linear committed 899743744/4294967296. No archive destination is fabricated.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x34000000 +32 MB (cleared 26 MB, heap end before 0x35a01000)
+
+[wasm] region 0x36200000 +32 MB (cleared 0 MB, heap end before 0x36001000)
+
+[wasm] region 0x38400000 +32 MB (cleared 0 MB, heap end before 0x38201000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 0 MB, heap end before 0x3a401000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 0 MB, heap end before 0x3c601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 0 MB, heap end before 0x3e801000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 0 MB, heap end before 0x40a01000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 0 MB, heap end before 0x42c01000)
+
+[wasm] region 0x45000000 +32 MB (cleared 0 MB, heap end before 0x44e01000)
+
+[wasm] region 0x47200000 +32 MB (cleared 0 MB, heap end before 0x47001000)
+
+[wasm] region 0x49400000 +32 MB (cleared 0 MB, heap end before 0x49201000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 0 MB, heap end before 0x4b401000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 402653184, retained heap 536739840, actual free 134086656, largest 4194304, segments 16/32; linear committed 1298202624/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x4d800000 +64 MB (cleared 0 MB, heap end before 0x4d601000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 461373440, retained heap 603840512, actual free 142467072, largest 4194304, segments 17/32; linear committed 1367408640/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x51a00000 +64 MB (cleared 0 MB, heap end before 0x51801000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 520093696, retained heap 670941184, actual free 150847488, largest 4194304, segments 18/32; linear committed 1436614656/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x55c00000 +64 MB (cleared 0 MB, heap end before 0x55a01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 578813952, retained heap 738041856, actual free 159227904, largest 4194304, segments 19/32; linear committed 1505820672/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x59e00000 +64 MB (cleared 0 MB, heap end before 0x59c01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 637534208, retained heap 805142528, actual free 167608320, largest 4194304, segments 20/32; linear committed 1575026688/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x5e000000 +64 MB (cleared 0 MB, heap end before 0x5de01000)
+
+[wasm] region 0x62200000 +64 MB (cleared 0 MB, heap end before 0x62001000)
+
+[wasm] region 0x66400000 +64 MB (cleared 0 MB, heap end before 0x66201000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x6a600000 +128 MB (cleared 0 MB, heap end before 0x6a401000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy0: 96 held eight-MiB objects, segment slots before transition 23/32; funeral allocation succeeded; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x34000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x36200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x38400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x45000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x47200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x49400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4d800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4fa00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x51c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x53e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x56000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x58200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5a400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5c600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5e800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x60a00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x62c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x64e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x67000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x69200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6b400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6d600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy1: 96 held eight-MiB objects, segment slots before transition 32/32; funeral allocation safely failed; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+PASS: original allocator funeral fixture: request 37314560, legacy largest 16777216; 64 fragmented transitions / 576 allocations, exact head/tail bytes, growable-capacity preflight / saturated accounting / full-slot limits, full live cleanup, same 536870912 growth target; candidate retained heap 167755776, peak live 67272704; insufficient segment growth remains failure. No phone-memory or next-scene claim.
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.
+PASS: real engine wc_InitRng health test, 128-byte generation and wc_FreeRng using the native OS entropy device; output/state guards intact.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 1071.5 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 1069.6 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 64 synchronous main-thread proxies including filesystem capacity and signed errors while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 6135.97 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+Starting real engine constructors and main-thread TLS…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+PASS: real engine constructors and main-thread TLS. Heap committed: 564.1 MiB.
+Process footprint with initialized engine alive: 33.7 MiB (sample, not peak).
+Streaming allocation retry: owner 0x7abcd0 request 67108864, segment cap 134217728; growth target 1073741824; live 0, retained heap 33546240, actual free 33546240, largest 16777216, segments 1/32; linear committed 591462400/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x23600000 +128 MB (cleared 0 MB, heap end before 0x23401000)
+
+PASS: actual engine resource allocator class1 at 0x7abcd0: 37,314,560-byte resource-map demand rounds to 64 MiB; real root Allocate/child Free and original live accounting verified.
+[wasm] region 0x2b800000 +32 MB (cleared 0 MB, heap end before 0x2b601000)
+
+Native diagnostic stack: Wasm PC mapping unavailable; returning an empty trace (standalone ABI). Engine warnings and fatal errors remain active.
+Warning: 
+Warning: 
+[wasm] region 0x2da00000 +32 MB (cleared 0 MB, heap end before 0x2d801000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 536870912; live 163840, retained heap 33546240, actual free 33382400, largest 16777216, segments 1/32; linear committed 799080448/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2da00000 +128 MB (cleared 32 MB, heap end before 0x2fa01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x2b800000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Streaming allocation retry: owner 0x20577a8 request 37314560, segment cap 134217728; growth target 16777216; live 0, retained heap 16769024, actual free 16769024, largest 8388608, segments 1/32; linear committed 899743744/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x2ca00000 +16 MB (cleared 16 MB, heap end before 0x35a01000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Streaming allocation FAILED: owner 0x20577a8 request 37314560; returned NULL; linear committed 899743744/4294967296. No archive destination is fabricated.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x35a01000)
+
+[wasm] region 0x34000000 +32 MB (cleared 26 MB, heap end before 0x35a01000)
+
+[wasm] region 0x36200000 +32 MB (cleared 0 MB, heap end before 0x36001000)
+
+[wasm] region 0x38400000 +32 MB (cleared 0 MB, heap end before 0x38201000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 0 MB, heap end before 0x3a401000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 0 MB, heap end before 0x3c601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 0 MB, heap end before 0x3e801000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 0 MB, heap end before 0x40a01000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 0 MB, heap end before 0x42c01000)
+
+[wasm] region 0x45000000 +32 MB (cleared 0 MB, heap end before 0x44e01000)
+
+[wasm] region 0x47200000 +32 MB (cleared 0 MB, heap end before 0x47001000)
+
+[wasm] region 0x49400000 +32 MB (cleared 0 MB, heap end before 0x49201000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 0 MB, heap end before 0x4b401000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 402653184, retained heap 536739840, actual free 134086656, largest 4194304, segments 16/32; linear committed 1298202624/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x4d800000 +64 MB (cleared 0 MB, heap end before 0x4d601000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 461373440, retained heap 603840512, actual free 142467072, largest 4194304, segments 17/32; linear committed 1367408640/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x51a00000 +64 MB (cleared 0 MB, heap end before 0x51801000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 520093696, retained heap 670941184, actual free 150847488, largest 4194304, segments 18/32; linear committed 1436614656/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x55c00000 +64 MB (cleared 0 MB, heap end before 0x55a01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 578813952, retained heap 738041856, actual free 159227904, largest 4194304, segments 19/32; linear committed 1505820672/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x59e00000 +64 MB (cleared 0 MB, heap end before 0x59c01000)
+
+Streaming allocation retry: owner 0x20577a8 request 8388608, segment cap 67108864; growth target 1073741824; live 637534208, retained heap 805142528, actual free 167608320, largest 4194304, segments 20/32; linear committed 1575026688/4294967296. Locked allocator snapshot; process footprint/headroom reported separately.
+[wasm] region 0x5e000000 +64 MB (cleared 0 MB, heap end before 0x5de01000)
+
+[wasm] region 0x62200000 +64 MB (cleared 0 MB, heap end before 0x62001000)
+
+[wasm] region 0x66400000 +64 MB (cleared 0 MB, heap end before 0x66201000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+[wasm] region 0x6a600000 +128 MB (cleared 0 MB, heap end before 0x6a401000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy0: 96 held eight-MiB objects, segment slots before transition 23/32; funeral allocation succeeded; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+[wasm] region 0x2b800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2da00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x2fc00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x31e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x34000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x36200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x38400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3a600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3c800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x3ea00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x40c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x42e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x45000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x47200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x49400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4b600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4d800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x4fa00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x51c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x53e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x56000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x58200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5a400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5c600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x5e800000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x60a00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x62c00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x64e00000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x67000000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x69200000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6b400000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+[wasm] region 0x6d600000 +32 MB (cleared 32 MB, heap end before 0x72601000)
+
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+Warning: 
+PASS: original allocator slot-pressure legacy1: 96 held eight-MiB objects, segment slots before transition 32/32; funeral allocation safely failed; initial 1 GiB growth target and complete cleanup; legacy comparison isolates segment growth; bounded preflight is shared.
+PASS: original allocator funeral fixture: request 37314560, legacy largest 16777216; 64 fragmented transitions / 576 allocations, exact head/tail bytes, growable-capacity preflight / saturated accounting / full-slot limits, full live cleanup, same 536870912 growth target; candidate retained heap 167755776, peak live 67272704; insufficient segment growth remains failure. No phone-memory or next-scene claim.
+PASS: probe save from the previous run is intact.
+PASS: engine fopen/fwrite/fread/fseeko/ftello/fclose; 64 KiB save, reopen, signed offsets and EOF.
+PASS: missing files, path traversal and writes to game data are rejected.
+PASS: 64-bit iovecs, offsets above 4 GiB, stat layout, clocks, environment and invalid-buffer errors.
+PASS: real engine statvfs reports native save-volume capacity; 120-byte syscall to 112-byte libc layout, root paths, output guards and missing-path errno checked.
+PASS: real engine wc_InitRng health test, 128-byte generation and wc_FreeRng using the native OS entropy device; output/state guards intact.
+PASS: real engine CaptureStackTrace accepts unavailable native Wasm-PC traces; zero/one/32 slots, skip depths and output guards checked.
+PASS: engine file reads at beginning and end: data/common/data/levels/gta5/paths.xml
+PASS: engine file reads at beginning and end: data/x64/anim/cutscene/cuts_prologue.rpf
+PASS: engine file reads at beginning and end: data/x64/levels/gta5/_prologue/plg_01.rpf
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+PASS: real engine HTTPFS lookup and queued reads of three files (head/tail), byte comparison, EOF and invalid request rejection.
+Worker-batch process footprint: 1067.1 MiB (sample, not peak; workers may already be finishing).
+Worker-batch process footprint: 1067.1 MiB (sample, not peak; workers may already be finishing).
+PASS: 8 engine pthreads in two batches; distinct TLS/stacks, shared heap, mailbox/proxy replies, concurrent save reads/writes, queued asset reads and joined cleanup.
+PASS: workers completed 64 synchronous main-thread proxies including filesystem capacity and signed errors while the engine owner was inside indefinite atomic waits; no external mailbox pump.
+Entering CPU startup with real game workers; stopping at the first archive read…
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 7055.35 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+PASS: actual main launched two game workers, both executed to native waits; mounted the selected asset index and requested x64/audio/audio.rpf. Stopped deliberately before archive/scene loading; all workers joined.
+PASS: native 0.4 asset/worker checkpoint — real engine queued file reads, concurrent requests, persistent saves and native thread lifecycle.
+PASS: actual main launched two game workers and reached its first archive read; stopped deliberately and joined workers.
+Archive/scene loading, Metal renderer, audio output and gameplay remain pending.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final valid changing light states. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final real-comparison invalid709 rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final ambiguous selector rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final changed source version rejected. Original BC1 bytes retained.
+PS6e9619cde3dac275 PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final invalid mip range rejected. Original BC1 bytes retained.
+PASS: semantic multi-shadow:12 draws/3072 checked pixels; two placeholders, independent real LessEqual shadow, binding65/linked variants, handle replacement, one cube,14 reference uses,4 pipelines/8 hits. No scene-pixel or phone FPS claim.
+PASS: buffer dependency replay legacy0:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 9/14; uniform packs/bytes 22/5632; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 152.759/4.655 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.025/0.004/0.056/1.077/1.077; lifetime 96 calls 2.402 ms max 1.077
+No device FPS or GPU execution claim.
+PASS: buffer dependency replay legacy1:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 98/103; uniform packs/bytes 192/49152; independent/dependent uploads 0/95; completions 7; pressure waits 6; same resource replacement, no new staging. ready-drain submits avoided 0; Handler/upload wall 469.861/74.892 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 3.392/0.014/18.704/34.265/34.265; lifetime 96 calls 325.624 ms max 34.265
+No device FPS or GPU execution claim.
+PASS: buffer dependency replay legacy2:96 original-shader draws,512 checked pixels,96 exact samples / 96 original pass-query segments,32 final buffer bytes, clear/counter upload ordering; batches/submissions 8/13; uniform packs/bytes 20/5120; independent/dependent uploads 93/3; completions 1; pressure waits 0; same resource replacement, no new staging. ready-drain submits avoided 1; Handler/upload wall 125.560/6.812 ms; protocol upload payload 53044 bytes (nested waits included, not GPU execution).
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.057/0.011/0.072/3.003/3.003; lifetime 96 calls 5.506 ms max 3.003
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode0:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.027/0.002/0.013/1.636/1.636; lifetime 96 calls 2.614 ms max 1.636
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode1:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 192/0, uniform GPU bytes 49152, batches 4; pipelines creates/hits/evictions 1/95/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.022/0.002/0.030/1.205/1.205; lifetime 96 calls 2.153 ms max 1.205
+No device FPS or GPU execution claim.
+PASS: immutable uniform/layout reuse mode2:96 original-shader draws,512 checked pixels,96 exact samples; packs/reuses 18/174, uniform GPU bytes 4608, batches 4; pipelines creates/hits/evictions 32/64/0; submissions 6, completions 1, pressure waits 0, logical resource peak 2388 bytes; no new staging. Changing constants, null/rebound CBs, first-constant offsets, flush and resource replacement verified.
+DRAW handler CPU wall (CI only; not displayed frame time): latest 96 ms mean/median/p95/p99/max 0.115/0.006/0.512/2.450/2.450; lifetime 96 calls 11.014 ms max 2.450
+No device FPS or GPU execution claim.
+PASS: inter-stage output/input relabeling: 3 cases, all 256 pixels checked; consumed location15, flat provoking-vertex colors, unused location15 and preserved clip distances. Native CI limit 15; original vertex inputs and fragment color outputs retained.
+PASS: native resource transitions: 44 cases; GPU-only upload neighbors, scratch reuse, array/3D copy bytes, source-destroyed copies and retained MSAA resolve. Bounded 40-byte upload scratch; no CPU readback or completion wait.
+PASS: native format compatibility: 18 normalized16 output cases across six formats; exact upload/readback and signed sampling; 18 border sampler cases through production descriptors; all 16 pixels per case checked.
+PASS: UAV/compute: 16 output cases; ordered reset/preserve/copy across staging reuse, independent per-view counters, raw/structured clears, original fill/copy with exact ranges, typed storage variants, original draw pixels, mip chains and presented-pixel sampling. 29 original compute pipelines compiled; compilation alone is not scene rendering.
+PASS: depth proxy: 14 cases, all 256 pixels checked; depth/stencil float and integer sampling, float comparison, mip/layer ranges, draw/clear/upload/copy invalidation, unchanged-source reuse and cleanup.
+PASS: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.
+PASS: instance input: 10 cases, all 256 pixels checked; rate0/1/2/3, zero stride, mixed rates, nonzero starts, instance IDs, indexed/indirect and bounded counts; no vertex expansion.
+PASS: raw readback: 36 cases across 30 formats, mip/array/3D boxes, compressed edges, A8, buffer boxes, guards and transfers above 1 MiB; one staging buffer capped at 1 MiB.
+PASS: signed 8-bit R8/RG8/RGBA8 render targets: 9 cases; clear, additive draw, upload, copy, raw signed readback and sampling; all 16 pixels per case verified.
+PASS: BC1–BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.
+PASS: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws; equivalent state reuses cached pipelines.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 11; native format caps 1; SNORM cases 9; commands 1137; uploads 117; readbacks 141; surface frames 0; draws 41; pipelines 16 (hits 25); last opcode FENCE; readback staging peak 1024 KiB (4 allocations); readback cases 36; instance cases 10; stepped draws/batches 9/17; indirect decodes 2; depth proxy cases 14; proxy allocations/refreshes/reuses 5/11/2; proxy peak 7 KiB; live proxy bytes/passes 0/0; UAV cases 16; compute pipelines/dispatches 32/8; counter reset/initial-count-unused/copy 1122/4/10; UAV clears 6; view proxy peak 0 KiB (7 copies), live 0; mips 4 (live passes 0); presented pixel samples 2, RGB 64/143; normalized16 cases 18; border cases 18; clip cases 12; byte-edge dispatches/words 12/16; whole-copy subresources/submissions 58/34; resource cases 44; queue submissions 417; logical engine GPU payload live/peak 0/1035 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 15/3; varying pixel cases 3; occlusion count cap 1; query cases 0; scope begins/ends 0/0; segments/maps 0/0; results/empty/stale 0/0/0; query pages 0/4; query GPU live/peak 0/0 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+Offscreen fixtures; no game scene is claimed.
+PASS: native counting occlusion/predicate queries: 180 cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.
+Query queue policy bounded queue reuse: 12/12 map completions, 3 bounded-pool waits (59.148ms); every query result checked.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 812; uploads 13; readbacks 0; surface frames 0; draws 185; pipelines 6 (hits 179); last opcode FENCE; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 17; logical engine GPU payload live/peak 0/12 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 180; scope begins/ends 182/181; segments/maps 183/12; results/empty/stale 179/1/3; query pages 4/4; query GPU live/peak 0/68 KiB; pool waits 3 (59148 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+
+PASS: native counting occlusion/predicate queries: 180 cases; exact 0/1/64/256/320/512/768/1024 results, repeated draws, depth/stencil/scissor rejection, MSAA coverage, overlapping scopes, pass/submit splits, empty scopes, pending reuse, destroyed IDs and protocol guards. Four bounded pages, asynchronous maps; no per-query completion wait. Original IM geometry; not a scene.
+Query queue policy 0.23 reference: 11/11 map completions, 0 bounded-pool waits (0.000ms); every query result checked.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 812; uploads 13; readbacks 0; surface frames 0; draws 185; pipelines 6 (hits 179); last opcode FENCE; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 16; logical engine GPU payload live/peak 0/12 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 180; scope begins/ends 182/181; segments/maps 183/11; results/empty/stale 179/1/3; query pages 3/4; query GPU live/peak 0/51 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+
+PASS: SRV/proxy remaining ranges: 9 GPU pixel cases (2304 pixels), mip/array suffixes, source writes, source ID reuse, actual six-face cube, direct depth view; invalid boundary 0. Generic descriptor fixture; captured 709/708 replay is tested separately.
+Fixture CPU submit/map 9 calls: mean/max 9.557/32.579 ms; post-completion sleeps avoided 10; proxy payload peak 7680 bytes. Offscreen Mac/fixture timings are not iPhone frame times or GPU execution time.
+PASS: 4 explicit SRV range rejection boundaries; no draws/proxy allocations published on invalid descriptors.
+PASS: captured 709/708 SRV shadow replay: 20 cases, 5120 pixels; original uniform-controlled cube/spot code, valid six-face float/BC1 cubes and two mips, disabled/spot fallback equivalence, cache reuse and source ID reuse. Invalid case 0. Synthetic upload/uniform/geometry inputs; no game scene claimed.
+PASS: five required/invalid/uncertified cube-binding rejections; no skipped draws or fabricated texture layers.
+PASS: signed light-count captured SRV replay (corrected): 20 cases/5120 pixels; no-light stale cube selector, signed count boundaries, active six-face cube and spot paths retained.
+PASS: signed light-count captured SRV replay (0.22 proof reference): SRV range outside texture: source 708 DXGI 71 native 50, dimension 2 size 4x4x1 mips 1 samples 1 version 2; SRV 709 raw[709,0,708,71,4,0,1,0,0]; shader binding 46 slot 14 dimension 4 sample 4 MS 0; requested layers 6. Explicit invalid ranges are not clamped; SRV/shader dimension or multisample mismatch  guard(6:63 p0 arm1 literal0 raw3f800000) guard(6:63 p0 arm1 literal3 raw3f800000) guard(3:8 p1 arm0 literal0 raw00000000) [DRAW, opcode 32] VS 101 028921879df627f5; PS 901 ffffffff00000223; CS 0 0000000000000000; payload(6) 0,6,1,0,0,0
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final valid transitions. Original2D bytes/layers retained.
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final active2D rejected. Original2D bytes/layers retained.
+PASS: dynamic shadow transitions: 32 draws/8192 pixels; selector2/count1 genuine cube, count0/selector0/selector3 inactive2D, CB byte writes/offsets/ID reuse, source708/709 replacement; 2 pipelines/30 hits/0 evictions, one inactive variant; final ambiguous2D rejected. Original2D bytes/layers retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final valid changing light states. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final real-comparison invalid709 rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final ambiguous selector rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final changed source version rejected. Original BC1 bytes retained.
+PASS: optional reference empty-shadow ring test: 32 draws/8192 pixels, seven active709 bindings with counts1/2/3/4/5/6/INT32_MAX, real cube comparison shadows retained, inactive proofs, partial CB writes/offsets, source/CB/view generation replacement, two pipelines/zero evictions, one 24-byte logical cube, exact1536 occlusion samples across initialization/readbacks; final invalid mip range rejected. Original BC1 bytes retained.
+PASS: pending-draw shadow eviction: six stripes, 256 pixels, exact 192 occlusion samples; 6 variants, 2 evictions/submits, cached pipeline recreation and final cleanup. No per-draw completion wait.
+PASS: equivalent vertex-layout identity semantic key: six draws/1536 pixels; creates/hits 2/4; changed color offset remains a distinct pipeline and changes pixels. Pipeline API CPU wall 1.179 ms; driver cache/order dependent, not iPhone FPS.
+PASS: equivalent vertex-layout identity 0.21 reference: six draws/1536 pixels; creates/hits 3/3; changed color offset remains a distinct pipeline and changes pixels. Pipeline API CPU wall 1.586 ms; driver cache/order dependent, not iPhone FPS.
+PASS: pipeline state equivalence semantic key: 64 draws/16384 checked pixels; creates/hits 1/63, evictions 0; pipeline API wall 0.364ms. Cache bounded at 256 (128 under pressure); retained native pipelines 1 (driver bytes unknown), no iPhone FPS claim. 
+PASS: fresh-object ordering corrected: 8 draws, 256 pixels, exact 2048 occlusion samples; batches 1, fresh flushes avoided 8. Existing-resource uploads/destruction still flush. 
+PASS: pipeline state equivalence 0.22 raw key: 64 draws/16384 checked pixels; creates/hits 32/32, evictions 0; pipeline API wall 13.126ms. Cache bounded at 256 (128 under pressure); retained native pipelines 32 (driver bytes unknown), no iPhone FPS claim. 
+PASS: fresh-object ordering 0.22 reference: 8 draws, 256 pixels, exact 2048 occlusion samples; batches 8, fresh flushes avoided 0. Existing-resource uploads/destruction still flush. 
+PASS: uniform queue ordering bounded queue reuse: 96 changing-constant batches, 32 slot wraps, all 256 pixels and exact 96 samples; completion waits 7, CPU wait 49.986ms, pressure waits 6; no stale uniform data. 
+PASS: uniform queue ordering 0.23 reference: 96 changing-constant batches, 32 slot wraps, all 256 pixels and exact 96 samples; completion waits 33, CPU wait 286.977ms, pressure waits 0; no stale uniform data. 
+PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.002ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 48.133ms. Same16-batch/4MiB bound, no new staging or GPU waits.
+PASS: pipeline working set policy 128: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 576/0/448; live peak 128, pressure evictions 0; pipeline API 96.719ms, link 40.124ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 37.165ms, link 15.021ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: pipeline working set policy 1: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 448/128/256; live peak 192, pressure evictions 64; pipeline API 76.969ms, link 31.699ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. 
+PASS: SRV contract GPU suite: 30 cases / 480 pixels; twelve cube-array faces, nonzero first face, dynamic layer selection, 3D, multisample, uint, null, sRGB view/proxy, depth32/stencil aspects, content refresh and cache reuse; single-layer 2D/array float/uint/sint bindings; ten controlled descriptor/lifetime failures.
+PASS: query cancellation and 8 explicit order/type/address/sample-mask boundary cases; no completion for an unfinished scope, all pool resources cleaned.
+Starting actual engine constructors for native graphics startup…
+[wasm] region 0x2200000 +352 MB (cleared 0 MB, heap end before 0x203d000)
+
+[wasm] region 0x18400000 +8 MB (cleared 0 MB, heap end before 0x1823d000)
+
+[wasm] region 0x18e00000 +32 MB (cleared 0 MB, heap end before 0x18c01000)
+
+[wasm] region 0x1b000000 +32 MB (cleared 0 MB, heap end before 0x1ae01000)
+
+[wasm] region 0x1d200000 +16 MB (cleared 0 MB, heap end before 0x1d001000)
+
+[wasm] region 0x1e400000 +80 MB (cleared 0 MB, heap end before 0x1e201000)
+
+[STARTUP]         (0x1e400000 to 0x23400000)
+[STARTUP] Recorder Memory          = [Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+[Audio_CutsceneAudio] Cutscene track reset, time 0, FC: 0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6ac000 end 0x1e6af200
+Pool CDebugDrawStore size : 2560 each 128 start 0x1e528fc0 end 0x1e5299c0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bc000 end 0x1e6bf200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6bf210 end 0x1e6c2410
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6c2420 end 0x1e6c5620
+Pool CDebugDrawStore size : 1280 each 128 start 0x1e6b75c0 end 0x1e6b7ac0
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6d8000 end 0x1e6db200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6db210 end 0x1e6de410
+Pool CDebugDrawStore size : 6400 each 128 start 0x1e6d0000 end 0x1e6d1900
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e6fc000 end 0x1e6ff200
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e708000 end 0x1e70b200
+Pool CDebugDrawStore size : 25600 each 128 start 0x1e710000 end 0x1e716400
+Pool CDebugDrawStore size : 12800 each 128 start 0x1e716410 end 0x1e719610
+Local asset index: 4 files; bounded reader: one 64 KiB buffer, at most 8 open files.
+Entering actual graphics-enabled main; native GPU backend and first archive boundary…
+Native capabilities: Apple Paravirtual device; BC 1; BC3D 1; norm16 1; SNORM rendering 1; sampler border 1; clip distances 1; float32 filter 1; depth32+stencil 1; indirect first instance 1; unclipped depth 1; BGRA storage 1; RG11 render 1; max2D 16384; buffer 3584 MiB; storage binding 3584 MiB; uniform/storage alignment 256/256; color attachments 8; compute threads 1024, shared 32 KiB. inter-stage variables 31. Capabilities are negotiated, not proof of gameplay.
+Native query capability: Metal counting 1; exact sample counts and Boolean predicates; bounded asynchronous results
+Native startup: process 116.9 MiB (highest 1-second sample 116.9 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Native startup: process 116.8 MiB (highest 1-second sample 124.3 MiB); heap committed 596.1 MiB; GPU commands 0, surface frames 0, last NOP
+Buffer mutation dependencies: independent uploads 0; required pending-draw flushes 0; 8 metadata bytes per live object; no new staging. Ready-drain submissions avoided 0; four-drain bound flushes 0 (4 ms checked between drains, never waits for more work).
+Certified inactive-shadow variants: creates/hits/evictions 0/0/0; at most 4 per live source shader. Active mismatches remain errors.
+Inactive-shadow eviction submits with pending work: 0 (no added per-draw completion wait).
+Game pipeline cache: capacity 256; creates/hits/evictions 0/0/0; unfinished frame handler/upload/allocation wall 0.000/0.000/0.000 ms. Subcategories overlap handler wall; do not sum them.
+Pipeline recreation window: 0 exact key matches among last 0 evicted keys (maximum 64, incomplete history); key bytes 1468, cache metadata 534272 bytes excluding driver allocations. Fresh-object pending flushes avoided 0.
+Pipeline live/peak 0/0, pressure evictions 0; maximum 256 handles, pressure capacity 128, driver bytes unknown. Uniform slot-wrap waits avoided 0; bounded staging pressure waits 0 (16 batches or 4 MiB).
+Uniform batches already retired by ordered readback maps: 0; staging caps remain16 batches/4MiB. This prevents redundant later completion waits, not the required readback itself.
+PRESENT submission intervals (not displayed FPS): no samples
+GPU-service CPU between PRESENTs (not engine CPU): no samples
+Command handler wall time per PRESENT (nested waits included): no samples
+Original WGSL module CPU wall (excludes linked variants): no samples
+Game DRAW pipeline API CPU wall: no samples
+Readback submit/map CPU wall (not GPU execution): no samples
+Queue completion CPU wait: no samples
+Upload handler wall per PRESENT: no samples
+Resource create/destroy wall per PRESENT: no samples
+Varying-link CPU wall (reflection and module creation): no samples
+Proven-inactive shadow variant module CPU wall: no samples
+Immutable per-batch uniforms: packs/reuses 0/0; GPU uniform upload bytes 0. Exact bytes/zero fill checked; no cross-batch reuse or extra GPU memory.
+Submission context: queue submits 0, draw batches 0; protocol buffer/texture uploads 0/0; byte-edge submits 0, whole-copy submits 0. Counts overlap and include preceding draw flushes; uniform uploads reported separately. No GPU timing inference.
+First 64 PRESENT intervals (startup, includes loading): no samples
+Intervals after first compute (not a scene detector): no samples
+Timing limits: no true GPU timestamps or engine-frame CPU hook; no sustained-gameplay classification. Readbacks 0; callback post-completion sleeps avoided 0; timing storage 29552 bytes, latest 256 samples per series.
+Bounded CPU cost records: up to eight worst PRESENT intervals and commands >=8ms. Includes loading. Nested categories overlap; idle is time waiting for the producer. These are not displayed frames or GPU execution times.
+Warning: *** Unknown option 'wgpu' on command line (use -Xwgpu to suppress).
+[wasm] engine thread skipped: [RAGE] Hang Detect Thread
+
+[wasm] engine thread 1: [RAGE] Dependency 0
+
+Browser language tag: en-US
+[file] Root folder /game/
+
+Warning: [file_asset] ASSET.SetPath works best with fully-qualified names (ie drive letter or device name, not '/game/')
+** POSSIBLE STALL: time bar System Init took 5874.78 ms, stack follows
+[file] Starting in \
+[file] Booting native-probe
+[file] Root folder /game/
+
+Audio rpf = /game/x64/audio/audio.rpf
+Packfile /game/x64/audio/audio.rpf is on HDD, promoting to CACHE_INSTALLER_FILE
+Recent/category diagnostics and initialization progress (may be recoverable):
+Initialization diagnostics: 0 error/assert messages; scene-sphere requests 0; animated camera starts 0. Last camera: none
+Allocator retry/failure history: latest 0 of 0 bounded events; 4 GiB linear limit retained. Engine Available is bounded logical streaming headroom; actual free and OS headroom are separate.
+Asset read service wall (excludes queued wait): no samples
+Asset descriptor cache hits/misses 0/0; one 64 KiB buffer and at most eight descriptors preserved.
+Asset stop snapshot: 1 pending/in-flight slots, 0 nonempty NULL destinations; reader joined. Cancellations do not imply successful reads.
+Asset reads: 0 requests, 0 MiB delivered; I/O errors 0; size mismatches 0; unexpected short reads 0. Expected EOF/range clipping is not an error.
+PASS: actual graphics-enabled engine main handed its shared command ring to native Metal, published input/audio and reached its first archive request. Stopped deliberately before archive bytes.
+Native GPU: Apple Paravirtual device; ready 1; native BC 1; BC sample formats 0; native format caps 1; SNORM cases 0; commands 0; uploads 0; readbacks 0; surface frames 0; draws 0; pipelines 0 (hits 0); last opcode NOP; readback staging peak 0 KiB (0 allocations); readback cases 0; instance cases 0; stepped draws/batches 0/0; indirect decodes 0; depth proxy cases 0; proxy allocations/refreshes/reuses 0/0/0; proxy peak 0 KiB; live proxy bytes/passes 0/0; UAV cases 0; compute pipelines/dispatches 0/0; counter reset/initial-count-unused/copy 0/0/0; UAV clears 0; view proxy peak 0 KiB (0 copies), live 0; mips 0 (live passes 0); presented pixel samples 0, RGB 0/0; normalized16 cases 0; border cases 0; clip cases 0; byte-edge dispatches/words 0/0; whole-copy subresources/submissions 0/0; resource cases 0; queue submissions 0; logical engine GPU payload live/peak 0/0 KiB (excludes native intermediates, driver overhead/residency; depth24 is estimated); varying limit/links 31/0; varying pixel cases 0; occlusion count cap 1; query cases 0; scope begins/ends 0/0; segments/maps 0/0; results/empty/stale 0/0/0; query pages 0/4; query GPU live/peak 0/0 KiB; pool waits 0 (0 us); optional reference-shadow mode 0 uses/allocations 0/0 (24 logical bytes, driver allocation unmeasured)
+This is an integration checkpoint, not a game scene.

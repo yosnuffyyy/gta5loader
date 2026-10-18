@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "scope": "Audit documentation, arithmetic, extracted host measurements and immutable v35 source/artifact checks; not physical gameplay",
+  "sections": "A-M in order",
+  "compactReportWords": 1233,
+  "nativeFilesUnchanged": 226,
+  "olderIPAsHashed": 34,
+  "releasedV35HashVerified": true,
+  "runtimeCodeChanges": 0,
+  "newRuntimeInstrumentation": 0,
+  "frameCap": 30,
+  "resolution": "640x360",
+  "replayAttemptsChecked": 2,
+  "phoneMeasurementsAvailable": false,
+  "performanceOptimizationsImplemented": 0
+}

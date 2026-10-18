@@ -1,3 +1,12 @@
+PERFORMANCE AUDIT — NATIVE 0.35 (2026-10-17 America/Sao_Paulo)
+Audit target is exact source 8047937b21007cea1efad62df2beb7d1c007bb43.
+Fresh same-source CI attempt 2 PASS; host replay/shader/runtime measurements,
+not iPhone FPS. Production code, 640x360, 30 FPS cap, 256 cache and IPAs unchanged.
+The user clarified that the completed 19-minute physical Prologue was v34.
+V35 physical performance and post-funeral loading remain unverified.
+See PERFORMANCE-AUDIT.md sections A-M and COLLECT-V35-PERFORMANCE.txt.
+No new optimization, profiling-code variant, release or stage advancement.
+
 NATIVE IPHONE ROADMAP — VERIFIED PROLOGUE AND NEXT-SCENE STABILITY
 Updated 2026-10-17. Native 0.35 independently validated; device checks pending.
 

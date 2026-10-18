@@ -1,0 +1,71 @@
+NATIVE 0.35 — PERFORMANCE COLLECTION GUIDE
+
+Target: source 8047937b21007cea1efad62df2beb7d1c007bb43, app 0.35.0 / build 35.
+Preserved IPA: GTA-Native-Probe-0.35-unsigned.ipa
+SHA256: 8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c
+Mach-O UUID: 54C10F1A-5313-37AD-BC46-2EE7BDA32930
+No new IPA is required for existing display/native diagnostics. No runtime code
+or settings were modified during the audit. Host CI is not an iPhone trace.
+
+1. PHONE-ONLY COLLECTION, WHEN AVAILABLE
+- Verify 0.35 in the report. Keep 640x360, cap 30, same shadow/input settings.
+- Enable displayed-frame diagnostics before Start. This adds display callbacks;
+  the native CPU/operation summaries already exist.
+- Record OS/device, power/Low Power Mode, charging, initial thermal state and
+  the route/phase. Do not assume an OS memory-headroom value is a guarantee.
+- Mark the visible-scene window when controllable gameplay begins. Use a
+  repeatable 30-60 second route, and export the report before resetting the mark.
+- Separately mark/export a cutscene, vault/guard change and funeral transition.
+  If restarting means a different route/workload, state that explicitly.
+- Preserve the first fatal error, last operation and full final summaries.
+  Capture allocator owner/request/live/retained/free/largest/slots and last
+  archive destinations at a transition failure. Do not modify game assets.
+- Existing marker resets display samples only. Native latest 256 windows can
+  still contain earlier phases. Keep before/after cumulative snapshots and
+  timestamps; do not call their rolling CPU quantiles phase-pure.
+- FPS displayed in the overlay is 1000 / mean of latest <= 16 valid intervals;
+  it remains historical during a stall. Report sample count, elapsed interval,
+  mean/p50/p95/p99/max, not an isolated overlay number.
+
+2. MAC + IPHONE COLLECTION, IF ATTACHMENT IS AUTHORIZED
+Use Instruments Game Performance/Time Profiler + Thread State/Metal trace on
+that same optimized source and workload. Preserve the matching binary/UUID.
+No signing identity, credentials, entitlements or provisioning were changed
+by this audit. An unsigned IPA does not grant profiling attachment permission.
+If the current installation cannot be profiled, record the failure and arrange
+an authorized development profiling setup separately.
+
+Collect 60 seconds of stable gameplay plus a shorter troublesome transition:
+- Active CPU samples, inclusive and self weight, per native engine/worker/GPU
+  service/archive/UI/driver thread. Capture sleeping/blocked states separately.
+- Native function symbols exist in this binary. The approved pinned Wasm name
+  section can map w2c_gta_fNN to original function names using inspect_engine.py.
+  It does not supply source line debug info. If extra debug symbols are needed,
+  build a separate same-source-O1 profiling variant and retain its own UUID.
+- GPU busy intervals, command-buffer/pass boundaries, display/acquire timing,
+  utilization/limiters where available, thermal and memory/VM tracks.
+- One gameplay GPU frame capture, target sizes/formats/mips, pass load/store,
+  proxy/compute/shadow/reflection work and bandwidth/overdraw counters.
+- Use separate captures/validation runs; heavy tools can perturb baseline FPS.
+- Preserve the trace and matched raw app report; do not upload game archives.
+
+3. WHAT TO CALCULATE
+Use only comparable counts from one aligned phase. Displayed intervals are
+not simulation frames. Wrapper queue submits are not frames or all internal
+backend transfers. Handler/upload/pipeline/map/completion walls overlap.
+Counter deltas can describe a phase only with both boundary snapshots.
+Do not sum p95s, average process quantiles or infer GPU saturation from a wait.
+Do not divide uniformGPUbytes by protocoluploadcount as copy amplification.
+
+4. CURRENT MISSING METRICS
+True engine-frame CPU intervals; actual GPU duration/counters; native opcode
+exclusiveCPU partition; per-cause flush/transfer bytes; input p95/p99; archive
+queue delay; phase-specific pipeline key recurrence and driver allocations.
+CPU protocol timestamps are sampled before flush and published after completion;
+they are not GPU hardware timestamps. See PERFORMANCE-AUDIT.md sectionsB/L.
+
+5. ACCEPTANCE FOR ANY LATER OPTIMIZATION
+Compare the same phase/settings/device state across repeated runs, separate
+cold compilation from warm gameplay, retain pixels/data/query/input tests,
+and record actual displayed p50/p95/p99 plus memory/input changes. Do not call
+an O0 Paravirtual fixture a measured A18 Pro FPS gain. Keep original working IPA.
