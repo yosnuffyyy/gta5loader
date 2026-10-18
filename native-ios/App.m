@@ -235,7 +235,7 @@ static void RuntimeProgress(void *context,const char *line) {@autoreleasepool {
     if(self.busy)return;if(!self.gameFolder){[self append:@"Select the extracted web folder first."];return;}
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;NSURL *saves=[support URLByAppendingPathComponent:@"NativeRuntimeProbe" isDirectory:YES];NSError *error=nil;
     if(!saves||![NSFileManager.defaultManager createDirectoryAtURL:saves withIntermediateDirectories:YES attributes:nil error:&error]){[self append:@"FAIL: integration save folder unavailable"];return;}
-    [self setWorking:YES];[self beginReport:[NSString stringWithFormat:@"Native integration 0.40 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent]];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];[self append:executionV2?@"Renderer V2 — experimental completion service":@"Existing renderer (default)"];NSURL *folder=self.gameFolder;
+    [self setWorking:YES];[self beginReport:[NSString stringWithFormat:@"Native integration 0.40 — queue/startup checkpoint\niOS %@ / %@\n%@\nGame folder: %@\nChecking signed render targets, original startup shader draws, native BC sampling and the shared GPU stream…",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent]];[NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];[NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         char report[16384]={0};int code=native_gpu_replay_probe(report,sizeof(report));RuntimeProgress((__bridge void*)self,report);
         if(code==0){BOOL scoped=[folder startAccessingSecurityScopedResource];code=native_graphics_checkpoint(folder.fileSystemRepresentation,saves.fileSystemRepresentation,RuntimeProgress,(__bridge void*)self,report,sizeof(report));if(scoped)[folder stopAccessingSecurityScopedResource];}
@@ -280,7 +280,7 @@ static void RuntimeProgress(void *context,const char *line) {@autoreleasepool {
     [self beginReport:[NSString stringWithFormat:@"Native prototype 0.4 — asset/worker checkpoint\niOS %@ / %@\n%@\nGame folder: %@",UIDevice.currentDevice.systemVersion,UIDevice.currentDevice.model,Footprint(),self.gameFolder.lastPathComponent?:@"not selected; asset checks will be skipped"]];
     [NSUserDefaults.standardUserDefaults setObject:self.report.storedText forKey:@"lastReport"];
     [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"probeRunning"];
-    [self append:executionV2?@"Renderer V2 — experimental completion service":@"Existing renderer (default)"];NSURL *folder=self.gameFolder;
+    NSURL *folder=self.gameFolder;
     NSThread *thread=[[NSThread alloc]initWithBlock:^{@autoreleasepool{
         BOOL scoped=folder?[folder startAccessingSecurityScopedResource]:NO;
         char report[4096]={0};

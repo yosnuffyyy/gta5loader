@@ -8,8 +8,8 @@
     },
     {
       "path": "native-ios/App.m",
-      "bytes": 37562,
-      "sha256": "37eee5f7a69f20aae1c59064cff2da054e680c66433b17a9e207af49c3c0666e"
+      "bytes": 37346,
+      "sha256": "3639bb7c2853b3438795570d0976024695a7471382e246c40f5539d5c255a08e"
     },
     {
       "path": "native-ios/Info.plist",
