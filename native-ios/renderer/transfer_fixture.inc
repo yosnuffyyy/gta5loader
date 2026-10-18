@@ -16,11 +16,14 @@ static bool transfer_fixture(struct w2c_env *h,bool legacy){
   cmd[0]=1;cmd[1]=i%16;cmd[2]=i/16;cmd[3]=cmd[1]+1;cmd[4]=cmd[2]+1;EMIT(31,5);
   memset(cmd,0,sizeof(cmd));cmd[1]=6;cmd[2]=1;EMIT(32,6);
   memset(cmd,0,sizeof(cmd));cmd[0]=118;cmd[2]=i%16;cmd[3]=i/16;cmd[5]=116;cmd[7]=1;cmd[8]=cmd[2];cmd[9]=cmd[3];cmd[11]=cmd[8]+1;cmd[12]=cmd[9]+1;cmd[13]=1;EMIT(34,14);
+  if(i==7){
+   /* Deliberately below the 64-transfer submission boundary: the copy must
+      still be pending when both its source and destination are mutated. */
+   memset(cmd,0,sizeof(cmd));cmd[0]=4001;cmd[5]=4000;EMIT(34,14);
+   cmd[0]=4000;cmd[1]=0;cmd[2]=8;cmd[3]=3;cmd[4]=4;EMIT(12,5);
+   cmd[0]=4001;cmd[1]=4;cmd[2]=4;cmd[3]=99;EMIT(47,4);
+  }
  }
- /* Both source and destination hazards must participate in upload epochs. */
- memset(cmd,0,sizeof(cmd));cmd[0]=4001;cmd[5]=4000;EMIT(34,14);
- cmd[0]=4000;cmd[1]=0;cmd[2]=8;cmd[3]=3;cmd[4]=4;EMIT(12,5);
- cmd[0]=4001;cmd[1]=4;cmd[2]=4;cmd[3]=99;EMIT(47,4);
  for(unsigned id=4000;id<=4001;id++){memset(cmd,0,sizeof(cmd));cmd[0]=id;cmd[9]=(uint32_t)(dst+1024+(id-4000)*8);cmd[10]=(dst+1024+(id-4000)*8)>>32;cmd[13]=1;cmd[14]=8;EMIT(42,17);cmd[0]=id;EMIT(4,1);}
  memset(cmd,0,sizeof(cmd));cmd[0]=118;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[11]=64;cmd[12]=cmd[14]=1024;EMIT(42,17);
  cmd[0]=116;EMIT(4,1);cmd[0]=118;EMIT(4,1);
@@ -30,7 +33,7 @@ static bool transfer_fixture(struct w2c_env *h,bool legacy){
  uint64_t wall=now_ns()-started;native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)==929;
  uint8_t pixels[1024];host_load(h,pixels,dst,sizeof(pixels));for(unsigned i=0;i<256&&ok;i++)for(unsigned c=0;c<4;c++){const unsigned rgba[]={200,100,50,255};unsigned expected=i<128?rgba[c]:0;if(abs((int)pixels[i*4+c]-(int)expected)>1)ok=false;}
  uint32_t hazard[4];host_load(h,hazard,dst+1024,sizeof(hazard));ok=ok&&hazard[0]==3&&hazard[1]==4&&hazard[2]==1&&hazard[3]==99;
- if(legacy)transfer_baseline=g->submissions;else ok=ok&&g->submissions*4<transfer_baseline&&g->transfer_submits_avoided>=240;
- printf("%s: ordered clear/draw/copy legacy%u: 128 original draws, 256 verified RGBA pixels; submissions %llu, batches %llu, transfer submits avoided %llu; wall %.3f ms, handler wall %.3f ms, uniform bytes %llu. Host fixture, not iPhone FPS. %s\n",ok?"PASS":"FAIL",legacy,(unsigned long long)g->submissions,(unsigned long long)g->draw.batches,(unsigned long long)g->transfer_submits_avoided,wall/1e6,g->metrics.frame_busy/1e6,(unsigned long long)g->draw.uniform_upload_bytes,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+ if(legacy)transfer_baseline=g->submissions;else ok=ok&&g->submissions*4<transfer_baseline&&g->transfer_submits_avoided>=240&&g->ordered_uploads==2;
+ printf("%s: ordered clear/draw/copy legacy%u: 128 original draws, 256 verified RGBA pixels; submissions %llu, batches %llu, retained transfers %llu; wall %.3f ms, handler wall %.3f ms, uniform bytes %llu. Host fixture, not iPhone FPS. %s\n",ok?"PASS":"FAIL",legacy,(unsigned long long)g->submissions,(unsigned long long)g->draw.batches,(unsigned long long)g->transfer_submits_avoided,wall/1e6,g->metrics.frame_busy/1e6,(unsigned long long)g->draw.uniform_upload_bytes,native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
 }
 #endif

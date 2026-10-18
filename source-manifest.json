@@ -453,8 +453,8 @@
     },
     {
       "path": "native-ios/renderer/copy_cast_fixture.inc",
-      "bytes": 3390,
-      "sha256": "205b1a1f124ae923ee277ceee2d103b6202eecd1c9edb0098f1eb8474ca1c227"
+      "bytes": 4782,
+      "sha256": "20d01ac175c3a795c450fceffd620f74461ada6cbedceb348d50266d30e12025"
     },
     {
       "path": "native-ios/renderer/depth_proxy_layout.h",
@@ -618,8 +618,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 91325,
-      "sha256": "ca21985d7511a53cf250bf6b46967a5b3ceb5c78d39a9a06e8fd56765d81717d"
+      "bytes": 91480,
+      "sha256": "f50abb3dd779c3afecb972e61a0fa273de19ab1c634f4e0b0dd79ecb579877e5"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
@@ -1108,8 +1108,8 @@
     },
     {
       "path": "native-ios/renderer/transfer_fixture.inc",
-      "bytes": 3844,
-      "sha256": "08822997538058ffdb5a6ce1567112e07e6d3c29bcd0067e1caba0fe84558cd1"
+      "bytes": 3957,
+      "sha256": "abbb23ae64a19e501ad1106cab4343f40c726ba4403296bbaf29d9d9c812c2ca"
     },
     {
       "path": "native-ios/renderer/uav_clear.inc",
