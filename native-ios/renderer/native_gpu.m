@@ -462,7 +462,7 @@ static bool execute_impl(void *context,uint32_t op,const uint8_t *p,uint32_t n){
  case 5:return check(g,n==7,"Invalid color clear command")&&clear(g,p,false);
  case 6:return check(g,n==6,"Invalid depth clear command")&&clear(g,p,true);
  case 7:return check(g,n==1,"Invalid present command")&&present(g,gpu_word(p,0));
- case 8:{if(!check(g,n==3,"Invalid fence command"))return false;uint64_t ptr=gpu_word(p,0)|((uint64_t)gpu_word(p,1)<<32);if(!check(g,ptr%4==0&&host_range(g->host,ptr,4),"Fence address outside shared heap"))return false;if(!completion_flush_writes(g)||!completed(g))return false;atomic_store_explicit(heap_word(g,ptr),gpu_word(p,2),memory_order_release);wake(g,ptr);return true;}
+ case 8:{if(!check(g,n==3,"Invalid fence command"))return false;uint64_t ptr=gpu_word(p,0)|((uint64_t)gpu_word(p,1)<<32);if(!check(g,ptr%4==0&&host_range(g->host,ptr,4),"Fence address outside shared heap"))return false;if(!completion_progress(g)||!completion_flush_writes(g)||!completed(g))return false;atomic_store_explicit(heap_word(g,ptr),gpu_word(p,2),memory_order_release);wake(g,ptr);return true;}
  case 10:{if(!check(g,n>=1&&gpu_word(p,0)<=(n-1)*4,"Invalid GPU log payload"))return false;return true;}
  case 11:return check(g,n==5,"Invalid buffer command")&&create_buffer(g,p);
  case 12:case 47:return upload_buffer(g,p,n);

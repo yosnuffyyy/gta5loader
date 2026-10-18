@@ -468,8 +468,8 @@
     },
     {
       "path": "native-ios/renderer/completion_fixture.inc",
-      "bytes": 13254,
-      "sha256": "de2db59062db768c7f3b394b50ad9ad14e26fc0ab963f2a59b2c6ac19d7cd446"
+      "bytes": 13351,
+      "sha256": "352aa4d7237b5f77c8f0769213dfadb56a23bbf30710ff07e5c69c9747c9616f"
     },
     {
       "path": "native-ios/renderer/completion_serial.h",
@@ -658,8 +658,8 @@
     },
     {
       "path": "native-ios/renderer/native_gpu.m",
-      "bytes": 95381,
-      "sha256": "b5c33e2a4cc9928fa9e52152a6471935c0060b6d9c8bb1bef5cc0e2bbb289ca0"
+      "bytes": 95406,
+      "sha256": "f6cbd2cc2ef552e088677a4ff7d4b89138e9dc3c7b8577f7c549db2055397c60"
     },
     {
       "path": "native-ios/renderer/native_launch.h",
