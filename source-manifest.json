@@ -1,5 +1,5 @@
 {
-  "scope": "Native0.41: bounded logical event scheduling, independent whole-loop CPU measurement, original Story/Sandbox startup with isolated saves, Low/Potato/Ultra fixed startup geometry, explicit cancellation provenance and bounded pre-unwind diagnostics. Existing renderer default; gameplay timing/audio/shaders/cache256 retained. Validation pending.",
+  "scope": "Native0.41: bounded logical event scheduling, independent whole-loop CPU measurement, original Story/Sandbox startup with isolated saves, Low/Potato/Ultra fixed startup geometry, explicit cancellation provenance and bounded pre-unwind diagnostics. Existing renderer default; gameplay timing/audio/shaders/cache256 retained. Executable da272c5bba805337a42bff4b965ea820b1d2b4d9 validated by CI39166914440; physical comparison pending.",
   "files": [
     {
       "path": ".github/workflows/native-ios.yml",

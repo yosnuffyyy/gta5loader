@@ -1,0 +1,15 @@
+NATIVE0.41 — BOUNDED QUERY SCHEDULING, STARTUP PROFILES AND MODE SELECTION
+Executable da272c5bba805337a42bff4b965ea820b1d2b4d9; CI39166914440 PASS.
+Existing renderer default; V2 experimental, no physical FPS claim.
+Story/original Sandbox startup modes, separate save roots; device spawn pending.
+Low640x360 / Potato480x270 / Ultra320x180; quality gains separate from renderer gains.
+Stop/catch race fixed with explicit cancellation; genuine traps retain traces.
+All4808shader checks and relevant runtime/component sanitizers pass.
+All40prior IPAs preserved. See NATIVE-0.41-RESULTS.md and raw benchmark.
+Release https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.41
+
+IPA 104976427bytes
+SHA256 7b9c73d7afb152a78f96ba3790c1348f4d61ad766e6771e9e25eda3f04a43a05
+UUID a273a90140ae3fb6900b310c011bd906
+279manifest entries, ARM64 unsigned package audited; UIKit205 / input71 / watchdog1374;32matched replays.
+No new physical FPS, Sandbox spawn, audio quality or long-session stability verification.
