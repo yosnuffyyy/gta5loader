@@ -33,6 +33,10 @@ Keep wgpu-native v29.0.1.1 (`6aed50955d934ac36049ba8d002034841633ae02`), patched
 
 Source: [pinned queue API](https://github.com/gfx-rs/wgpu-native/blob/6aed50955d934ac36049ba8d002034841633ae02/src/lib.rs). Queue writes and submission identity must not be conflated; completion never certifies a later unsubmitted write.
 
+The pinned `wgpu-core 29.0.3` crate was independently downloaded and checked against Cargo.lock SHA256 `02da3ad1b568337f25513b317870960ef87073ea0945502e44b864b67a8c77b7`. `device/queue.rs:1515` registers work against the life tracker and explicitly leaves pending-write flushing unimplemented. V2 therefore submits unsent QueueWrite transfers before creating their fence. This corrects a separately tested ordering gap; it is not counted as a performance improvement. Other draw submission boundaries remain unchanged. `queue.rs:1501` runs completion closures after releasing core locks. Native code calls queue submission and device polling only on its service thread; callbacks and the completion pools keep that ownership.
+
+The existing CPU profiler samples its thread clock before the wall clock and ends it after the wall-clock interval and bookkeeping. On extremely short commands the reported CPU duration can exceed wall duration because the sampled intervals differ and clock overhead matters. These values are not precise exclusive instruction costs. The dominant END_QUERY total remains inclusive of draw finalization, submission, backend callbacks and profiling overhead. Paired profiling-on/off runs are required; no clock-overhead subtraction is invented.
+
 ## Validation and promotion
 
 Exact bytes for copies/uniforms/query payloads; existing shader fixture tolerance of one UNORM unit remains fixed before comparison. Alternate existing/V2 order, repeat separate processes, record profile-on/off and warm/cold status. Test saturation, delayed/reordered callbacks, ID generation/token reuse, cancellation, error, pending writes and clean shutdown. Run inherited pixel/shader/runtime/input suites. Synthetic gains do not promote V2; device median/p95 regressions over5% require review and matching phase/thermal controls.

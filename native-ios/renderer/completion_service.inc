@@ -18,13 +18,17 @@ static void completion_done(WGPUQueueWorkDoneStatus status,WGPUStringView messag
  bool success=status==WGPUQueueWorkDoneStatus_Success&&!atomic_load(&g->stop)&&!atomic_load(&g->closing)&&!atomic_load(&g->failed);
  completion_finish(s,ctx->batch,success);g->event_pending=s->pending;
 }
+static bool completion_flush_writes(NativeGpu *g){
+ if(!g->completion||!g->queue_writes_pending)return true;
+ g->completion_write_submits++;return submit(g,encoder(g));
+}
 static bool completion_event_end(NativeGpu *g,Object *q,uint32_t sequence,uint64_t value){
  uint64_t started=now_ns();
  if(!check(g,g->event_token<UINT64_MAX,"Event query token exhausted"))return false;
  /* END must cover pending QueueWrite* transfers too. The old callback API
     alone fences the last SUBMISSION, not unsent writes. Flush only if needed. */
  if(!draw_flush(g))return false;
- if(g->queue_writes_pending){g->completion_write_submits++;if(!submit(g,encoder(g)))return false;}
+ if(!completion_flush_writes(g))return false;
  CompletionReply ticket={.id=q->id,.sequence=sequence,.generation=q->generation,.token=++g->event_token,.value=value,.started=started};
  q->event_token=ticket.token;uint64_t deadline=now_ns()+15000000000ull;bool pressure=false;
  for(;;){

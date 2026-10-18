@@ -76,11 +76,15 @@ static bool completion_write_fixture(struct w2c_env *h){
   while(atomic_load_explicit(heap_word(g,result),memory_order_acquire)!=phase&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}
   ok=!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,result),memory_order_acquire)==phase&&host_u64(h,result+8)==1;
  }
+ // A plain protocol FENCE has the same obligation to cover queued writes.
+ cmd[0]=900;cmd[1]=0;cmd[2]=8;cmd[3]=0xabcdef04;cmd[4]=0x12345678;EMIT(12,5);
+ cmd[0]=(uint32_t)(result+32);cmd[1]=(result+32)>>32;cmd[2]=76;host_put32(h,result+32,0);EMIT(8,3);
+ if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(atomic_load_explicit(heap_word(g,result+32),memory_order_acquire)!=76&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}ok=!native_gpu_error(g)&&atomic_load(heap_word(g,result+32))==76;}
  memset(cmd,0,sizeof(cmd));cmd[0]=900;cmd[9]=(uint32_t)dst;cmd[10]=dst>>32;cmd[13]=1;cmd[14]=16;EMIT(42,17);
  cmd[0]=(uint32_t)(result+32);cmd[1]=(result+32)>>32;cmd[2]=77;host_put32(h,result+32,0);EMIT(8,3);
  #undef EMIT
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(atomic_load_explicit(heap_word(g,result+32),memory_order_acquire)!=77&&!native_gpu_error(g)&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
- native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&atomic_load(heap_word(g,result+32))==77&&host_u64(h,dst)==UINT64_C(0x12345678abcdef03)&&g->completion_write_submits==2&&g->completion_ready==1&&g->completion_registers==2&&g->event_pending==0;
- printf("%s: V2 isolated upload/event progress: two writes submitted before replies, completed fence reused once, later mutation invalidates completion, exact 64-bit readback; no DRAW/PRESENT required. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
+ native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&atomic_load(heap_word(g,result+32))==77&&host_u64(h,dst)==UINT64_C(0x12345678abcdef04)&&g->completion_write_submits==3&&g->completion_ready==1&&g->completion_registers==2&&g->event_pending==0;
+ printf("%s: V2 isolated upload/event progress: two writes submitted before event replies and a third before plain FENCE, completed fence reused once, later mutation invalidates completion, exact 64-bit readback; no DRAW/PRESENT required. %s\n",ok?"PASS":"FAIL",native_gpu_error(g)?native_gpu_error(g):"");native_gpu_end(g);return ok;
 }
 #endif

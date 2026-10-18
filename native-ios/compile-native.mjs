@@ -55,6 +55,7 @@ const key=hash(JSON.stringify(item));
    result+='PROCESS '+pass+' EXECUTION '+(pass===2?'V2':'EXISTING')+'\n'+output;console.log(output);
   }
   fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
+  execFileSync(process.execPath,['evidence/renderer-v2/compare.mjs',root+'/evidence/native-engine-test.txt',root+'/evidence/renderer-v2-benchmark.json'],{stdio:'inherit'});
   // Independent compiler processes, bounded to the runner's three cores.
   // Preserve every stdout/stderr even on failure or a compiler timeout.
   const audits=await Promise.allSettled([0,1,2].map(shard=>new Promise((resolve,reject)=>{
