@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "priorIPAs": 35,
+  "originalEngineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "protectedMain": "de7664a8e6448096716c5a341250d32d4f594fd1",
+  "source": "f30f83723017f2452dbe5660243906dedb425e13",
+  "privateDownloadURLsExcluded": true
+}

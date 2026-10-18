@@ -1,0 +1,28 @@
+{
+  "hiddenLogAssignmentsAvoided" : 200,
+  "completedSteps" : 21,
+  "checks" : 197,
+  "fullLogStoredBytes" : 116441,
+  "optionsPresented" : false,
+  "scope" : "Production UIKit\/controller mapping and real modal lifecycle in iOS simulator; engine launch stubs abort",
+  "logAssignmentBenchmark" : {
+    "UITextViewMs" : 740.64995833339253,
+    "approximateBytesPerText" : 8196,
+    "samples" : 200,
+    "hiddenReportMs" : 0.118583333346578,
+    "scope" : "Simulator text-assignment API wall only, no layout forcing or iPhone FPS claim"
+  },
+  "gameplayVerified" : false,
+  "sessionSuspended" : false,
+  "result" : "PASS",
+  "applicationState" : 0,
+  "screenshots" : [
+    "dashboard",
+    "graphics",
+    "controls",
+    "files",
+    "advanced",
+    "dashboard-accessibility",
+    "controls-accessibility"
+  ]
+}

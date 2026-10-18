@@ -1,0 +1,2 @@
+PASS: optional profiler deterministic aggregation, fixed windows, frozen instance option, CPU clock errors, protocol PRESENT reset, opcode bounds and residual accounting; 36144 bytes.
+Profiler host microbenchmark 500000 operations: baseline 0.178 ms, enabled 216.381 ms, incremental 0.432 us/operation; checksum 249999500000. Synthetic CPU/sanitizer costs, not iPhone performance.

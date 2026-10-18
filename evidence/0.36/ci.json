@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "source": "f30f83723017f2452dbe5660243906dedb425e13",
+  "run": 39083899358,
+  "attempt": 1,
+  "url": "https://github.com/yosnuffyyy/gta5loader/actions/runs/39083899358",
+  "artifacts": [
+    {
+      "id": 12120014485,
+      "name": "GTA-Native-Probe-unsigned",
+      "bytes": 90013158,
+      "digest": "sha256:246158cf3d0b50adc05f5e88881b84f10a3ddc9f8d2c71d969cb30b0756b7069"
+    },
+    {
+      "id": 12119959860,
+      "name": "native-compiler-evidence",
+      "bytes": 1955745,
+      "digest": "sha256:be0f80b2d71b9b1396cb2744738d3defa5edc0aadc2ec59d1780259a16042c1b"
+    }
+  ]
+}

@@ -1,0 +1,554 @@
+{
+  "result": "PASS_SOURCE_ONLY",
+  "modulesInspected": 4808,
+  "fragmentCandidates": 13,
+  "certifiedSingleUseCubeGuards": 76,
+  "exactPairGuards": [
+    {
+      "binding": 46,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": false,
+          "predicate": 1
+        }
+      ]
+    },
+    {
+      "binding": 57,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 2
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 1,
+          "trueArm": true,
+          "predicate": 2
+        }
+      ]
+    },
+    {
+      "binding": 59,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 61,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    }
+  ],
+  "eightPairGuards": [
+    {
+      "binding": 46,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 63,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": false,
+          "predicate": 1
+        }
+      ]
+    },
+    {
+      "binding": 57,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 79,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 2
+        },
+        {
+          "slot": 3,
+          "word": 8,
+          "equals": 1,
+          "trueArm": true,
+          "predicate": 2
+        }
+      ]
+    },
+    {
+      "binding": 59,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 95,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 61,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 111,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 63,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 127,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 127,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 65,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 143,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 143,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 67,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 159,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 159,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    },
+    {
+      "binding": 69,
+      "conditions": [
+        {
+          "slot": 6,
+          "word": 175,
+          "equals": 0,
+          "trueArm": true,
+          "predicate": 0
+        },
+        {
+          "slot": 6,
+          "word": 175,
+          "equals": 3,
+          "trueArm": true,
+          "predicate": 0
+        }
+      ]
+    }
+  ],
+  "comparisonCertificates": 76,
+  "catalog": [
+    {
+      "hash": "996bb42f448956f2",
+      "effect": "ped_alpha",
+      "program": "PS_PedTextured_Four",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "18d215d5dcffe192",
+      "effect": "ped_alpha",
+      "program": "PS_PedTexturedCutOut_Four",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "6e9619cde3dac275",
+      "effect": "ped_alpha",
+      "program": "PS_PedTextured_Eight",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "ace8e73d1c5f3e01",
+      "effect": "ped_alpha",
+      "program": "PS_PedTexturedCutOut_Eight",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "97f5cd7e61649cef",
+      "effect": "ped_alpha",
+      "program": "PS_PedTextured_Four_UI",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "4756ddc52ce8b9bf",
+      "effect": "vehicle_vehglass_crack",
+      "program": "PS_VehicleTextured_Eight",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "f190330c73ec718b",
+      "effect": "vehicle_vehglass_crack",
+      "program": "PS_VehicleTextured_Four",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "23359cc318845d60",
+      "effect": "vehicle_vehglass_crack",
+      "program": "PS_VehicleTextured_FourHighQuality",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "cf4b3b5d76747cd1",
+      "effect": "vehicle_vehglass_crack",
+      "program": "PS_VehicleTextured_EightHighQuality",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "40b91c5040b747c4",
+      "effect": "vfx_decal_glass",
+      "program": "PS_Vfx_Decal_Textured_Eight",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "6acc71d398e188db",
+      "effect": "vfx_decal_glass",
+      "program": "PS_Vfx_Decal_DOF_Textured_Four",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    },
+    {
+      "hash": "02f627d274ec109d",
+      "effect": "vfx_decal_glass",
+      "program": "PS_Vfx_Decal_DOF_Textured_Eight",
+      "bindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ]
+    },
+    {
+      "hash": "cb7288294ad32b21",
+      "effect": "vfx_decal_glass",
+      "program": "PS_Vfx_Decal_Textured_FourHighQuality",
+      "bindings": [
+        46,
+        57,
+        59,
+        61
+      ],
+      "comparisonBindings": [
+        46,
+        57,
+        59,
+        61
+      ]
+    }
+  ],
+  "gpuValidation": false,
+  "scope": "Conservative structural guard proof, no fabricated cube data or successful scene implied."
+}

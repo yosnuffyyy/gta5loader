@@ -1,0 +1,33 @@
+GTA V iOS Native 0.36 — full text logs and optional CPU profiling
+Source: f30f83723017f2452dbe5660243906dedb425e13
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/39083899358 (attempt1 PASS)
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.36
+IPA: GTA-Native-Probe-0.36-unsigned.ipa
+Bytes: 102336482
+SHA256: 18a3d8c257a003be03a72fa4c511cc86e952fd7b28b14dd0fdf7c1631469c2f2
+
+PASS: ASan+UBSan/TSan full-journal stress:80,000 records,4,435,612 bytes,
+no lost bytes; live snapshot, exact stable prefix, export after stop, duplicate
+path protection, partial writes, injected ENOSPC and explicit incomplete state.
+PASS:197 UIKit checks;116,441 bytes retained through100,000-character UI
+progress input despite bounded preview; Share file controller excludes copy.
+PASS:36,144-byte optional CPU profiler; defaultOFF; deterministic fixed-window,
+clock-error, opcode-bound and PRESENT reset tests. Host microbenchmark:
+500,000 operations,0.178ms baseline/216.381ms enabled,0.432us incremental/op.
+This is host sanitized overhead, not phone latency or FPS.
+PASS: two runtime processes; exact optional-profile accounting in the original
+96-draw Metal replay,512 pixels,96 query samples/segments,53,044 payload bytes,
+final buffer bytes and clear/counter order. Production submissions13/12,
+uniform bytes5120/4608; no extra staging; cache256 preserved.
+PASS:4,808 Metal shader modules/pipelines,500 clip shaders; shadow/SRV5633,
+queries, compute/UAV, readback, memory/resource/worker/input regressions.
+PASS:71 original engine-input checks;1,374 session assertions; native adaptive
+37,314,560-byte allocator request and long-session fragmentation regressions.
+PASS:235 exact remote source entries;35 prior IPAs preserved; main unchanged.
+PASS: unsigned ARM64 iPhone package, minimumiOS17, no game/web payload,
+CI shader inventory or test injection code. Exactly one release IPA asset.
+
+NOT VERIFIED: physical0.36 FPS, log overhead, OS Save-to-Files flow, next Story
+Mode load after funeral, new sustained rendering or actual GPU execution time.
+111 shader records untranslated. Audio output unfinished. No stage advancement.
+See OPTIMIZATION-PLAN.md for measured evidence, unknowns and phone collection.

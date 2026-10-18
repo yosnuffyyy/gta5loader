@@ -1,0 +1,1 @@
+PASS: query scope/order, exact 64-bit count and BOOL conversion, pending completion, empty scopes, sequence zero, defined count wrap and predicate preservation, and 10000 reuse/stale/ABA-token cases.

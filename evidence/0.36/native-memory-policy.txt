@@ -1,0 +1,2 @@
+PASS: bounded streamer preflight headroom: large loads before growth, over-target saturation, full slots, sentinel rounding, 4 GiB ceiling and 40,000 accounting cases; no allocation or OS-memory promise.
+PASS: request-aware buddy growth policy: 72831 boundary/overflow checks; bounded segment-growth envelope; growth target unchanged.

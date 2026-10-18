@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "url": "https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.36",
+  "id": 416163314,
+  "tag": "native-0.36",
+  "prerelease": true,
+  "draft": false,
+  "target": "f30f83723017f2452dbe5660243906dedb425e13",
+  "assets": [
+    {
+      "name": "GTA-Native-Probe-0.36-unsigned.ipa",
+      "size": 102336482,
+      "digest": "sha256:18a3d8c257a003be03a72fa4c511cc86e952fd7b28b14dd0fdf7c1631469c2f2",
+      "url": "https://github.com/yosnuffyyy/gta5loader/releases/download/native-0.36/GTA-Native-Probe-0.36-unsigned.ipa"
+    }
+  ],
+  "automaticSourceLinksNotAssets": true
+}

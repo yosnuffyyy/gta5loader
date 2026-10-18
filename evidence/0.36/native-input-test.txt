@@ -1,0 +1,1 @@
+PASS: native input mapping, trigger pressure, press/hold/release, queued tap, source takeover, held-axis blocking, drift/hysteresis, reconnect, focus, NaN, pad restoration, multitouch, viewport and concurrency. 100000 event/consume pairs 21.607 ms (0.216 us/pair); bridge queue capacity 64, no heap allocations. Not device latency.

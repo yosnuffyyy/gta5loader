@@ -1,0 +1,203 @@
+{
+  "result": "PASS",
+  "source": "f30f83723017f2452dbe5660243906dedb425e13",
+  "ciRun": 39083899358,
+  "attempt": 1,
+  "rawSHA256": "291bddd9b0ef75ee91563ba2d9b39e6037464dc2cf69b2a98437e6cea87bd5f1",
+  "origin": "Original-shader synthetic ring fixtures on macOS Apple Paravirtual Metal, native CLI -O0. Not the iPhone -O1 production path, real gameplay frames or GPU execution duration.",
+  "modes": {
+    "0": "dependency-aware uploads; old drain boundaries",
+    "1": "legacy upload and drain flush policy",
+    "2": "preserved v35 production policy, optional CPU profiling ON"
+  },
+  "rows": [
+    {
+      "process": 1,
+      "mode": 0,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 9,
+      "submissions": 14,
+      "uniformPacks": 22,
+      "uniformBytes": 5632,
+      "independent": 93,
+      "dependent": 3,
+      "protocolUploadBytes": 53044,
+      "completions": 1,
+      "pressureWaits": 0,
+      "handlerWallMs": 121.144,
+      "uploadWallMs": 6.356,
+      "drawWallTotalMs": 3.255,
+      "drawWallMs": {
+        "mean": 0.034,
+        "p50": 0.006,
+        "p95": 0.049,
+        "p99": 1.788,
+        "max": 1.788
+      }
+    },
+    {
+      "process": 1,
+      "mode": 1,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 98,
+      "submissions": 103,
+      "uniformPacks": 192,
+      "uniformBytes": 49152,
+      "independent": 0,
+      "dependent": 95,
+      "protocolUploadBytes": 53044,
+      "completions": 7,
+      "pressureWaits": 6,
+      "handlerWallMs": 517.733,
+      "uploadWallMs": 80.205,
+      "drawWallTotalMs": 372.875,
+      "drawWallMs": {
+        "mean": 3.884,
+        "p50": 0.018,
+        "p95": 18.722,
+        "p99": 36.114,
+        "max": 36.114
+      }
+    },
+    {
+      "process": 1,
+      "mode": 2,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 8,
+      "submissions": 13,
+      "uniformPacks": 20,
+      "uniformBytes": 5120,
+      "independent": 93,
+      "dependent": 3,
+      "protocolUploadBytes": 53044,
+      "completions": 1,
+      "pressureWaits": 0,
+      "handlerWallMs": 204.789,
+      "uploadWallMs": 7.063,
+      "drawWallTotalMs": 3.804,
+      "drawWallMs": {
+        "mean": 0.04,
+        "p50": 0.007,
+        "p95": 0.085,
+        "p99": 1.588,
+        "max": 1.588
+      }
+    },
+    {
+      "process": 2,
+      "mode": 0,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 9,
+      "submissions": 14,
+      "uniformPacks": 22,
+      "uniformBytes": 5632,
+      "independent": 93,
+      "dependent": 3,
+      "protocolUploadBytes": 53044,
+      "completions": 1,
+      "pressureWaits": 0,
+      "handlerWallMs": 122.524,
+      "uploadWallMs": 7.026,
+      "drawWallTotalMs": 4.336,
+      "drawWallMs": {
+        "mean": 0.045,
+        "p50": 0.006,
+        "p95": 0.191,
+        "p99": 1.717,
+        "max": 1.717
+      }
+    },
+    {
+      "process": 2,
+      "mode": 1,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 98,
+      "submissions": 103,
+      "uniformPacks": 192,
+      "uniformBytes": 49152,
+      "independent": 0,
+      "dependent": 95,
+      "protocolUploadBytes": 53044,
+      "completions": 7,
+      "pressureWaits": 6,
+      "handlerWallMs": 480.42,
+      "uploadWallMs": 64.242,
+      "drawWallTotalMs": 362.212,
+      "drawWallMs": {
+        "mean": 3.773,
+        "p50": 0.014,
+        "p95": 18.632,
+        "p99": 33.987,
+        "max": 33.987
+      }
+    },
+    {
+      "process": 2,
+      "mode": 2,
+      "draws": 96,
+      "pixelsChecked": 512,
+      "querySamples": 96,
+      "querySegments": 96,
+      "batches": 7,
+      "submissions": 12,
+      "uniformPacks": 18,
+      "uniformBytes": 4608,
+      "independent": 93,
+      "dependent": 3,
+      "protocolUploadBytes": 53044,
+      "completions": 1,
+      "pressureWaits": 0,
+      "handlerWallMs": 138.85,
+      "uploadWallMs": 4.872,
+      "drawWallTotalMs": 2.759,
+      "drawWallMs": {
+        "mean": 0.029,
+        "p50": 0.005,
+        "p95": 0.047,
+        "p99": 1.706,
+        "max": 1.706
+      }
+    }
+  ],
+  "pipelineWorkingSetLines": [
+    "PASS: pipeline working set policy 128: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 576/0/448; live peak 128, pressure evictions 0; pipeline API 112.669ms, link 45.911ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 34.033ms, link 14.117ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: pipeline working set policy 1: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 448/128/256; live peak 192, pressure evictions 64; pipeline API 73.729ms, link 29.597ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: pipeline working set policy 128: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 576/0/448; live peak 128, pressure evictions 0; pipeline API 98.989ms, link 41.251ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: pipeline working set policy 256: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 192/384/0; live peak 192, pressure evictions 0; pipeline API 33.058ms, link 13.349ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. ",
+    "PASS: pipeline working set policy 1: 192 distinct required keys, 3 cycles, 576 draws/147456 samples/256 pixels; creates/hits/evictions 448/128/256; live peak 192, pressure evictions 64; pipeline API 63.736ms, link 27.194ms; encoded commands survive eviction. Policy 1 shrinks 256->128 then grows. Driver bytes and iPhone FPS unmeasured. "
+  ],
+  "pipelineEquivalenceLines": [
+    "PASS: pipeline state equivalence semantic key: 64 draws/16384 checked pixels; creates/hits 1/63, evictions 0; pipeline API wall 0.817ms. Cache bounded at 256 (128 under pressure); retained native pipelines 1 (driver bytes unknown), no iPhone FPS claim. ",
+    "PASS: pipeline state equivalence 0.22 raw key: 64 draws/16384 checked pixels; creates/hits 32/32, evictions 0; pipeline API wall 13.853ms. Cache bounded at 256 (128 under pressure); retained native pipelines 32 (driver bytes unknown), no iPhone FPS claim. ",
+    "PASS: pipeline state equivalence semantic key: 64 draws/16384 checked pixels; creates/hits 1/63, evictions 0; pipeline API wall 0.401ms. Cache bounded at 256 (128 under pressure); retained native pipelines 1 (driver bytes unknown), no iPhone FPS claim. ",
+    "PASS: pipeline state equivalence 0.22 raw key: 64 draws/16384 checked pixels; creates/hits 32/32, evictions 0; pipeline API wall 15.234ms. Cache bounded at 256 (128 under pressure); retained native pipelines 32 (driver bytes unknown), no iPhone FPS claim. "
+  ],
+  "readbackRetirementLines": [
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.004ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 55.902ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement corrected:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 0, explicit completions 1, retired batches 96; completion CPU 0.002ms. Same16-batch/4MiB bound, no new staging or GPU waits.",
+    "PASS: ordered readback uniform retirement 0.30 reference:96 changing draws,13 exact readbacks,256 checked pixels,96 exact occlusion samples; pressure waits 6, explicit completions 7, retired batches 0; completion CPU 37.386ms. Same16-batch/4MiB bound, no new staging or GPU waits."
+  ],
+  "limitations": [
+    "Handler and upload walls overlap; draw wall can contain flushes/waits.",
+    "Fixture has no PRESENT or drawable; no per-frame FPS inference.",
+    "Fixed test order and cold driver state are not controlled A/B timing.",
+    "Mode 2 preserves the v35 production policy with new optional CPU profiling ON; reference modes are comparisons."
+  ]
+}

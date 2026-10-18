@@ -1,3 +1,14 @@
+NATIVE0.36 — FULL SESSION LOGS AND OPTIONAL CPU PROFILE
+Validated source f30f83723017f2452dbe5660243906dedb425e13; CI39083899358 PASS.
+Share-only text-file export; no application file-size quota, bounded2MiB queue.
+Optional36,144-byte service CPU profiler defaultOFF.197 UIKit checks and all
+4,808 shader pipelines / runtime / memory / resource-order regressions PASS.
+This is a measurement build, not a new measured iPhone FPS improvement.
+No stage-count advancement. Physical next-scene loading and0.36 performance
+remain pending. Native0.35 and35 previous IPAs preserved.
+Release: https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.36
+See OPTIMIZATION-PLAN.md, VERIFICATION-0.36.txt and COLLECT-0.36-PERFORMANCE.txt.
+
 PERFORMANCE AUDIT — NATIVE 0.35 (2026-10-17 America/Sao_Paulo)
 Audit target is exact source 8047937b21007cea1efad62df2beb7d1c007bb43.
 Fresh same-source CI attempt 2 PASS; host replay/shader/runtime measurements,
