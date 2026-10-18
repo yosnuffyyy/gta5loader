@@ -818,8 +818,8 @@
     },
     {
       "path": "native-ios/renderer/submission_fixture.inc",
-      "bytes": 7629,
-      "sha256": "0f4e62267e05742bf3b935edfb17d37436367eb010cada5e5cad523045de5086"
+      "bytes": 8214,
+      "sha256": "51c7510d1e33f2f5c46206cf04896f2f492a70d1026a6e0cca8ecaa9ef399db8"
     },
     {
       "path": "native-ios/renderer/test-inter-stage-source.mjs",
