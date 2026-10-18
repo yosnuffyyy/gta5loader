@@ -18,13 +18,14 @@ static inline const char *native_quality_name(unsigned quality){return quality==
 /* Pinned WasmInputBlock, relative to the pointer published by original main.
    +280 is mouse focus, NOT startMode. Publish mode last with release ordering. */
 enum {NATIVE_LAUNCH_BLOCK_BYTES=444,NATIVE_LAUNCH_FOCUS=280,NATIVE_LAUNCH_MODE=440};
-static inline bool native_launch_publish(void *block,size_t bytes,NativeLaunchOptions options){
+static inline bool native_launch_publish(volatile void *block,size_t bytes,NativeLaunchOptions options){
  NativeLaunchOptions checked;
  if(!block||bytes<NATIVE_LAUNCH_BLOCK_BYTES||(uintptr_t)block%4||!native_launch_options(options.mode,options.quality,&checked))return false;
- uint8_t *p=block;uint32_t focus=1,limit=UINT32_MAX;
- memcpy(p+NATIVE_LAUNCH_FOCUS,&focus,4);memcpy(p+424,&limit,4);
- memcpy(p+432,&checked.width,4);memcpy(p+436,&checked.height,4);
- atomic_store_explicit((_Atomic uint32_t*)(p+NATIVE_LAUNCH_MODE),checked.mode,memory_order_release);return true;
+ volatile _Atomic uint8_t *p=block;
+ const uint32_t offsets[]={NATIVE_LAUNCH_FOCUS,424,432,436},values[]={1,UINT32_MAX,checked.width,checked.height};
+ /* Match host_store's atomic byte accesses for ordinary shared fields. */
+ for(unsigned i=0;i<4;i++)for(unsigned j=0;j<4;j++)atomic_store_explicit(p+offsets[i]+j,(uint8_t)(values[i]>>(j*8)),memory_order_relaxed);
+ atomic_store_explicit((volatile _Atomic uint32_t*)(p+NATIVE_LAUNCH_MODE),checked.mode,memory_order_release);return true;
 }
 /* Preserve the established new-Story policy; Sandbox follows the original
    reference startup without the Story-only new-game/autoload override. */

@@ -288,8 +288,8 @@
     },
     {
       "path": "native-ios/launch/options.h",
-      "bytes": 3343,
-      "sha256": "8b8a6d3d7870be99819897c4d1433ea2780dfe023a7d5a29d9e99af2c7e7307f"
+      "bytes": 3543,
+      "sha256": "40306bbb239fed7094486e42c78c5bd25c7d00d10fa8316e28f0bd50b7b10c9c"
     },
     {
       "path": "native-ios/launch/test_engine_mode.cjs",
