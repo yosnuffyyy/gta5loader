@@ -11,6 +11,7 @@
 
 static int launch(const char *game,const char *saves,void *layer,bool checkpoint,bool reference_shadow_compat,bool v2,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){
  NativeLaunchOptions options;if(!native_launch_options(mode,quality,&options)){snprintf(report,capacity,"FAIL: invalid startup mode/quality");return 1;}
+ if(progress)progress(context,mode==2?"Launch bridge received Sandbox (2); isolated Sandbox saves, original offline game initialization requested.":"Launch bridge received Story (1); existing Story saves and startup retained.");
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));w2c_gta *engine=calloc(1,sizeof(*engine));
  if(!h||!engine){free(h);free(engine);snprintf(report,capacity,"FAIL: native launch allocation");return 1;}
  host_init(h);h->engine=engine;h->progress=progress;h->progress_context=context;struct w2c_wasi__snapshot__preview1 wasi={.env=h};

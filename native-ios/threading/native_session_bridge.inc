@@ -15,7 +15,7 @@ static bool scene_watch_poll(NativeThreads *r){
  if(first||transitioned)session_summary(&r->session,now_ns(),text,sizeof(text));
  checked(pthread_mutex_unlock(&r->watch_mutex));
  if(fault)atomic_store(&r->stopping,true);
- if(transitioned)native_log_push(&r->log,"Session transition: camera scene event + subsequent engine pad hook + successful PRESENT; startup-only deadline retired. Visual correctness and mission progression remain separate.");
+ if(transitioned)native_log_push(&r->log,"Session transition: engine scene/player event + subsequent engine pad hook + successful PRESENT; startup-only deadline retired. Visual correctness and mission progression remain separate.");
  if(first){char line[768];snprintf(line,sizeof(line),"Error: session watchdog: %s. %s",session_failure(fault),text);native_log_push(&r->log,line);native_gpu_snapshot(r->gpu,line,sizeof(line));native_log_push(&r->log,line);snprintf(line,sizeof(line),"Watchdog thread context: %s; phase %s; engine workers %u; proxy completions %u; owner mailbox %u; stop %u",worker?"engine worker":"engine owner/UI",worker&&worker->phase?worker->phase:"owner/runtime monitor",atomic_load(&r->game_started),atomic_load(&r->proxies),(unsigned)atomic_load(&r->mailbox_pending),(unsigned)atomic_load(&r->stopping));native_log_push(&r->log,line);}
  return fault!=SESSION_OK;
 }

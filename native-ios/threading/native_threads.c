@@ -45,7 +45,7 @@ typedef struct NativeWorker {
 } NativeWorker;
 #include "timing/native_time_trace.h"
 struct NativeThreads {
- NativeTimeTrace time_trace;NativeLaunchOptions launch;
+ NativeTimeTrace time_trace;NativeLaunchOptions launch;_Atomic unsigned launch_commit;
  struct w2c_env *host;
  pthread_t owner;
  pthread_mutex_t mutex;
@@ -90,6 +90,10 @@ static void checked(int error){if(error)abort();}
 static void report(struct w2c_env *h,const char *s){if(h->progress)h->progress(h->progress_context,s);}
 bool native_thread_log(struct w2c_env *h,const char *line){
  if(!current||current->host!=h||!current->boot_mode)return false;
+ unsigned committed=native_launch_commit(line);
+ if(committed){check(h,committed==current->launch.mode,"Selected launch mode differs from engine commit; refusing silent Story fallback");atomic_store(&current->launch_commit,committed);native_log_push(&current->log,line);report(h,committed==2?"Launch engine commit: Sandbox; original offline startup selected, player/world readiness still pending.":"Launch engine commit: Story; original release startup retained.");return true;}
+ if(current->launch.mode==2&&native_launch_story_script(line))host_unavailable(h,"Sandbox initialization entered Prologue1; refusing Story fallback");
+ if(current->watch_enabled&&current->launch.mode==2&&atomic_load(&current->launch_commit)==2&&native_launch_player_event(line)){uint64_t commands=0,frames=0;native_gpu_progress(current->gpu,&commands,&frames);checked(pthread_mutex_lock(&current->watch_mutex));bool first=!current->session.scene_marker;session_scene_event(&current->session);if(first)current->session.marker_frames=frames;checked(pthread_mutex_unlock(&current->watch_mutex));if(first)report(h,"Sandbox player event: original engine observed a live ped/inventory and granted its loadout. Awaiting subsequent input hook/PRESENT for liveness; movement/camera/collision remain device checks.");}
  if(current->watch_enabled&&(strstr(line,"Animated camera intial frame")||strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))){uint64_t commands=0,frames=0;native_gpu_progress(current->gpu,&commands,&frames);checked(pthread_mutex_lock(&current->watch_mutex));bool marker=!current->session.scene_marker&&strstr(line,"Animated camera intial frame");session_log(&current->session,line);if(marker)current->session.marker_frames=frames;checked(pthread_mutex_unlock(&current->watch_mutex));}
  native_log_push(&current->log,line);return true;
 }
@@ -368,7 +372,7 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
  }
  check(h,current&&current->main_mode&&host_range(h,address,audio?capacity*4:4)&&capacity<=1048576,"invalid startup shared state");
  if(audio){check(h,address%8==0&&capacity>=256&&!(capacity&(capacity-1))&&host_range(h,address,64+capacity*8),"Invalid stereo audio ring extent");current->audio=address;current->audio_capacity=capacity;if(current->boot_mode&&current->display&&!current->gpu_checkpoint){char error[320];if(!native_audio_start(h->memory.data,atomic_load(&h->memory.size),address,capacity,error,sizeof(error))){host_log(h,"Error: native audio output unavailable; real playback is not established.");host_log(h,error);}else host_log(h,"Native audio connected to original 48 kHz stereo PCM ring; actual PCM/nonzero output statistics follow.");}}else current->input=address;
- if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,444),"native input block layout");host_put32(h,address+280,current->launch.mode);host_put32(h,address+424,UINT32_MAX);host_put32(h,address+432,current->launch.width);host_put32(h,address+436,current->launch.height);atomic_store_explicit((_Atomic uint32_t*)(h->memory.data+address+440),1,memory_order_release);}
+ if(current->boot_mode&&!audio){check(h,address%4==0&&host_range(h,address,NATIVE_LAUNCH_BLOCK_BYTES),"native input block layout");check(h,native_launch_publish(h->memory.data+address,NATIVE_LAUNCH_BLOCK_BYTES,current->launch),"native launch publication rejected");char text[192];snprintf(text,sizeof(text),"Launch input publication: block %llu +440 = %u; focus +280 = 1; geometry %ux%u. Engine decision not yet verified.",(unsigned long long)address,current->launch.mode,current->launch.width,current->launch.height);report(h,text);}
  // Mode and geometry were frozen before main; pad delivery remains synchronous.
 }
 
@@ -420,10 +424,11 @@ void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
  char width[32],height[32];snprintf(width,sizeof(width),"-width=%u",r->launch.width);snprintf(height,sizeof(height),"-height=%u",r->launch.height);
- const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu",width,height,"-forceResolution","-noautoload","-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
+ const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu",width,height,"-forceResolution",native_launch_noautoload(r->launch.mode)?"-noautoload":NULL,native_launch_city_spawn(r->launch.mode),"-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
  uint64_t p=w2c_gta_0x5Femscripten_stack_alloc(h->engine,4096),cursor=p+512;unsigned count=sizeof(args)/sizeof(args[0]);
- for(unsigned i=0;i<count;i++){host_put64(h,p+8*i,cursor);size_t bytes=strlen(args[i])+1;host_store(h,cursor,args[i],bytes);cursor+=bytes;}
- host_put64(h,p+8*count,0);w2c_gta_0x5F_main_argc_argv(h->engine,count,p);host_unavailable(h,"native main returned before a game scene");
+ unsigned argc=0;for(unsigned i=0;i<count;i++){if(!args[i])continue;host_put64(h,p+8*argc++,cursor);size_t bytes=strlen(args[i])+1;host_store(h,cursor,args[i],bytes);cursor+=bytes;}
+ report(h,r->launch.mode==2?"Launch arguments: Sandbox, no Story-only -noautoload; original engine scripts initialize free roam.":"Launch arguments: Story, existing -noautoload preserved.");
+ host_put64(h,p+8*argc,0);w2c_gta_0x5F_main_argc_argv(h->engine,argc,p);host_unavailable(h,"native main returned before a game scene");
 }
 bool native_boot_finish(struct w2c_env *h,char *summary,size_t capacity){
  NativeThreads *r=current;if(!r){snprintf(summary,capacity,"Native GPU service was not started.");return false;}atomic_store(&r->stopping,true);signal_change(r);native_audio_stop();native_gpu_stop(r->gpu);native_assets_stop(r->assets);

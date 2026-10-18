@@ -27,9 +27,10 @@ static inline void session_suspend(NativeSession *s,uint64_t now,bool suspended)
  s->suspended=suspended;
 }
 static inline void session_hook(NativeSession *s,uint64_t now){if(s->phase!=SESSION_STOPPED){s->hooks++;s->engine_at=session_time(s,now);}}
+static inline void session_scene_event(NativeSession *s){if(s->phase!=SESSION_STOPPED&&!s->scene_marker){s->scene_marker=true;s->marker_hook=s->hooks;s->marker_frames=s->frames;}}
 static inline void session_log(NativeSession *s,const char *line){
  if(s->phase==SESSION_STOPPED)return;
- if(!s->scene_marker&&strstr(line,"Animated camera intial frame")){s->scene_marker=true;s->marker_hook=s->hooks;s->marker_frames=s->frames;}
+ if(strstr(line,"Animated camera intial frame"))session_scene_event(s);
  if(strstr(line,"Currently running script thread")||strstr(line,">>>SCRIPT["))snprintf(s->script,sizeof(s->script),"%.111s",line);
 }
 static inline unsigned session_check(NativeSession *s,uint64_t now,uint64_t commands,uint64_t frames,uint64_t io_bytes){
