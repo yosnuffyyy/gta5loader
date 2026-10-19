@@ -288,13 +288,13 @@
     },
     {
       "path": "native-ios/launch/options.h",
-      "bytes": 3543,
-      "sha256": "40306bbb239fed7094486e42c78c5bd25c7d00d10fa8316e28f0bd50b7b10c9c"
+      "bytes": 3953,
+      "sha256": "5d51ec797db8a9d6a28796fa0cb3c25d988bd0d18a3ddad2dd667832b6bffd70"
     },
     {
       "path": "native-ios/launch/test_engine_mode.cjs",
-      "bytes": 5393,
-      "sha256": "d57752b2ea52ebc3507bd4c6be879344d33fc2f22b5378d2d7f372ce57408dc4"
+      "bytes": 5621,
+      "sha256": "8bc8a8e4f16f209cc54cb9b770952902d8fe8e42fb531466355662c3db85aff2"
     },
     {
       "path": "native-ios/launch/test_options.c",
@@ -303,8 +303,8 @@
     },
     {
       "path": "native-ios/launch/test_publication.c",
-      "bytes": 2662,
-      "sha256": "4de6da6f1a95665e42cb1a59a21d183e5d7b68d1b63febdf079fb7229636364b"
+      "bytes": 3659,
+      "sha256": "1d283fd51babb9d7be3a7dc312d230bf36b0eef0db5b7dbc008e93e00a5bd893"
     },
     {
       "path": "native-ios/memory/allocator_fixture.inc",

@@ -27,7 +27,7 @@ const m=new Module(__filename);m.filename=__filename;m.paths=module.paths;m._com
      requested-mode+440 to 1. Reproduce that failure before testing the fix. */
   if(mode===2){r.i32(published+440,1);assert.equal(r.instance.exports.testModeNow(),1);r.i32(published+440,2);}
   assert.equal(r.readI32(6583880),-1,'must not pre-populate cached choice');assert.equal(r.instance.exports.testModeNow(),mode);
-  assert.equal(r.instance.exports.testChoice(),mode);assert.equal(r.instance.exports.testMode(),mode);assert(output.includes('[wasm] start mode: '+(mode===2?'sandbox':'story')));
+  assert.equal(r.instance.exports.testChoice(),mode);assert.equal(r.instance.exports.testMode(),mode);assert(output.includes('[wasm] start mode: '+(mode===2?'sandbox':'story')));const commitLine=output.match(/\[wasm\] start mode: (story|sandbox)\r?\n/)?.[0];assert.equal(commitLine,'[wasm] start mode: '+(mode===2?'sandbox':'story')+'\n','original engine emits exact LF-terminated mode commit');
   function scriptFlag(name){const info=110000,result=111000,parameters=112000,text=113000;r.u64(info,result);r.u64(info+16,parameters);r.u64(parameters,text);r.bytes.set(Buffer.from(name+'\0'),text);r.i32(result,-1);r.instance.exports.testScript(BigInt(info));return r.readI32(result);}
   /* Execute original script native, not getters: this is what startup scripts
      see when choosing release Story versus the built-in offline Sandbox. */
@@ -35,7 +35,7 @@ const m=new Module(__filename);m.filename=__filename;m.paths=module.paths;m._com
   function findArg(name){r.bytes.set(Buffer.from(name+'\0'),114000);r.u64(115000,0);return r.instance.exports.testFindArg(114000n,115000n);}
   assert.equal(findArg('-noautoload'),mode===1||control?1:0);assert.equal(findArg('-playercoords'),mode===2?1:0);
   if(mode===2){const p=Number(r.readU64(115000));assert.equal(Buffer.from(r.bytes.subarray(p,r.bytes.indexOf(0,p))).toString(),'94.95,-742.96,44.75');}
-  checks+=13;rows.push({mode,quality,width,height,controlSandboxWithNoautoload:control,block:published,focus:r.readI32(published+280),requested:r.readI32(published+440),cached:r.readI32(6583880),storyScriptFlag:mode===1,sandboxScriptFlag:mode===2,noautoload:args.includes('-noautoload')});
+  checks+=13;rows.push({commitLine,mode,quality,width,height,controlSandboxWithNoautoload:control,block:published,focus:r.readI32(published+280),requested:r.readI32(published+440),cached:r.readI32(6583880),storyScriptFlag:mode===1,sandboxScriptFlag:mode===2,noautoload:args.includes('-noautoload')});
  }
  const result={result:'PASS',checks,rows,origin:fixture?'production C publication bytes → original main → original startup/script decisions':'synthetic publication bytes → original main → original startup/script decisions',engineInstructionsModified:false,worldGameplayVerified:false,limitations:'Main is stopped at publication; original StartChoice and GET_COMMANDLINE_PARAM_EXISTS run afterward. No archives, player/world simulation, audio hardware or full mission scripts execute here.'};
  fs.writeFileSync(process.argv[2],JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

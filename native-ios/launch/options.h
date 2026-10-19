@@ -35,8 +35,13 @@ static inline bool native_launch_noautoload(unsigned mode){return mode==1;}
 static inline const char *native_launch_city_spawn(unsigned mode){return mode==2?"-playercoords=94.95,-742.96,44.75":NULL;}
 /* Engine-generated commit line, not an assertion of playable gameplay. */
 static inline unsigned native_launch_commit(const char *line){
- if(!strcmp(line,"[wasm] start mode: story"))return 1;
- if(!strcmp(line,"[wasm] start mode: sandbox"))return 2;
+ /* WASI stdout retains the engine printf's newline; host_log callers may
+    supply a complete line without it. Accept only that exact framing, never
+    an arbitrary suffix or an embedded second message. */
+ const char prefix[]="[wasm] start mode: ";if(strncmp(line,prefix,sizeof(prefix)-1))return 0;
+ const char *p=line+sizeof(prefix)-1;unsigned mode=0,n=0;
+ if(!strncmp(p,"story",5)){mode=1;n=5;}else if(!strncmp(p,"sandbox",7)){mode=2;n=7;}else return 0;
+ p+=n;if(!*p||!strcmp(p,"\n")||!strcmp(p,"\r\n"))return mode;
  return 0;
 }
 static inline bool native_launch_story_script(const char *line){return strstr(line,">>>SCRIPT[Prologue1]")||strstr(line,"Currently running script thread \"Prologue1\"");}
