@@ -23,6 +23,7 @@ void native_set_assets(NativeAssets*);
 NativeAssets *native_current_assets(void);
 uint32_t native_language(struct w2c_env*,uint64_t,uint64_t,uint64_t);
 void native_boot_prepare(struct w2c_env*,void*,bool);
+void native_boot_core_option(struct w2c_env*,bool);
 void native_boot_launch_options(struct w2c_env*,NativeLaunchOptions);
 void native_boot_prepare_execution(struct w2c_env*,void*,bool,bool,bool);
 void native_boot_prepare_options(struct w2c_env*,void*,bool,bool);

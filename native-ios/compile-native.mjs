@@ -37,7 +37,7 @@ for(const target of ['macos','ios']){
    if(generated.includes(source)&&fs.readFileSync(source,'utf8').includes('audio/native_mixer_profile.h'))item.mixerHeader=hash(fs.readFileSync('native-ios/audio/native_mixer_profile.h')); 
 // Extra header applies only to host consumers. Engine cache keys stay unchanged.
 if(!generated.includes(source)&&!runtime.includes(source)){
- item.hostHeaders=['native-ios/diagnostics/native_trap.h','native-ios/launch/options.h','native-ios/timing/native_time_trace.h','native-ios/audio/native_audio.h','native-ios/audio/native_pcm.h','native-ios/diagnostics/native_journal.h','native-ios/diagnostics/native_recovery.h','native-ios/diagnostics/native_profile.h',...fs.readdirSync('native-ios/memory').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/memory/'+n),'native-ios/input/native_input.h','native-ios/threading/native_session.h','native-ios/threading/native_session_bridge.inc','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
+ item.hostHeaders=['native-ios/diagnostics/native_trap.h','native-ios/launch/options.h','native-ios/timing/native_time_trace.h','native-ios/audio/native_audio.h','native-ios/audio/native_pcm.h','native-ios/diagnostics/native_journal.h','native-ios/diagnostics/native_recovery.h','native-ios/diagnostics/native_profile.h',...fs.readdirSync('native-ios/memory').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/memory/'+n),'native-ios/input/native_input.h','native-ios/threading/native_session.h','native-ios/threading/native_session_bridge.inc','native-ios/threading/native_mailbox.h','native-ios/threading/native_pump.h','native-ios/threading/native_log.h','native-ios/threading/native_threads.h','native-ios/asset_io/native_assets.h','native-ios/platform/native_paths.h','native-ios/renderer/gpu_ring.h','native-ios/renderer/native_gpu.h','native-ios/renderer/native_launch.h',...fs.readdirSync('native-ios/renderer').filter(n=>/\.(h|inc)$/.test(n)).sort().map(n=>'native-ios/renderer/'+n)].map(p=>[p,hash(fs.readFileSync(p))]);
 }
 const key=hash(JSON.stringify(item));
    const cached=cache+'/'+key+'.o',record=cache+'/'+key+'.sha256';
@@ -50,14 +50,40 @@ const key=hash(JSON.stringify(item));
  const objects=sources.map(s=>folder+'/'+path.basename(s)+'.o');
  if(target==='macos'){
   await run('clang',['-isysroot',sdk,...objects,root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','AVFoundation','-framework','AudioToolbox','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',folder+'/native-probe']);
-  let result='';
-  for(let pass=1;pass<=2;pass++){
-   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:240000,env:{...process.env,NATIVE_RENDERER_V2_TEST:pass===2?'1':'0'}});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);fs.writeFileSync(root+'/evidence/native-engine-test-failed-stderr.txt',String(error.stderr||''));console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed: status='+error.status+' signal='+error.signal+' code='+error.code+'; full output preserved in evidence');}
+  let result='',coreResult='';
+  for(let pass=1;pass<=4;pass++){
+   let output;try{output=execFileSync(folder+'/native-probe',[root+'/fixtures/web',root+'/fixtures/saves'],{encoding:'utf8',timeout:240000,env:{...process.env,NATIVE_RENDERER_V2_TEST:pass%2===0?'1':'0',NATIVE_CPU_CORE_V2_TEST:pass>2?'1':'0'}});}catch(error){const stdout=String(error.stdout||'');fs.writeFileSync(root+'/evidence/native-engine-test-failed.txt',stdout);fs.writeFileSync(root+'/evidence/native-engine-test-failed-stderr.txt',String(error.stderr||''));console.error(stdout.slice(-8192));throw Error('Native regression process '+pass+' failed: status='+error.status+' signal='+error.signal+' code='+error.code+'; full output preserved in evidence');}
    if(pass===2&&!output.includes('probe save from the previous run is intact'))throw Error('Persistent save was not verified in the second process');
-   result+='PROCESS '+pass+' EXECUTION '+(pass===2?'V2':'EXISTING')+'\n'+output;console.log(output);
+   if(pass<=2)result+='PROCESS '+pass+' EXECUTION '+(pass%2===0?'V2':'EXISTING')+'\n'+output;else coreResult+='PROCESS '+(pass-2)+' EXECUTION '+(pass%2===0?'V2':'EXISTING')+'\n'+output;console.log(output);
   }
-  fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);
+  fs.writeFileSync(root+'/evidence/native-engine-test.txt',result);fs.writeFileSync(root+'/evidence/native-core-engine-test.txt',coreResult);
   execFileSync(process.execPath,['evidence/renderer-v2/compare.mjs',root+'/evidence/native-engine-test.txt',root+'/evidence/renderer-v2-benchmark.json'],{stdio:'inherit'});
+  execFileSync(process.execPath,['evidence/renderer-v2/compare.mjs',root+'/evidence/native-core-engine-test.txt',root+'/evidence/native-core-completion-benchmark.json'],{stdio:'inherit'});
+  // Match the shipping renderer's O1 setting in an isolated host benchmark.
+  // The existing O0 validation binary and its evidence remain unchanged.
+  const rendererSource='native-ios/renderer/native_gpu.m',rendererObject=folder+'/core-bench.o';
+  await run('clang',[...flags.filter(f=>!/^-[O][0-3]$/.test(f)),'-O1','-fobjc-arc','-DNATIVE_PROBE_CLI','-I'+root+'/wgpu/macos/include','-c',rendererSource,'-o',rendererObject]);
+  const rendererBinary=folder+'/core-bench';
+  await run('clang',['-isysroot',sdk,...objects.map(p=>p===folder+'/native_gpu.m.o'?rendererObject:p),root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','AVFoundation','-framework','AudioToolbox','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',rendererBinary]);
+  let coreBench='';for(let process=1;process<=2;process++){coreBench+='PROCESS '+process+' RENDERER_O1\n'+execFileSync(rendererBinary,['--cpu-core-bench','unused'],{encoding:'utf8',timeout:240000});}
+  fs.writeFileSync(root+'/evidence/cpu-core-O1-benchmark.txt',coreBench);
+  // Recompile just the original forward-light producer's containing partition.
+  // All other objects/flags remain identical; do not promote shipping AOT flags.
+  const selected=generated.filter(p=>/\bu32 w2c_gta_f44528\([^;]*\)\s*\{/.test(fs.readFileSync(p,'utf8')));
+  if(selected.length!==1)throw Error('AOT producer partition not uniquely identified');
+  const original=folder+'/'+path.basename(selected[0])+'.o',experiment=[];
+  for(const opt of ['-O1','-O2']){
+   const output=folder+'/aot-'+opt.slice(1)+'.o',before=performance.now();
+   await run('clang',[...flags.filter(f=>!/^-[O][0-3]$/.test(f)),opt,'-DNATIVE_PROBE_CLI','-c',selected[0],'-o',output]);
+   const compile_ms=performance.now()-before,binary=folder+'/aot-'+opt.slice(1);
+   await run('clang',['-isysroot',sdk,...objects.map(p=>p===original?output:p),root+'/wgpu/macos/lib/libwgpu_native.a','-Wl,-dead_strip','-framework','Foundation','-framework','AVFoundation','-framework','AudioToolbox','-framework','Metal','-framework','QuartzCore','-framework','CoreGraphics','-framework','IOKit','-lc++','-o',binary]);
+   experiment.push({opt,partition:selected[0],sourceSHA256:hash(fs.readFileSync(selected[0])),compile_ms,object_bytes:fs.statSync(output).size,binary_bytes:fs.statSync(binary).size,binary});
+  }
+  const observations=[];for(let pair=0;pair<8;pair++)for(let order=0;order<2;order++){
+   const candidate=experiment[(pair+order)%2];const stdout=execFileSync(candidate.binary,['--aot-compiler-bench','unused'],{encoding:'utf8',timeout:60000});
+   if(!stdout.includes('calls=400000 checksum=700000'))throw Error('Original AOT producer correctness failed');observations.push({pair,order,opt:candidate.opt,stdout});
+  }
+  fs.writeFileSync(root+'/evidence/aot-compiler-experiment.json',JSON.stringify({origin:'Host original GetLightShadowIndex partition; 400000 calls/iteration with exact return checks, other partitions unchanged at host O0. Not engine gameplay CPU profiling or ARM64 evidence. No shipping flag promotion.',experiment,observations},null,2));
   // Independent compiler processes, bounded to the runner's three cores.
   // Preserve every stdout/stderr even on failure or a compiler timeout.
   const audits=await Promise.allSettled([0,1,2].map(shard=>new Promise((resolve,reject)=>{

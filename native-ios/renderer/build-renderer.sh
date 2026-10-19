@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_core_index.c -o native-build/test-core-index
+native-build/test-core-index | tee native-build/evidence/native-core-index-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_pipeline_policy.c -o native-build/test-pipeline-policy
 native-build/test-pipeline-policy | tee native-build/evidence/native-pipeline-policy-test.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O2 native-ios/renderer/test_pipeline_policy.c -o native-build/bench-pipeline-policy

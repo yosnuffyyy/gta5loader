@@ -21,7 +21,7 @@ static WGPUVertexFormat draw_vertex_format(uint32_t f,unsigned *bytes){switch(f)
 static bool draw_state_words(NativeGpu *g,uint32_t id,uint32_t kind,uint32_t *dst,unsigned count){if(!id)return true;Object *o=object(g,id);if(!check(g,o&&o->kind==16&&o->words==count+2&&o->meta[1]==kind,"Invalid draw state object/descriptor size"))return false;memcpy(dst,o->meta+2,count*4);return true;}
 /* Releasing a cache reference preserves references held by encoded/submitted
    commands. No GPU wait is required for LRU eviction. */
-static void pipeline_evict(NativeGpu *g,DrawPipeline *p,bool pressure){DrawState *s=&g->draw;if(!p->pipeline)return;s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;if(pressure)s->pipeline_pressure_evictions++;wgpuRenderPipelineRelease(p->pipeline);p->pipeline=NULL;s->pipeline_live--;}
+static void pipeline_evict(NativeGpu *g,DrawPipeline *p,bool pressure){g->core_pipeline.valid=false;g->core_pipeline_epoch++;DrawState *s=&g->draw;if(!p->pipeline)return;s->evicted_keys[s->evicted_next++%64]=p->key;if(s->evicted_count<64)s->evicted_count++;g->metrics.pipeline_evictions++;if(pressure)s->pipeline_pressure_evictions++;wgpuRenderPipelineRelease(p->pipeline);p->pipeline=NULL;s->pipeline_live--;}
 static void pipeline_prune_cold(NativeGpu *g,uint64_t now,uint64_t frame){DrawState *s=&g->draw;
  for(unsigned i=0;i<DRAW_PIPELINES&&s->pipeline_live>PIPELINE_PRESSURE_CAPACITY;i++){DrawPipeline *p=s->pipelines+i;if(p->pipeline&&pipeline_cold(now,p->last_ns,frame,p->last_present))pipeline_evict(g,p,true);}
 }
@@ -36,7 +36,10 @@ static unsigned pipeline_capacity(NativeGpu *g){DrawState *s=&g->draw;
 #endif
  while(s->pipeline_live>s->pipeline_capacity){unsigned oldest=DRAW_PIPELINES;for(unsigned i=0;i<DRAW_PIPELINES;i++)if(s->pipelines[i].pipeline&&(oldest==DRAW_PIPELINES||s->pipelines[i].age<s->pipelines[oldest].age))oldest=i;if(oldest==DRAW_PIPELINES)break;pipeline_evict(g,s->pipelines+oldest,true);}
  return s->pipeline_capacity;}
+#include "core_pipeline.inc"
 static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgram *vp,DrawProgram *pp){
+ CorePipelineInputs input={0};
+ if(g->core_v2){pipeline_capacity(g);input=core_pipeline_inputs(g,vp,pp);DrawPipeline *hit=core_pipeline_hit(g,&input);if(hit)return hit;}
  DrawKey key={0};key.inactive_masks[0]=vp->inactive_mask;key.inactive_masks[1]=pp?pp->inactive_mask:0;memcpy(key.storage_formats[0],vp->storage_formats,sizeof(vp->storage_formats));if(pp)memcpy(key.storage_formats[1],pp->storage_formats,sizeof(pp->storage_formats));key.shader[0]=vs->meta[2];key.shader[1]=vs->meta[3];if(ps){key.shader[2]=ps->meta[2];key.shader[3]=ps->meta[3];}
  Object *layout=object(g,g->layout);if(!check(g,layout&&layout->kind==15,"Draw input layout missing"))return NULL;memcpy(key.layout,layout->meta,layout->words*4);
  /* Object IDs are ownership handles, not vertex-layout semantics. */
@@ -70,9 +73,9 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  DrawState *s=&g->draw;unsigned capacity=pipeline_capacity(g);
  /* Preserve the cheap first-entry hit before hashing the full key. Equality
     remains exact, including specializations and all normalized state. */
- DrawPipeline *first=s->pipelines;if(first->pipeline&&!memcmp(&first->key,&key,sizeof(key))){first->age=++s->age;first->last_ns=now_ns();first->last_present=g->presents;s->hits++;return first;}
+ DrawPipeline *first=s->pipelines;if(first->pipeline&&!memcmp(&first->key,&key,sizeof(key))){first->age=++s->age;first->last_ns=now_ns();first->last_present=g->presents;s->hits++;return core_pipeline_remember(g,&input,first);}
  uint64_t fingerprint=pipeline_fingerprint(&key,sizeof(key));unsigned empty_slot=DRAW_PIPELINES,oldest=DRAW_PIPELINES;
- for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(q->fingerprint==fingerprint&&!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;q->last_ns=now_ns();q->last_present=g->presents;s->hits++;return q;}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
+ for(unsigned i=0;i<DRAW_PIPELINES;i++){DrawPipeline *q=s->pipelines+i;if(!q->pipeline){if(empty_slot==DRAW_PIPELINES)empty_slot=i;continue;}if(q->fingerprint==fingerprint&&!memcmp(&q->key,&key,sizeof(key))){q->age=++s->age;q->last_ns=now_ns();q->last_present=g->presents;s->hits++;return core_pipeline_remember(g,&input,q);}if(oldest==DRAW_PIPELINES||q->age<s->pipelines[oldest].age)oldest=i;}
  unsigned slot=s->pipeline_live<capacity?empty_slot:oldest;if(!check(g,slot<DRAW_PIPELINES,"Pipeline cache slot accounting"))return NULL;
  bool recreated=false;DrawPipeline *p=s->pipelines+slot;for(unsigned i=0;i<s->evicted_count;i++)if(!memcmp(s->evicted_keys+i,&key,sizeof(key))){s->recent_recompiles++;recreated=true;break;}
  if(p->pipeline)pipeline_evict(g,p,false);memset(p,0,sizeof(*p));p->key=key;p->fingerprint=fingerprint;p->last_ns=now_ns();p->last_present=g->presents;p->age=++s->age;
@@ -111,5 +114,5 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
  WGPUFragmentState fragment=WGPU_FRAGMENT_STATE_INIT;if(pp){fragment.module=coverage_module?coverage_module:linked.fragment?linked.fragment:pp->module;fragment.entryPoint=(WGPUStringView){"main",WGPU_STRLEN};fragment.targetCount=colors;fragment.targets=targets;d.fragment=&fragment;}
  char label[64];snprintf(label,sizeof(label),"%s + %s",vp->hash,pp?pp->hash:"depth");d.label=(WGPUStringView){label,WGPU_STRLEN};atomic_store(&g->live_phase,4);uint64_t pipeline_cpu=g->profile?native_profile_cpu():0;uint64_t pipeline_start=now_ns();p->pipeline=wgpuDeviceCreateRenderPipeline(g->device,&d);uint64_t pipeline_elapsed=now_ns()-pipeline_start;timing_add(&g->metrics.windows[METRIC_PIPELINE],pipeline_elapsed);if(g->profile)native_profile_stage(g->profile,NP_PIPELINE,pipeline_elapsed,pipeline_cpu);pipeline_cost_record(g,&key,recreated,pipeline_elapsed);atomic_store(&g->live_phase,1);s->creates++;if(p->pipeline){s->pipeline_live++;if(s->pipeline_live>s->pipeline_peak)s->pipeline_peak=s->pipeline_live;}
  done:if(coverage_module)wgpuShaderModuleRelease(coverage_module);linked_modules_free(&linked);if(pipeline_layout)wgpuPipelineLayoutRelease(pipeline_layout);if(empty)wgpuBindGroupLayoutRelease(empty);
- if(!check(g,p->pipeline&&!atomic_load(&g->failed),"Native draw pipeline validation failed"))return NULL;return p;
+ if(!check(g,p->pipeline&&!atomic_load(&g->failed),"Native draw pipeline validation failed"))return NULL;return core_pipeline_remember(g,&input,p);
 }

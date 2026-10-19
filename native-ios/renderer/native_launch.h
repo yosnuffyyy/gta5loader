@@ -5,11 +5,13 @@
 #include "../probe.h"
 #include "../launch/options.h"
 int native_scene_probe(const char*,const char*,void*,native_progress,void*,char*,size_t);
+int native_scene_probe_core(const char*,const char*,void*,bool,bool,bool,unsigned,unsigned,native_progress,void*,char*,size_t);
 int native_scene_probe_config(const char*,const char*,void*,bool,bool,unsigned,unsigned,native_progress,void*,char*,size_t);
 int native_scene_probe_execution(const char*,const char*,void*,bool,bool,native_progress,void*,char*,size_t);
 int native_scene_probe_options(const char*,const char*,void*,bool,native_progress,void*,char*,size_t);
 int native_gpu_replay_probe(char*,size_t);
 #ifdef NATIVE_PROBE_CLI
+int native_gpu_core_benchmark(void);
 int native_gpu_shader_audit(const char*,unsigned,unsigned);
 #endif
 int native_graphics_checkpoint(const char*,const char*,native_progress,void*,char*,size_t);

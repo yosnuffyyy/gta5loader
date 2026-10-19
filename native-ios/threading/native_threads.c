@@ -1,6 +1,7 @@
 #include "native_threads.h"
 #include "audio/native_audio.h"
 #include "native_pump.h"
+#include "native_mailbox.h"
 #include "native_log.h"
 #include "native_session.h"
 #include "native_wait.h"
@@ -61,7 +62,7 @@ struct NativeThreads {
  NativeAssets *assets;
  _Atomic unsigned game_started;
  _Atomic bool archive_boundary;
- unsigned generations;
+ unsigned generations;bool core_v2;
  NativeLog log;
  pthread_mutex_t watch_mutex;NativeSession session;bool watch_enabled,watch_reported;_Atomic uint64_t watch_check_at;
  _Atomic bool stack_notice;
@@ -123,7 +124,7 @@ bool native_wait_cancelled(void){
 void native_wait_service(void){
  if(!current||servicing_mailbox)return;
  _Atomic bool *pending=worker?&worker->mailbox_pending:&current->mailbox_pending;
- if(!atomic_exchange_explicit(pending,false,memory_order_acquire))return;
+ if(!native_mailbox_claim(pending,current->core_v2))return;
  servicing_mailbox=true;
  w2c_gta_0x5Femscripten_check_mailbox(worker?worker->engine:current->host->engine);
  servicing_mailbox=false;
@@ -414,6 +415,10 @@ bool native_main_reached(struct w2c_env *h){
 static void graphics_failed(void *context){NativeThreads *r=context;atomic_store(&r->stopping,true);signal_change(r);}
 uint32_t native_has_display(void){return current&&current->display?1:0;}
 void native_boot_prepare_execution(struct w2c_env *h,void *layer,bool checkpoint,bool compatibility,bool v2){NativeThreads *r=current;check(h,r&&!worker,"native boot owner missing");native_launch_options(1,0,&r->launch);r->boot_mode=true;r->gpu_checkpoint=checkpoint;r->display=layer!=NULL;if(checkpoint)atomic_store(&scene_stop,false);r->deadline=now_ns()+180000000000ull;r->watch_enabled=!checkpoint&&r->display;session_begin(&r->session,now_ns());session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));r->gpu=native_gpu_create(h,layer,graphics_failed,r);check(h,r->gpu!=NULL,"native graphics service allocation");native_gpu_reference_shadow_option(r->gpu,compatibility);native_gpu_execution_option(r->gpu,v2);checked(pthread_mutex_lock(&scene_status_mutex));checked(pthread_mutex_lock(&r->watch_mutex));session_suspend(&r->session,now_ns(),atomic_load(&scene_suspended));checked(pthread_mutex_unlock(&r->watch_mutex));scene_runtime=r;checked(pthread_mutex_unlock(&scene_status_mutex));}
+void native_boot_core_option(struct w2c_env *h,bool enabled){
+ NativeThreads *r=current;check(h,r&&!worker&&!r->main_mode,"late CPU core selection");native_gpu_core_option(r->gpu,enabled);r->core_v2=enabled;
+ report(h,enabled?"CPU Execution Core V2: experimental indexed objects and exact incremental pipeline preparation; existing hazards and backend preserved.":"CPU Execution Core: existing (default).");
+}
 void native_boot_launch_options(struct w2c_env *h,NativeLaunchOptions options){
  NativeThreads *r=current;NativeLaunchOptions checkedOptions;
  check(h,r&&!worker&&!r->main_mode&&native_launch_options(options.mode,options.quality,&checkedOptions),"invalid or late native launch options");

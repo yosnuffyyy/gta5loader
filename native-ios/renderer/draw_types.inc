@@ -46,6 +46,10 @@ typedef struct {
  float viewport[6];uint32_t scissor[4],stencil,valid;WGPUColor blend;
 } PassState;
 typedef struct {
+ uint64_t created,destroyed;uint32_t state[9],strides[16],targets[37],masks[2],formats[2][8];
+} CorePipelineInputs;
+typedef struct {CorePipelineInputs input;uint64_t epoch,hits,misses;unsigned slot;bool valid;} CorePipeline;
+typedef struct {
  PassState bound;uint64_t state_emitted,state_skipped;
  unsigned pipeline_capacity,pipeline_live,pipeline_peak;uint64_t pipeline_budget_check,pipeline_pressure_evictions;
  unsigned queued_uniform_batches;uint64_t queued_uniform_bytes,uniform_wraps_avoided,uniform_pressure_waits,uniform_map_retired;
