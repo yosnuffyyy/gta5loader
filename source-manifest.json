@@ -513,8 +513,8 @@
     },
     {
       "path": "native-ios/renderer/coverage_ring_fixture.inc",
-      "bytes": 6042,
-      "sha256": "05c76115bbb7fa71651da48351b83ceffadd1ca1ea0ecba1a20d2a116c2b0f81"
+      "bytes": 6044,
+      "sha256": "f9544a07a9e433bd3b05f01663152a498a37ff4be70919b680a91230ae590e9e"
     },
     {
       "path": "native-ios/renderer/depth_proxy_layout.h",

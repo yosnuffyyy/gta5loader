@@ -10,7 +10,7 @@ static bool coverage_ring_fixture(struct w2c_env *h,bool v2){
  memset(cmd,0,sizeof(cmd));cmd[0]=123;cmd[1]=0;cmd[2]=1;cmd[11]=15;EMIT(16,68);
  const uint32_t values[]={0,0x3e800000,0x3f000000,0x3f400000,0x3f800000,0xbf800000,0x40000000,0x7fc00000,0x3effffff};
  for(unsigned t=0;t<9;t++){
-  for(unsigned q=0;q<2;q++){uint64_t address=dst+8192+t*64+q*32;host_put32(h,address,0);cmd[0]=14000+t*2+q;cmd[1]=1;cmd[2]=(uint32_t)address;cmd[3]=address>>32;EMIT(44,4);}
+  for(unsigned q=0;q<2;q++){uint64_t address=dst+16384+t*64+q*32;host_put32(h,address,0);cmd[0]=14000+t*2+q;cmd[1]=1;cmd[2]=(uint32_t)address;cmd[3]=address>>32;EMIT(44,4);}
   memset(cmd,0,sizeof(cmd));cmd[0]=116;EMIT(5,7);memset(cmd,0,sizeof(cmd));cmd[0]=117;cmd[3]=1;cmd[4]=0x3f800000;EMIT(6,6);
   memset(cmd,0,sizeof(cmd));cmd[0]=116;cmd[32]=117;EMIT(26,37);cmd[0]=107;cmd[1]=0;EMIT(28,2);
   memset(cmd,0,sizeof(cmd));cmd[0]=123;for(unsigned j=1;j<5;j++)cmd[j]=0x3f800000;cmd[5]=UINT32_MAX;EMIT(27,6);
@@ -41,7 +41,7 @@ static bool coverage_ring_fixture(struct w2c_env *h,bool v2){
  #undef EMIT
  if(ok){atomic_store_explicit(heap_word(g,base),tail,memory_order_release);wake(g,base);while(!native_gpu_error(g)&&atomic_load_explicit(heap_word(g,flag),memory_order_acquire)!=991&&now_ns()<deadline){struct timespec t={0,1000000};nanosleep(&t,NULL);}}
  native_gpu_stop(g);ok=ok&&!native_gpu_error(g)&&host_u64(h,flag)%UINT64_C(4294967296)==991;
- for(unsigned t=0;t<9&&ok;t++){float a;memcpy(&a,values+t,4);bool covered=a>=.5f;for(unsigned q=0;q<2;q++){uint64_t address=dst+8192+t*64+q*32;uint64_t want=(q?!covered:covered)?256:0;if(host_u64(h,address+8)!=want||atomic_load(heap_word(g,address))!=101+t*2+q){fail(g,"A2C query/depth result mismatch");ok=false;}}
+ for(unsigned t=0;t<9&&ok;t++){float a;memcpy(&a,values+t,4);bool covered=a>=.5f;for(unsigned q=0;q<2;q++){uint64_t address=dst+16384+t*64+q*32;uint64_t want=(q?!covered:covered)?256:0;if(host_u64(h,address+8)!=want||atomic_load(heap_word(g,address))!=101+t*2+q){fail(g,"A2C query/depth result mismatch");ok=false;}}
   uint8_t pixels[1024];host_load(h,pixels,dst+t*1024,1024);for(unsigned i=0;i<256&&ok;i++){int want[4]={covered?200:0,covered?100:0,covered?50:0,covered?(int)lroundf(fminf(1,a)*255):0};for(unsigned c=0;c<4;c++)if(abs((int)pixels[i*4+c]-want[c])>1){fail(g,"A2C color or alpha mismatch");ok=false;break;}}
  }
  for(unsigned t=0;t<2&&ok;t++){uint64_t at=dst+12288+t*32;if(host_u64(h,at+8)!=(t?256u:0u)||atomic_load(heap_word(g,at))!=201+t){fail(g,"A2C stencil write/read mismatch");ok=false;}}
