@@ -513,8 +513,8 @@
     },
     {
       "path": "native-ios/renderer/coverage_ring_fixture.inc",
-      "bytes": 3744,
-      "sha256": "5d93d0a06c931dff9570d618231be5bee08e8e0ce6318f2d4244cea6a10a620e"
+      "bytes": 6042,
+      "sha256": "05c76115bbb7fa71651da48351b83ceffadd1ca1ea0ecba1a20d2a116c2b0f81"
     },
     {
       "path": "native-ios/renderer/depth_proxy_layout.h",
@@ -758,8 +758,8 @@
     },
     {
       "path": "native-ios/renderer/pass_state.inc",
-      "bytes": 3359,
-      "sha256": "194e9048fddbc04e06d39fed10dff78aa6d92b010327e04675098bba203a78fb"
+      "bytes": 4230,
+      "sha256": "de0251b2fa7840e3eb530e21c2667393749df20fb43d52c71553bb0bafdd3ccc"
     },
     {
       "path": "native-ios/renderer/patch-metal-bc.mjs",
