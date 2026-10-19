@@ -13,6 +13,9 @@ static bool coverage_pair_fixture(NativeGpu *g){@autoreleasepool{
  for(unsigned i=0;i<5;i++){unsigned bytes=0;draw_vertex_format(formats[i],&bytes);uint32_t *e=layout->meta+2+i*7;e[0]=i+1;e[2]=formats[i];e[4]=stride;stride+=bytes;}g->layout=layout->id;
  Object *vb=coverage_buffer(g,8503,stride*6,WGPUBufferUsage_Vertex);if(!vb)goto cleanup;float quad[6][2]={{-1,1},{1,1},{-1,-1},{-1,-1},{1,1},{1,-1}};
  for(unsigned i=0;i<6;i++){float v[17]={quad[i][0],quad[i][1],.25f,1,0,0,1,0,0,0,0,0,0,0,0,.5f,.5f};memcpy(vb->shadow+i*stride,v,stride);}queue_write_buffer(g,vb->buffer,0,vb->shadow,vb->size);g->vb[0][0]=vb->id;g->vb[0][1]=stride;
+ /* Preserve the fatal indexed-instanced DRAW payload, including count48.
+    Repeated test-quad indices provide known pixels; scene geometry is absent. */
+ Object *ib=coverage_buffer(g,8504,96,WGPUBufferUsage_Index);if(!ib)goto cleanup;for(unsigned i=0;i<48;i++)((uint16_t*)ib->shadow)[i]=i%6;queue_write_buffer(g,ib->buffer,0,ib->shadow,96);g->ib[0]=ib->id;g->ib[1]=57;
  const unsigned sizes[]={192,16,20480,368,736,368};Object *cb[6];for(unsigned i=0;i<6;i++){cb[i]=coverage_buffer(g,8510+i,sizes[i],WGPUBufferUsage_Uniform);if(!cb[i])goto cleanup;}
  float *mat=(float*)cb[0]->shadow;mat[32]=mat[37]=mat[42]=mat[47]=1;
  mat=(float*)cb[2]->shadow;mat[0]=mat[5]=mat[10]=1;uint32_t white=UINT32_MAX;memcpy(mat+3,&white,4);mat[11]=1000000;
@@ -30,7 +33,7 @@ static bool coverage_pair_fixture(NativeGpu *g){@autoreleasepool{
    for(unsigned i=0;i<4;i++)g->targets[i*4]=8530+i;g->targets[32]=8534;
    ((float*)cb[5]->shadow)[88]=1;((float*)cb[5]->shadow)[90]=1;((float*)cb[5]->shadow)[91]=alphas[a];
    uint32_t clear_words[7]={8530,0,0,0,0,0};for(unsigned i=0;i<4;i++){clear_words[0]=8530+i;if(!clear(g,(uint8_t*)clear_words,false))goto cleanup;}
-   uint32_t payload[]={0,6,1,0,0,0};if(!draw_execute(g,(uint8_t*)payload)||!draw_flush(g))goto cleanup;
+   uint32_t payload[]={3,48,1,0,0,0};if(!draw_execute(g,(uint8_t*)payload)||!draw_flush(g))goto cleanup;
    for(unsigned target=0;target<4;target++){Object *out=object(g,samples==1?8530+target:8535);
    if(samples==4){uint32_t resolve[]={8535,0,8530+target,0};if(!resolve_resource(g,(uint8_t*)resolve))goto cleanup;}
    WGPUCommandEncoder e=encoder(g);WGPUTexelCopyTextureInfo src=WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;src.texture=out->texture;WGPUTexelCopyBufferInfo dst=WGPU_TEXEL_COPY_BUFFER_INFO_INIT;dst.buffer=read;dst.layout.offset=target*4096;dst.layout.bytesPerRow=256;dst.layout.rowsPerImage=16;WGPUExtent3D extent={16,16,1};wgpuCommandEncoderCopyTextureToBuffer(e,&src,&dst,&extent);if(!submit(g,e))goto cleanup;}
@@ -38,7 +41,7 @@ static bool coverage_pair_fixture(NativeGpu *g){@autoreleasepool{
    for(unsigned target=0;target<4;target++)for(unsigned y=0;y<16;y++)for(unsigned x=0;x<16;x++){const uint8_t *p=pixels+target*4096+y*256+x*4;bool on=alphas[a]>=.5f;int rgba[4][4]={{200,100,50,(int)lroundf(fminf(1,fmaxf(0,alphas[a]))*255)},{128,128,255,255},{0,0,250,255},{0,0,0,127}};for(unsigned c=0;c<4;c++){int want=on?rgba[target][c]:0;if((samples==1||alphas[a]<=0||alphas[a]>=1)?abs((int)p[c]-want)>1:p[c]>rgba[target][c]+1){char why[190];snprintf(why,sizeof(why),"Fatal grass A2C samples%u alpha%.3f MRT%u pixel%u,%u channel%u got%u expected%d",samples,alphas[a],target,x,y,c,p[c],want);fail(g,why);goto cleanup;}}}
    wgpuBufferUnmap(read);atomic_store(&g->map_active,false);cases++;
   }
-  reset_state(g);for(unsigned id=8530;id<=8535;id++){Object *o=object(g,id);CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)id);destroy(o);}g->shader[0]=8500;g->shader[1]=8501;g->layout=8502;g->vb[0][0]=8503;g->vb[0][1]=stride;g->srv[1][2]=8521;g->blend[0]=8522;for(unsigned i=0;i<6;i++)g->cb[stages[i]][slots[i]][0]=cb[i]->id;
+  reset_state(g);for(unsigned id=8530;id<=8535;id++){Object *o=object(g,id);CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)id);destroy(o);}g->shader[0]=8500;g->shader[1]=8501;g->layout=8502;g->vb[0][0]=8503;g->vb[0][1]=stride;g->ib[0]=8504;g->ib[1]=57;g->srv[1][2]=8521;g->blend[0]=8522;for(unsigned i=0;i<6;i++)g->cb[stages[i]][slots[i]][0]=cb[i]->id;
  }
  ok=cases==16&&!atomic_load(&g->failed);if(ok)puts("PASS: fatal grass VS90bb870460e2835c/PS0030c87264713865: 16 actual DRAW cases, 16384 pixels, four MRTs, single-sample threshold and native4x coverage endpoints; original shaders and synthetic material/geometry. No vehicle collision gameplay claimed.");
  cleanup:if(atomic_exchange(&g->map_active,false)&&read)wgpuBufferUnmap(read);if(read)wgpuBufferRelease(read);draw_flush(g);reset_state(g);for(unsigned id=8500;id<=8535;id++){Object *o=object(g,id);if(o){CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)id);destroy(o);}}return ok;
