@@ -1,3 +1,5 @@
+Native 0.44 CPU preparation core — validated experimental ARM64 build44, code fb7a11e2c0571c5187b98411807226edb7fcc863, CI 39332037894. Separate OFF-default core selector; bounded index/exact immutable pipeline preparation/mailbox fast path; host comparisons and original producer O1/O2 experiment. Physical performance and correct low-cadence simulation/audio activation remain pending. Roadmap stage count unchanged. See NATIVE-0.44-CPU-REWORK-RESULTS.md.
+
 NATIVE0.43 — A2C COLLISION-TRIGGERED TRAP AND SANDBOX LIVE HANDOFF
 Executable 9ea0c38bcfe9e673fa7ac7f5ae2a0ef811ce1f24; CI39187176166 PASS.
 Exact grass pair/payload:16 DRAWs/16384 MRT pixels; both-mode alpha/depth/stencil/query tests.

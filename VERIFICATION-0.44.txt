@@ -1,0 +1,10 @@
+Native 0.44.0 / build 44
+Executable source: fb7a11e2c0571c5187b98411807226edb7fcc863
+Tree: 66c1b8d5b5d31697112f7d71a358fbca79867a93
+CI: https://github.com/yosnuffyyy/gta5loader/actions/runs/39332037894 — PASS
+291 source entries; 4 runtime processes; 4,808 shader modules/pipelines; 500 clip shaders; component ASan/UBSan/TSan; 64 matched renderer-O1 replays.
+IPA: GTA-Native-Probe-0.44-unsigned.ipa
+Bytes: 105001835
+SHA256: e847e89988e792f530c301f17a1c00296a356bd7a8ce141e70f6d5cce127f4af
+UUID: a72d02aea6953220a4d1b287dc50d469
+43 prior IPA hashes preserved. Core V2 experimental/OFF by default. Mixed, modest host measurements; major-performance gate not met. No physical 0.44 FPS, simulation, audio, thermal or gameplay verification. Timer-clamp and audio-start issues unresolved.
