@@ -89,7 +89,7 @@ struct NativeGpu {
  unsigned test_inter_stage_limit;bool test_legacy_ordered_upload;bool test_legacy_layout_ids,test_legacy_shadow_counts,test_raw_pipeline_keys,test_flush_new_objects,test_uniform_wrap_wait,test_no_map_retirement,test_legacy_upload_flush,test_drain_flush,test_drain_controlled_clock;unsigned test_pipeline_capacity;bool test_sync_events;
  void *test_scope_context;
  bool test_legacy_transfers;
- bool test_unused_layout_keys,test_no_uniform_reuse,test_measure_draw;TimingWindow test_draw_times;
+ bool test_no_pass_reuse;bool test_unused_layout_keys,test_no_uniform_reuse,test_measure_draw;TimingWindow test_draw_times;
 #endif
  bool clip_enabled;unsigned clip_cases_tested;bool bc_enabled,format_caps_enabled,norm16_enabled,border_enabled,test_bc;unsigned norm16_cases_tested,border_cases_tested;unsigned bc_formats_tested,snorm_cases_tested,instance_cases_tested;
  DrawState draw;
@@ -634,6 +634,7 @@ bool native_gpu_replay_test(struct w2c_env *h,char *report,size_t capacity){
  char summary[1800];native_gpu_summary(g,summary,sizeof(summary));snprintf(report,capacity,"%s: inter-stage output/input relabeling: 3 cases, all 256 pixels checked; consumed location15, flat provoking-vertex colors, unused location15 and preserved clip distances. Native CI limit 15; original vertex inputs and fragment color outputs retained.\n%s: native resource transitions: 44 cases; GPU-only upload neighbors, scratch reuse, array/3D copy bytes, source-destroyed copies and retained MSAA resolve. Bounded 40-byte upload scratch; no CPU readback or completion wait.\n%s: native format compatibility: 18 normalized16 output cases across six formats; exact upload/readback and signed sampling; 18 border sampler cases through production descriptors; all 16 pixels per case checked.\n%s: UAV/compute: 16 output cases; ordered reset/preserve/copy across staging reuse, independent per-view counters, raw/structured clears, original fill/copy with exact ranges, typed storage variants, original draw pixels, mip chains and presented-pixel sampling. 29 original compute pipelines compiled; compilation alone is not scene rendering.\n%s: depth proxy: 14 cases, all 256 pixels checked; depth/stencil float and integer sampling, float comparison, mip/layer ranges, draw/clear/upload/copy invalidation, unchanged-source reuse and cleanup.\n%s: native GPU shared-ring replay, buffer/texture uploads, copies/readbacks, bounded A8 expansion, event query and GPU-completion fence.\n%s: instance input: 10 cases, all 256 pixels checked; rate0/1/2/3, zero stride, mixed rates, nonzero starts, instance IDs, indexed/indirect and bounded counts; no vertex expansion.\n%s: raw readback: 36 cases across 30 formats, mip/array/3D boxes, compressed edges, A8, buffer boxes, guards and transfers above 1 MiB; one staging buffer capped at 1 MiB.\n%s: signed 8-bit R8/RG8/RGBA8 render targets: 9 cases; clear, additive draw, upload, copy, raw signed readback and sampling; all 16 pixels per case verified.\n%s: BC1-BC7 hardware sampling, 11 linear/sRGB format cases, all 16 pixels per case checked against format precision bounds; compressed BC1 ring upload/copy/destruction.\n%s: original startup IM shader pair through DRAW: 10 cases, all 256 pixels per case checked; direct/indexed/instanced/indirect draws, constant changes and offsets, blending, scissor, depth reject/pass; 11 draws; equivalent state reuses cached pipelines.\n%s\n%s",g->inter_stage_cases==3?"PASS":"FAIL",g->resource_cases==44?"PASS":"FAIL",g->norm16_cases_tested==18&&g->border_cases_tested==18?"PASS":"FAIL",g->draw.uav_cases==16?"PASS":"FAIL",g->draw.proxy_cases==14?"PASS":"FAIL",ok?"PASS":"FAIL",g->instance_cases_tested==10?"PASS":"FAIL",g->readback_cases_tested==36?"PASS":"FAIL",g->snorm_cases_tested==9?"PASS":"FAIL",g->bc_formats_tested==11?"PASS":"FAIL",ok?"PASS":"FAIL",summary,native_gpu_error(g)?native_gpu_error(g):"Offscreen fixtures; no game scene is claimed.");native_gpu_end(g);return ok;
 }
 #include "query_fixture.inc"
+#include "coverage_ring_fixture.inc"
 #include "query_stop_fixture.inc"
 #include "event_fixture.inc"
 #include "completion_fixture.inc"
@@ -689,6 +690,8 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  if(!result&&!copy_cast_fixture(h))result=1;
  if(!result&&!copy_error_fixture(h))result=1;
  for(unsigned mode=0;mode<2&&!result;mode++)if(!transfer_fixture(h,mode==0))result=1;
+ if(!result&&!coverage_ring_fixture(h,false))result=1;
+ if(!result&&!coverage_ring_fixture(h,true))result=1;
  if(!result&&!event_callback_fixture(h))result=1;
  if(!result&&!completion_callback_fixture(h))result=1;
  if(!result&&!completion_write_fixture(h))result=1;
@@ -700,6 +703,7 @@ int native_gpu_replay_probe(char *report,size_t capacity){
  for(unsigned legacy=0;legacy<3&&!result;legacy++){char text[2400];bool valid=submission_fixture(h,legacy,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
  for(unsigned mode=0;mode<2&&!result;mode++){char text[2400];bool valid=ordered_fixture(h,mode==0,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
  for(unsigned mode=0;mode<3&&!result;mode++){char text[2400];bool valid=reuse_fixture(h,mode,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
+ for(unsigned pair=0;pair<8&&!result;pair++)for(unsigned order=0;order<2&&!result;order++){unsigned mode=((pair+order)&1)?3:4;char text[2400];bool valid=reuse_fixture(h,mode,text,sizeof(text));printf("%s\n",text);if(!valid)result=1;}
 #endif
  }else snprintf(report,capacity,"FAIL: GPU replay memory trap %d",trap);
  host_close(h); if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}free(h);wasm_rt_free_thread();return result;

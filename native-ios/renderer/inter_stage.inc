@@ -1,5 +1,5 @@
 #include "inter_stage_layout.h"
-typedef struct {WGPUShaderModule vertex,fragment;} LinkedModules;
+typedef struct {WGPUShaderModule vertex,fragment;__unsafe_unretained NSString *fragment_source;} LinkedModules;
 /* Reflect only the VS result and PS main parameters. Never relabel vertex
    inputs, fragment outputs, buffers/textures, builtin fields, or private code. */
 static NSRange inter_stage_range(NSString *text,bool vertex){
@@ -27,6 +27,7 @@ static bool draw_link_modules(NativeGpu *g,NSString *vs,NSString *ps,uint32_t fl
  if(plan.changed){vertex=inter_stage_relabel(vertex,vr,&plan);if(ps&&(plan.changed&fmask))fragment=inter_stage_relabel(ps,fr,&plan);}
  if(![vertex isEqualToString:vs]){WGPUShaderSourceWGSL src=WGPU_SHADER_SOURCE_WGSL_INIT;src.code=(WGPUStringView){vertex.UTF8String,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&src.chain;md.label=(WGPUStringView){"linked vertex varying locations",WGPU_STRLEN};out->vertex=wgpuDeviceCreateShaderModule(g->device,&md);if(!out->vertex||atomic_load(&g->failed))return false;}
  if(ps&&![fragment isEqualToString:ps]){WGPUShaderSourceWGSL src=WGPU_SHADER_SOURCE_WGSL_INIT;src.code=(WGPUStringView){fragment.UTF8String,WGPU_STRLEN};WGPUShaderModuleDescriptor md=WGPU_SHADER_MODULE_DESCRIPTOR_INIT;md.nextInChain=&src.chain;md.label=(WGPUStringView){"linked fragment varying locations",WGPU_STRLEN};out->fragment=wgpuDeviceCreateShaderModule(g->device,&md);if(!out->fragment||atomic_load(&g->failed))return false;}
+ out->fragment_source=fragment;
  if(plan.changed){g->draw.inter_stage_links++;if(g->host->progress&&g->draw.inter_stage_links<=6){char line[240];snprintf(line,sizeof(line),"Native inter-stage link: negotiated limit %u; VS/PS locations 0x%08x/0x%08x; relabeled high locations 0x%08x. Types/interpolation/builtins and all outputs retained.",g->inter_stage_limit,vmask,fmask,plan.changed);g->host->progress(g->host->progress_context,line);}}return !atomic_load(&g->failed);
 }
 static void linked_modules_free(LinkedModules *m){if(m->vertex)wgpuShaderModuleRelease(m->vertex);if(m->fragment)wgpuShaderModuleRelease(m->fragment);*m=(LinkedModules){0};}

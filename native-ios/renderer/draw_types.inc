@@ -39,7 +39,14 @@ typedef struct {
  DrawKey key; WGPURenderPipeline pipeline; uint64_t age,fingerprint,last_ns,last_present;
  unsigned slots; uint32_t last[16],stride[16],rate[16]; bool instance[16],manual_instances;uint8_t gpu_slot[16];
 } DrawPipeline;
+typedef struct {WGPUBuffer buffer;uint64_t offset,size;} PassBuffer;
 typedef struct {
+ WGPURenderPipeline pipeline;WGPUBindGroup groups[2];uint32_t offsets[2],counts[2];
+ PassBuffer vertex[16],index;WGPUIndexFormat index_format;
+ float viewport[6];uint32_t scissor[4],stencil,valid;WGPUColor blend;
+} PassState;
+typedef struct {
+ PassState bound;uint64_t state_emitted,state_skipped;
  unsigned pipeline_capacity,pipeline_live,pipeline_peak;uint64_t pipeline_budget_check,pipeline_pressure_evictions;
  unsigned queued_uniform_batches;uint64_t queued_uniform_bytes,uniform_wraps_avoided,uniform_pressure_waits,uniform_map_retired;
  uint64_t uniform_packs,uniform_reuses,uniform_upload_bytes;
