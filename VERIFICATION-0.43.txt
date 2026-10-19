@@ -1,0 +1,12 @@
+Native0.43.0/build43 — verified host/CI test build
+Source 9ea0c38bcfe9e673fa7ac7f5ae2a0ef811ce1f24
+Tree 209d01b2847d21dd0bb88fdbef725fcc69cf64ea
+CI https://github.com/yosnuffyyy/gta5loader/actions/runs/39187176166 PASS
+IPA 104983240 bytes
+SHA256 405a57c1f7263a68ac3068d1b7cf9310f690ed512ea2749f7c2dfe51cb5d9aed
+UUID f18f4497dc803c7e99adf75c4712e717
+284 manifest entries; two native runtime processes;4808 shader/pipelines;500clip;71 input;205 UIKit;1374 watchdog; applicable component ASan/UBSan/TSan.
+Fatal grass pair16 DRAWs/16384 MRT pixels; both execution modes alpha/depth/stencil/query; Sandbox LF/CRLF commit and20-minute live policy; genuine stalls retained.
+16 paired host benchmarks: setters768->134; DRAW CPU1.743->1.649ms; service CPU4.881->4.381ms. Cold total wall1.784->1.796ms and p99/max1.1625->1.3300ms did not improve. Host/-O0, not iPhone/-O1 or gameplay FPS.
+42 prior IPAs preserved. No game/web payload. Physical0.43 collision, sustained FPS, memory, input/audio/thermal and Story save checks PENDING.
+See NATIVE-0.43-RESULTS.md.

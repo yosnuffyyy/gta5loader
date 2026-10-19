@@ -1,3 +1,14 @@
+NATIVE0.43 — A2C COLLISION-TRIGGERED TRAP AND SANDBOX LIVE HANDOFF
+Executable 9ea0c38bcfe9e673fa7ac7f5ae2a0ef811ce1f24; CI39187176166 PASS.
+Exact grass pair/payload:16 DRAWs/16384 MRT pixels; both-mode alpha/depth/stencil/query tests.
+Single-sample reference alpha threshold; native MSAA preserved.
+Sandbox mode LF/CRLF framing fixed; correct publication/save roots unchanged.
+Bounded encoder-state reuse:768->134 setter calls; host service CPU4.881->4.381ms; cold wall/p99 did not improve. No phone FPS claim.
+256-entry cache, both renderers, presets,30 cap,audio,input,branding preserved;42 prior IPAs intact.
+Prior0.42 Sandbox driving is user-reported;0.43 sustained/collision tests remain pending. Stage count not advanced by host tests.
+See NATIVE-0.43-RESULTS.md and VERIFICATION-0.43.txt.
+Release https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.43
+
 NATIVE 0.42 — SANDBOX REQUESTED-MODE BRIDGE REPAIR
 Executable ab51b47752066092280136f8327a8543b8a612ad; CI 39171815837 PASS.
 Correct +440 mode / +280 focus; original Sandbox scripts, isolated saves.
