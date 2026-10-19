@@ -508,8 +508,8 @@
     },
     {
       "path": "native-ios/renderer/coverage_fixture.inc",
-      "bytes": 7599,
-      "sha256": "fbe441f82468da5e9efb867a3968cd88a3de8e385d55f4ead8663cf4166e4002"
+      "bytes": 7891,
+      "sha256": "33f42aecd4edbfe52f4cb84c91c518ca05e366c9529005aea37c4d01f2c9bdd7"
     },
     {
       "path": "native-ios/renderer/coverage_ring_fixture.inc",
@@ -908,8 +908,8 @@
     },
     {
       "path": "native-ios/renderer/reuse_fixture.inc",
-      "bytes": 6201,
-      "sha256": "a61ca6acc2249d86af16cf660259d118cb3ac38b5a4ad66ccf1f026c9d03ae35"
+      "bytes": 6993,
+      "sha256": "5bab764d7d89e8a3bcaef330b50b83a0c5c7b068cae7a374414658602da6da41"
     },
     {
       "path": "native-ios/renderer/sampler_border.h",
