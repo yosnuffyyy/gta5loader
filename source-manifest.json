@@ -568,8 +568,8 @@
     },
     {
       "path": "native-ios/renderer/draw_pipeline.inc",
-      "bytes": 17641,
-      "sha256": "04c8f161487d2752620a6ac884786b8ae40c50dee09ac18ed9e89f88f1092333"
+      "bytes": 17661,
+      "sha256": "c420c78162a9b060cbb8bee89c97970e83694c2ece31baf5e0da57a2738184c1"
     },
     {
       "path": "native-ios/renderer/draw_replay.inc",
@@ -628,8 +628,8 @@
     },
     {
       "path": "native-ios/renderer/inter_stage.inc",
-      "bytes": 5073,
-      "sha256": "562407f767770ae49460b5e504c47d4ca082976680f82389e5c3433474977f1a"
+      "bytes": 5203,
+      "sha256": "248883c0cb0fb07062b53a0a85107f3c95cc5b4d4aa49e27db6a86ceb222ba54"
     },
     {
       "path": "native-ios/renderer/inter_stage_layout.h",
@@ -883,8 +883,8 @@
     },
     {
       "path": "native-ios/renderer/recorded_pair_audit.inc",
-      "bytes": 6287,
-      "sha256": "6da074c86c66aac959a45aa51cb53ecc978a570478ec75804cd2e34a62fbae10"
+      "bytes": 6740,
+      "sha256": "af0cc32822fabee24ba76dabbfd296f6ead96fd7aac2ba267acfa5c0415df2d8"
     },
     {
       "path": "native-ios/renderer/renderer_cli.m",

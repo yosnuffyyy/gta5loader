@@ -95,7 +95,7 @@ static DrawPipeline *draw_pipeline(NativeGpu *g,Object *vs,Object *ps,DrawProgra
   /* Explicit shader coverage disables A2C in D3D11. Inspect only the result
      interface, never a sample_mask input. The single-sample variant is compiled
      after varying linking; all original outputs/depth and their types remain. */
-  NSString *source=linked.fragment_source;NSArray *e=draw_matches(@"@fragment\\s*fn\\s+main\\s*\\((?:[^()]|\\([^)]*\\))*\\)\\s*->\\s*([^\\{]+)\\{",source);
+  NSString *source=(__bridge NSString*)linked.fragment_source;NSArray *e=draw_matches(@"@fragment\\s*fn\\s+main\\s*\\((?:[^()]|\\([^)]*\\))*\\)\\s*->\\s*([^\\{]+)\\{",source);
   NSString *result=e.count==1?draw_capture(source,e[0],1):@"";
   if(![result containsString:@"@"]){NSArray *st=draw_matches([NSString stringWithFormat:@"struct\\s+%@\\s*\\{([^}]*)\\}",[NSRegularExpression escapedPatternForString:[result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]]],source);if(st.count==1)result=draw_capture(source,st[0],1);}
   bool coverage=[result containsString:@"@builtin(sample_mask)"];if(coverage)d.multisample.alphaToCoverageEnabled=false;

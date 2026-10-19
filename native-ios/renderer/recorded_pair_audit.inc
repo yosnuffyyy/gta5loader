@@ -33,6 +33,8 @@ static bool audit_recorded_pair(NativeGpu *g){@autoreleasepool{
  DrawProgram *vp=draw_program(g,shaders[0]),*pp=draw_program(g,shaders[1]);if(!vp||!pp||atomic_load(&g->failed))goto cleanup;
  if(!pair_original_rejects(g,vp,pp)||!draw_pipeline(g,shaders[0],shaders[1],vp,pp))goto cleanup;
  uint64_t hits=g->draw.hits,creates=g->draw.creates;if(!draw_pipeline(g,shaders[0],shaders[1],vp,pp)||g->draw.hits!=hits+1||g->draw.creates!=creates)goto cleanup;
- ok=!atomic_load(&g->failed);if(ok)puts("PASS: recorded Prologue VS 7db515e410659eca + PS 394c572f727d25e8: real modules, packed bindings, special constants, clip outputs and production cached pipeline. Synthetic vertex/attachment fixtures; scene pixels not claimed.");
- cleanup:reset_state(g);for(unsigned i=8100;i<=8106;i++){Object *o=object(g,i);if(o){CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)i);destroy(o);}}return ok;
+ Object *blend=create(g,8107,16);if(!blend)goto cleanup;blend->words=68;blend->meta=calloc(68,4);if(!blend->meta)goto cleanup;blend->meta[0]=8107;blend->meta[2]=1;blend->meta[11]=15;g->blend[0]=8107;
+ if(!draw_pipeline(g,shaders[0],shaders[1],vp,pp))goto cleanup;
+ ok=!atomic_load(&g->failed);if(ok){puts("PASS: A2C after real location15 varying relabel: retained fragment source, clip output, packed bindings and cached Metal pipeline; synthetic alpha state, no scene pixels claimed.");puts("PASS: recorded Prologue VS 7db515e410659eca + PS 394c572f727d25e8: real modules, packed bindings, special constants, clip outputs and production cached pipeline. Synthetic vertex/attachment fixtures; scene pixels not claimed.");}
+ cleanup:reset_state(g);for(unsigned i=8100;i<=8107;i++){Object *o=object(g,i);if(o){CFDictionaryRemoveValue(g->objects,(void*)(uintptr_t)i);destroy(o);}}return ok;
 }}
