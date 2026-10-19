@@ -578,7 +578,7 @@ void native_gpu_summary(NativeGpu *g,char *text,size_t size){if(!g){snprintf(tex
 #ifdef NATIVE_PROBE_CLI
 #include "core_fixture.inc"
 static bool core_benchmark_replays(struct w2c_env *h){
- for(unsigned pair=0;pair<8;pair++)for(unsigned order=0;order<2;order++){unsigned mode=((pair+order)&1)?5:6;char text[2400];if(!reuse_fixture(h,mode,text,sizeof(text))){puts(text);return false;}}return true;
+ for(unsigned pair=0;pair<8;pair++)for(unsigned phase=0;phase<2;phase++)for(unsigned order=0;order<2;order++){unsigned mode=(((pair+phase)&1)?5:7)+(((pair+order)&1)?0:1);char text[2400];if(!reuse_fixture(h,mode,text,sizeof(text))){puts(text);return false;}}return true;
 }
 int native_gpu_core_benchmark(void){
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));if(!h)return 1;host_init(h);

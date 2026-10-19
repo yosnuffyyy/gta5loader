@@ -87,7 +87,7 @@ const key=hash(JSON.stringify(item));
   // Independent compiler processes, bounded to the runner's three cores.
   // Preserve every stdout/stderr even on failure or a compiler timeout.
   const audits=await Promise.allSettled([0,1,2].map(shard=>new Promise((resolve,reject)=>{
-   execFile(folder+'/native-probe',['--shader-audit-'+shard,root+'/shader-audit'],{encoding:'utf8',timeout:1200000,maxBuffer:16*1024*1024},(error,stdout,stderr)=>{
+   execFile(folder+'/native-probe',['--shader-audit-'+shard,root+'/shader-audit'],{encoding:'utf8',timeout:1200000,maxBuffer:16*1024*1024,env:{...process.env,NATIVE_CPU_CORE_V2_TEST:'1'}},(error,stdout,stderr)=>{
     fs.writeFileSync(root+'/evidence/native-shader-audit-'+shard+'.txt',stdout||'');fs.writeFileSync(root+'/evidence/native-shader-audit-'+shard+'-stderr.txt',stderr||'');
     if(error){console.error('Shader audit shard '+shard+' failed; complete diagnostics saved.\n'+String(stdout).slice(-8192)+String(stderr).slice(-2048));reject(error);}else resolve(stdout);
    });
