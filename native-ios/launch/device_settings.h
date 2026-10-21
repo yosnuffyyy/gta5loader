@@ -8,7 +8,7 @@ static NSString *native_settings_device_check(NativeSettings s,id<MTLDevice> dev
  unsigned w,h;if(!native_settings_size(&s,&w,&h))return @"Invalid render configuration.";
  if(!device||![device supportsTextureSampleCount:1])return @"The selected Metal device cannot create the required single-sample target.";
  uint64_t minimum=(uint64_t)w*h*8; // BGRA8 plus Depth32; excludes every other engine allocation.
- if(headroom&&headroom<minimum)return @"Available app memory is below even the selected color/depth target payload. Choose a lower base/scale or restart the app.";
+ if(headroom<minimum)return @"Available app memory is below even the selected color/depth target payload. Choose a lower base/scale or restart the app.";
  NSString *summary=nil;
  @autoreleasepool{
   MTLTextureDescriptor *d=[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:w height:h mipmapped:NO];d.storageMode=MTLStorageModePrivate;d.usage=MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
