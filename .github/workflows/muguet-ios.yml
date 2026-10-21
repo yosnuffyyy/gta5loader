@@ -1,0 +1,91 @@
+name: Build Muguet iOS
+on:
+  push:
+    branches: [muguet-ios-build]
+    paths: ['.github/workflows/muguet-ios.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: muguet-ios-build
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: '2'
+      RUSTUP_TOOLCHAIN: '1.98.1'
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      MUGUET_IOS_HEAP_GB: '5'
+    steps:
+      - name: Check out pinned upstream Muguet
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: c22dev/muguet
+          ref: 1b4600b052b864c78fe36180073ff406663b7e0b
+          persist-credentials: false
+      - name: Prepare Apple and Rust build tools
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+          test "$(xcodebuild -version | awk '/^Xcode/ {split($2,v,".");print v[1]}')" -ge 26
+          xcrun --sdk iphoneos --show-sdk-path
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup target add aarch64-apple-ios --toolchain 1.98.1
+          for tool in cmake:cmake xcodegen:xcodegen wasm-opt:binaryen; do
+            command -v "${tool%%:*}" >/dev/null || brew install "${tool##*:}"
+          done
+          cargo --version
+          cargo fetch --locked
+      - name: Download and verify the existing local engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/input"
+          gh api -H 'Accept: application/octet-stream' repos/yosnuffyyy/gta5loader/releases/assets/663067909 > "$RUNNER_TEMP/input/game.wasm"
+          echo "754fe6874f272097962a7754d8593f24d7f38baf4fdc5a6e26dc5e44dc2ba221  $RUNNER_TEMP/input/game.wasm" | shasum -a 256 -c -
+          test "$(wc -c < "$RUNNER_TEMP/input/game.wasm" | tr -d ' ')" = 63201816
+      - name: Build native iOS engine and sideload IPA
+        run: |
+          set -euo pipefail
+          bash make-ios.sh "$RUNNER_TEMP/input/game.wasm" --ipa 2>&1 | tee build-ios.log
+      - name: Audit native app and IPA
+        run: |
+          set -euo pipefail
+          APP="$PWD/target/ios-xcode/Build/Products/Release-iphoneos/Muguet.app"
+          test -s target/ios-game/game.cwasm
+          test -s build/Muguet.ipa
+          codesign --verify --strict "$APP"
+          file "$APP/muguet" | tee build/native-audit.txt
+          xcrun vtool -show-build "$APP/muguet" | tee -a build/native-audit.txt
+          otool -l "$APP/muguet" | grep -A 9 'segname __GAME' | tee -a build/native-audit.txt
+          test "$(otool -l "$APP/muguet" | grep -c 'segname __GAME')" -ge 1
+          plutil -lint "$APP/Info.plist"
+          codesign -d --entitlements :- "$APP" 2>&1 | tee -a build/native-audit.txt
+          unzip -t build/Muguet.ipa | tail -1 | tee -a build/native-audit.txt
+          shasum -a 256 build/Muguet.ipa | tee build/SHA256SUMS.txt
+          cp README.md build/UPSTREAM-README.md
+          printf '%s\n' 'Upstream: 1b4600b052b864c78fe36180073ff406663b7e0b' 'Engine SHA256: 754fe6874f272097962a7754d8593f24d7f38baf4fdc5a6e26dc5e44dc2ba221' 'Built with upstream make-ios.sh --ipa. Requires sideload signing and game data ZIP import.' 'Physical iPhone gameplay has not been tested by this build.' > build/BUILD-INFO.txt
+      - name: Upload IPA
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: Muguet-iOS-sideload
+          path: |
+            build/Muguet.ipa
+            build/SHA256SUMS.txt
+            build/native-audit.txt
+            build/BUILD-INFO.txt
+            build/UPSTREAM-README.md
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: Muguet-build-log
+          path: build-ios.log
+          if-no-files-found: ignore
+          retention-days: 7
