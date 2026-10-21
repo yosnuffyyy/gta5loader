@@ -1,0 +1,226 @@
+{
+  "result": "PASS",
+  "count": 44,
+  "priorIPAsUnchanged": [
+    {
+      "name": "GTA-Native-Probe-0.10-unsigned.ipa",
+      "bytes": 102016397,
+      "sha256": "8135acee45f9c21833e6e8e180e42c1465959efaae98a747fff1a7c6038773df"
+    },
+    {
+      "name": "GTA-Native-Probe-0.11-unsigned.ipa",
+      "bytes": 102015372,
+      "sha256": "28b4f8455bb9c99d765e517c14314a2d849bd1535c42a2e506053259d2f51935"
+    },
+    {
+      "name": "GTA-Native-Probe-0.12-unsigned.ipa",
+      "bytes": 102021636,
+      "sha256": "783300c861e79ced3a67c9e53660fe44b1659c8c30c600fe2fea783681381dfe"
+    },
+    {
+      "name": "GTA-Native-Probe-0.13-unsigned.ipa",
+      "bytes": 102034948,
+      "sha256": "503cd5bbaba9c60270e389b47a8cb1033cb63022e83a0c2c9464beedc6724bca"
+    },
+    {
+      "name": "GTA-Native-Probe-0.14-unsigned.ipa",
+      "bytes": 102042043,
+      "sha256": "8df2971492f00a58f180ca66e124d5f5f6cef342f18da2c1b8a329a7623e013f"
+    },
+    {
+      "name": "GTA-Native-Probe-0.15-unsigned.ipa",
+      "bytes": 102047984,
+      "sha256": "cbfe6fee085bbe68e1c71f88d252c80b4c87bc48727748d9571939652b0df338"
+    },
+    {
+      "name": "GTA-Native-Probe-0.16-unsigned.ipa",
+      "bytes": 102163717,
+      "sha256": "6363584f629b55ea90038c1efe468f930d0ba74f19d640681e1c228513abd314"
+    },
+    {
+      "name": "GTA-Native-Probe-0.17-unsigned.ipa",
+      "bytes": 102178840,
+      "sha256": "06f973476770372362d93d572cb1cb0c034a6af35fabaeddf05c28b462e14315"
+    },
+    {
+      "name": "GTA-Native-Probe-0.18-unsigned.ipa",
+      "bytes": 102179210,
+      "sha256": "8b5145801a9a8f0bea70df7998aee43df5a3c1771cdd50177fca78caa0cf9a82"
+    },
+    {
+      "name": "GTA-Native-Probe-0.19-unsigned.ipa",
+      "bytes": 102186051,
+      "sha256": "d1ebf5c0fc91a3dc5f6375aec5a3f8d1f3926a6f333d82191bfc421512a847fb"
+    },
+    {
+      "name": "GTA-Native-Probe-0.2-unsigned.ipa",
+      "bytes": 99623654,
+      "sha256": "57b6580193f65e3f6bbc492aeaf623340f7a2ec39de084bcc9676c22b001b94f"
+    },
+    {
+      "name": "GTA-Native-Probe-0.20-unsigned.ipa",
+      "bytes": 102213617,
+      "sha256": "55657252d76d9c9107bf63686accf075106032e6b284e92dca6760b05449ac3e"
+    },
+    {
+      "name": "GTA-Native-Probe-0.21-unsigned.ipa",
+      "bytes": 102240118,
+      "sha256": "d883dbf5e2b8afe5474210741d6a04b5f12062697ec932099416001dd20f0264"
+    },
+    {
+      "name": "GTA-Native-Probe-0.22-unsigned.ipa",
+      "bytes": 102259690,
+      "sha256": "4bfa23afb8171bb7076da063622eb6690de5fbddb774914e5e407aaaa2709005"
+    },
+    {
+      "name": "GTA-Native-Probe-0.23-unsigned.ipa",
+      "bytes": 102268898,
+      "sha256": "997a6e813cbe41cc8263cd75e58cbc2fd3653f5fd5a4327e383e5a37154da0f5"
+    },
+    {
+      "name": "GTA-Native-Probe-0.24-unsigned.ipa",
+      "bytes": 102274626,
+      "sha256": "f86d9bda5d979ce3a571c9dee275cc7632e8abfb1f97fd7f334b64e1a026aa6b"
+    },
+    {
+      "name": "GTA-Native-Probe-0.25-unsigned.ipa",
+      "bytes": 102274132,
+      "sha256": "4a07c0820f59bb104d990c12edb495816aed177bc10264d9423e218292f647b3"
+    },
+    {
+      "name": "GTA-Native-Probe-0.26-unsigned.ipa",
+      "bytes": 102274708,
+      "sha256": "77856412b31cdb5bc09319c86ed349c16b14fbc7fdd55d32ec610b9f62ac2c0a"
+    },
+    {
+      "name": "GTA-Native-Probe-0.27-unsigned.ipa",
+      "bytes": 102288740,
+      "sha256": "0a118ac4647992b40c8a6b4b75be0fefa2460e05ee0d683881550ac555296ecd"
+    },
+    {
+      "name": "GTA-Native-Probe-0.28-unsigned.ipa",
+      "bytes": 102287375,
+      "sha256": "f46d04ecde77fa633960ca2057900118d204c685b2a50156161e938f2e309c52"
+    },
+    {
+      "name": "GTA-Native-Probe-0.29-unsigned.ipa",
+      "bytes": 102311532,
+      "sha256": "4c3bb5efef37548a933bf331c5ed571529681b483ff77bff718822e390cf5d9d"
+    },
+    {
+      "name": "GTA-Native-Probe-0.3-unsigned.ipa",
+      "bytes": 99639817,
+      "sha256": "556f30e57d9e3a519dfb59a081ee95b7eb9c95accb07fa1f81eaa6e75550554b"
+    },
+    {
+      "name": "GTA-Native-Probe-0.30-unsigned.ipa",
+      "bytes": 102319677,
+      "sha256": "35c5c8d69cad8df51513bd70f7f6f869b1f687c0b4a053335d8e7b2f8c27bf4d"
+    },
+    {
+      "name": "GTA-Native-Probe-0.31-unsigned.ipa",
+      "bytes": 102309108,
+      "sha256": "42e8fa3d0c68f41cc9d69d315a00b970e426d3237605f3aa1132a2554ac2dde2"
+    },
+    {
+      "name": "GTA-Native-Probe-0.32-unsigned.ipa",
+      "bytes": 102313930,
+      "sha256": "d119a553ed0c09753390d15b54464a6654426402bc6894ba03a075cd6ec32d87"
+    },
+    {
+      "name": "GTA-Native-Probe-0.33-unsigned.ipa",
+      "bytes": 102314936,
+      "sha256": "9e35ec1433dcf9e055c294ec2bf50bc5160c79330cc1185858a1378845b50453"
+    },
+    {
+      "name": "GTA-Native-Probe-0.34-unsigned.ipa",
+      "bytes": 102325604,
+      "sha256": "d53e49f82cf96866ba2baafed191e0a77ed754ddaf6577543feb2f00ea17f5e3"
+    },
+    {
+      "name": "GTA-Native-Probe-0.35-unsigned.ipa",
+      "bytes": 102339097,
+      "sha256": "8e4744e7f027109934a0477a0b32b377f8af6364907fa39373b92d5ea768110c"
+    },
+    {
+      "name": "GTA-Native-Probe-0.36-unsigned.ipa",
+      "bytes": 102336482,
+      "sha256": "18a3d8c257a003be03a72fa4c511cc86e952fd7b28b14dd0fdf7c1631469c2f2"
+    },
+    {
+      "name": "GTA-Native-Probe-0.37-unsigned.ipa",
+      "bytes": 102339977,
+      "sha256": "cc58cc617a3d143fe88305bc0d482015aa64d6f51b7d32605425f019331559b4"
+    },
+    {
+      "name": "GTA-Native-Probe-0.38-unsigned.ipa",
+      "bytes": 104980739,
+      "sha256": "fe019a129b4ad68459347a6744d14fd78f8d1acc5c2f7e22309dbbba7356ea04"
+    },
+    {
+      "name": "GTA-Native-Probe-0.39-unsigned.ipa",
+      "bytes": 104978601,
+      "sha256": "99b1f41e8f3a76d81e06aa844c813baf9793ffe667484b6af16a85b2455f4571"
+    },
+    {
+      "name": "GTA-Native-Probe-0.4-unsigned.ipa",
+      "bytes": 99641600,
+      "sha256": "8f9a1e58643a236156637aacfd0cb1b47a12c0b83da5b6ab387757fa051e48ff"
+    },
+    {
+      "name": "GTA-Native-Probe-0.40-unsigned.ipa",
+      "bytes": 104973130,
+      "sha256": "fd19c2f7078e7e10cac07066d223774633e93215cfeffad9f260266629d9b860"
+    },
+    {
+      "name": "GTA-Native-Probe-0.41-unsigned.ipa",
+      "bytes": 104976427,
+      "sha256": "7b9c73d7afb152a78f96ba3790c1348f4d61ad766e6771e9e25eda3f04a43a05"
+    },
+    {
+      "name": "GTA-Native-Probe-0.42-unsigned.ipa",
+      "bytes": 104977964,
+      "sha256": "3db37e432c515f17892272633843f0cee70adf5d0d1daa7fbb85348086f8f13d"
+    },
+    {
+      "name": "GTA-Native-Probe-0.43-unsigned.ipa",
+      "bytes": 104983240,
+      "sha256": "405a57c1f7263a68ac3068d1b7cf9310f690ed512ea2749f7c2dfe51cb5d9aed"
+    },
+    {
+      "name": "GTA-Native-Probe-0.44-unsigned.ipa",
+      "bytes": 105001835,
+      "sha256": "e847e89988e792f530c301f17a1c00296a356bd7a8ce141e70f6d5cce127f4af"
+    },
+    {
+      "name": "GTA-Native-Probe-0.5-unsigned.ipa",
+      "bytes": 102673372,
+      "sha256": "8e3e47f95c73e71ae5fdcb87494979a81389d2519e2cd5ec2fca673c2da8000a"
+    },
+    {
+      "name": "GTA-Native-Probe-0.6-unsigned.ipa",
+      "bytes": 102726024,
+      "sha256": "f4f804df2812959b65150de77d866651d4d293b127e47d699a396965cd298ef5"
+    },
+    {
+      "name": "GTA-Native-Probe-0.7-unsigned.ipa",
+      "bytes": 101970980,
+      "sha256": "6dae9106c4bb9a7fc5402c03efa525f695a8903f6c699cf6d893c91a167d7050"
+    },
+    {
+      "name": "GTA-Native-Probe-0.8-unsigned.ipa",
+      "bytes": 102008462,
+      "sha256": "065af3d1316d7b2675ec4b401acff929b78a80b35950c4b204327f66130f1c0b"
+    },
+    {
+      "name": "GTA-Native-Probe-0.9-unsigned.ipa",
+      "bytes": 102010314,
+      "sha256": "84882ef4608b29d11079a553742672ac3cbb24621c7e46b9b5365746227799a1"
+    },
+    {
+      "name": "GTA-Native-Probe-unsigned.ipa",
+      "bytes": 93004776,
+      "sha256": "03ec7809359e36216e97fc9da0c241b8bcb78feb609a00e82d08b616cb9099d0"
+    }
+  ]
+}

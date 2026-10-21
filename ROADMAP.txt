@@ -1,3 +1,5 @@
+Native 0.45 — native library launcher and centralized settings. Code 7030977aee7f5e5d87a206931d123d9901f793ca; CI39672234412 PASS; unsigned ARM64 0.45.0/build45 verified. Persistent typed configuration, preset/Custom precedence, original-engine argument verification, real PCM master gain/mute, touch/controller preferences and responsive navigation. Muguet remains unavailable; migration branch untouched. Physical UI/game-setting validation pending; roadmap stage count unchanged. See NATIVE-0.45-LAUNCHER-RESULTS.md.
+
 Native 0.44 CPU preparation core — validated experimental ARM64 build44, code fb7a11e2c0571c5187b98411807226edb7fcc863, CI 39332037894. Separate OFF-default core selector; bounded index/exact immutable pipeline preparation/mailbox fast path; host comparisons and original producer O1/O2 experiment. Physical performance and correct low-cadence simulation/audio activation remain pending. Roadmap stage count unchanged. See NATIVE-0.44-CPU-REWORK-RESULTS.md.
 
 NATIVE0.43 — A2C COLLISION-TRIGGERED TRAP AND SANDBOX LIVE HANDOFF

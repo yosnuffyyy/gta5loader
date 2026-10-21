@@ -1,0 +1,17 @@
+{
+  "ipa": "GTA-Native-Probe-0.45-unsigned.ipa",
+  "bytes": 105028704,
+  "sha256": "cbe19d8ab8d9073071c4eff426189ea1d5f6898600435e81daf6cc2d6384588f",
+  "version": "0.45.0",
+  "build": "45",
+  "bundle": "io.github.yosnuffyyy.gtanativeprobe",
+  "name": "GTA V (Test Build)",
+  "arm64": true,
+  "platform": "iOS",
+  "machOUUID": "72CA719D-8B41-3711-A6FC-0277BEE9F402",
+  "unsignedPackaging": true,
+  "iconCatalog": true,
+  "webOrGameAssets": false,
+  "entries": 18,
+  "binarySHA256": "146e99079eed7e01adf197ed4c5ab54dfa64df2401849ea153ae0d4d461ba980"
+}

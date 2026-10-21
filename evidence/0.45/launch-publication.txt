@@ -1,0 +1,2 @@
+PASS: production launch publication: 12 alternating mode/preset blocks, 5136 untouched-byte checks; bounds, focus, mode commit and noautoload policy.
+PASS: raw WASI mode newline/CRLF framing: missed-commit negative control, positive player event, subsequent input/PRESENT, 20-minute live Sandbox and genuine 60-second stall; no gameplay proof.

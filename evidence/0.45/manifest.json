@@ -1,0 +1,102 @@
+{
+  "sourceCommit": "7030977aee7f5e5d87a206931d123d9901f793ca",
+  "ciRun": 39672234412,
+  "origin": "GitHub Actions macos-15, Metal host and iOS simulator; no physical iPhone gameplay",
+  "files": [
+    {
+      "name": "native-input-ui.json",
+      "bytes": 814,
+      "sha256": "74ee760c71c607b3cb01a0d4a9b20bf7afb02f02e707b94b1e74b956a2ea4119"
+    },
+    {
+      "name": "settings-engine.json",
+      "bytes": 14630,
+      "sha256": "88ddc9cb9cbb283a428a0e0d5db5915df0e513d0b424256ad40fea348151f6d7"
+    },
+    {
+      "name": "settings-model.txt",
+      "bytes": 271,
+      "sha256": "12b681cbf99015114f64a36eb6f99800aa8e46ef066dd5d8da97e5e243858abe"
+    },
+    {
+      "name": "settings-device.txt",
+      "bytes": 226,
+      "sha256": "4b92e35e39393f54e15cfc6b4d8756e3af049c54538dc6ba8e52cfb789f3f526"
+    },
+    {
+      "name": "native-audio-output.txt",
+      "bytes": 420,
+      "sha256": "4b1035f40c34eb8b6c5c010a5eec03b84a5e7b0843ad8d2ab33d71a604f97861"
+    },
+    {
+      "name": "native-input-thread-test.txt",
+      "bytes": 333,
+      "sha256": "fe4bfd2c7d3e23505eda213fa881150aa0286f367c2e00a86d55c2ee980b672a"
+    },
+    {
+      "name": "native-pcm-thread.txt",
+      "bytes": 226,
+      "sha256": "8616e3bf3498d1210dde8e0817546d6ab4b13b050b63d8fcf10e1c9f4218ef8a"
+    },
+    {
+      "name": "native-shader-audit-summary.json",
+      "bytes": 247,
+      "sha256": "a5e2b3acfa3d15baab62b566bc22d57623ea786227a5ac68d2048c4836bf07b5"
+    },
+    {
+      "name": "launch-mode-engine.json",
+      "bytes": 5129,
+      "sha256": "d4cfe2dcaa4316f2375e2a9cf25ee28b0bbe573c1be677217daf0badc5430de5"
+    },
+    {
+      "name": "launch-publication.txt",
+      "bytes": 344,
+      "sha256": "c22b96ae8a9ccefbf450614578d96cae44357b4ca325b86d78d7f78cc1e44d70"
+    },
+    {
+      "name": "native-memory-policy.txt",
+      "bytes": 335,
+      "sha256": "7e26d461c31efc176f00f9066acb54866206777fb45a3c1d74d0bda9181d7b2f"
+    },
+    {
+      "name": "ios-binary.txt",
+      "bytes": 1982,
+      "sha256": "2c3465e81e65cd3a3dc4cebc71714c8ddf9dbfec2ab4864e6ff7749665508d1f"
+    },
+    {
+      "name": "ipa-sha256.txt",
+      "bytes": 96,
+      "sha256": "87cae08c2bf98c9c5b89574d182898ca06ac907e4fed40751c9e949f91762136"
+    },
+    {
+      "name": "native-srv-contract-test.txt",
+      "bytes": 310,
+      "sha256": "82ab96f5076a36590653f7a12f1922aa381748308d3a4ded90bc1320e0396863"
+    },
+    {
+      "name": "native-query-state-test.txt",
+      "bytes": 200,
+      "sha256": "1147895a0410c23a878e81d288a5cffed8817e186d140d9220f40f43bc530774"
+    },
+    {
+      "name": "ui-dashboard.png",
+      "bytes": 455006,
+      "sha256": "fb68a59247030bd090531cafed7037ef42f841bafb4456a6dd31d5dedd05728e"
+    },
+    {
+      "name": "ui-library-landscape-667.png",
+      "bytes": 273655,
+      "sha256": "c9f1cf24bb28ca85705fd49e42a74139cf75efb6db6362775fa50dca4d1d1204"
+    },
+    {
+      "name": "ui-library-landscape-932.png",
+      "bytes": 324765,
+      "sha256": "8f6f2513e6cfb4d8e1a9cd5d84b286c551d3753eba47eaef616cb6e46d42da83"
+    },
+    {
+      "name": "ui-Graphics.png",
+      "bytes": 380147,
+      "sha256": "0fae77f4f064a8dc1b1e86eca1a27d070ad1891a58a6bbaa7397b8234e8110b0"
+    }
+  ]
+}

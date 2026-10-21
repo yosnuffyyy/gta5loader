@@ -1,0 +1,2 @@
+PASS: native AVAudioEngine production source node, 48-kHz stereo connection, 1024 exact output frames with unity/half/mute/restored gain, invalid gain rejection, L/R mapping and stopped graph teardown. Offline fixture PCM; physical game sound pending.
+PASS: mixer sampling exact100000 calls/1562 samples; finite clocks; empty sampled-pair overhead 11.150 ns/call (host O2, includes atomics and clocks, not game mixing).

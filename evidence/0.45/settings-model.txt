@@ -1,0 +1,1 @@
+PASS: 100198 settings assertions, 19 real argv fixtures (10 publication fixtures), immutable snapshots, all field bounds/NaN, presets, exact aspect and PCM gain/mute. 100000 startup-only serializations 487.953 ms; settings size 128 bytes. Host CPU benchmark, not iPhone.

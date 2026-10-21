@@ -1,0 +1,1 @@
+PASS: 18 scale/base allocations of real host Metal BGRA8/depth32 targets, nil device, invalid config and insufficient minimum payload headroom rejection. Representative targets only, not full game budgets or iPhone rendering.

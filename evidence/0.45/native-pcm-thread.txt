@@ -1,0 +1,1 @@
+PASS: original stereo ring contract, full extent, invalid capacity/occupancy, wrap, L/R bytes, partial underrun, disabled callback, detach, 20000 concurrent ordered PCM frames. No game bank or speaker claim. Context 88 bytes.

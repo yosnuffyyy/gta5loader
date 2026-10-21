@@ -1,0 +1,15 @@
+{
+  "releaseId": 420049915,
+  "url": "https://github.com/yosnuffyyy/gta5loader/releases/tag/native-0.45",
+  "tag": "native-0.45",
+  "source": "7030977aee7f5e5d87a206931d123d9901f793ca",
+  "draft": false,
+  "prerelease": true,
+  "uploadedAssets": [
+    {
+      "name": "GTA-Native-Probe-0.45-unsigned.ipa",
+      "bytes": 105028704,
+      "sha256": "cbe19d8ab8d9073071c4eff426189ea1d5f6898600435e81daf6cc2d6384588f"
+    }
+  ]
+}

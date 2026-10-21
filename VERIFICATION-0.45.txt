@@ -1,0 +1,16 @@
+NATIVE 0.45 LAUNCHER / SETTINGS
+Source 7030977aee7f5e5d87a206931d123d9901f793ca
+CI 39672234412: PASS; macos-15 host Metal + iOS 26.2 UIKit simulator.
+267 UIKit checks / 33 asynchronous steps.
+836 original-engine setting checks / 19 generated configurations.
+100198 recorded model checks include 100000 bounded argv serialization iterations.
+4808 translated modules + 4808 Metal pipelines; 500 clip shaders; zero audit failures; 111 pre-existing untranslated records.
+18 representative Metal base/scale allocation pairs + invalid/nil/zero-headroom guards.
+1024 exact production AVAudioEngine offline PCM frames across unity/half/mute/restored gain.
+Existing graphics, resource, query, worker, memory, archive, input and sanitizer checks passed.
+No physical iPhone gameplay, FPS, complete quality combinations or speaker verification claimed.
+IPA GTA-Native-Probe-0.45-unsigned.ipa: 105028704 bytes, iOS ARM64, version0.45.0/build45.
+SHA256 cbe19d8ab8d9073071c4eff426189ea1d5f6898600435e81daf6cc2d6384588f
+UUID 72CA719D-8B41-3711-A6FC-0277BEE9F402
+Same bundle/name/icon. No web/game archives included. All44 previous IPAs rehashed unchanged.
+See NATIVE-0.45-LAUNCHER-RESULTS.md and evidence/0.45.
