@@ -36,6 +36,14 @@ jobs:
           cargo +1.98.1 test --manifest-path migration/Cargo.toml --locked --release --features compiler 2>&1 | tee migration/evidence/rust-tests.log
           migration/target/release/migration-probe host migration/evidence/engine-probe.wasm migration/evidence > migration/evidence/host-run.log
           node migration/reference.cjs migration/evidence/engine-probe.wasm migration/evidence/reference.json migration/evidence/host.json
+      - name: Execute original engine functions from compiler-free linked RX code on macOS
+        run: |
+          set -euo pipefail
+          export MIGRATION_AOT="$PWD/migration/evidence/host.cwasm"
+          export MIGRATION_AOT_SHA256="$(shasum -a 256 "$MIGRATION_AOT" | cut -d' ' -f1)"
+          cargo +1.98.1 build --manifest-path migration/Cargo.toml --locked --release --no-default-features --features embedded-check --bin embedded-aot-check 2>&1 | tee migration/evidence/mac-link.log
+          node migration/audit-macho.cjs migration/target/release/embedded-aot-check migration/evidence/host.cwasm migration/evidence/mac-macho.json macos
+          migration/target/release/embedded-aot-check | tee migration/evidence/embedded-execution.json
       - name: ARM64 AOT, compiler-free iOS link and executable-section audit
         run: |
           set -euo pipefail

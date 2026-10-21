@@ -1,14 +1,14 @@
 // Embedding mechanism adapted from Muguet src/main.rs/build.rs:
 // Constantin Clerc (c22dev), GPL-3.0-or-later, revision pinned in upstream-lock.
-// A structural/link check, not an iOS application or gameplay release.
-#[cfg(all(target_os = "ios", feature = "compiler"))]
+// macOS execution + iOS structural/link check; not a gameplay release.
+#[cfg(all(any(target_os = "ios", target_os = "macos"), feature = "compiler"))]
 compile_error!("No JIT/compiler in the iOS artifact");
-#[cfg(not(target_os = "ios"))]
+#[cfg(not(any(target_os = "ios", target_os = "macos")))]
 fn main() {
-    panic!("embedded-aot-check is an iOS link/packaging check only");
+    panic!("embedded-aot-check requires an Apple target");
 }
 
-#[cfg(target_os = "ios")]
+#[cfg(any(target_os = "ios", target_os = "macos"))]
 std::arch::global_asm!(
     ".section __GAME,__code,regular,pure_instructions",
     ".p2align 14",
@@ -18,7 +18,7 @@ std::arch::global_asm!(
     ".text",
 );
 
-#[cfg(target_os = "ios")]
+#[cfg(any(target_os = "ios", target_os = "macos"))]
 fn main() -> anyhow::Result<()> {
     use gta_muguet_runtime::{artifact::ExpectedArtifact, runtime::*};
     use std::sync::Arc;
@@ -79,9 +79,64 @@ fn main() -> anyhow::Result<()> {
     let raw =
         std::ptr::NonNull::new(std::ptr::slice_from_raw_parts(start, size) as *mut [u8]).unwrap();
     let module = unsafe { Module::deserialize_raw(&engine, raw) }?;
+    // Execute original functions directly from the linked RX region. No host
+    // deserializer, compiler, file-backed executable mmap or fake host success.
+    use wasmtime::{ExternType, Linker, MemoryType, SharedMemory, Store, Val};
+    let memory = SharedMemory::new(
+        &engine,
+        MemoryType::shared(INITIAL_PAGES as u32, MAX_PAGES as u32),
+    )?;
+    let mut store = Store::new(&engine, ());
+    let mut linker = Linker::new(&engine);
+    for import in module.imports() {
+        match import.ty() {
+            ExternType::Memory(ty) => {
+                anyhow::ensure!(
+                    import.module() == "env"
+                        && import.name() == "memory"
+                        && ty.is_shared()
+                        && !ty.is_64()
+                        && ty.minimum() == INITIAL_PAGES
+                        && ty.maximum() == Some(MAX_PAGES),
+                    "memory ABI mismatch"
+                );
+                linker.define(&store, import.module(), import.name(), memory.clone())?;
+            }
+            ExternType::Func(ty) => {
+                let name = format!("{}::{}", import.module(), import.name());
+                linker.func_new(import.module(), import.name(), ty, move |_, _, _| {
+                    Err(wasmtime::Error::msg(format!(
+                        "unexpected embedded-probe import: {name}"
+                    )))
+                })?;
+            }
+            _ => anyhow::bail!("unsupported embedded-probe import"),
+        }
+    }
+    let instance = linker.instantiate(&mut store, &module)?;
+    instance
+        .get_typed_func::<(), ()>(&mut store, "migration_init")?
+        .call(&mut store, ())?;
+    instance
+        .get_global(&mut store, "migration_stack")
+        .ok_or_else(|| anyhow::anyhow!("missing stack"))?
+        .set(&mut store, Val::I64(96 * 1024 * 1024))?;
+    let sin = instance
+        .get_typed_func::<f32, f32>(&mut store, "migration_sinf")?
+        .call(&mut store, 0.25)?;
+    let cos = instance
+        .get_typed_func::<f32, f32>(&mut store, "migration_cosf")?
+        .call(&mut store, 0.25)?;
+    anyhow::ensure!(
+        sin.to_bits() == 0x3e7d5777 && cos.to_bits() == 0x3f780aa5,
+        "original embedded math mismatch"
+    );
     println!(
-        "Embedded original-engine probe loaded; {} imports. No gameplay initialized.",
-        module.imports().len()
+        "{}",
+        serde_json::json!({"result":"PASS","platform":std::env::consts::OS,
+        "wasmtime":"49.0.2","compilerEnabled":false,"artifactBytes":size,
+        "artifactSHA256":env!("MIGRATION_AOT_SHA256"),"originalSin":sin,"originalCos":cos,
+        "linkedRXExecution":true,"gameplayVerified":false})
     );
     Ok(())
 }

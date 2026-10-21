@@ -1,8 +1,10 @@
 fn main() {
     println!("cargo:rerun-if-env-changed=MIGRATION_AOT");
     println!("cargo:rerun-if-env-changed=MIGRATION_AOT_SHA256");
-    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("ios")
-        && std::env::var_os("CARGO_FEATURE_EMBEDDED_CHECK").is_some()
+    if matches!(
+        std::env::var("CARGO_CFG_TARGET_OS").as_deref(),
+        Ok("ios" | "macos")
+    ) && std::env::var_os("CARGO_FEATURE_EMBEDDED_CHECK").is_some()
     {
         assert!(
             std::env::var_os("CARGO_FEATURE_COMPILER").is_none(),
