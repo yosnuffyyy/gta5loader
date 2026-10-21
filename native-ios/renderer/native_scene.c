@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int launch(const char *game,const char *saves,void *layer,bool checkpoint,bool reference_shadow_compat,bool v2,bool core,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){
- NativeLaunchOptions options;if(!native_launch_options(mode,quality,&options)){snprintf(report,capacity,"FAIL: invalid startup mode/quality");return 1;}
+static int launch(const char *game,const char *saves,void *layer,bool checkpoint,bool reference_shadow_compat,bool v2,bool core,unsigned mode,unsigned quality,const NativeSettings *settings,native_progress progress,void *context,char *report,size_t capacity){
+ NativeLaunchOptions options;if(!(settings?native_launch_config(*settings,&options):native_launch_options(mode,quality,&options))){snprintf(report,capacity,"FAIL: invalid startup mode/quality");return 1;}
  if(progress)progress(context,mode==2?"Launch bridge received Sandbox (2); isolated Sandbox saves, original offline game initialization requested.":"Launch bridge received Story (1); existing Story saves and startup retained.");
  wasm_rt_init();struct w2c_env *h=calloc(1,sizeof(*h));w2c_gta *engine=calloc(1,sizeof(*engine));
  if(!h||!engine){free(h);free(engine);snprintf(report,capacity,"FAIL: native launch allocation");return 1;}
@@ -36,12 +36,14 @@ static int launch(const char *game,const char *saves,void *layer,bool checkpoint
  if(instantiated)wasm2c_gta_free(engine);if(allocated){wasm_rt_free_memory_shared(&h->memory);pthread_mutex_destroy(&h->memory.mem_lock);}
  free(engine);free(h);wasm_rt_free_thread();return result;
 }
-int native_scene_probe_options(const char *game,const char *saves,void *layer,bool compatibility,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,false,false,1,0,progress,context,report,capacity);}
-int native_scene_probe(const char *game,const char *saves,void *layer,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,false,false,false,1,0,progress,context,report,capacity);}
-int native_graphics_checkpoint(const char *game,const char *saves,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,NULL,true,false,false,false,1,0,progress,context,report,capacity);}
+int native_scene_probe_options(const char *game,const char *saves,void *layer,bool compatibility,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,false,false,1,0,NULL,progress,context,report,capacity);}
+int native_scene_probe(const char *game,const char *saves,void *layer,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,false,false,false,1,0,NULL,progress,context,report,capacity);}
+int native_graphics_checkpoint(const char *game,const char *saves,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,NULL,true,false,false,false,1,0,NULL,progress,context,report,capacity);}
 
-int native_scene_probe_execution(const char *game,const char *saves,void *layer,bool compatibility,bool v2,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,false,1,0,progress,context,report,capacity);}
+int native_scene_probe_execution(const char *game,const char *saves,void *layer,bool compatibility,bool v2,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,false,1,0,NULL,progress,context,report,capacity);}
 
-int native_scene_probe_config(const char *game,const char *saves,void *layer,bool compatibility,bool v2,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,false,mode,quality,progress,context,report,capacity);}
+int native_scene_probe_config(const char *game,const char *saves,void *layer,bool compatibility,bool v2,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,false,mode,quality,NULL,progress,context,report,capacity);}
 
-int native_scene_probe_core(const char *game,const char *saves,void *layer,bool compatibility,bool v2,bool core,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,core,mode,quality,progress,context,report,capacity);}
+int native_scene_probe_core(const char *game,const char *saves,void *layer,bool compatibility,bool v2,bool core,unsigned mode,unsigned quality,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,compatibility,v2,core,mode,quality,NULL,progress,context,report,capacity);}
+
+int native_scene_probe_settings(const char *game,const char *saves,void *layer,NativeSettings settings,native_progress progress,void *context,char *report,size_t capacity){return launch(game,saves,layer,false,settings.shadowCompatibility,settings.rendererV2,settings.coreV2,settings.mode,settings.preset,&settings,progress,context,report,capacity);}

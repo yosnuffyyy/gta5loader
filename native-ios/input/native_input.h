@@ -16,6 +16,7 @@ void ni_end(void);
 void ni_focus(bool focused);
 void ni_connect(bool connected);
 void ni_configure(float deadzone,float camera_sensitivity);
+void ni_configure_sources(float deadzone,float touch_sensitivity,float controller_sensitivity,bool invert_y,bool touch_enabled);
 /* Input producers are serialized by a mutex. No producer accesses engine RAM. */
 NISource ni_controller(NIState state);
 NISource ni_touch(NIState state,bool deliberate_begin);

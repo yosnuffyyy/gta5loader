@@ -38,6 +38,11 @@ int main(int argc,char **argv){
  ni_configure(NAN,INFINITY);ni_touch((NIState){0},true);ni_controller((NIState){0});ni_controller((NIState){.lx=.04f});drain();assert(ni_source()==NI_TOUCH);ni_configure(.15f,1);
  ni_end();drain();assert(mask()==0&&pad[50]==0&&pad[55]==0);
  uint8_t control[4];int32_t v;ni_control(control);memcpy(&v,control,4);assert(v==-4);ni_begin();ni_control(control);memcpy(&v,control,4);assert(v==0);assert(ni_is_control(24488864)&&!ni_is_control(24488865));
+ /* Independent sensitivities, inversion, touch disable and safe neutralization. */
+ ni_configure_sources(.15f,.5f,1.5f,true,true);drain();ni_touch((NIState){.rx=.6f,.ry=.4f,.buttons=NI_CROSS},true);drain();assert(pad[22]==166&&pad[23]==153&&mask()==NI_CROSS);
+ ni_configure_sources(.15f,.5f,1.5f,true,false);drain();assert(mask()==0);ni_touch((NIState){.buttons=NI_CROSS,.lx=1},true);drain();assert(mask()==0&&pad[20]==128);
+ ni_connect(true);ni_controller((NIState){0});ni_controller((NIState){.rx=.6f,.ry=.4f});drain();assert(ni_source()==NI_CONTROLLER&&pad[22]==242&&pad[23]==204);
+ ni_configure(.15f,1);drain();assert(mask()==0&&pad[22]==128);
  /* Shared production geometry, multitouch and resize cancellation. */
  NIRect fit=ni_aspect_fit(932,430);assert(fabsf(fit.w/fit.h-16.f/9)<.00001f&&fit.x>0);NITouches t={.rect={59,0,814,400},.scale=1};float x,y;ni_center(&t,0,&x,&y);assert(ni_touch_begin(&t,0,x,y));ni_touch_move(&t,0,x,y-100);ni_center(&t,6,&x,&y);assert(ni_touch_begin(&t,1,x,y));ni_center(&t,7,&x,&y);assert(ni_touch_begin(&t,2,x,y));NIState s=ni_touch_state(&t);assert(s.ly>0&&s.lt==1&&s.rt==1);ni_touch_end(&t,1);s=ni_touch_state(&t);assert(s.lt==0&&s.rt==1&&s.ly>0);assert(!ni_touch_begin(&t,10,x,y));ni_touch_clear(&t);assert(ni_touch_state(&t).buttons==0);for(unsigned c=0;c<NI_CONTROL_COUNT;c++){ni_center(&t,c,&x,&y);assert(ni_touch_hit(&t,x,y)==(int)c);}
  /* Two owners of one button and drag/cancel cannot cause duplicate releases. */

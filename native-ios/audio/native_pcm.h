@@ -15,6 +15,7 @@ typedef struct {
  _Atomic uint64_t calls,frames,underrun_frames,invalid,nonfinite,nonzero;
  _Atomic uint32_t peak,available_max;
 } NativePCM;
+static inline void na_gain(float *left,float *right,uint32_t n,float gain){if(gain==1)return;for(uint32_t i=0;i<n;i++){left[i]*=gain;right[i]*=gain;}}
 static inline volatile _Atomic uint32_t *na_word(NativePCM *p,unsigned n){return (volatile _Atomic uint32_t*)(p->base+p->address+4*n);}
 static inline bool na_attach(NativePCM *p,volatile _Atomic unsigned char *base,uint64_t size,uint64_t address,uint64_t capacity){
  if(!base||address%8||capacity<256||capacity>1048576||(capacity&(capacity-1))||address>size||64+capacity*8>size-address||atomic_load(&p->enabled)||atomic_load(&p->readers))return false;

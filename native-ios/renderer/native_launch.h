@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "../probe.h"
 #include "../launch/options.h"
+int native_scene_probe_settings(const char*,const char*,void*,NativeSettings,native_progress,void*,char*,size_t);
 int native_scene_probe(const char*,const char*,void*,native_progress,void*,char*,size_t);
 int native_scene_probe_core(const char*,const char*,void*,bool,bool,bool,unsigned,unsigned,native_progress,void*,char*,size_t);
 int native_scene_probe_config(const char*,const char*,void*,bool,bool,unsigned,unsigned,native_progress,void*,char*,size_t);

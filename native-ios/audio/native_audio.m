@@ -26,6 +26,9 @@ void native_audio_mix_end(void){
 }
 
 static NativePCM pcm;
+static _Atomic uint32_t output_gain=1000000;
+_Static_assert(ATOMIC_INT_LOCK_FREE==2,"Audio gain must be lock-free");
+bool native_audio_set_volume(float volume,bool muted){if(!isfinite(volume)||volume<0||volume>1)return false;atomic_store_explicit(&output_gain,muted?0:(uint32_t)lroundf(volume*1000000),memory_order_relaxed);return true;}
 static dispatch_queue_t control;
 static AVAudioEngine *engine;
 static AVAudioSourceNode *source;
@@ -46,7 +49,8 @@ static void make_graph(void){
    if(list->mNumberBuffers!=2||!list->mBuffers[0].mData||!list->mBuffers[1].mData||list->mBuffers[0].mNumberChannels!=1||list->mBuffers[1].mNumberChannels!=1||list->mBuffers[0].mDataByteSize<(uint64_t)count*4||list->mBuffers[1].mDataByteSize<(uint64_t)count*4){
     for(unsigned i=0;i<list->mNumberBuffers;i++)if(list->mBuffers[i].mData)memset(list->mBuffers[i].mData,0,list->mBuffers[i].mDataByteSize);atomic_fetch_add(&pcm.invalid,1);*silence=YES;return noErr;
    }
-   *silence=na_read(&pcm,list->mBuffers[0].mData,list->mBuffers[1].mData,count)==0;return noErr;
+   uint32_t gain=atomic_load_explicit(&output_gain,memory_order_relaxed);
+   *silence=na_read(&pcm,list->mBuffers[0].mData,list->mBuffers[1].mData,count)==0||gain==0;na_gain(list->mBuffers[0].mData,list->mBuffers[1].mData,count,gain/1000000.0f);return noErr;
   }];
   [engine attachNode:source];[engine connect:source to:engine.mainMixerNode format:format];
  }
@@ -97,5 +101,5 @@ void native_audio_stop(void){setup();dispatch_sync(control,^{wanted=false;disabl
 void native_audio_suspend(bool value){setup();dispatch_async(control,^{suspended=value;if(value)disable();else activate();});}
 void native_audio_summary(char *text,size_t n){setup();dispatch_sync(control,^{
  snprintf(text,n,"Native PCM output: 48000 Hz stereo; running %u, starts %u; callbacks/frames/nonzero %llu/%llu/%llu; underrun frames %llu, invalid/nonfinite %llu/%llu; peak %.6f; maximum queued %u frames (%.1f ms); %s. Consumed PCM is not proof of speaker audibility or complete bank coverage.",atomic_load(&pcm.enabled),restarts,(unsigned long long)atomic_load(&pcm.calls),(unsigned long long)atomic_load(&pcm.frames),(unsigned long long)atomic_load(&pcm.nonzero),(unsigned long long)atomic_load(&pcm.underrun_frames),(unsigned long long)atomic_load(&pcm.invalid),(unsigned long long)atomic_load(&pcm.nonfinite),atomic_load(&pcm.peak)/1e6,atomic_load(&pcm.available_max),atomic_load(&pcm.available_max)/48.0,failure[0]?failure:"no output API error");
- size_t used=strlen(text);uint64_t samples=atomic_load(&mix_samples);if(used<n)snprintf(text+used,n-used," Mixer calls/sampled %llu/%llu; sampled wall mean/max %.3f/%.3f ms, thread CPU mean %.3f ms; clock errors %llu. 1/64 MixBuffers calls; excludes producer sleeps and hardware callback.",(unsigned long long)atomic_load(&mix_calls),(unsigned long long)samples,samples?atomic_load(&mix_wall)/(double)samples/1e6:0,atomic_load(&mix_max)/1e6,samples?atomic_load(&mix_cpu)/(double)samples/1e6:0,(unsigned long long)atomic_load(&mix_clock_errors));
+ size_t used=strlen(text);if(used<n)snprintf(text+used,n-used," Output gain %.3f (zero means muted).",atomic_load(&output_gain)/1000000.0);used=strlen(text);uint64_t samples=atomic_load(&mix_samples);if(used<n)snprintf(text+used,n-used," Mixer calls/sampled %llu/%llu; sampled wall mean/max %.3f/%.3f ms, thread CPU mean %.3f ms; clock errors %llu. 1/64 MixBuffers calls; excludes producer sleeps and hardware callback.",(unsigned long long)atomic_load(&mix_calls),(unsigned long long)samples,samples?atomic_load(&mix_wall)/(double)samples/1e6:0,atomic_load(&mix_max)/1e6,samples?atomic_load(&mix_cpu)/(double)samples/1e6:0,(unsigned long long)atomic_load(&mix_clock_errors));
  });}

@@ -45,6 +45,7 @@ typedef struct NativeWorker {
  char failure_text[256];
 } NativeWorker;
 #include "timing/native_time_trace.h"
+#include "launch/effective_settings.h"
 struct NativeThreads {
  NativeTimeTrace time_trace;NativeLaunchOptions launch;_Atomic unsigned launch_commit;
  struct w2c_env *host;
@@ -365,7 +366,7 @@ void native_publish(struct w2c_env *h,uint64_t address,uint64_t capacity,bool au
   uint64_t pointer=~address;
   check(h,current&&current->main_mode,"input hook outside engine main");
   if(!current->boot_mode||!current->display)return;
-  if(pointer==12840656){native_time_observe(h,&current->time_trace,now_ns());scene_watch_hook(current);uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
+  if(pointer==12840656){uint64_t previous=current->time_trace.at;native_time_observe(h,&current->time_trace,now_ns());if(previous!=current->time_trace.at)native_settings_observe(h,&current->launch.settings);scene_watch_hook(current);uint8_t pad[56];host_load(h,pad,pointer,sizeof(pad));ni_consume(pad);host_store(h,pointer+12,pad+12,4);host_store(h,pointer+20,pad+20,6);host_store(h,pointer+50,pad+50,1);host_store(h,pointer+55,pad+55,1);}
   else if(ni_is_control(pointer)){uint8_t source[4];ni_control(source);host_store(h,pointer+138272,source,4);}
   /* As in the pinned browser bridge, other CControl instances retain their
      engine-owned source field. Never write an unverified object layout. */
@@ -420,18 +421,22 @@ void native_boot_core_option(struct w2c_env *h,bool enabled){
  report(h,enabled?"CPU Execution Core V2: experimental indexed objects and exact incremental pipeline preparation; existing hazards and backend preserved.":"CPU Execution Core: existing (default).");
 }
 void native_boot_launch_options(struct w2c_env *h,NativeLaunchOptions options){
- NativeThreads *r=current;NativeLaunchOptions checkedOptions;
- check(h,r&&!worker&&!r->main_mode&&native_launch_options(options.mode,options.quality,&checkedOptions),"invalid or late native launch options");
+ NativeThreads *r=current;NativeLaunchOptions checkedOptions=options;
+ check(h,r&&!worker&&!r->main_mode&&native_launch_valid(options),"invalid or late native launch options");
  r->launch=checkedOptions;native_gpu_surface_size(r->gpu,checkedOptions.width,checkedOptions.height);
- char text[200];snprintf(text,sizeof(text),"Frozen launch: %s; %s %ux%u; separate sandbox save root; 30 FPS cap unchanged.",options.mode==2?"Sandbox (original engine mode2)":"Story",native_quality_name(options.quality),checkedOptions.width,checkedOptions.height);report(h,text);
+ char text[320];snprintf(text,sizeof(text),"Validated frozen launch: %s; %s %ux%u; requested scale %u%%, cap %u FPS, texture %u, FXAA %u; independent save namespace. Engine effective settings are sampled separately.",options.mode==2?"Sandbox (original engine mode2)":"Story",native_settings_preset_name(options.quality),checkedOptions.width,checkedOptions.height,options.settings.scale,options.settings.fps,options.settings.texture,options.settings.aa);report(h,text);
 }
 void native_graphics_start(struct w2c_env *h,uint64_t ring,uint64_t bytes,uint64_t dbg){check(h,current&&current->gpu,"graphics requested outside native launch");native_gpu_start(current->gpu,ring,bytes,dbg);const char *failure=native_gpu_error(current->gpu);if(failure)host_unavailable(h,failure);}
 void native_main_scene(struct w2c_env *h){
  NativeThreads *r=current;check(h,r&&!worker&&r->assets&&r->gpu,"native scene services unavailable");r->main_mode=true;if(r->gpu_checkpoint)native_assets_arm(r->assets,archive_boundary,r);
- char width[32],height[32];snprintf(width,sizeof(width),"-width=%u",r->launch.width);snprintf(height,sizeof(height),"-height=%u",r->launch.height);
- const char *args[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu",width,height,"-forceResolution",native_launch_noautoload(r->launch.mode)?"-noautoload":NULL,native_launch_city_spawn(r->launch.mode),"-numCores=2","-frameLimit=2","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
- uint64_t p=w2c_gta_0x5Femscripten_stack_alloc(h->engine,4096),cursor=p+512;unsigned count=sizeof(args)/sizeof(args[0]);
- unsigned argc=0;for(unsigned i=0;i<count;i++){if(!args[i])continue;host_put64(h,p+8*argc++,cursor);size_t bytes=strlen(args[i])+1;host_store(h,cursor,args[i],bytes);cursor+=bytes;}
+ NativeSettingArguments settingsArgs;check(h,native_settings_arguments(&r->launch.settings,&settingsArgs),"invalid frozen engine arguments");
+ const char *base[]={"native-probe","-rootdir=/game/","-output","-nonetwork","-noSocialClub","-pc:nosocialclub","-nodisplaycalibration","-wgpu","-forceResolution",native_launch_noautoload(r->launch.mode)?"-noautoload":NULL,native_launch_city_spawn(r->launch.mode),"-numCores=2"};
+ const char *args[64];unsigned count=0;for(unsigned i=0;i<sizeof(base)/sizeof(base[0]);i++)if(base[i])args[count++]=base[i];
+ for(unsigned i=0;i<settingsArgs.count;i++)args[count++]=settingsArgs.argv[i];
+ check(h,count<64,"launch argument count");
+ uint64_t p=w2c_gta_0x5Femscripten_stack_alloc(h->engine,8192),cursor=p+512;unsigned argc=0;
+ for(unsigned i=0;i<count;i++){size_t bytes=strlen(args[i])+1;check(h,cursor+bytes<=p+8192,"launch argument extent");host_put64(h,p+8*argc++,cursor);host_store(h,cursor,args[i],bytes);cursor+=bytes;}
+ for(unsigned i=0;i<settingsArgs.count;i++)report(h,settingsArgs.argv[i]);
  report(h,r->launch.mode==2?"Launch arguments: Sandbox, no Story-only -noautoload; original engine scripts initialize free roam.":"Launch arguments: Story, existing -noautoload preserved.");
  host_put64(h,p+8*argc,0);w2c_gta_0x5F_main_argc_argv(h->engine,argc,p);host_unavailable(h,"native main returned before a game scene");
 }

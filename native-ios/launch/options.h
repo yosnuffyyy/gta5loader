@@ -5,13 +5,18 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdatomic.h>
-typedef struct {unsigned mode,quality,width,height;} NativeLaunchOptions;
+#include "settings.h"
+typedef struct {unsigned mode,quality,width,height;NativeSettings settings;} NativeLaunchOptions;
+static inline bool native_launch_config(NativeSettings settings,NativeLaunchOptions *out){
+ unsigned w,h;if(!out||!native_settings_size(&settings,&w,&h))return false;
+ *out=(NativeLaunchOptions){settings.mode,settings.preset,w,h,settings};return true;
+}
+static inline bool native_launch_valid(NativeLaunchOptions o){unsigned w,h;return native_settings_size(&o.settings,&w,&h)&&o.mode==o.settings.mode&&o.quality==o.settings.preset&&o.width==w&&o.height==h;}
 /* Original engine startMode: 1 Story; 2 offline GTA V-map sandbox.
    No new engine flags, mid-session resizing or unverified population writes. */
 static inline bool native_launch_options(unsigned mode,unsigned quality,NativeLaunchOptions *out){
  if(!out||(mode!=1&&mode!=2)||quality>2)return false;
- const unsigned widths[]={640,480,320},heights[]={360,270,180};
- *out=(NativeLaunchOptions){mode,quality,widths[quality],heights[quality]};return true;
+ NativeSettings settings=native_settings_defaults();settings.mode=mode;native_settings_preset(&settings,quality);return native_launch_config(settings,out);
 }
 static inline const char *native_launch_saves(unsigned mode){return mode==2?"NativeSandboxProbe":"NativeRuntimeProbe";}
 static inline const char *native_quality_name(unsigned quality){return quality==2?"Ultra Potato":quality==1?"Potato":"Low";}
@@ -19,8 +24,8 @@ static inline const char *native_quality_name(unsigned quality){return quality==
    +280 is mouse focus, NOT startMode. Publish mode last with release ordering. */
 enum {NATIVE_LAUNCH_BLOCK_BYTES=444,NATIVE_LAUNCH_FOCUS=280,NATIVE_LAUNCH_MODE=440};
 static inline bool native_launch_publish(volatile void *block,size_t bytes,NativeLaunchOptions options){
- NativeLaunchOptions checked;
- if(!block||bytes<NATIVE_LAUNCH_BLOCK_BYTES||(uintptr_t)block%4||!native_launch_options(options.mode,options.quality,&checked))return false;
+ NativeLaunchOptions checked=options;
+ if(!block||bytes<NATIVE_LAUNCH_BLOCK_BYTES||(uintptr_t)block%4||!native_launch_valid(options))return false;
  volatile _Atomic uint8_t *p=block;
  const uint32_t offsets[]={NATIVE_LAUNCH_FOCUS,424,432,436},values[]={1,UINT32_MAX,checked.width,checked.height};
  /* Match host_store's atomic byte accesses for ordinary shared fields. */

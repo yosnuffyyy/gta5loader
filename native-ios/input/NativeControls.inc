@@ -32,6 +32,7 @@
 @property(nonatomic,strong) UIButton *settingsButton;
 @property(nonatomic,strong) UILabel *performanceLabel;
 @property(nonatomic,assign) BOOL playing;
+@property(nonatomic,assign) BOOL touchDisabled;
 @property(nonatomic,assign) float overlayOpacity;
 @property(nonatomic,assign) float stickScale;
 - (instancetype)initWithSurface:(UIView *)surface;
@@ -54,13 +55,13 @@
 }
 - (void)setPlaying:(BOOL)playing {_playing=playing;[self clearTouches];[self updateSource];}
 - (void)clearTouches {for(unsigned i=0;i<NI_TOUCHES;i++)_touchOwners[i]=nil;ni_touch_clear(&_touchState);ni_touch((NIState){0},false);[self.art setNeedsDisplay];}
-- (void)updateSource {BOOL touch=self.playing&&ni_source()==NI_TOUCH;if(!touch)[self clearTouches];self.art.alpha=touch?self.overlayOpacity:0;/* Art never intercepts touches. The game container detects deliberate wake touches even while art is invisible. */self.art.userInteractionEnabled=NO;self.settingsButton.hidden=!self.playing;}
+- (void)updateSource {BOOL touch=self.playing&&!self.touchDisabled&&ni_source()==NI_TOUCH;if(!touch)[self clearTouches];self.art.alpha=touch?self.overlayOpacity:0;/* Art never intercepts touches. The game container detects deliberate wake touches even while art is invisible. */self.art.userInteractionEnabled=NO;self.settingsButton.hidden=!self.playing;}
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if(!self.playing)return;ni_touch(ni_touch_state(&_touchState),true);[self updateSource];
+    if(!self.playing||self.touchDisabled)return;ni_touch(ni_touch_state(&_touchState),true);[self updateSource];
     for(UITouch *touch in touches){for(unsigned i=0;i<NI_TOUCHES;i++)if(!_touchOwners[i]){CGPoint p=[touch locationInView:self];_touchOwners[i]=touch;ni_touch_begin(&_touchState,i,p.x,p.y);break;}}
     ni_touch(ni_touch_state(&_touchState),false);[self.art setNeedsDisplay];
 }
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {if(!self.playing)return;for(UITouch *touch in touches)for(unsigned i=0;i<NI_TOUCHES;i++)if(_touchOwners[i]==touch){CGPoint p=[touch locationInView:self];ni_touch_move(&_touchState,i,p.x,p.y);}ni_touch(ni_touch_state(&_touchState),false);[self.art setNeedsDisplay];}
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {if(!self.playing||self.touchDisabled)return;for(UITouch *touch in touches)for(unsigned i=0;i<NI_TOUCHES;i++)if(_touchOwners[i]==touch){CGPoint p=[touch locationInView:self];ni_touch_move(&_touchState,i,p.x,p.y);}ni_touch(ni_touch_state(&_touchState),false);[self.art setNeedsDisplay];}
 - (void)finishTouches:(NSSet<UITouch *> *)touches {for(UITouch *touch in touches)for(unsigned i=0;i<NI_TOUCHES;i++)if(_touchOwners[i]==touch){_touchOwners[i]=nil;ni_touch_end(&_touchState,i);}ni_touch(ni_touch_state(&_touchState),false);[self.art setNeedsDisplay];}
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {[self finishTouches:touches];}
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {[self finishTouches:touches];}

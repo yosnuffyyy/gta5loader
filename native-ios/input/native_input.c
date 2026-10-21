@@ -11,8 +11,8 @@ static struct {
  NIState physical,output;NIEvent queue[NI_QUEUE];unsigned head,count;uint32_t delivered_buttons;
  uint32_t blocked;bool connected,running,focused,baseline,stick_ready[2],stick_blocked[2],trigger_ready[2],pad_saved;
  uint8_t saved50,saved55;NISource source;
- float deadzone,sensitivity;NIMetrics metrics;
-} input={.lock=PTHREAD_MUTEX_INITIALIZER,.deadzone=.15f,.sensitivity=1};
+ float deadzone,sensitivity,touch_sensitivity;bool invert_y,touch_enabled;NIMetrics metrics;
+} input={.lock=PTHREAD_MUTEX_INITIALIZER,.deadzone=.15f,.sensitivity=1,.touch_sensitivity=1,.touch_enabled=true};
 static void lock(void){if(pthread_mutex_lock(&input.lock))abort();}
 static void unlock(void){if(pthread_mutex_unlock(&input.lock))abort();}
 #if defined(NI_TEST_CLOCK)
@@ -41,7 +41,12 @@ void ni_begin(void){lock();input.running=true;input.focused=true;input.baseline=
 void ni_end(void){lock();input.running=false;input.focused=false;rearm();neutral();unlock();}
 void ni_focus(bool focused){lock();input.focused=focused;input.baseline=input.connected;rearm();neutral();input.source=NI_TOUCH;unlock();}
 void ni_connect(bool connected){lock();input.connected=connected;input.baseline=connected;input.physical=(NIState){0};rearm();/* Release a disconnected physical source, but preserve an already active touch hold. */if(!connected)switch_to(NI_TOUCH);unlock();}
-void ni_configure(float deadzone,float sensitivity){lock();input.deadzone=isfinite(deadzone)?finite_clamp(deadzone,.05f,.4f):.15f;input.sensitivity=isfinite(sensitivity)?finite_clamp(sensitivity,.25f,2):1;unlock();}
+void ni_configure_sources(float deadzone,float touch,float controller,bool invert,bool enabled){
+ lock();float dz=isfinite(deadzone)?finite_clamp(deadzone,.05f,.4f):.15f,t=isfinite(touch)?finite_clamp(touch,.25f,2):1,c=isfinite(controller)?finite_clamp(controller,.25f,2):1;
+ if(dz!=input.deadzone||t!=input.touch_sensitivity||c!=input.sensitivity||invert!=input.invert_y||enabled!=input.touch_enabled){rearm();neutral();}
+ input.deadzone=dz;input.touch_sensitivity=t;input.sensitivity=c;input.invert_y=invert;input.touch_enabled=enabled;unlock();
+}
+void ni_configure(float deadzone,float sensitivity){ni_configure_sources(deadzone,sensitivity,sensitivity,false,true);}
 NISource ni_source(void){lock();NISource s=input.source;unlock();return s;}
 NISource ni_controller(NIState raw){
  lock();NIState s=clean(raw),old=input.physical;input.physical=s;input.metrics.events++;
@@ -55,10 +60,10 @@ NISource ni_controller(NIState raw){
  if(input.source==NI_CONTROLLER){s.buttons&=~input.blocked;/* Outputs held during a touch takeover need a release/rearm. */
   if(input.blocked&NI_L2)s.lt=0;if(input.blocked&NI_R2)s.rt=0;
   if(input.stick_blocked[0])s.lx=s.ly=0;if(input.stick_blocked[1])s.rx=s.ry=0;
-  s.rx=finite_clamp(s.rx*input.sensitivity,-1,1);s.ry=finite_clamp(s.ry*input.sensitivity,-1,1);enqueue(s);}
+  s.rx=finite_clamp(s.rx*input.sensitivity,-1,1);s.ry=finite_clamp(s.ry*input.sensitivity*(input.invert_y?-1:1),-1,1);enqueue(s);}
  NISource mode=input.source;unlock();return mode;
 }
-NISource ni_touch(NIState raw,bool begin){lock();input.metrics.events++;if(input.running&&input.focused){if(begin)switch_to(NI_TOUCH);if(input.source==NI_TOUCH){NIState s=clean(raw);s.rx=finite_clamp(s.rx*input.sensitivity,-1,1);s.ry=finite_clamp(s.ry*input.sensitivity,-1,1);enqueue(s);}}NISource mode=input.source;unlock();return mode;}
+NISource ni_touch(NIState raw,bool begin){lock();input.metrics.events++;if(input.running&&input.focused&&input.touch_enabled){if(begin)switch_to(NI_TOUCH);if(input.source==NI_TOUCH){NIState s=clean(raw);s.rx=finite_clamp(s.rx*input.touch_sensitivity,-1,1);s.ry=finite_clamp(s.ry*input.touch_sensitivity*(input.invert_y?-1:1),-1,1);enqueue(s);}}NISource mode=input.source;unlock();return mode;}
 static uint8_t axis(float x,bool invert){x=finite_clamp(x,-1,1);if(invert)x=-x;return (uint8_t)lroundf(128+x*(x<0?128:127));}
 void ni_consume(uint8_t pad[56]){
  lock();
