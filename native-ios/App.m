@@ -121,13 +121,7 @@ static NSString *Digest(NSData *bytes) {
 - (void)beginReport:(NSString *)text;
 - (void)inputResumed:(NSNotification *)note;
 - (void)runScene;
-- (void)applyStoredSettings;
-- (void)changeSetting:(NSUInteger)index value:(double)value;
-- (void)updateSettingMenu:(UIButton*)button index:(NSUInteger)index;
-- (void)populateModelPage:(NSUInteger)page stack:(UIStackView*)stack;
-- (UIButton*)dashboardButton:(NSString*)title symbol:(NSString*)symbol action:(SEL)action;
-- (void)buildLibraryNavigation;
-- (void)layoutLibrary;
+- (void)applyFullscreen;
 - (UIButton *)button:(NSString *)title action:(SEL)action;
 - (UISlider *)inputSlider:(NSString *)label key:(NSString *)key initial:(float)value min:(float)minimum max:(float)maximum stack:(UIStackView *)stack;
 - (void)inputSettingsChanged;
@@ -138,7 +132,16 @@ static NSString *Digest(NSData *bytes) {
 - (void)queueProgress:(NSString *)text;
 - (void)appendShadowFailure;
 @end
+@interface ProbeController (NativeSettingsUI)
+- (void)applyStoredSettings;
+- (void)changeSetting:(NSUInteger)index value:(double)value;
+- (void)updateSettingMenu:(UIButton*)button index:(NSUInteger)index;
+- (void)populateModelPage:(NSUInteger)page stack:(UIStackView*)stack;
+- (void)buildLibraryNavigation;
+- (void)layoutLibrary;
+@end
 @interface ProbeController (NativeDashboard)
+- (UIButton*)dashboardButton:(NSString*)title symbol:(NSString*)symbol action:(SEL)action;
 - (void)exportLogRecovery:(BOOL)recovery;
 - (void)exportRecovery;
 - (void)buildDashboard;

@@ -11,9 +11,10 @@ int main(void){@autoreleasepool{
   if(![engine enableManualRenderingMode:AVAudioEngineManualRenderingModeOffline format:f maximumFrameCount:128 error:&error]){fprintf(stderr,"Manual audio configuration: %s\n",error.localizedDescription.UTF8String);ok=false;return;}
   atomic_store(&pcm.enabled,true);if(![engine startAndReturnError:&error]){fprintf(stderr,"Manual audio start: %s\n",error.localizedDescription.UTF8String);ok=false;return;}
   AVAudioPCMBuffer *buffer=[[AVAudioPCMBuffer alloc]initWithPCMFormat:f frameCapacity:128];
-  for(unsigned i=0;i<8;i++){assert([engine renderOffline:128 toBuffer:buffer error:&error]==AVAudioEngineManualRenderingStatusSuccess);assert(buffer.frameLength==128);for(unsigned j=0;j<128;j++){assert(fabsf(buffer.floatChannelData[0][j]-.125f)<1e-6f);assert(fabsf(buffer.floatChannelData[1][j]+.25f)<1e-6f);}}
+  assert(!native_audio_set_volume(NAN,false)&&!native_audio_set_volume(-1,false)&&!native_audio_set_volume(2,false));
+  for(unsigned i=0;i<8;i++){float gain=i<2?1:i<4?.5f:i<6?0:1;assert(native_audio_set_volume(i<6?.5f:1,i>=4&&i<6));if(i<2)assert(native_audio_set_volume(1,false));assert([engine renderOffline:128 toBuffer:buffer error:&error]==AVAudioEngineManualRenderingStatusSuccess);assert(buffer.frameLength==128);for(unsigned j=0;j<128;j++){assert(fabsf(buffer.floatChannelData[0][j]-.125f*gain)<1e-6f);assert(fabsf(buffer.floatChannelData[1][j]+.25f*gain)<1e-6f);}}
   disable();assert(!atomic_load(&pcm.readers));engine=nil;source=nil;pcm.base=NULL;
- });assert(ok);printf("PASS: native AVAudioEngine production source node, 48-kHz stereo connection, 1024 exact output frames, L/R mapping and stopped graph teardown. Offline fixture PCM; physical game sound pending.\n");
+ });assert(ok);printf("PASS: native AVAudioEngine production source node, 48-kHz stereo connection, 1024 exact output frames with unity/half/mute/restored gain, invalid gain rejection, L/R mapping and stopped graph teardown. Offline fixture PCM; physical game sound pending.\n");
 uint64_t before=mix_clock(CLOCK_MONOTONIC);for(unsigned i=0;i<100000;i++){native_audio_mix_begin();native_audio_mix_end();}uint64_t elapsed=mix_clock(CLOCK_MONOTONIC)-before;
  assert(atomic_load(&mix_calls)==100000&&atomic_load(&mix_samples)==1562&&!atomic_load(&mix_clock_errors));
  assert(atomic_load(&mix_wall)>=atomic_load(&mix_max));
