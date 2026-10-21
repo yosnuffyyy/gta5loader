@@ -26,6 +26,14 @@ pub fn valid_path(path: &str) -> bool {
             .split('/')
             .all(|p| !p.is_empty() && p != "." && p != "..")
 }
+fn manifest_integer(value: &serde_json::Value) -> Result<u64> {
+    let n = value.as_f64().context("non-numeric manifest value")?;
+    ensure!(
+        n.is_finite() && (0.0..=9_007_199_254_740_991.0).contains(&n) && n.floor() == n,
+        "invalid manifest integer"
+    );
+    Ok(n as u64)
+}
 impl Index {
     pub fn parse(bytes: &[u8]) -> Result<Self> {
         ensure!(
@@ -49,12 +57,8 @@ impl Index {
             ensure!(row.len() == 3, "expected original path/size/metadata tuple");
             let path = row[0].as_str().context("non-string path")?;
             ensure!(valid_path(path), "invalid asset path");
-            let size = row[1].as_u64().context("invalid size")?;
-            let metadata = row[2].as_u64().context("invalid entry metadata")?;
-            ensure!(
-                size <= 9_007_199_254_740_991 && metadata <= 9_007_199_254_740_991,
-                "inexact JSON integer"
-            );
+            let size = manifest_integer(&row[1])?;
+            manifest_integer(&row[2])?;
             let id = result.entries.len();
             ensure!(
                 result.exact.insert(path.into(), id).is_none(),
@@ -113,6 +117,7 @@ mod unix {
     pub struct Reader {
         root: File,
         pub index: Index,
+        manifest: Box<[u8]>,
         cache: Vec<(usize, File, u64)>,
         scratch: Box<[u8; SCRATCH_BYTES]>,
         stamp: u64,
@@ -178,6 +183,7 @@ mod unix {
             Ok(Self {
                 root: data,
                 index,
+                manifest: bytes.into_boxed_slice(),
                 cache: Vec::with_capacity(OPEN_FILES),
                 scratch: Box::new([0; SCRATCH_BYTES]),
                 stamp: 0,
@@ -188,6 +194,11 @@ mod unix {
         }
         pub fn cached_files(&self) -> usize {
             self.cache.len()
+        }
+        /// Original bytes, including metadata and file-ID order, for publication
+        /// to the engine. No transformed or fabricated manifest entries.
+        pub fn manifest_bytes(&self) -> &[u8] {
+            &self.manifest
         }
         /// Synchronous bounded transfer. Sink must copy bytes before returning.
         /// A failure/cancellation is an error even if earlier chunks were sent;
@@ -307,5 +318,9 @@ mod tests {
         }
         assert!(index(serde_json::json!([["a", 1, 0], ["a", 2, 0]])).is_err());
         assert!(index(serde_json::json!([])).is_err());
+        assert_eq!(
+            index(serde_json::json!([["a", 3.0, 0.0]])).unwrap().entries[0].bytes,
+            3
+        );
     }
 }

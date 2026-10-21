@@ -301,6 +301,8 @@ fn shared_atomic_checks(engine: &Engine) -> Result<serde_json::Value> {
         r#"(module (import "env" "memory" (memory 1 2 shared))
      (func (export "add") (result i32) i32.const 0 i32.const 1 i32.atomic.rmw.add)
      (func (export "wait") (result i32) i32.const 0 i32.const 80000 i64.const 1000000 memory.atomic.wait32)
+     (func (export "wake_wait") (result i32) i32.const 4 i32.const 0 i64.const 5000000000 memory.atomic.wait32)
+     (func (export "notify") (result i32) i32.const 4 i32.const 1 memory.atomic.notify)
      (func (export "bad") (result i32) i32.const 65536 i32.atomic.load))"#,
     )?;
     let mem = SharedMemory::new(engine, MemoryType::shared(1, 2))?;
@@ -324,7 +326,7 @@ fn shared_atomic_checks(engine: &Engine) -> Result<serde_json::Value> {
     }
     ensure!(u32_at(&mem, 0)? == 80000, "lost atomic updates");
     let mut s = Store::new(engine, ());
-    let i = Instance::new(&mut s, &m, &[mem.into()])?;
+    let i = Instance::new(&mut s, &m, &[mem.clone().into()])?;
     ensure!(
         i.get_typed_func::<(), i32>(&mut s, "wait")?
             .call(&mut s, ())?
@@ -337,7 +339,34 @@ fn shared_atomic_checks(engine: &Engine) -> Result<serde_json::Value> {
             .is_err(),
         "missing bounds trap"
     );
-    Ok(json!({"workers":4,"increments":80000,"waitTimeout":true,"boundsTrap":true}))
+    let e = engine.clone();
+    let waiter = std::thread::spawn(move || -> Result<i32> {
+        let mut s = Store::new(&e, ());
+        let i = Instance::new(&mut s, &m, &[mem.into()])?;
+        Ok(i.get_typed_func::<(), i32>(&mut s, "wake_wait")?
+            .call(&mut s, ())?)
+    });
+    let notify = i.get_typed_func::<(), i32>(&mut s, "notify")?;
+    let deadline = Instant::now() + std::time::Duration::from_secs(3);
+    let mut awakened = false;
+    while Instant::now() < deadline {
+        if notify.call(&mut s, ())? == 1 {
+            awakened = true;
+            break;
+        }
+        // Fixture-only bounded rendezvous; never a production worker loop.
+        std::thread::sleep(std::time::Duration::from_millis(1));
+    }
+    let result = waiter
+        .join()
+        .map_err(|_| anyhow::anyhow!("waiter panic"))??;
+    ensure!(
+        awakened && result == 0,
+        "atomic notify did not wake blocked Wasm worker"
+    );
+    Ok(
+        json!({"workers":4,"increments":80000,"waitTimeout":true,"waitNotify":true,"boundsTrap":true}),
+    )
 }
 
 fn main() -> Result<()> {

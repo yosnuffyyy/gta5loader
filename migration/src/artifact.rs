@@ -1,6 +1,7 @@
 //! Native module bytes are executable code, not an ordinary game asset.
 use anyhow::{ensure, Result};
 use sha2::{Digest, Sha256};
+#[cfg(not(target_os = "ios"))]
 use wasmtime::{Engine, Module};
 
 pub fn digest(bytes: &[u8]) -> String {
