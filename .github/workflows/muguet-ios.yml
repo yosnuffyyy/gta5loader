@@ -5,7 +5,9 @@ on:
     paths: ['.github/workflows/muguet-ios.yml']
   workflow_dispatch:
 permissions:
-  contents: read
+  # GitHub requires write-level membership to read unpublished release assets.
+  # The token is passed only to the download step; no publish/update command runs.
+  contents: write
 concurrency:
   group: muguet-ios-build
   cancel-in-progress: false
