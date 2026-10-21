@@ -1,0 +1,33 @@
+{
+  "result": "PASS",
+  "scope": "Stage A runtime/ABI components; migration incomplete, no gameplay IPA",
+  "sourceCommit": "8a1d6819e5e8b51802bb26251b9e24942d98a3a0",
+  "sourceTree": "1a641963dadaa085d35dbb92f07ce641d240df01",
+  "workflowRun": 39646902321,
+  "workflowURL": "https://github.com/yosnuffyyy/gta5loader/actions/runs/39646902321",
+  "artifactID": 12367029256,
+  "artifactZipSHA256": "49ba369de7feeadd783cdd525fd6d9cec763448f4b3199f0f36a7068015428a8",
+  "macLinkedRXExecution": true,
+  "iOSLinkedRXAudit": true,
+  "iOSExecution": false,
+  "rustUnitTests": 5,
+  "unixIntegrationTests": 2,
+  "legacySanitizers": "ASan + UBSan: launch options and completion serial only",
+  "fullRustOrDriverSanitizers": false,
+  "files": {
+    "host.json": "5fbeab0615e12e0d62b09a5af32be0bc8d83ef44045d1a48e297ad48446e57cd",
+    "ios.json": "a97ec677a65f32fee25f50880df8930f693e763c7a449b0731741f000080e12f",
+    "macho.json": "3e38f5318950832f2009e1379e1d167161ec0c3576d86c0cec0126186706b050",
+    "mac-macho.json": "1ed42d5deb679cc1ed3c1dced7799ff81e137fe317e35f08d52a4ddf3e4fb309",
+    "embedded-execution.json": "2b2b17ddb119f93897346b98d1ea01fd5386742d895e115b345d905f4edb4bd6",
+    "rust-tests.log": "18097bb0326a5a112e937c9619d3eebcd8aedb81ad97872bde8e02010389f4e8",
+    "ios-dependencies.txt": "14c4f681ae7360896dcfe0068049c1908e45c3ae52d160a26972b738c746c4f1",
+    "mac-link.log": "6c28355e7f520cef43cc979c819aed040d415225e291153849778e5bf35f2aa5",
+    "ios-link.log": "5446e0d88f644cc0db5e6324411cca20d34006ff4d69f3e531f87f6396741cb0",
+    "original-mode.json": "2ea563106cf5aa30235c0463a71f113cebed3693dfbc606e05a13266bb0c8421",
+    "original-timer.json": "944a2fcd70fe3cd578cdea81ff108459093261d861a75fa2c23354391e8100f9",
+    "reference.json": "0df076b270a00146fd93795e72037399b6127039060d83c107ebce4fdd40c4ee",
+    "legacy-options.log": "ac885cc53bb69b03cca8aa3ae4be518be776a07e6db90513889613eef54c9269",
+    "legacy-completion.log": "4fecbae8caa19a6bf9964926f93205331ecb932de155e4306baf363a54c03b43"
+  }
+}

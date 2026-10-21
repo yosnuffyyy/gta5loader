@@ -1,0 +1,128 @@
+gta-muguet-runtime v0.1.0 (/Users/runner/work/gta5loader/gta5loader/migration)
+├── anyhow v1.0.104
+├── libc v0.2.190
+├── serde_json v1.0.151
+│   ├── itoa v1.0.18
+│   ├── memchr v2.8.3
+│   ├── serde_core v1.0.229
+│   └── zmij v1.0.23
+├── sha2 v0.10.9
+│   ├── cfg-if v1.0.5
+│   ├── cpufeatures v0.2.17
+│   │   └── libc v0.2.190
+│   └── digest v0.10.7
+│       ├── block-buffer v0.10.4
+│       │   └── generic-array v0.14.7
+│       │       └── typenum v1.20.1
+│       │       [build-dependencies]
+│       │       └── version_check v0.9.5
+│       └── crypto-common v0.1.7
+│           ├── generic-array v0.14.7 (*)
+│           └── typenum v1.20.1
+└── wasmtime v49.0.2
+    ├── async-trait v0.1.92 (proc-macro)
+    │   ├── proc-macro2 v1.0.107
+    │   │   └── unicode-ident v1.0.27
+    │   ├── quote v1.0.47
+    │   │   └── proc-macro2 v1.0.107 (*)
+    │   └── syn v3.0.9
+    │       ├── proc-macro2 v1.0.107 (*)
+    │       ├── quote v1.0.47 (*)
+    │       └── unicode-ident v1.0.27
+    ├── bitflags v2.13.2
+    ├── bumpalo v3.20.3
+    ├── libc v0.2.190
+    ├── log v0.4.34
+    ├── mach2 v0.6.0
+    ├── object v0.40.0
+    │   └── memchr v2.8.3
+    ├── once_cell v1.21.4
+    ├── postcard v1.1.3
+    │   ├── cobs v0.3.0
+    │   │   └── thiserror v2.0.21
+    │   │       └── thiserror-impl v2.0.21 (proc-macro)
+    │   │           ├── proc-macro2 v1.0.107 (*)
+    │   │           ├── quote v1.0.47 (*)
+    │   │           └── syn v3.0.9 (*)
+    │   └── serde v1.0.229
+    │       ├── serde_core v1.0.229
+    │       └── serde_derive v1.0.229 (proc-macro)
+    │           ├── proc-macro2 v1.0.107 (*)
+    │           ├── quote v1.0.47 (*)
+    │           └── syn v3.0.9 (*)
+    ├── pulley-interpreter v49.0.2
+    │   ├── cranelift-bitset v0.136.2
+    │   │   ├── serde v1.0.229 (*)
+    │   │   ├── serde_derive v1.0.229 (proc-macro) (*)
+    │   │   └── wasmtime-internal-core v49.0.2
+    │   │       ├── anyhow v1.0.104
+    │   │       ├── hashbrown v0.17.1
+    │   │       │   └── foldhash v0.2.0
+    │   │       ├── libm v0.2.16
+    │   │       └── serde v1.0.229 (*)
+    │   ├── log v0.4.34
+    │   ├── pulley-macros v49.0.2 (proc-macro)
+    │   │   ├── proc-macro2 v1.0.107 (*)
+    │   │   ├── quote v1.0.47 (*)
+    │   │   └── syn v2.0.119
+    │   │       ├── proc-macro2 v1.0.107 (*)
+    │   │       ├── quote v1.0.47 (*)
+    │   │       └── unicode-ident v1.0.27
+    │   └── wasmtime-internal-core v49.0.2 (*)
+    ├── rustix v1.1.5
+    │   ├── bitflags v2.13.2
+    │   ├── errno v0.3.14
+    │   │   └── libc v0.2.190
+    │   └── libc v0.2.190
+    ├── serde v1.0.229 (*)
+    ├── serde_derive v1.0.229 (proc-macro) (*)
+    ├── smallvec v1.16.3
+    │   └── serde v1.0.229 (*)
+    ├── target-lexicon v0.13.5
+    ├── wasmparser v0.258.3
+    │   ├── bitflags v2.13.2
+    │   └── serde v1.0.229 (*)
+    ├── wasmtime-environ v49.0.2
+    │   ├── anyhow v1.0.104
+    │   ├── cranelift-bforest v0.136.2
+    │   │   ├── cranelift-entity v0.136.2
+    │   │   │   ├── cranelift-bitset v0.136.2 (*)
+    │   │   │   ├── serde v1.0.229 (*)
+    │   │   │   ├── serde_derive v1.0.229 (proc-macro) (*)
+    │   │   │   └── wasmtime-internal-core v49.0.2 (*)
+    │   │   └── wasmtime-internal-core v49.0.2 (*)
+    │   ├── cranelift-bitset v0.136.2 (*)
+    │   ├── cranelift-entity v0.136.2 (*)
+    │   ├── gimli v0.33.0
+    │   ├── hashbrown v0.17.1 (*)
+    │   ├── indexmap v2.14.2
+    │   │   ├── equivalent v1.0.3
+    │   │   ├── hashbrown v0.17.1 (*)
+    │   │   └── serde_core v1.0.229
+    │   ├── log v0.4.34
+    │   ├── object v0.40.0 (*)
+    │   ├── postcard v1.1.3 (*)
+    │   ├── serde v1.0.229 (*)
+    │   ├── serde_derive v1.0.229 (proc-macro) (*)
+    │   ├── sha2 v0.10.9 (*)
+    │   ├── smallvec v1.16.3 (*)
+    │   ├── target-lexicon v0.13.5
+    │   ├── wasmparser v0.258.3 (*)
+    │   └── wasmtime-internal-core v49.0.2 (*)
+    ├── wasmtime-internal-core v49.0.2 (*)
+    ├── wasmtime-internal-jit-icache-coherence v49.0.2
+    │   ├── libc v0.2.190
+    │   └── wasmtime-internal-core v49.0.2 (*)
+    ├── wasmtime-internal-unwinder v49.0.2
+    │   ├── log v0.4.34
+    │   ├── object v0.40.0 (*)
+    │   └── wasmtime-environ v49.0.2 (*)
+    └── wasmtime-internal-versioned-export-macros v49.0.2 (proc-macro)
+        ├── proc-macro2 v1.0.107 (*)
+        ├── quote v1.0.47 (*)
+        └── syn v2.0.119 (*)
+    [build-dependencies]
+    ├── cc v1.9.0
+    │   ├── find-msvc-tools v0.1.15
+    │   └── shlex v2.0.1
+    └── wasmtime-internal-versioned-export-macros v49.0.2 (proc-macro) (*)

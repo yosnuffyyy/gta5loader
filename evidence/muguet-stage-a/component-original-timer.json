@@ -1,0 +1,91 @@
+{
+  "result": "PASS: original timer behavior reproduced",
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "sourceFunction": 8924,
+  "minimumDelta": 0.03333333507180214,
+  "maximumDelta": 0.06666667014360428,
+  "rows": [
+    {
+      "profile": "original defaults",
+      "minimumDelta": 0.03333333507180214,
+      "renderCadenceFPS": 5,
+      "realSeconds": 10,
+      "engineDeltaSum": 3.333333507180214,
+      "engineIntegerMilliseconds": 3300
+    },
+    {
+      "profile": "original defaults",
+      "minimumDelta": 0.03333333507180214,
+      "renderCadenceFPS": 10,
+      "realSeconds": 10,
+      "engineDeltaSum": 6.666667014360428,
+      "engineIntegerMilliseconds": 6600
+    },
+    {
+      "profile": "original defaults",
+      "minimumDelta": 0.03333333507180214,
+      "renderCadenceFPS": 15,
+      "realSeconds": 10,
+      "engineDeltaSum": 9.999999403953552,
+      "engineIntegerMilliseconds": 9900
+    },
+    {
+      "profile": "original defaults",
+      "minimumDelta": 0.03333333507180214,
+      "renderCadenceFPS": 20,
+      "realSeconds": 10,
+      "engineDeltaSum": 9.999999403953552,
+      "engineIntegerMilliseconds": 10000
+    },
+    {
+      "profile": "original defaults",
+      "minimumDelta": 0.03333333507180214,
+      "renderCadenceFPS": 30,
+      "realSeconds": 10,
+      "engineDeltaSum": 10.000000521540642,
+      "engineIntegerMilliseconds": 10000
+    },
+    {
+      "profile": "device-observed minimum (rounded report)",
+      "minimumDelta": 0.000333,
+      "renderCadenceFPS": 5,
+      "realSeconds": 10,
+      "engineDeltaSum": 3.333333507180214,
+      "engineIntegerMilliseconds": 3300
+    },
+    {
+      "profile": "device-observed minimum (rounded report)",
+      "minimumDelta": 0.000333,
+      "renderCadenceFPS": 10,
+      "realSeconds": 10,
+      "engineDeltaSum": 6.666667014360428,
+      "engineIntegerMilliseconds": 6600
+    },
+    {
+      "profile": "device-observed minimum (rounded report)",
+      "minimumDelta": 0.000333,
+      "renderCadenceFPS": 15,
+      "realSeconds": 10,
+      "engineDeltaSum": 9.999999403953552,
+      "engineIntegerMilliseconds": 9900
+    },
+    {
+      "profile": "device-observed minimum (rounded report)",
+      "minimumDelta": 0.000333,
+      "renderCadenceFPS": 20,
+      "realSeconds": 10,
+      "engineDeltaSum": 9.999999403953552,
+      "engineIntegerMilliseconds": 10000
+    },
+    {
+      "profile": "device-observed minimum (rounded report)",
+      "minimumDelta": 0.000333,
+      "renderCadenceFPS": 30,
+      "realSeconds": 10,
+      "engineDeltaSum": 9.999999403953552,
+      "engineIntegerMilliseconds": 10000
+    }
+  ],
+  "pauseResume": "PASS",
+  "limitation": "Not a slow-motion fix. Original 66.7-ms clamp loses elapsed simulation time below 15 updates/s. Arbitrary clamp removal or extra physics ticks are not validated; animation/cutscene-specific clocks require device traces."
+}

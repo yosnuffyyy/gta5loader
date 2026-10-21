@@ -1,0 +1,43 @@
+{
+  "result": "PASS",
+  "arm64": true,
+  "platform": "macos",
+  "embedded": {
+    "bytes": 160984984,
+    "sha256": "8c962585929ad6ddbc96e7f5404a8693cbfd7bf766a0528cccd35c11520ce87b"
+  },
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "max": 0,
+      "init": 0
+    },
+    {
+      "name": "__TEXT",
+      "max": 5,
+      "init": 5
+    },
+    {
+      "name": "__DATA_CONST",
+      "max": 3,
+      "init": 3
+    },
+    {
+      "name": "__DATA",
+      "max": 3,
+      "init": 3
+    },
+    {
+      "name": "__GAME",
+      "max": 5,
+      "init": 5
+    },
+    {
+      "name": "__LINKEDIT",
+      "max": 1,
+      "init": 1
+    }
+  ],
+  "executionVerified": false,
+  "appOrIPA": false
+}

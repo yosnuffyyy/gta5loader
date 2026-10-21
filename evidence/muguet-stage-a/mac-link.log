@@ -1,0 +1,22 @@
+   Compiling hashbrown v0.17.1
+   Compiling thiserror v2.0.21
+   Compiling memchr v2.8.3
+   Compiling cobs v0.3.0
+   Compiling postcard v1.1.3
+   Compiling object v0.40.0
+   Compiling wasmtime-internal-core v49.0.2
+   Compiling indexmap v2.14.2
+   Compiling cranelift-bitset v0.136.2
+   Compiling cranelift-entity v0.136.2
+   Compiling wasmparser v0.258.3
+   Compiling cranelift-bforest v0.136.2
+   Compiling gimli v0.33.0
+   Compiling wasmtime-internal-unwinder v49.0.2
+   Compiling pulley-interpreter v49.0.2
+   Compiling wasmtime v49.0.2
+   Compiling wasmtime-environ v49.0.2
+   Compiling wasmtime-internal-jit-icache-coherence v49.0.2
+   Compiling gta-muguet-runtime v0.1.0 (/Users/runner/work/gta5loader/gta5loader/migration)
+   Compiling bumpalo v3.20.3
+   Compiling serde_json v1.0.151
+    Finished `release` profile [optimized] target(s) in 44.94s

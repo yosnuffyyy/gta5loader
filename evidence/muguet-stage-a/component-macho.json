@@ -1,0 +1,43 @@
+{
+  "result": "PASS",
+  "arm64": true,
+  "ios": true,
+  "embedded": {
+    "bytes": 159918840,
+    "sha256": "6612e8594e9218f2435e709cf500d4b8bdbd487e80e4d920af5e900c6bbb8170"
+  },
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "max": 0,
+      "init": 0
+    },
+    {
+      "name": "__TEXT",
+      "max": 5,
+      "init": 5
+    },
+    {
+      "name": "__DATA_CONST",
+      "max": 3,
+      "init": 3
+    },
+    {
+      "name": "__DATA",
+      "max": 3,
+      "init": 3
+    },
+    {
+      "name": "__GAME",
+      "max": 5,
+      "init": 5
+    },
+    {
+      "name": "__LINKEDIT",
+      "max": 1,
+      "init": 1
+    }
+  ],
+  "executionVerified": false,
+  "appOrIPA": false
+}

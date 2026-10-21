@@ -1,0 +1,106 @@
+{
+  "artifactBytes": 192973408,
+  "artifactSHA256": "a95f4426bb3cbeb05a9b43692dc183d6933d006b3bbf3c76f9be605338b8bad4",
+  "compileWallSeconds": 70.6667928,
+  "config": "wasmtime49.0.2-wasm32-shared-4GiB-64KiBguard-speed-v1",
+  "engineChecks": {
+    "checksum": 700000,
+    "hostBoundaryInclusiveWallMs": 472.8852,
+    "overLimitRejected": true,
+    "shadowCalls": 400000,
+    "sharedGrowthBaseStable": true,
+    "strings": true,
+    "trig": [
+      {
+        "cos": 1.0,
+        "sin": 0.0,
+        "x": 0.0
+      },
+      {
+        "cos": 0.9689124226570129,
+        "sin": 0.24740396440029144,
+        "x": 0.25
+      },
+      {
+        "cos": 0.8775825500488281,
+        "sin": -0.4794255495071411,
+        "x": -0.5
+      },
+      {
+        "cos": 0.5403022766113281,
+        "sin": 0.8414709568023682,
+        "x": 1.0
+      },
+      {
+        "cos": -0.9941296577453613,
+        "sin": -0.10819513350725174,
+        "x": 3.25
+      },
+      {
+        "cos": 0.8623188734054565,
+        "sin": -0.5063656568527222,
+        "x": 100.0
+      }
+    ]
+  },
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "gameplayVerified": false,
+  "iOSExecutionVerified": false,
+  "probeSHA256": "6386a4047a5c9c5d5384b1127b4dbd37d76970abfca620c9632bd9335c1b6d7b",
+  "result": "PASS",
+  "sharedAtomicFixture": {
+    "boundsTrap": true,
+    "increments": 80000,
+    "waitNotify": true,
+    "waitTimeout": true,
+    "workers": 4
+  },
+  "startupChecks": [
+    {
+      "args": [
+        "native-probe",
+        "-nonetwork",
+        "-noautoload"
+      ],
+      "mode": 1,
+      "originalScriptFlags": true,
+      "publication": true,
+      "worldExecuted": false
+    },
+    {
+      "args": [
+        "native-probe",
+        "-nonetwork",
+        "-playercoords=94.95,-742.96,44.75"
+      ],
+      "mode": 2,
+      "originalScriptFlags": true,
+      "publication": true,
+      "worldExecuted": false
+    },
+    {
+      "args": [
+        "native-probe",
+        "-nonetwork",
+        "-playercoords=94.95,-742.96,44.75"
+      ],
+      "mode": 2,
+      "originalScriptFlags": true,
+      "publication": true,
+      "worldExecuted": false
+    },
+    {
+      "args": [
+        "native-probe",
+        "-nonetwork",
+        "-noautoload"
+      ],
+      "mode": 1,
+      "originalScriptFlags": true,
+      "publication": true,
+      "worldExecuted": false
+    }
+  ],
+  "target": "host",
+  "wasmtime": "49.0.2"
+}

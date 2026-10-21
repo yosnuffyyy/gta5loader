@@ -1,0 +1,1 @@
+PASS: completion serial: 100000 deterministic lifecycle/failure/reordering sequences, exact 64-bit replies, 128-entry saturation, no fake completion; state 15408 bytes

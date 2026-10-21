@@ -1,0 +1,1739 @@
+{
+  "engineSHA256": "e65bec476e8fd8125515150c24037c9bd0d0c46530e3544f9d389ab108b5592e",
+  "probeSHA256": "6386a4047a5c9c5d5384b1127b4dbd37d76970abfca620c9632bd9335c1b6d7b",
+  "engineBytes": 66172903,
+  "probeBytes": 66173163,
+  "memory": [
+    {
+      "module": "env",
+      "name": "memory",
+      "kind": "memory",
+      "memory64": false,
+      "shared": true,
+      "min": 8192,
+      "max": 65536
+    }
+  ],
+  "imports": [
+    {
+      "module": "env",
+      "name": "memory",
+      "kind": "memory",
+      "memory64": false,
+      "shared": true,
+      "min": 8192,
+      "max": 65536
+    },
+    {
+      "module": "env",
+      "name": "wasm_now_ms",
+      "kind": "function",
+      "index": 0,
+      "type": 246,
+      "params": [],
+      "results": [
+        "f64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "wasm_hang_line_js",
+      "kind": "function",
+      "index": 1,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_audio_publish_js",
+      "kind": "function",
+      "index": 2,
+      "type": 7,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_io_start_js",
+      "kind": "function",
+      "index": 3,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_httpfs_manifest_js",
+      "kind": "function",
+      "index": 4,
+      "type": 10,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_page_js",
+      "kind": "function",
+      "index": 5,
+      "type": 21,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_put_js",
+      "kind": "function",
+      "index": 6,
+      "type": 790,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "f64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_userdata_delete_js",
+      "kind": "function",
+      "index": 7,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wgpu_start_worker",
+      "kind": "function",
+      "index": 8,
+      "type": 6,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_has_page_js",
+      "kind": "function",
+      "index": 9,
+      "type": 21,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "wasm_input_publish_js",
+      "kind": "function",
+      "index": 10,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "wasm_module_int_js",
+      "kind": "function",
+      "index": 11,
+      "type": 10,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_now",
+      "kind": "function",
+      "index": 12,
+      "type": 246,
+      "params": [],
+      "results": [
+        "f64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "wasm_print_line_js",
+      "kind": "function",
+      "index": 13,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_snapshot",
+      "kind": "function",
+      "index": 14,
+      "type": 12,
+      "params": [],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_stack_unwind_buffer",
+      "kind": "function",
+      "index": 15,
+      "type": 27,
+      "params": [
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int",
+      "kind": "function",
+      "index": 16,
+      "type": 22,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_get_heap_max",
+      "kind": "function",
+      "index": 17,
+      "type": 12,
+      "params": [],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "exit",
+      "kind": "function",
+      "index": 18,
+      "type": 13,
+      "params": [
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjj",
+      "kind": "function",
+      "index": 19,
+      "type": 6,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_ij",
+      "kind": "function",
+      "index": 20,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "invoke_vj",
+      "kind": "function",
+      "index": 21,
+      "type": 3,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjij",
+      "kind": "function",
+      "index": 22,
+      "type": 17,
+      "params": [
+        "i64",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjij",
+      "kind": "function",
+      "index": 23,
+      "type": 101,
+      "params": [
+        "i64",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjii",
+      "kind": "function",
+      "index": 24,
+      "type": 33,
+      "params": [
+        "i64",
+        "i64",
+        "i32",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_iji",
+      "kind": "function",
+      "index": 25,
+      "type": 27,
+      "params": [
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "invoke_vjjii",
+      "kind": "function",
+      "index": 26,
+      "type": 82,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "i32",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "invoke_jjiiijij",
+      "kind": "function",
+      "index": 27,
+      "type": 791,
+      "params": [
+        "i64",
+        "i64",
+        "i32",
+        "i32",
+        "i32",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijji",
+      "kind": "function",
+      "index": 28,
+      "type": 42,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "invoke_ijjiii",
+      "kind": "function",
+      "index": 29,
+      "type": 216,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_asm_const_int_sync_on_main_thread",
+      "kind": "function",
+      "index": 30,
+      "type": 22,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "proc_exit",
+      "kind": "function",
+      "index": 31,
+      "type": 13,
+      "params": [
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "_tzset_js",
+      "kind": "function",
+      "index": 32,
+      "type": 9,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "_abort_js",
+      "kind": "function",
+      "index": 33,
+      "type": 5,
+      "params": [],
+      "results": []
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "clock_time_get",
+      "kind": "function",
+      "index": 34,
+      "type": 104,
+      "params": [
+        "i32",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_close",
+      "kind": "function",
+      "index": 35,
+      "type": 18,
+      "params": [
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_date_now",
+      "kind": "function",
+      "index": 36,
+      "type": 246,
+      "params": [],
+      "results": [
+        "f64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_set_strongref",
+      "kind": "function",
+      "index": 37,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "emscripten_exit_with_live_runtime",
+      "kind": "function",
+      "index": 38,
+      "type": 5,
+      "params": [],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fcntl64",
+      "kind": "function",
+      "index": 39,
+      "type": 128,
+      "params": [
+        "i32",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_openat",
+      "kind": "function",
+      "index": 40,
+      "type": 393,
+      "params": [
+        "i32",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ioctl",
+      "kind": "function",
+      "index": 41,
+      "type": 128,
+      "params": [
+        "i32",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_write",
+      "kind": "function",
+      "index": 42,
+      "type": 217,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_read",
+      "kind": "function",
+      "index": 43,
+      "type": 217,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_fstat64",
+      "kind": "function",
+      "index": 44,
+      "type": 60,
+      "params": [
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_stat64",
+      "kind": "function",
+      "index": 45,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_newfstatat",
+      "kind": "function",
+      "index": 46,
+      "type": 294,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_lstat64",
+      "kind": "function",
+      "index": 47,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_ftruncate64",
+      "kind": "function",
+      "index": 48,
+      "type": 60,
+      "params": [
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getcwd",
+      "kind": "function",
+      "index": 49,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_sizes_get",
+      "kind": "function",
+      "index": 50,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "environ_get",
+      "kind": "function",
+      "index": 51,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_init_main_thread_js",
+      "kind": "function",
+      "index": 52,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_mailbox_await",
+      "kind": "function",
+      "index": 53,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_seek",
+      "kind": "function",
+      "index": 54,
+      "type": 393,
+      "params": [
+        "i32",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_mkdirat",
+      "kind": "function",
+      "index": 55,
+      "type": 119,
+      "params": [
+        "i32",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_mktime_js",
+      "kind": "function",
+      "index": 56,
+      "type": 0,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_localtime_js",
+      "kind": "function",
+      "index": 57,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_gmtime_js",
+      "kind": "function",
+      "index": 58,
+      "type": 2,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pread",
+      "kind": "function",
+      "index": 59,
+      "type": 265,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_receive_on_main_thread_js",
+      "kind": "function",
+      "index": 60,
+      "type": 792,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "f64"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_check_blocking_allowed",
+      "kind": "function",
+      "index": 61,
+      "type": 5,
+      "params": [],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "__pthread_create_js",
+      "kind": "function",
+      "index": 62,
+      "type": 28,
+      "params": [
+        "i64",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_thread_cleanup",
+      "kind": "function",
+      "index": 63,
+      "type": 1,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "name": "fd_pwrite",
+      "kind": "function",
+      "index": 64,
+      "type": 265,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getdents64",
+      "kind": "function",
+      "index": 65,
+      "type": 104,
+      "params": [
+        "i32",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_unlinkat",
+      "kind": "function",
+      "index": 66,
+      "type": 119,
+      "params": [
+        "i32",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_rmdir",
+      "kind": "function",
+      "index": 67,
+      "type": 4,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_renameat",
+      "kind": "function",
+      "index": 68,
+      "type": 393,
+      "params": [
+        "i32",
+        "i64",
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_poll",
+      "kind": "function",
+      "index": 69,
+      "type": 24,
+      "params": [
+        "i64",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_statfs64",
+      "kind": "function",
+      "index": 70,
+      "type": 22,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "emscripten_num_logical_cores",
+      "kind": "function",
+      "index": 71,
+      "type": 21,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_system",
+      "kind": "function",
+      "index": 72,
+      "type": 4,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_notify_mailbox_postmessage",
+      "kind": "function",
+      "index": 73,
+      "type": 3,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "emscripten_resize_heap",
+      "kind": "function",
+      "index": 74,
+      "type": 4,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "_emscripten_throw_longjmp",
+      "kind": "function",
+      "index": 75,
+      "type": 5,
+      "params": [],
+      "results": []
+    },
+    {
+      "module": "env",
+      "name": "__syscall_accept4",
+      "kind": "function",
+      "index": 76,
+      "type": 394,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_connect",
+      "kind": "function",
+      "index": 77,
+      "type": 395,
+      "params": [
+        "i32",
+        "i64",
+        "i32",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockname",
+      "kind": "function",
+      "index": 78,
+      "type": 394,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_getsockopt",
+      "kind": "function",
+      "index": 79,
+      "type": 793,
+      "params": [
+        "i32",
+        "i32",
+        "i32",
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_recvfrom",
+      "kind": "function",
+      "index": 80,
+      "type": 794,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_sendto",
+      "kind": "function",
+      "index": 81,
+      "type": 795,
+      "params": [
+        "i32",
+        "i64",
+        "i64",
+        "i32",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_setsockopt",
+      "kind": "function",
+      "index": 82,
+      "type": 562,
+      "params": [
+        "i32",
+        "i32",
+        "i32",
+        "i64",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_shutdown",
+      "kind": "function",
+      "index": 83,
+      "type": 218,
+      "params": [
+        "i32",
+        "i32",
+        "i32",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "module": "env",
+      "name": "__syscall_socket",
+      "kind": "function",
+      "index": 84,
+      "type": 218,
+      "params": [
+        "i32",
+        "i32",
+        "i32",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    }
+  ],
+  "exports": [
+    {
+      "name": "__wasm_call_ctors",
+      "kind": 0,
+      "index": 85,
+      "params": [],
+      "results": []
+    },
+    {
+      "name": "__indirect_function_table",
+      "kind": 1,
+      "index": 0
+    },
+    {
+      "name": "__main_argc_argv",
+      "kind": 0,
+      "index": 103,
+      "params": [
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "pthread_self",
+      "kind": 0,
+      "index": 90897,
+      "params": [],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "name": "fflush",
+      "kind": 0,
+      "index": 90764,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "htons",
+      "kind": 0,
+      "index": 90793,
+      "params": [
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "ntohs",
+      "kind": 0,
+      "index": 90793,
+      "params": [
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "_emscripten_tls_init",
+      "kind": 0,
+      "index": 90693,
+      "params": [],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "name": "__funcs_on_exit",
+      "kind": 0,
+      "index": 90715,
+      "params": [],
+      "results": []
+    },
+    {
+      "name": "_emscripten_thread_init",
+      "kind": 0,
+      "index": 91110,
+      "params": [
+        "i64",
+        "i32",
+        "i32",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "name": "__set_thread_state",
+      "kind": 0,
+      "index": 90740,
+      "params": [
+        "i64",
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_thread_crashed",
+      "kind": 0,
+      "index": 90742,
+      "params": [],
+      "results": []
+    },
+    {
+      "name": "_emscripten_run_js_on_main_thread_done",
+      "kind": 0,
+      "index": 90855,
+      "params": [
+        "i64",
+        "i64",
+        "f64"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_run_js_on_main_thread",
+      "kind": 0,
+      "index": 90856,
+      "params": [
+        "i32",
+        "i64",
+        "i32",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "f64"
+      ]
+    },
+    {
+      "name": "_emscripten_thread_free_data",
+      "kind": 0,
+      "index": 90881,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_thread_exit",
+      "kind": 0,
+      "index": 90882,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_check_mailbox",
+      "kind": 0,
+      "index": 90969,
+      "params": [],
+      "results": []
+    },
+    {
+      "name": "setThrew",
+      "kind": 0,
+      "index": 91014,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "name": "emscripten_stack_set_limits",
+      "kind": 0,
+      "index": 91024,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_stack_restore",
+      "kind": 0,
+      "index": 91107,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "name": "_emscripten_stack_alloc",
+      "kind": 0,
+      "index": 91108,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "name": "emscripten_stack_get_current",
+      "kind": 0,
+      "index": 91109,
+      "params": [],
+      "results": [
+        "i64"
+      ]
+    }
+  ],
+  "patchTargets": [
+    {
+      "name": "GtaThread::Update(int)",
+      "found": true,
+      "index": 63732,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "CExplosionManager::AddExplosion(CExplosionManager::CExplosionArgs&, CProjectile*, bool)",
+      "found": true,
+      "index": 82028,
+      "params": [
+        "i64",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "CTimeWarper::SetTargetTimeWarp(TW_Dir)",
+      "found": true,
+      "index": 36231,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": []
+    },
+    {
+      "name": "CTextFile::GetInternal(unsigned int)",
+      "found": true,
+      "index": 77480,
+      "params": [
+        "i32"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "name": "graphics_commands::HasStreamedTxdLoaded(char const*)",
+      "found": true,
+      "index": 50534,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "rage::sysMemGrowBuddyAllocator::GrowHeap()",
+      "found": true,
+      "index": 3036,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "stats_commands::CommandStatSetInt(int, int, bool)",
+      "found": true,
+      "index": 59619,
+      "params": [
+        "i32",
+        "i32",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "opus_decode_frame",
+      "found": true,
+      "index": 90205,
+      "params": [
+        "i64",
+        "i64",
+        "i32",
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "rage::datResourceInfo::GenerateMap(rage::datResourceMap&) const",
+      "found": true,
+      "index": 1176,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "name": "CScenarioManager::PerformCollisionChecksForScenarioPoint(CScenarioManager::CollisionCheckParams const&)",
+      "found": true,
+      "index": 72580,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "name": "CMovieMgr::PreloadMovie(char const*, bool)",
+      "found": true,
+      "index": 81498,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "alias": "init",
+      "name": "__wasm_init_memory",
+      "index": 88,
+      "params": [],
+      "results": []
+    },
+    {
+      "alias": "shadow",
+      "name": "CParaboloidShadow::GetLightShadowIndex(CLightSource const&, bool)",
+      "index": 44528,
+      "params": [
+        "i64",
+        "i32"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "main",
+      "name": "main",
+      "index": 103,
+      "params": [
+        "i32",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "mode_now",
+      "name": "wasm_start_mode_now",
+      "index": 566,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "mode",
+      "name": "wasm_start_mode",
+      "index": 568,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "choice",
+      "name": "StartChoice()",
+      "index": 569,
+      "params": [],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "script_flag",
+      "name": "debug_commands::SetupScriptCommands()::scrWrapped_GET_COMMANDLINE_PARAM_EXISTS::Call(rage::scrThread::Info&)",
+      "index": 49773,
+      "params": [
+        "i64"
+      ],
+      "results": []
+    },
+    {
+      "alias": "memcmp",
+      "name": "memcmp",
+      "index": 90814,
+      "params": [
+        "i64",
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "strcmp",
+      "name": "strcmp",
+      "index": 90930,
+      "params": [
+        "i64",
+        "i64"
+      ],
+      "results": [
+        "i32"
+      ]
+    },
+    {
+      "alias": "strlen",
+      "name": "strlen",
+      "index": 90939,
+      "params": [
+        "i64"
+      ],
+      "results": [
+        "i64"
+      ]
+    },
+    {
+      "alias": "sinf",
+      "name": "sinf",
+      "index": 90918,
+      "params": [
+        "f32"
+      ],
+      "results": [
+        "f32"
+      ]
+    },
+    {
+      "alias": "cosf",
+      "name": "cosf",
+      "index": 90732,
+      "params": [
+        "f32"
+      ],
+      "results": [
+        "f32"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "sha256": "0e196a1aa73f622383ed5164ad799d43b9a1ac2ac0dc69068244187d1315ca26"
+    },
+    {
+      "id": 2,
+      "sha256": "18d283ceb513e1a305a61b417fadcbd22b1da90b5262d9ff7cb588e87e08f5fa"
+    },
+    {
+      "id": 3,
+      "sha256": "ea54cf93f0634c280ca0497dfb89b4fc93968f7e589bf3670fe1e987d0340728"
+    },
+    {
+      "id": 4,
+      "sha256": "d6d5c4cd7a97c4ebfb9de10f880bb99f2e5959372ad95b7a38dc16532f4d6485"
+    },
+    {
+      "id": 6,
+      "sha256": "26e506a0b7e1cb2f9d1481d13bea410a28f936014804dd48110414fe77c57b78"
+    },
+    {
+      "id": 7,
+      "sha256": "6975ae509179531679e7917f52d949000f2ad6a6ae41af55a38077404b6c3c9d"
+    },
+    {
+      "id": 8,
+      "sha256": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015"
+    },
+    {
+      "id": 9,
+      "sha256": "b7212fbe90549242cb13d26ebd677c23d04a0fb32f2d5e66b291e1dce9a9f920"
+    },
+    {
+      "id": 12,
+      "sha256": "797c2a0df927a567a849ce452ac2c92e5f492f63cfef75cdac619533fd3249b9"
+    },
+    {
+      "id": 10,
+      "sha256": "40a4eecda7ccefb19a5eeab93235887f9cad15b52ddb7abdff76cf0b0ba90c0b"
+    },
+    {
+      "id": 11,
+      "sha256": "21c2fdcf172524c8b33a3f6c20b3dd25c79492284f8b2bfc01e6ceb90a8c6f15"
+    }
+  ],
+  "modifications": "Additional exports only. Code, data, element, type and import sections unchanged.",
+  "gameplayVerified": false
+}
