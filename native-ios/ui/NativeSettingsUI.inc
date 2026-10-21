@@ -15,7 +15,7 @@ static NSString *NativeSettingText(const NativeSettingSpec *f,double v){
  if(!strcmp(k,"mode"))return v==2?@"Sandbox Mode":@"Story Mode";
  if(!strcmp(k,"scale"))return [NSString stringWithFormat:@"%.0f%%",v];
  if(!strcmp(k,"fps"))return [NSString stringWithFormat:@"%.0f FPS",v];
- if(!strcmp(k,"texture"))return @[@"Normal · engine 0",@"High · engine 1",@"Very High · engine 2"][(unsigned)v];
+ if(!strcmp(k,"texture"))return @[@"Normal",@"High",@"Very High"][(unsigned)v];
  if(!strcmp(k,"aa"))return v?@"FXAA":@"Off";
  if(!strcmp(k,"shadow"))return @[@"Off",@"Normal",@"High",@"Very High"][(unsigned)(v+1)];
  if(!strcmp(k,"anisotropy"))return v?[NSString stringWithFormat:@"%.0f×",v]:@"Off";
@@ -27,7 +27,7 @@ static NSString *NativeSettingText(const NativeSettingSpec *f,double v){
 @implementation ProbeController (NativeSettingsUI)
 - (void)buildLibraryNavigation {
  self.playDock=[[UIView alloc]init];self.playDock.translatesAutoresizingMaskIntoConstraints=NO;self.playDock.backgroundColor=[UIColor colorWithWhite:.045 alpha:1];[self.view addSubview:self.playDock];self.playDockHeight=[self.playDock.heightAnchor constraintEqualToConstant:72];self.playDockHeight.active=YES;
- self.navigationPanel=[[NativeMenuScrollView alloc]init];self.navigationPanel.translatesAutoresizingMaskIntoConstraints=NO;self.navigationPanel.backgroundColor=[UIColor colorWithWhite:.055 alpha:1];self.navigationPanel.showsHorizontalScrollIndicator=NO;self.navigationPanel.showsVerticalScrollIndicator=NO;self.navigationPanel.delaysContentTouches=NO;[self.view addSubview:self.navigationPanel];
+ self.navigationPanel=[[NativeMenuScrollView alloc]init];self.navigationPanel.translatesAutoresizingMaskIntoConstraints=NO;self.navigationPanel.backgroundColor=[UIColor colorWithWhite:.055 alpha:1];self.navigationPanel.showsHorizontalScrollIndicator=YES;self.navigationPanel.showsVerticalScrollIndicator=YES;self.navigationPanel.delaysContentTouches=NO;[self.view addSubview:self.navigationPanel];
  self.navigationItems=NativeVertical();self.navigationItems.translatesAutoresizingMaskIntoConstraints=NO;self.navigationItems.spacing=6;[self.navigationPanel addSubview:self.navigationItems];
  NSArray *names=@[@"Home",@"GTA V",@"Graphics",@"Gameplay",@"Controls",@"Audio",@"Advanced",@"Game Files",@"Diagnostics"];
  NSArray *icons=@[@"house",@"square.stack",@"display",@"person",@"gamecontroller",@"speaker.wave.2",@"slider.horizontal.3",@"folder",@"waveform.path.ecg"];
@@ -41,7 +41,7 @@ static NSString *NativeSettingText(const NativeSettingSpec *f,double v){
 }
 - (void)layoutLibrary {
  if(!self.navigationPanel)return;BOOL wide=self.view.bounds.size.width>=660&&self.view.bounds.size.width>self.view.bounds.size.height;
- if(wide==self.libraryLandscape)return;self.libraryLandscape=wide;[NSLayoutConstraint deactivateConstraints:wide?self.libraryNarrow:self.libraryWide];self.navigationItems.axis=wide?UILayoutConstraintAxisVertical:UILayoutConstraintAxisHorizontal;[NSLayoutConstraint activateConstraints:wide?self.libraryWide:self.libraryNarrow];
+ if(wide==self.libraryLandscape)return;self.libraryLandscape=wide;self.libraryArtHeight.constant=wide?96:170;self.modeDescription.hidden=wide;self.mainStack.spacing=wide?12:18;[NSLayoutConstraint deactivateConstraints:wide?self.libraryNarrow:self.libraryWide];self.navigationItems.axis=wide?UILayoutConstraintAxisVertical:UILayoutConstraintAxisHorizontal;[NSLayoutConstraint activateConstraints:wide?self.libraryWide:self.libraryNarrow];
 }
 - (void)libraryNavigate:(UIButton *)sender {
  if(sender.tag==99){[self.mainScroll setContentOffset:CGPointZero animated:NO];return;}

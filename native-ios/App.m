@@ -58,6 +58,8 @@ static NSString *Digest(NSData *bytes) {
 @property(nonatomic,strong) NSMutableDictionary<NSString*,UILabel*> *settingValues;
 @property(nonatomic,strong) UILabel *resolutionPreview;
 @property(nonatomic,strong) UILabel *launchSummary;
+@property(nonatomic,strong) UILabel *modeDescription;
+@property(nonatomic,strong) NSLayoutConstraint *libraryArtHeight;
 @property(nonatomic,strong) UIScrollView *navigationPanel;
 @property(nonatomic,strong) UIView *playDock;
 @property(nonatomic,strong) NSLayoutConstraint *playDockHeight;
