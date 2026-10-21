@@ -1,0 +1,67 @@
+name: Muguet migration compatibility gates
+on:
+  push:
+    branches: [muguet-rebirth]
+    paths: ['migration/**', '.github/workflows/muguet-migration.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: muguet-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compatibility:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Pin Rust and iOS target
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup target add aarch64-apple-ios --toolchain 1.98.1
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: migration/target
+          key: muguet-stage-a-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('migration/Cargo.lock') }}
+      - name: Assemble original engine and run export-only ABI gate
+        run: |
+          mkdir -p migration/evidence
+          node native-ios/prepare-engine.mjs
+          node migration/prepare-engine.cjs native-build/engine-original.wasm migration/evidence > migration/evidence/abi-summary.json
+          NATIVE_MODE_ENGINE=native-build/engine-original.wasm node native-ios/launch/test_engine_mode.cjs migration/evidence/original-mode.json
+          NATIVE_TIMING_ENGINE=native-build/engine-original.wasm node native-ios/timing/test-timer.cjs migration/evidence/original-timer.json
+      - name: Rust components, exact engine execution and independent reference
+        run: |
+          set -euo pipefail
+          cargo +1.98.1 test --manifest-path migration/Cargo.toml --locked --release --features compiler 2>&1 | tee migration/evidence/rust-tests.log
+          migration/target/release/migration-probe host migration/evidence/engine-probe.wasm migration/evidence > migration/evidence/host-run.log
+          node migration/reference.cjs migration/evidence/engine-probe.wasm migration/evidence/reference.json migration/evidence/host.json
+      - name: ARM64 AOT, compiler-free iOS link and executable-section audit
+        run: |
+          set -euo pipefail
+          migration/target/release/migration-probe ios migration/evidence/engine-probe.wasm migration/evidence > migration/evidence/ios-compile.log
+          export MIGRATION_AOT="$PWD/migration/evidence/ios.cwasm"
+          export MIGRATION_AOT_SHA256="$(shasum -a 256 "$MIGRATION_AOT" | cut -d' ' -f1)"
+          export IPHONEOS_DEPLOYMENT_TARGET=17.0
+          cargo +1.98.1 tree --manifest-path migration/Cargo.toml --locked --no-default-features --features embedded-check --target aarch64-apple-ios > migration/evidence/ios-dependencies.txt
+          if grep -E 'cranelift-codegen |wasmtime-internal-cranelift ' migration/evidence/ios-dependencies.txt; then exit 1; fi
+          cargo +1.98.1 build --manifest-path migration/Cargo.toml --locked --release --no-default-features --features embedded-check --target aarch64-apple-ios --bin embedded-aot-check 2>&1 | tee migration/evidence/ios-link.log
+          node migration/audit-macho.cjs migration/target/aarch64-apple-ios/release/embedded-aot-check migration/evidence/ios.cwasm migration/evidence/macho.json
+      - name: Preserve baseline component gates
+        run: |
+          set -euo pipefail
+          clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/launch/test_options.c -o migration/evidence/test-options
+          migration/evidence/test-options | tee migration/evidence/legacy-options.log
+          clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_completion_serial.c -o migration/evidence/test-completion
+          migration/evidence/test-completion | tee migration/evidence/legacy-completion.log
+      - name: Upload textual evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: muguet-stage-a-evidence
+          path: |
+            migration/evidence/*.json
+            migration/evidence/*.log
+            migration/evidence/*.txt
+          if-no-files-found: error
+          retention-days: 30
