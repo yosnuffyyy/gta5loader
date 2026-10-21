@@ -6,6 +6,8 @@ exec > >(tee native-build/evidence/build.log) 2>&1
 sdk=$(xcrun --sdk iphoneos --show-sdk-path)
 xcrun --sdk iphoneos clang -target arm64-apple-ios17.0 -isysroot "$sdk" -fobjc-arc -Inative-ios -fsyntax-only native-ios/App.m
 plutil -lint native-ios/Info.plist
+clang -std=gnu11 -fobjc-arc -O1 -g -fsanitize=address,undefined native-ios/launch/test_device.m -framework Foundation -framework Metal -o native-build/test-settings-device
+native-build/test-settings-device | tee native-build/evidence/settings-device.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_texture_copy.c -o native-build/test-texture-copy
 native-build/test-texture-copy | tee native-build/evidence/texture-copy-plan.txt
 clang -std=gnu11 -Wall -Wextra -Werror -O1 -g -fsanitize=address,undefined native-ios/renderer/test_completion_serial.c -o native-build/test-completion-serial

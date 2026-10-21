@@ -42,6 +42,8 @@ Exact original-engine parameter objects, command names, value-reader instruction
 
 24/40 FPS do not map to integral original 60 Hz divisors; 60/uncapped simulation is not validated. MSAA2 is unavailable in this backend; complete game-wide MSAA4 resolve/readback handling is not validated. Ultra Low/Low texture tiers lack a verified lower mip policy. Native display/854×480, alternate upscalers, soft/long shadows, individual bloom/DOF/fog/lens toggles, independent audio buses, haptics and manual source locking remain unavailable. No dummy controls are provided.
 
+PLAY performs a startup-only allocation check for representative BGRA8/depth32 targets on the selected Metal device and rejects OS headroom below even their minimum payload. Targets are released before engine launch. This is a capability/minimum-payload check, not a full-scene memory model.
+
 Higher valid graphics values consume more resources and may encounter unobserved game shader/operation combinations. Domain/argument validation is not a guarantee of sufficient memory for every Story/Sandbox scene. Physical iPhone visual correctness, sustained memory/FPS, complete AA quality and audible output remain device checks.
 
 ## UI and overhead

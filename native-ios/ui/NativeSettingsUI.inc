@@ -78,7 +78,8 @@ static NSString *NativeSettingText(const NativeSettingSpec *f,double v){
 }
 - (void)updateSettingMenu:(UIButton *)button index:(NSUInteger)index {
  const NativeSettingSpec *f=&native_setting_specs[index];NativeSettings s=self.settingsStore.value;double value=native_setting_get(&s,f);
- UIButtonConfiguration *c=button.configuration;c.title=NativeSettingText(f,value);c.image=[UIImage systemImageNamed:@"chevron.up.chevron.down"];c.imagePlacement=NSDirectionalRectEdgeTrailing;c.baseForegroundColor=NativeGold();button.configuration=c;
+ NSString *selected=NativeSettingText(f,value);if(button.menu&&[button.accessibilityValue isEqualToString:selected])return;button.accessibilityValue=selected;
+ UIButtonConfiguration *c=button.configuration;c.title=selected;c.image=[UIImage systemImageNamed:@"chevron.up.chevron.down"];c.imagePlacement=NSDirectionalRectEdgeTrailing;c.baseForegroundColor=NativeGold();button.configuration=c;
  NSArray *choices=NativeChoices(f->key);if(!choices){NSMutableArray *items=[NSMutableArray new];for(int i=(int)f->minimum;i<=f->maximum;i++)[items addObject:@(i)];choices=items;}
  NSMutableArray *actions=[NSMutableArray new];__weak ProbeController *weak=self;
  for(NSNumber *n in choices){UIAction *a=[UIAction actionWithTitle:NativeSettingText(f,n.doubleValue) image:nil identifier:nil handler:^(UIAction *action){[weak changeSetting:index value:n.doubleValue];}];a.state=n.doubleValue==value?UIMenuElementStateOn:UIMenuElementStateOff;[actions addObject:a];}
